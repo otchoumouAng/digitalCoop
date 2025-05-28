@@ -1,0 +1,461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D1B8EB39-3A94-401A-9D5B-39E247A1F3DA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tms.Classes</RootNamespace>
+    <AssemblyName>Tms.Classes</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.CodeParser.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Data.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Tms2017.MVC\bin\DevExpress.Data.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.DataAccess.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Tms2017.MVC\bin\DevExpress.DataAccess.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpo.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraPrinting.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v17.1, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Tms2017.MVC\bin\DevExpress.XtraReports.v17.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraReports.v17.1.Web, Version=17.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Tms2017.MVC\bin\DevExpress.XtraReports.v17.1.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=5.6.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.5.6.4\lib\net45\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ext.Net, Version=4.2.2.0, Culture=neutral, PublicKeyToken=2e12ce3d0176cd87, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ext.NET.MVC.4.2.2\lib\net45\Ext.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.4.1\lib\net45\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Tms2017.MVC\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Business\AnalyseCode.cs" />
+    <Compile Include="Business\AnalysePhysique.cs" />
+    <Compile Include="Business\BonDeLivraison.cs" />
+    <Compile Include="Business\Brice.cs" />
+    <Compile Include="Business\ContratPeriode.cs" />
+    <Compile Include="Business\Facture.cs" />
+    <Compile Include="Business\FactureDeduction.cs" />
+    <Compile Include="Business\FactureValorisation.cs" />
+    <Compile Include="Business\Facture_Prelevement.cs" />
+    <Compile Include="Business\Financement.cs" />
+    <Compile Include="Business\Financement_Approval.cs" />
+    <Compile Include="Business\Fournisseur.cs" />
+    <Compile Include="Business\PrixJournalier.cs" />
+    <Compile Include="Business\PrixJournalierAgence.cs" />
+    <Compile Include="Business\PrixNegocieAgence.cs" />
+    <Compile Include="Business\AnalysePhysiqueAgence.cs" />
+    <Compile Include="Business\Sales\CertificatPoids.cs" />
+    <Compile Include="Business\Sales\ConnaissementMaritime.cs" />
+    <Compile Include="Business\Sales\Conteneur.cs" />
+    <Compile Include="Business\Sales\ConteneurLot.cs" />
+    <Compile Include="Business\Sales\ContratDeVentes.cs" />
+    <Compile Include="Business\Sales\Embarquement.cs" />
+    <Compile Include="Business\Sites\LotCoop.cs" />
+    <Compile Include="Business\Sites\LotCoopDetail.cs" />
+    <Compile Include="Business\Sites\PaiementChequeAgence.cs" />
+    <Compile Include="Business\Sites\Engagement.cs" />
+    <Compile Include="Business\Sites\FournisseurAutreSites.cs" />
+    <Compile Include="Business\Sites\TransfertFevesDetail.cs" />
+    <Compile Include="Business\Sites\TransfertFeves.cs" />
+    <Compile Include="Business\Sites\PeseeSitePalette.cs" />
+    <Compile Include="Business\Sites\PeseeSite.cs" />
+    <Compile Include="Business\Sites\PrefinancementAgence.cs" />
+    <Compile Include="Business\Sites\VenteLot.cs" />
+    <Compile Include="Business\Sites\VenteLotDetail.cs" />
+    <Compile Include="Business\stock\InventaireAgence.cs" />
+    <Compile Include="Business\stock\Lot_Envoi.cs" />
+    <Compile Include="Business\stock\Lot_GestionStock.cs" />
+    <Compile Include="Business\stock\Lot_Reception.cs" />
+    <Compile Include="Business\stock\MouvementStockAgence.cs" />
+    <Compile Include="Business\stock\MouvementStock_Gestion.cs" />
+    <Compile Include="Business\stock\RetourEmpotage.cs" />
+    <Compile Include="Business\Sales\Empotage.cs" />
+    <Compile Include="Business\Sales\EnregistrementDetail.cs" />
+    <Compile Include="Business\Sales\Enregistrement.cs" />
+    <Compile Include="Business\Sales\FactureCommerciale.cs" />
+    <Compile Include="Business\Sales\FactureCommercialeDeduction.cs" />
+    <Compile Include="Business\Sales\FactureCommercialePrefinancement.cs" />
+    <Compile Include="Business\Sales\FactureFinale.cs" />
+    <Compile Include="Business\Sales\PaiementCheque.cs" />
+    <Compile Include="Business\Sales\Prefinancement.cs" />
+    <Compile Include="Business\Sales\Redevance.cs" />
+    <Compile Include="Business\Sales\RedevanceValeur.cs" />
+    <Compile Include="Business\stock\AnalyseChimique.cs" />
+    <Compile Include="Business\stock\AnalyseChimiqueEchantillon.cs" />
+    <Compile Include="Business\stock\AnalyseChimiqueEchantillonLot.cs" />
+    <Compile Include="Business\stock\AnalysePhysiqueExport.cs" />
+    <Compile Include="Business\stock\FicheLotCertifieLivraison.cs" />
+    <Compile Include="Business\stock\FicheLotCertifie.cs" />
+    <Compile Include="Business\stock\Reusinage.cs" />
+    <Compile Include="Business\stock\MelangeLivraison.cs" />
+    <Compile Include="Business\stock\TransfertFeves.cs" />
+    <Compile Include="Business\stock\BordereauEntreeSortie.cs" />
+    <Compile Include="Business\stock\CompositionUsinage.cs" />
+    <Compile Include="Business\stock\CompositionUsinageLivraison.cs" />
+    <Compile Include="Business\stock\Inventaire.cs" />
+    <Compile Include="Business\stock\InventaireElementStock.cs" />
+    <Compile Include="Business\stock\PeseeProduction.cs" />
+    <Compile Include="Business\stock\Lot.cs" />
+    <Compile Include="Business\stock\MouvementStock.cs" />
+    <Compile Include="Business\stock\OrdreProduction.cs" />
+    <Compile Include="Business\stock\PeseeProductionPalette.cs" />
+    <Compile Include="Business\SuiviLivraison.cs" />
+    <Compile Include="Business\Livraison.cs" />
+    <Compile Include="Business\MiseEnCompte.cs" />
+    <Compile Include="Business\MiseEnComptePlanifiee.cs" />
+    <Compile Include="Business\FactureTransport.cs" />
+    <Compile Include="Business\Payement.cs" />
+    <Compile Include="Business\FactureTransportTransaction.cs" />
+    <Compile Include="Business\PayementTransaction.cs" />
+    <Compile Include="Business\Pesee.cs" />
+    <Compile Include="Business\PrixNegocie.cs" />
+    <Compile Include="Business\PrixNegocieLivraison.cs" />
+    <Compile Include="Business\Refoulement.cs" />
+    <Compile Include="Business\RemboursementDirect.cs" />
+    <Compile Include="Business\RemboursementDirectFinancement.cs" />
+    <Compile Include="Business\RemboursementDirectMEC.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="DevExpressReportDs.cs" />
+    <Compile Include="DevReport\BanqueListe.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\ContratPeriodeBalanceReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\ContratPeriodeExecutionReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\HeaderTemplate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptBonDeLivraison.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptBonDeLivraisonList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptCodingList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptDailyPriceList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptDeliveriesList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptDeliveriesReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\RptDeliveryCode.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptDirectRepaymentList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptFinancingAgreement.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptFinancingApprovalList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptFinancingBalance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptFinancingExecution.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptFinancingExposure.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptFinancingList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptForwardContractList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptInvoice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptInvoiceList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptInvoiceTest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptListOfUsers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptPayementList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptPhysicalAnalysisDeliveriesReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptPhysicalAnalysisList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptProgSavingList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptQualityAverage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptRejectedWeighingList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSavingList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSpotPriceList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSupplierAccountStatus.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSupplierFinancialStatus.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSupplierHystoryOfInvoice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSupplierHystoryOfPayment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptSupplierList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptTransportInvoiceList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptVoucherDelivery.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\RptVoucherFinancing.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptVoucherSaving.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptVoucherTransport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptWeighingHistoryList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\rptWeighingList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\SupplierList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\TicketPeseeCaisse.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\TicketPeseeNormal.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\TicketPeseeNormalSansVGM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\TicketPeseeRejectionCaisse.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\XtraReport1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\XtraReport2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DevReport\XtraReportListBank.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportWaterMark.cs" />
+    <Compile Include="Security\Application.cs" />
+    <Compile Include="Security\Fonction.cs" />
+    <Compile Include="Security\Module.cs" />
+    <Compile Include="Security\BaseDeDonnees.cs" />
+    <Compile Include="Security\ModuleUsers.cs" />
+    <Compile Include="Security\ProcedureStockee.cs" />
+    <Compile Include="Security\Role.cs" />
+    <Compile Include="Security\RoleUsers.cs" />
+    <Compile Include="Security\RoleFonction.cs" />
+    <Compile Include="Security\Security.cs" />
+    <Compile Include="Security\SitePrice.cs" />
+    <Compile Include="Security\Utilisateur.cs" />
+    <Compile Include="Shared\AnalysePhysiqueNorme.cs" />
+    <Compile Include="Shared\Analyseur.cs" />
+    <Compile Include="Shared\Banque.cs" />
+    <Compile Include="Shared\Bascule.cs" />
+    <Compile Include="Shared\Campagne.cs" />
+    <Compile Include="Shared\Certification.cs" />
+    <Compile Include="Shared\ClassificationFeves.cs" />
+    <Compile Include="Shared\ContratPeriodeType.cs" />
+    <Compile Include="Shared\DashBoard.cs" />
+    <Compile Include="Shared\Destination.cs" />
+    <Compile Include="Shared\DestinationType.cs" />
+    <Compile Include="Shared\ElementEnStock.cs" />
+    <Compile Include="Shared\Exportateur.cs" />
+    <Compile Include="Shared\FactureDeductionType.cs" />
+    <Compile Include="Shared\FactureValorisationType.cs" />
+    <Compile Include="Shared\FinancementType.cs" />
+    <Compile Include="Shared\FournisseurGroupe.cs" />
+    <Compile Include="Shared\FournisseurType.cs" />
+    <Compile Include="Shared\IService.cs" />
+    <Compile Include="Shared\Imprimante.cs" />
+    <Compile Include="Shared\MiseEnComptePlanifieeMode.cs" />
+    <Compile Include="Shared\MoneySpeller.cs" />
+    <Compile Include="Shared\MoneySpellerEn.cs" />
+    <Compile Include="Shared\PayementItem.cs" />
+    <Compile Include="Shared\PayementOption.cs" />
+    <Compile Include="Shared\Sales\ContratDeVentePoidsStandard.cs" />
+    <Compile Include="Shared\Sales\ConteneurShip.cs" />
+    <Compile Include="Shared\Sales\RedevanceNature.cs" />
+    <Compile Include="Shared\Sites\AnalyseurSite.cs" />
+    <Compile Include="Shared\stock\PoleProvenance.cs" />
+    <Compile Include="Shared\PayementType.cs" />
+    <Compile Include="Shared\PrefinancementType.cs" />
+    <Compile Include="Shared\RemboursementMode.cs" />
+    <Compile Include="Shared\ReportingManager.cs" />
+    <Compile Include="Shared\Sales\Client.cs" />
+    <Compile Include="Shared\Sales\CompagnieMaritime.cs" />
+    <Compile Include="Shared\Sales\CompteBancaire.cs" />
+    <Compile Include="Shared\Sales\ConditionLivraison.cs" />
+    <Compile Include="Shared\Sales\Conditionnement.cs" />
+    <Compile Include="Shared\Sales\Consignee.cs" />
+    <Compile Include="Shared\Sales\ConteneurType.cs" />
+    <Compile Include="Shared\Sales\DestinationExport.cs" />
+    <Compile Include="Shared\Sales\FactureCommercialeDeductionType.cs" />
+    <Compile Include="Shared\Sales\ModeTraitement.cs" />
+    <Compile Include="Shared\Sales\OrganismeCertification.cs" />
+    <Compile Include="Shared\Sales\ProduitExport.cs" />
+    <Compile Include="Shared\Sales\EnregistrementMode.cs" />
+    <Compile Include="Shared\Sales\StationEmpotage.cs" />
+    <Compile Include="Shared\Sales\Navire.cs" />
+    <Compile Include="Shared\Sales\Origine.cs" />
+    <Compile Include="Shared\Sales\Qualite.cs" />
+    <Compile Include="Shared\Sales\RedevanceType.cs" />
+    <Compile Include="Shared\Sales\TermesPaiement.cs" />
+    <Compile Include="Shared\stock\AgentProductionType.cs" />
+    <Compile Include="Shared\stock\Magasin.cs" />
+    <Compile Include="Shared\stock\MouvementStockType.cs" />
+    <Compile Include="Shared\stock\ProvenanceFeves.cs" />
+    <Compile Include="Shared\stock\PeseeProductionType.cs" />
+    <Compile Include="Shared\stock\LotType.cs" />
+    <Compile Include="Shared\stock\StockType.cs" />
+    <Compile Include="Shared\stock\Periode.cs" />
+    <Compile Include="Shared\stock\Emplacement.cs" />
+    <Compile Include="Shared\stock\TypeElementStock.cs" />
+    <Compile Include="Shared\stock\Melange.cs" />
+    <Compile Include="Shared\stock\AgentProduction.cs" />
+    <Compile Include="Shared\stock\Usine.cs" />
+    <Compile Include="Shared\Services.cs" />
+    <Compile Include="Shared\ServicesHelper.cs" />
+    <Compile Include="Shared\StatusString.cs" />
+    <Compile Include="Shared\Laboratoire.cs" />
+    <Compile Include="Shared\LivraisonType.cs" />
+    <Compile Include="Shared\MiseEnCompteType.cs" />
+    <Compile Include="Shared\Parametres.cs" />
+    <Compile Include="Shared\PayementMode.cs" />
+    <Compile Include="Shared\PayementTransactionType.cs" />
+    <Compile Include="Shared\PieceType.cs" />
+    <Compile Include="Shared\PrelevementMode.cs" />
+    <Compile Include="Shared\PrixNegocieModeApplication.cs" />
+    <Compile Include="Shared\Produit.cs" />
+    <Compile Include="Shared\Protocole.cs" />
+    <Compile Include="Shared\Provenance.cs" />
+    <Compile Include="Shared\ProvenanceType.cs" />
+    <Compile Include="Shared\Recolte.cs" />
+    <Compile Include="Shared\RemboursementDirectType.cs" />
+    <Compile Include="Shared\SacType.cs" />
+    <Compile Include="Shared\Site.cs" />
+    <Compile Include="Shared\toto.cs" />
+    <Compile Include="Shared\Transitaire.cs" />
+    <Compile Include="Shared\Transporteur.cs" />
+    <Compile Include="Shared\TypeChargement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tms.Components\Tms.Components.csproj">
+      <Project>{58cbf427-1c0c-4144-a8f0-aac1b0d91e88}</Project>
+      <Name>Tms.Components</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DevReport\TicketPeseeNormal.resx">
+      <DependentUpon>TicketPeseeNormal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DevReport\TicketPeseeNormalSansVGM.resx">
+      <DependentUpon>TicketPeseeNormalSansVGM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

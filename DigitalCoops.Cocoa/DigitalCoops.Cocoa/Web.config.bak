@@ -1,0 +1,192 @@
+<?xml version="1.0" ?><!--
+  For more information on how to configure your ASP.NET application, please visit
+  http://go.microsoft.com/fwlink/?LinkId=301880
+  -->
+<configuration>
+  <configSections>
+    <!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 -->
+    <section name="DataParameters" type="Tms.Components.Data.DataConfigSection, Tms.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
+    <section name="extnet" type="Ext.Net.GlobalConfig" requirePermission="false" />
+    <sectionGroup name="devExpress">
+      <section name="themes" type="DevExpress.Web.ThemesConfigurationSection, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="compression" type="DevExpress.Web.CompressionConfigurationSection, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="settings" type="DevExpress.Web.SettingsConfigurationSection, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="errors" type="DevExpress.Web.ErrorsConfigurationSection, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+      <section name="resources" type="DevExpress.Web.ResourcesConfigurationSection, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" requirePermission="false" />
+    </sectionGroup>
+  </configSections>
+  <!--BTECHSVR2017-->
+  <!--<DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="LBQEtVMyusAhOr76APQr7E/2DTJkBAz6p7j+TT+EfYR7HerggXz0VjTTVGEFjlqO" user="klLeNOCw3aBOjBBWgjsfD2ZzL+xTjLHm/bosIbAJtyo=" password="klLeNOCw3aBOjBBWgjsfD/ehNcxZ7icqAG0uaTwyUDBRjrv3YXOJS0zuxaK3cZ7g" language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />-->
+  <!--ABTECH001-->
+  <!--<DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="6GiTnOqYNNH1gbSUdXrfhuQs2ySqbgI4OpleG4Nlme7+G58sZeqC8NUn98AOZlve"  user="klLeNOCw3aBOjBBWgjsfD2ZzL+xTjLHm/bosIbAJtyo=" password="klLeNOCw3aBOjBBWgjsfD9+kISVvchg1x/blqrhM0ko="  language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />-->
+  <!--BTECH001-->
+  <!--<DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="LBQEtVMyusAhOr76APQr7Ate/B/NiBqP7fwihR8/c2mId759NoZwWzilOEUNBE12" user="klLeNOCw3aBOjBBWgjsfD2ZzL+xTjLHm/bosIbAJtyo=" password="klLeNOCw3aBOjBBWgjsfD9+kISVvchg1x/blqrhM0ko="   language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />-->
+  <!--BTECH002-->
+  <connectionStrings>
+    <add name="ABTECHLT001\SQL2014_TMS2017_Connection" connectionString="XpoProvider=MSSqlServer;data source=ABTECHLT001\SQL2014;integrated security=SSPI;initial catalog=TMS2017" />
+  </connectionStrings>
+  <DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="LBQEtVMyusAhOr76APQr7IF6xqmQFqACEqCqO9QBivi2Ymmb5pZFuOx0ikZl1b6c" user="klLeNOCw3aBOjBBWgjsfD2ZzL+xTjLHm/bosIbAJtyo=" password="klLeNOCw3aBOjBBWgjsfD9+kISVvchg1x/blqrhM0ko=" language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />
+  <!-- BTECH003 :-->
+  <!--<DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="LBQEtVMyusAhOr76APQr7ApuCNdcH+IFcr2YffwcKC2+gnGtHxSQH0bX0nUGpdqC" language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />-->
+  <!--<DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="LBQEtVMyusAhOr76APQr7ApuCNdcH+IFcr2YffwcKC2+gnGtHxSQH0bX0nUGpdqC" user="klLeNOCw3aBOjBBWgjsfD2ZzL+xTjLHm/bosIbAJtyo=" password="klLeNOCw3aBOjBBWgjsfD9+kISVvchg1x/blqrhM0ko=" language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />-->
+  <!-- BTECH004 :
+	<DataParameters database="jPhyFR8xuwBp0d/PFHeruXQN6C8T4k7HQzx5Su7PkUw=" server="LBQEtVMyusAhOr76APQr7JDPi5BmIGZJmNwjg/LfG3WJ/6+5MMcwxXbuJw4Pccmb" language="2ex3PpF+oxQrFnoyGYX19540XmzbHvUeGlEr5Tf+VPw=" user="klLeNOCw3aBOjBBWgjsfD2ZzL+xTjLHm/bosIbAJtyo=" password="klLeNOCw3aBOjBBWgjsfD9+kISVvchg1x/blqrhM0ko="  others="L49FnLxVulFW8ogJTn1Nunb2dFSHjqNJxHUa9p9tH0GqhThBIpDBCUMK5UAg4xHJTocvcn7RFkrsGDm/rKEMpPYs4ZzVyKP4ybaVYjJ1eTXBwzrGOSdOKKMHdUw+U3+8XE3+JTndnpuGbF3qDJ/bdhah3iPvN9Iq3/dlGAvkCVsQFxqyZ6SQZ3z4qiB3zvthTgfDcqDDTSTGax+l+VG8hfN3bDxL6ffu8C4kuxpI3aZ5pgJgkk6VEGRZb9j5dVSacrbctbklZuGiGUMlmxo8CFlbP6Z9QUNA3G72oA/+jPVxUYyEFk82EdeI9X6dKEwFmKKW1So32e48Z+0rH4dVY0xZnklnuj2oPVCNqFyIMmBviKkz5zMOMFPjuixfig8M/PVAcFpbfZPgyQSL/W1KQSbG6+jnI5qzDEK/6lZoaeNw10xZCSRSs7TXI7RIjh5KICWZ+cwvU42SUnYaKOnm570PImA0LUFoeM0UykMurXjXEK/7Y4K1oEVdRkQcUNIc" />-->
+  <!--<connectionStrings>
+		<add name="DefaultConnection" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\aspnet-Tms2017.MVC-20170622092912.mdf;Initial Catalog=aspnet-Tms2017.MVC-20170622092912;Integrated Security=True" providerName="System.Data.SqlClient" />
+	</connectionStrings>-->
+  <appSettings>
+    <add key="webpages:Version" value="3.0.0.0" />
+    <add key="webpages:Enabled" value="false" />
+    <add key="ClientValidationEnabled" value="true" />
+    <add key="UnobtrusiveJavaScriptEnabled" value="true" />
+    <add key="vs:EnableBrowserLink" value="false" />
+  </appSettings>
+  <system.web>
+    <sessionState mode="InProc" timeout="30"></sessionState>
+    <authentication mode="Forms"></authentication>
+    <compilation debug="true" targetFramework="4.5.2">
+      <assemblies>
+        <add assembly="DevExpress.Utils.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Data.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Web.ASPxThemes.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.RichEdit.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Printing.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Web.Mvc5.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.XtraReports.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.XtraReports.v16.2.Web, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Pdf.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+        <add assembly="DevExpress.Web.Resources.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+      </assemblies>
+    </compilation>
+    <httpRuntime targetFramework="4.5.2" maxRequestLength="4096" requestValidationMode="4.0" executionTimeout="110" />
+    <!-- This httpHandlers config only required if using IIS6 (or lower) -->
+    <!--
+    <httpHandlers>
+      <add path="*/ext.axd" verb="*" type="Ext.Net.ResourceHandler" validate="false" />
+    </httpHandlers>
+    -->
+    <!-- This httpModules config only required if using IIS6 (or lower) -->
+    <!--
+    <httpModules>
+      <add name="DirectRequestModule" type="Ext.Net.DirectRequestModule, Ext.Net" />
+    </httpModules>
+    -->
+    <pages validateRequest="true" clientIDMode="AutoID">
+      <controls>
+        <add assembly="Ext.Net" namespace="Ext.Net" tagPrefix="ext" />
+      </controls>
+      <namespaces>
+        <add namespace="Ext.Net" />
+        <add namespace="Ext.Net.MVC" />
+        <add namespace="DevExpress.Utils" />
+        <add namespace="DevExpress.Web.ASPxThemes" />
+        <add namespace="DevExpress.Web" />
+        <add namespace="DevExpress.Web.Mvc" />
+        <add namespace="DevExpress.Web.Mvc.UI" />
+        <add namespace="DevExpress.XtraReports" />
+        <add namespace="DevExpress.XtraReports.UI" />
+        <add namespace="DevExpress.XtraReports.Web" />
+        <add namespace="DevExpress.XtraReports.Web.DocumentViewer" />        
+      </namespaces>
+    </pages>
+    <httpHandlers>
+      <add type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" validate="false" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET" path="DX.ashx" validate="false" />
+    </httpHandlers>
+    <httpModules>
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
+    </httpModules>
+    <globalization culture="" uiCulture="" />
+  </system.web>
+  <system.webServer>
+    <modules>
+      <remove name="FormsAuthentication" />
+      <add name="DirectRequestModule" preCondition="managedHandler" type="Ext.Net.DirectRequestModule, Ext.Net" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" name="ASPxHttpHandlerModule" />
+    </modules>
+    <validation validateIntegratedModeConfiguration="false" />
+    <handlers>
+      <add name="DirectRequestHandler" verb="*" path="*/ext.axd" preCondition="integratedMode" type="Ext.Net.ResourceHandler" />
+      <add type="DevExpress.Web.ASPxUploadProgressHttpHandler, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET,POST" path="ASPxUploadProgressHandlerPage.ashx" name="ASPxUploadProgressHandler" preCondition="integratedMode" />
+      <add type="DevExpress.Web.ASPxHttpHandlerModule, DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" verb="GET" path="DX.ashx" name="ASPxHttpHandlerModule" preCondition="integratedMode" />
+    </handlers>
+    <security>
+      <requestFiltering>
+        <requestLimits maxAllowedContentLength="30000000" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Security" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-3.0.1.0" newVersion="3.0.1.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Security.OAuth" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-3.0.1.0" newVersion="3.0.1.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin.Security.Cookies" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-3.0.1.0" newVersion="3.0.1.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Microsoft.Owin" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-3.0.1.0" newVersion="3.0.1.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="Newtonsoft.Json" culture="neutral" publicKeyToken="30ad4fe6b2a6aeed" />
+        <bindingRedirect oldVersion="0.0.0.0-10.0.0.0" newVersion="10.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Optimization" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-1.1.0.0" newVersion="1.1.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="0.0.0.0-1.5.2.14234" newVersion="1.5.2.14234" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Helpers" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-5.2.3.0" newVersion="5.2.3.0" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="System.Web.WebPages" publicKeyToken="31bf3856ad364e35" />
+        <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+  <entityFramework>
+    <defaultConnectionFactory type="System.Data.Entity.Infrastructure.LocalDbConnectionFactory, EntityFramework">
+      <parameters>
+        <parameter value="mssqllocaldb" />
+      </parameters>
+    </defaultConnectionFactory>
+    <providers>
+      <provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
+    </providers>
+  </entityFramework>
+  <system.codedom>
+    <compilers>
+      <compiler language="c#;cs;csharp" extension=".cs" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" warningLevel="4" compilerOptions="/langversion:6 /nowarn:1659;1699;1701" />
+      <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" warningLevel="4" compilerOptions="/langversion:14 /nowarn:41008 /define:_MYTYPE=\&quot;Web\&quot; /optionInfer+" />
+    </compilers>
+  </system.codedom>
+  <extnet theme="Triton" licenseKey="** Ext.NET LICENSE KEY HERE **" initScriptMode="Linked" />
+  <devExpress>
+    <resources>
+      <add type="ThirdParty" />
+      <add type="DevExtreme" />
+    </resources>
+    <themes enableThemesAssembly="true" theme="" customThemeAssemblies="" />
+    <compression enableHtmlCompression="false" enableCallbackCompression="true" enableResourceCompression="true" enableResourceMerging="true" />
+    <settings rightToLeft="false" checkReferencesToExternalScripts="true" doctypeMode="Html5" accessibilityCompliant="false" />
+    <errors callbackErrorRedirectUrl="" />
+  </devExpress>
+</configuration>

@@ -1,0 +1,518 @@
+﻿@model Tms.Classes.Business.FournisseurViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    var wzFieldPattern = @"^[1-9]\d{2}\.\d{3}\.\d{4}";
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 70px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var TypeFournisseurChanged = function (item) {
+        var Fournisseur_Type = App.hiddenTypeFournisseur.value;
+
+        if (App.hiddenExecMode.value.toString() != "Consult") {
+
+            /*var agence = App.cmbAgenceFrs.value || '';
+            if (agence) {
+                App.cmbAgenceFrs.setValue(agence);
+            }*/
+
+            if (item == Fournisseur_Type) {
+                App.cmbAgenceFrs.setReadOnly(false);
+                App.cmbAgenceFrs.allowBlank = false;
+                App.cmbAgenceFrs.validate();
+                App.cmbAgenceFrs.setIndicator("*");
+                App.cmbAgenceFrs.setIndicatorCls('IndicatorRedStar');
+                App.cmbAgenceFrs.showIndicator();
+            }
+            else if (Ext.isNumeric(item)) {
+                App.cmbAgenceFrs.setReadOnly(true);
+                App.cmbAgenceFrs.allowBlank = true;
+                App.cmbAgenceFrs.validate();
+                App.cmbAgenceFrs.setIndicator("");
+                App.cmbAgenceFrs.setValue(-1);
+            }
+        }
+        else {
+            App.cmbAgenceFrs.setReadOnly(true);
+        }
+
+    };
+
+</script>
+@( 
+X.Window()
+    .ID("FormFournisseurAgence")
+    .Width(1040)
+    .Resizable(false)
+    .Modal(true)
+    .Height(340)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(200)
+    .Y(20)
+    .BodyPadding(10)
+    .Title(Model.Title)
+    .Items(
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Top, Pack = BoxPack.Center })
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items(
+
+                        X.Container()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items
+                            (
+                                    X.Hidden()
+                                        .ID("hiddenExecMode")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                    X.Hidden()
+                                             .ID("hiddenTypeFournisseur")
+                                             .Value(Model.IdChefAgence),
+                                    X.Hidden()
+                                        .ID("hiddenRowversion")
+                                        .Value(Model.Rowversion)
+                                        ,
+                                    X.TextField()
+                                        .ID("TxtFournisseurID")
+                                        .FieldLabel("ID")
+                                        .Text(Model.ID)
+                                        .Hidden(true).LabelAlign(LabelAlign.Right)
+                                        ,
+                                    X.ComboBox()
+                            .ID("cmbAgenceFrs")
+                            .FieldLabel("Site")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                            .ReadOnly(true)
+                            .LabelAlign(LabelAlign.Right)
+                            .ForceSelection(true)
+                            .Value(Model._Fournisseur.Agence.ID)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            // .LabelWidth(110)
+                            //.Width(340)
+                            .Store
+                            (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                         )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadSite", "Site"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                             ),
+                                    X.TextField()
+                                        .ID("TxtFournisseurName")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Nom")
+                                        .Text(Model.Name)
+                                        .LabelAlign(LabelAlign.Right)
+                                        //.LabelWidth(110)
+                                        //.Width(350)
+                                        ,
+                                    X.ComboBox()
+                                        .ID("GroupFournisseurID")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Groupe de fournisseur")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .Value(Model.GroupFournisseurID)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        //.LabelWidth(110)
+                                        //.Width(350)
+                                        .Store
+                                        (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                            )
+                                            .Proxy
+                                            (
+                                                Html.X()
+                                                .AjaxProxy()
+                                                .Url(Url.Action("LoadGroupFournisseurSite", "FournisseurGroupe"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                        )
+                                        ,
+                                    X.ComboBox()
+                                        .ID("TypeFournisseurID")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Type de fournisseur")
+                                        .DisplayField("Designation").ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .Value(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model.IdChefAgence.ToString() : Model.TypeFournisseurID)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._Fournisseur.EstSectorLead)
+                                        .Store
+                                        (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                 Html.X()
+                                                 .Model()
+                                                 .IDProperty("ID")
+                                                 .Fields
+                                                 (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                 )
+                                            )
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                .Url(Url.Action(ViewData["UrlFournisseurType"].ToString(), "FournisseurType"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                        )
+                                        //.Listeners
+                                        //    (
+                                        //        ls =>
+                                        //        {
+                                        //            ls.AfterRender.Handler = "TypeFournisseurChanged(App.TypeFournisseurID.value)";
+                                        //            ls.Select.Handler = "TypeFournisseurChanged(App.TypeFournisseurID.value)";
+                                        //        }
+                                        //    )
+                                        ,
+                                    X.ComboBox()
+                                        .ID("OriginFournisseurID")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*").FieldLabel("Provenance")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .Value(Model.OriginFournisseurID)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        //.LabelWidth(110)
+                                        //.Width(350)
+                                        .Store
+                                        (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                            )
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadProvenance", "Provenance"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                        )
+                                        ,
+                                    X.TextField()
+                                        .FieldLabel("Piece N°")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ID("TxtPieceNumeroFournisseur")
+                                        .Text(Model.PieceNumeroFournisseurID),
+                                    X.ComboBox()
+                                        .ID("PieceTypeIDFournisseur")
+                                        //.AllowBlank(false)
+                                        //.IndicatorCls("IndicatorRedStar")
+                                        //.IndicatorText("*")
+                                        .ForceSelection(true)
+                                        .FieldLabel("Type de piece")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model.PieceTypeFournisseur)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        //.LabelWidth(110)
+                                        //.Width(350)
+                                        .Store
+                                        (
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model
+                                                (
+                                                    Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadPieceType", "PieceType"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                        )
+                            //.LabelWidth(110)
+                            //.Width(340)
+                            //.AllowBlank(false)
+                            //.IndicatorCls("IndicatorRedStar")
+                            //.IndicatorText("*")
+
+
+                            ),
+                X.Container()
+                    .Layout(LayoutType.Form)
+                    .Flex(1)
+                    .Items
+                    (
+
+                            X.TextField()
+                            .ID("TxtAdressFournisseur")
+                            .FieldLabel("Adresse")
+                            .Text(Model.AddresseFournisseur)
+                            .LabelAlign(LabelAlign.Right)
+                            //.LabelWidth(110)
+                            //.Width(340)
+                            ,
+                            X.TextField()
+                            .FieldLabel("N° Telephone Fixe")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("TxtTelFixeFournisseur")
+                            .Text(Model.FixeFournisseur)
+                            // .LabelWidth(110)
+                            //.Width(340)
+                            ,
+                            X.TextField()
+                            .FieldLabel("N° Telephone Mobile")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("TxtTelMobileFournisseur")
+                            .Text(Model.MobileFournisseur)
+                            //.LabelWidth(110)
+                            //.Width(340)
+                            ,
+                            X.TextField()
+                            .FieldLabel("Fax")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("TxtFaxFournisseur")
+                            .Text(Model.FaxFournisseur)
+                            //.LabelWidth(110)
+                            //.Width(340)
+                            ,
+                            X.TextField()
+                            .FieldLabel("E-mail")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("TxtEmailFournisseur")
+                            .Text(Model.EmailFournisseur),
+                            X.TextField()
+                            .FieldLabel("N° Compte Contribuable")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("TxtNumeroCCFournisseur")
+                            .Text(Model.NumeroCCFournisseur),
+                        X.TextField()
+                            .FieldLabel("Numero Registre Commerce")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("TxtNumeroRegistreFournisseur")
+                            .Text(Model.NumeroRegistreFournisseur)
+
+
+                //.LabelWidth(110)
+                //.Width(340)                            
+
+                //)
+
+                ),
+                X.Container()
+                    .Layout(LayoutType.VBox)
+                    .Flex(1)
+                    //.Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                    .Items
+                    (
+
+    #region Grid
+                            X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListeAutreSite")
+                                       .Flex(3)
+                                       .Frame(true)
+                                       .Region(Region.Center)
+                                       .ForceFit(true)
+                                       .Height(180)
+                                       .MarginSpec("0 5 0 0")
+                                       .AllowDeselect(true)
+                                       .Store(
+                                                X.StoreFor<Tms.Classes.Business.Sites.FournisseurAutreSites>()
+                                                    .ID("storeListeAutreSite")
+                                                    .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .Proxy(
+                                                            X.AjaxProxy()
+                                                                .Url(
+                                                                        Url.Action("SelectFrsAutreSite")
+                                                                )
+                                                                .Reader(
+                                                                        X.JsonReader().RootProperty("data")
+                                                                )
+                                                      )
+                                                      .Parameters(
+                                                        ps => ps.Add(new StoreParameter("fournisseurID", "#{TxtFournisseurID}.getValue()", ParameterMode.Raw))
+                                                        )
+                                        //.Listeners(
+                                        //      ls =>
+                                        //      {
+                                        //          ls.Load.Handler = "GetNbrOfSites();";
+                                        //          ls.Add.Handler = "GetNbrOfSites();";
+                                        //          ls.Remove.Handler = "GetNbrOfSites();";
+                                        //      }
+                                        //  )
+                                        )
+                                        .ColumnModel
+                                        (
+                                            //X.RowNumbererColumn(),
+                                            X.Column().Text("Site").Flex(2).DataIndex("SiteAsString").Hideable(false)
+                                        )
+                                        .DockedItems(
+                                                X.Toolbar()
+                                                    .Dock(Dock.Top)
+                                                    .Items(
+                                                            X.Label().Text("Additional Delivery Sites"),
+                                                            //X.ToolbarSpacer(5),
+                                                            X.Button()
+                                                                .ID("btnAddSite")
+                                                                .IconCls("action_new_02")
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Ajouter")
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("onAddSite");
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSite", Mode = ParameterMode.Raw, Encode = false, Value = "App.cmbAgenceFrs.getValue()" });
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemFournisseur", Mode = ParameterMode.Value, Encode = false, Value = Model._Fournisseur.ID.ToString() });
+                                                                }),
+                                                            X.Button()
+                                                                .ID("btnRemoveSite")
+                                                                //.IconCls("action_filter_02")
+                                                                .Icon(Icon.Delete)
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Retirer")
+                                                                .Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("RemoveSiteToUser");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeAutreSite.getRowsValues({selectedOnly : true})" });
+                                                                    //de.Click.ExtraParams.Add(new Parameter { Name = "storeListeDelivery", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeCodeOverview.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Site : Retirer'; config.confirmation.message = 'Do you want to remove this Location ? ';";
+                                                                })
+                                                            )
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowSiteFS")
+                                                            .Mode(SelectionMode.Single)
+                                                            .AllowDeselect(true)
+                                        )
+                                        .Listeners(l =>
+                                        {
+                                            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                            {
+                                                l.Select.Handler = "App.btnRemoveSite.enable();";
+                                                l.Deselect.Handler = "App.btnRemoveSite.disable();";
+                                            }
+                                        }
+                                    )
+    #endregion
+                    )
+
+                        )
+            )
+            .Buttons
+            (
+                X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.Before = "return validNew(App.FormFournisseurAgence.id);";
+                    de.Click.EventMask.ShowMask = true;
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeAutreSite.getRowsValues({selectedOnly : false})" });
+                })
+
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormFournisseurAgence.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+
+            var areAllrequiredFieldsFilled = isFormValid(winId);
+
+            /*
+           *   Vérification de la saisie des champs obligatoires
+           */
+            if (!areAllrequiredFieldsFilled) {
+
+                Ext.Msg.show({ title: 'Erreur : Supplier ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                return false;
+            }
+
+        }
+
+
+</script>
+
+

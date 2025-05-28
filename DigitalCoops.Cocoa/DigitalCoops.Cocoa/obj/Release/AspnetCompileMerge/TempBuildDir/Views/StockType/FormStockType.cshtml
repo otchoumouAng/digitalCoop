@@ -1,0 +1,92 @@
+﻿@model Tms.Classes.Shared.stock.StockTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormStockType")
+    .Width(500)
+    .Resizable(false)
+    .Height(150)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Listeners(l =>
+    {
+        l.Show.Handler = "#{TxtDesignation}.focus();";
+    })
+    //.X(400)
+    .Y(20)
+    .Title("Stock Type : Detail")
+    .BodyPadding(6)
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._StockType.RowVersionKey),
+                            X.Hidden().ID("TxtStockTypeID").Value(Model._StockType.ID),
+                            X.TextField().ID("TxtDesignation").FieldLabel("Nom").TabIndex(1)
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._StockType.Designation : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")                            
+
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK").ID("BtnSubmit")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.Before = "return validNew(App.FormStockType.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormStockType.doClose()").Cls("btncancel")
+
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Stock Type : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

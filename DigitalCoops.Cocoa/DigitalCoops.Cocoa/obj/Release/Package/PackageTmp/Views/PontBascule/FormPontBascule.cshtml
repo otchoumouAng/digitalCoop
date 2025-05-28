@@ -1,0 +1,186 @@
+﻿
+@model Tms.Classes.Shared.BasculeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 110px !important;
+    }
+</style>
+@(X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Items(
+                X.Window()
+                .ID("FormPontBascule")
+                .Width(750)
+                .Resizable(false)
+                .Height(250)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners(l =>
+                {
+                    l.Close.Handler = "App.TmsViewPort.unmask();";
+                    //l.Show.Handler = "#{TxtNomTransporteur}.focus();";
+                })
+                //.X(400)
+                .Y(20)
+                .Title("Bridge : Detail")
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                .BodyPadding(6)
+                    .Items(
+
+
+                            X.Panel().Layout(LayoutType.Form).Flex(1)
+                                .Items(
+                                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                        X.Hidden().ID("TxtDefaultSiteID").Value(Model._Parametres.Site),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._Bascule.RowVersionKey),
+                                        X.Hidden().ID("TxtBasculeID").Value(Model._Bascule.ID),
+                                        X.ComboBox()
+                                            .ID("CmbProtocoleID")
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .FieldLabel("Protocol")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            .Width(150)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.Protocole.ID : (int?)null)
+                                            .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                            //.ReadOnly(!Model.HasAccessToAllWeighBridges)
+                                            .ForceSelection(true)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                            Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadProtocole", "Protocole"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                            ),
+                                        X.TextField().ID("TxtDesignationBascule").FieldLabel("Designation")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.Designation : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtOrdinateurBascule").FieldLabel("DeskTop")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.Ordinateur : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.NumberField().ID("TxtComVitesseBascule")
+                                            .FieldLabel("Baud Rate")
+                                            .AllowDecimals(false)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.ComVitesse : 0)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        ),
+                                X.Panel().Layout(LayoutType.Form).Flex(1)
+                                .Items(
+                                        X.NumberField().ID("TxtComPariteBascule")
+                                            .FieldLabel("Parity")
+                                            .AllowDecimals(false)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.ComParite : 0)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.NumberField().ID("TxtComBitsDonneesBascule")
+                                            .FieldLabel("Data Bits")
+                                            .AllowDecimals(false)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.ComBitsDonnees : 0)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.NumberField().ID("TxtComBitsStopBascule")
+                                            .FieldLabel("Stop Bits")
+                                            .AllowDecimals(false)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.ComBitsStop : 0)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtComPortBascule").FieldLabel("Port Name")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.ComPort.ToString() : string.Empty)
+                                            .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                            .LabelAlign(LabelAlign.Right),
+                                        X.NumberField().ID("TxtComTimeOutBascule")
+                                            .FieldLabel("Read TimeOut")
+                                            .AllowDecimals(false)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Bascule.ComTimeOut : 0)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                )
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitBascule")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormPontBascule.id);";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormPontBascule.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Bridge : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

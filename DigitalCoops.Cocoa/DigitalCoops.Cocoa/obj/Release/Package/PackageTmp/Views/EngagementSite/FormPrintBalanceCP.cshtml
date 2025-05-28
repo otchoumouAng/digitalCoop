@@ -1,0 +1,263 @@
+﻿@model Tms.Classes.Business.ContratPeriodeViewModel
+@{
+    Layout = null;
+    var X = Html.X();   
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(
+
+X.Window()
+    .ID("FormPrintBalanceCP")
+    .Width(700)
+    .Resizable(false)
+    .Height(230)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Contrat Periode")
+    .Items(
+            X.FormPanel()
+                //.DefaultAnchor("100%")
+                //.FieldDefaults(d => d.LabelWidth = 130)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                        X.Hidden().ID("currentcampagne").Value(Model._ContratPeriode.Campagne.Designation),
+                        X.Hidden().ID("CpTypeReport").Value(Model._TypeContratPeriodeReport.Designation),
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items(
+                                    X.ComboBox()
+                                        .ID("CpcmbSite")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .ReadOnly(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        //.ReadOnly(true)
+                                        .Value(Model._ContratPeriode.Sites.ID)
+                                        .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadSiteByAccess", "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ).Listeners(
+                                                ls =>
+                                                {
+                                                    ls.Select.Handler = "if (App.CpcmbSite.value) { App.CPfournisseurForReport.clearValue(); App.CPfournisseurForReport.getStore().load(); };";
+                                                }
+                                            ),
+                                    X.ComboBox()
+                                        .ID("CPcropYearForReport")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .AllowBlank(false)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                        .Fields(
+                                                                            //new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Listeners(ls =>
+                                                    {
+                                                        ls.Load.Handler = "#{CPcropYearForReport}.setValue(#{currentcampagne}.value)";
+                                                    })
+                                                ),
+                                    X.ComboBox()
+                                        .ID("CPfournisseurForReport")
+                                        .FieldLabel("Fournisseur")
+                                        .DisplayField("NameAndCode")
+                                        .ValueField("ID")
+                                        .Value(string.IsNullOrEmpty(ViewData["IdFrs"].ToString()) ? -1 : ViewData["IdFrs"])
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Listeners(l => l.Load.Handler = "App.CPfournisseurForReport.setValue(App.CPfournisseurForReport.getStore().getAt(0));")
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                                )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadAllSupplierBySite", "Fournisseur"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Parameters
+                                                        (
+                                                        ps => { ps.Add(new StoreParameter("siteID", "App.CpcmbSite.getValue()", ParameterMode.Raw)); }
+                                                        )
+                                                ),
+                                    X.ComboBox()
+                                        .ID("CPtypeContratForReport")
+                                        .FieldLabel("Type De Contrat")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .Value(-1)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AutoSelect(true)
+                                        .ForceSelection(true)
+                                        //.MatchFieldWidth(false)
+                                        //.ListConfig(new BoundList { MinWidth = 300 })
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    //.Listeners(l => l.Load.Handler = "App.TypeContratID.setValue(App.TypeContratID.getStore().getAt(0));")
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadTypeContratPeriodeAll", "ContratPeriodeType"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                    )
+                                ),
+
+                    X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items(
+                                X.DateField()
+                                    .ID("CPstartDateForReport")
+                                    .FieldLabel("Date Debut")
+                                    .Text(Model._ContratPeriode.DateDebut.ToString())
+                                    .LabelAlign(LabelAlign.Right),
+                                X.DateField()
+                                    .ID("CPdueDateForReport")
+                                    .FieldLabel("Date Fin")
+                                    .Text(Model._ContratPeriode.DateEcheance.ToString())
+                                    .LabelAlign(LabelAlign.Right)
+                                    ,
+                                X.ComboBox()
+                                    .ID("CPtypeContratOptionForReport")
+                                    .FieldLabel("Option")
+                                    .LabelAlign(LabelAlign.Right)
+                                    //.MatchFieldWidth(false)
+                                    //.ListConfig(new BoundList { MinWidth = 200 })
+                                    .TypeAhead(false)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .Items(
+                                            new ListItem("All", "NO"),
+                                            new ListItem("Ouvert", "OP"),
+                                            new ListItem("Terminé", "FF")
+                                        )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "All", Value = "NO" }); })
+                                )
+
+            )
+)
+.Buttons(
+            X.Button()
+                .Text("OK")
+                .ID("BtnGenerateBalanceReport")
+                .DirectEvents(de =>
+                {
+                    if (Model._TypeContratPeriodeReport.Designation == "Balance")
+                    {
+                        de.Click.Url = Url.Action("GenerateBalanceReport");
+                        de.Click.Before = "return validNew(App.FormPrintBalanceCP.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                    }
+                    else
+                    {
+                        de.Click.Url = Url.Action("GenerateExecutionReport");
+                        de.Click.Before = "return validNew(App.FormPrintBalanceCP.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                    }
+
+                }),
+            X.Button()
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.FormPrintBalanceCP.doClose()")
+                .Cls("btncancel")
+            )
+
+            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                /*alert(winId);*/
+                /*var winId = #{FormFournisseur}.id;*/
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Contrat Periode | Print Balance : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+
+                }
+                
+            };
+    var CloseFormPrintBalanceCP = function () {
+        App.TmsViewPort.unmask();
+        App.FormPrintBalanceCP.doClose();
+    };
+</script>
+
+
+
+
+
+
+

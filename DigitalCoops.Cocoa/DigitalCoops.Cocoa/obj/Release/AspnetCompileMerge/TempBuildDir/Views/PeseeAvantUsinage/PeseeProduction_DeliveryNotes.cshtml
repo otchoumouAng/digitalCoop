@@ -1,0 +1,277 @@
+﻿
+
+@model Tms.Classes.Business.BonDeLivraisonViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var SetAvailableNotesInfos = function () {
+        var PoidsNetAccepte = App.storeListDeliveryNotes.sum('PoidsNetAccepte') || 0;
+
+        var mChaine = Ext.String.format('Total Livré : {0} (Kg)', formatNumber(PoidsNetAccepte));
+        App.LblResumeAvlbNotes.setText(mChaine);
+
+    };
+
+    var SetValidBtnOK = function () {
+        if (App.RowPendingBLforInvoice.hasSelection())
+            App.BtnSendBlDelivery.enable();
+        else
+            App.BtnSendBlDelivery.disable();
+    };
+</script>
+@(
+                        //X.FormPanel()
+                        //            .Items
+                        //            (
+                        X.Window()
+                        .ID("PeseeProduction_DeliveyNotes")
+                        .Width(880)
+                        .Resizable(false)
+                        .Height(470)
+                        .Modal(true)
+                        .CloseAction(Ext.Net.CloseAction.Destroy)
+                        .X(200)
+                        .Y(20)
+                        .Title("BE Disponibles")
+                        .Layout(LayoutType.VBox)
+                        .BodyPadding(5)
+                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                        .Items
+                        (
+
+                            X.FormPanel()
+                            .ID("CriteriaPanelDeliveryNote")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Delivery Note - Livraisons disponibles", Height = 20 })
+                            .Region(Region.North)
+                            .Border(false)
+                            .Collapsed(false)
+                            .Collapsible(true)
+                            .BodyPadding(5)
+                            .Frame(true)
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Height(150)
+                            .HeaderConfig(new PanelHeader
+                            {
+                                Items = {
+                                            X.Button()
+                                                .ID("btnRefreshDeliveryNote")
+                                                .IconCls("action_refresh_01")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                .Border(false)
+                                                .Cls("ButtonStyle")
+                                                .Disable(false)
+                                                .DirectEvents
+                                                (
+                                                  de =>
+                                                  {
+                                                    de.Click.Url  = Url.Action("OnRefreshForAvailableDeliveryNotes");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemFournisseur", Encode=true, Value= "#{cmbFournisseurFD}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDateFD}.getRawValue()",   Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDateFD}.getRawValue()",     Mode=ParameterMode.Raw});
+                                                    de.Click.Success = "App.CriteriaPanelDeliveryNote.setTitle('Fournisseur : ' + App.cmbFournisseurFD.rawValue + ' , du  '+ App.dtpStartDateFD.rawValue  + ' au  '+ App.dtpEndDateFD.rawValue )";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                  }
+                                               )
+                                    }
+                            }
+                            )
+                            .Items
+                             (
+                                X.Panel()
+                                .Layout(LayoutType.VBox)
+                                .Height(120)
+                                .Margin(5)
+                                .Frame(true)
+                                .Flex(3)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items(
+                                        X.Panel()
+                                         .Border(false)
+                                         .Layout(LayoutType.Form)
+                                         .Items
+                                         (
+                                               X.ComboBox()
+                                                .ID("cmbFournisseurFD")
+                                                .FieldLabel("Fournisseur")
+                                                .DisplayField("Nom")
+                                                .ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(true)
+                                                .ForceSelection(true)
+                                                .Store
+                                                (
+                                                  X.Store()
+                                                   .AutoLoad(true)
+                                                   .Model
+                                                   (
+                                                     Html.X().Model()
+                                                     .IDProperty("ID")
+                                                     .Fields
+                                                     (
+                                                       new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                       new ModelField("Nom", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                     )
+                                                   )
+                                                   .Proxy
+                                                   (
+                                                     Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadFournisseurAll", "Fournisseur"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                   )
+                                                 )
+                                                 .SelectedItems
+                                                 (
+                                                   it =>
+                                                   {
+                                                       it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                   }
+                                                 ),
+
+                                                X.FieldContainer()
+                                                 .LabelWidth(90)
+                                                 .FieldLabel("From/To")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Layout(LayoutType.HBox)
+                                                 .Width(360)
+                                                 .Items
+                                                 (
+                                                    X.DateField().ID("dtpStartDateFD").Text(@StartDate).Width(125).MarginSpec("0 5 0 0"),
+                                                    X.DateField().ID("dtpEndDateFD").Text(@EndDate).Width(120)
+                                                 )
+                                         )
+                                   ),
+
+
+                               X.Panel()
+                                .ID("formOverviewDeliveryNote")
+                                .Flex(2)
+                                //.Frame(true)
+                                //.Margin(5)
+                                .Height(120)
+                                //.TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                                .Border(false)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label()
+                                                .ID("LblResumeAvlbNotes")
+                                                .Text("")
+                                                .EmptyText(""))
+                                 )
+
+                               ),
+
+                           X.Hidden()
+                            .ID("TxtExecMode").Value(Model._ExecMode),
+                           X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListDeliveryNotes")
+                            .MarginSpec("5 0 0 0")
+                            //.MinHeight(130)
+                            .Frame(true)
+                            .Height(200)
+                            .AllowDeselect(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.BonDeLivraison>()
+                                .ID("storeListDeliveryNotes")
+                                .AutoLoad(true)
+                             .Proxy
+                             (
+                              Html.X().AjaxProxy()
+                                  .Url(Url.Action("LoadListOfAvailableDeliveryNotes"))
+                                  .Reader(Html.X().JsonReader().RootProperty("data"))
+                             )
+                             .Listeners(
+                                ls =>
+                                {
+                                    ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                    ls.Load.Handler = "SetAvailableNotesInfos(); Ext.net.Mask.hide();";                                    
+                                }
+                            )
+                             .Parameters
+                             (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemFournisseur", "#{cmbFournisseurFD}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDateFD}.getRawValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDateFD}.getRawValue()", ParameterMode.Raw));
+                               }
+                             )
+                             )
+                             .ColumnModel
+                             (
+                                //Html.X().Column().Text("").DataIndex("mIcon").Width(40).Renderer("renderIcon"),
+                                Html.X().Column().Text("Date Livraison").DataIndex("DateLivraisonLongAstring").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Note N°").DataIndex("Numero").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Fournisseur").DataIndex("FournisseurNom").Flex(2).Hideable(false),
+                                Html.X().Column().Text("N° Livraison").DataIndex("LivraisonID").Flex(1).Hideable(false),
+                                //Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Width(110),
+                                Html.X().Column().Text("Poids Net (Kg)").DataIndex("PoidsNetAccepteAsString").Flex(1).Hideable(false)
+                             )
+
+                            .SelectionModel(
+                               X.RowSelectionModel()
+                                    .ID("RowPendingBLforInvoice")
+                                    .Mode(SelectionMode.Single)
+                            .Listeners(l =>
+                            {
+                                l.Select.Handler = "SetValidBtnOK();";
+                                l.Deselect.Handler = "SetValidBtnOK();";
+                            })
+                           )
+                       )
+
+                       .Buttons
+                       (
+                           X.Button()
+                            .Text("Selectionner")
+                            .ID("BtnSendBlDelivery")
+                            .Disabled(true)
+                            .DirectEvents
+                           (
+                              de =>
+                              {
+                                  de.Click.Url = Url.Action("SubmitDeliveryNote");
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeliveryNotes}.getSelectionModel().getSelection()[0].data" });
+                              }
+                           ),
+
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.PeseeProduction_DeliveyNotes.doClose()")
+                            .Cls("btncancel")
+
+                          )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+

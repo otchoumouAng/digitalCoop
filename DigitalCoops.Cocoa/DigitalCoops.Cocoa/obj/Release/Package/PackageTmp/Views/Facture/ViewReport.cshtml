@@ -1,0 +1,6 @@
+﻿@Html.DevExpress().WebDocumentViewer(settings =>
+{
+    settings.Name = "Delivery Note";
+    settings.ClientSideEvents.Init = "function(s, e) { s.previewModel.reportPreview.zoom(1);}";
+}).Bind((XtraReport)ViewData["Report"]).GetHtml()
+

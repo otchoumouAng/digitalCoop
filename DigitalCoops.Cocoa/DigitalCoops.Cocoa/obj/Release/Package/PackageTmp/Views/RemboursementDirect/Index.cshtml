@@ -1,0 +1,706 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 100px !important;
+}
+</style>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeRemboursementDirect.columnManager.getColumns(), App.grpListeRemboursementDirect.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    }
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+            else if (value == 3) {
+                return 'action_new_03';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red';
+            }
+            else if (value == 1) {
+                return  'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+            else if (value == 3) {
+                return 'glyphicon-file green';
+            }
+            else if (value == 4) {
+                return 'glyphicon-ban-circle red';
+            }
+        },
+
+        SummaryRD: function () {
+            var nbrOfrows = App.grpListeRemboursementDirect.getStore().getCount();
+            var totalAmount = parseFloat(App.storeListeRemboursementDirect.sum('MontantIfIsActive')) || 0;
+            /*for (var i = 0; i < nbrOfrows; i++) {
+                if (App.grpListeRemboursementDirect.getRowsValues()[i].IsActive) {
+                    totalAmount += parseFloat(App.grpListeRemboursementDirect.getRowsValues()[i].Montant);
+                }
+            }*/
+            totalAmount = FormatAmount(totalAmount);
+            App.lblSummaryRD.setText("Montant Total : " + totalAmount + " FCFA");
+        },
+
+        resetButtons: function () {
+
+            App.btnModify.disable();
+            App.btnApprove.disable();
+            App.btnCancel.disable();
+
+            if (App.rowSelectionListeRD.hasSelection()) {
+
+                var isDesActive = App.rowSelectionListeRD.selected.items[0].data.Desactive;
+                var EstFinalise = App.rowSelectionListeRD.selected.items[0].data.IsApproved;
+
+                if (isDesActive === false)
+                {
+                    if (App.RdhiddenPermModifier.value == 'true')
+                        App.btnModify.enable();
+
+                    if (EstFinalise === false) {
+                        if (App.RdhiddenPermApprove.value == 'true')
+                            App.btnApprove.enable();
+
+                        if (App.RdhiddenPermDesactiver.value == 'true')
+                            App.btnCancel.enable();
+                    }
+
+                    if (EstFinalise === true && App.RdhiddenPermDesactiverSup.value == 'true') {                        
+                            App.btnCancel.enable();
+                    }
+                }
+
+                else
+                {
+                  App.btnModify.disable();
+                  App.btnApprove.disable();
+                  App.btnCancel.disable();
+                }
+
+            }
+        }
+    }
+
+
+</script>
+
+@model Tms.Classes.Business.RemboursementDirect
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                        .Layout(LayoutType.Border)
+                        .ID("TmsViewPort")
+                        .Items
+                         (
+    X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+    X.Hidden().ID("RdhiddenPermCreer").ReadOnly(true),
+                X.Hidden().ID("RdhiddenPermModifier").ReadOnly(true),
+                X.Hidden().ID("RdhiddenPermApprove").ReadOnly(true),
+                X.Hidden().ID("RdhiddenPermDesactiver").ReadOnly(true),
+                X.Hidden().ID("RdhiddenPermDesactiverSup").ReadOnly(true),
+                X.Hidden().ID("CphiddenPermExporterExcel").ReadOnly(true),
+                X.Hidden().ID("RdhiddenPermExporterExcel").ReadOnly(true),
+                X.Hidden().ID("RdhiddenPermOverview").ReadOnly(true),
+
+                            X.Panel()
+                                .ID("pnlNorth")
+                                .Region(Region.North)
+                                .Layout(LayoutType.Border)
+                                .TopBar(new Toolbar()
+                                {
+                                    Items =
+                                    {
+                                         X.Button()
+                                            .ID("btnFilter")
+                                            .IconCls("action_filter_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                {
+                                                    de.Click.Url  = Url.Action("OnFilter");
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnRefresh")
+                                            .IconCls("action_refresh_01")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                {
+                                                    de.Click.Url  = Url.Action("OnRefresh");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemFournisseur", Encode=true, Value= "#{cmbFournisseur}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=false, Value= "#{cmbCampagne}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemType", Encode=true, Value= "#{cmbType}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Encode=false, Value= "#{cmbStatus}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSite", Encode=false, Value= "#{cmbSite}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.Success = "App.CriteriaPanelRD.setTitle('Site : ' + App.cmbSite.rawValue + ', Campagne : '+ App.cmbCampagne.rawValue + ', Fournisseur : ' + App.cmbFournisseur.rawValue +  ', Type : '+ App.cmbType.rawValue + ', Statut : '+ App.cmbStatus.rawValue + ', du '+ App.dtpStartDate.rawValue  + ' au '+ App.dtpEndDate.rawValue )";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnNew")
+                                            .IconCls("action_new_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                    {
+                                                        de.Click.Url  = Url.Action("OnAdd");
+                                                        //de.Click.Success = "App.RemboursementDirect_Detail.setTitle('Direct Repayment : Nouveau')";
+                                                        de.Click.EventMask.ShowMask = true;
+                                                    }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnModify")
+                                            .IconCls("action_modify_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(true)
+                                            .DirectEvents
+                                             (
+                                                 de =>
+                                                 {
+                                                    de.Click.Url  = Url.Action("OnEdit");
+                                                    //de.Click.Success = "App.RemboursementDirect_Detail.setTitle('Direct Repayment : Modifier')";
+                                                    de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeRemboursementDirect}.getSelectionModel().getSelection()[0].data"});
+                                                    de.Click.EventMask.ShowMask = true;
+                                                 }
+                                             ),
+
+                                         X.SplitButton()
+                                            .ID("btnPrint")
+                                            .IconCls("action_print_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Disabled(false)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Menu
+                                             (
+                                                new Menu()
+                                                {
+                                                    Items =
+                                                    {
+
+                                                         X.MenuItem()
+                                                                .ID("mnuPrintDirectRepaymentList")
+                                                                .Text("Direct Repayments")
+                                                                .Disabled(false)
+                                                                .DirectEvents(de =>
+                                                                        {
+                                                                            de.Click.Url = Url.Action("OnDisplayDirectRepaymentList");
+                                                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSite", Encode=false, Value= "#{cmbSite}.getValue()", Mode=ParameterMode.Raw});
+                                                                            de.Click.EventMask.ShowMask = true;
+                                                                        })
+                                                     }
+                                                 }
+                                               ),
+
+                                            X.Button()
+                                            .ID("btnApprove")
+                                            .IconCls("action_approve_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(true)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnApprove");
+                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeRemboursementDirect}.getSelectionModel().getSelection()[0].data" });
+                                                        de.Click.EventMask.ShowMask = true;
+                                                        de.Click.Confirmation.ConfirmRequest = true;
+                                                        de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Direct Repayment : Approuver'; config.confirmation.message = 'Do you want to approve selected item ? ';";
+                                                    }
+                                             ),
+
+                                            X.ToolbarFill(),
+
+                                            X.Button()
+                                                .ID("btnActions")
+                                                .Text("Actions")
+                                                .Border(false)
+                                                .Cls("ButtonStyle")
+                                                .IconCls("menu_04")
+                                                .Disabled(false)
+                                                .Menu
+                                                 (
+                                                    new Menu()
+                                                    {
+                                                        Items =
+                                                        {
+                                                            X.MenuItem()
+                                                                .ID("mnuExportReimbList")
+                                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                                .Icon(Icon.PageExcel)
+                                                                .Handler("SetExcelList();"),
+                                                           X.MenuItem()
+                                                            .ID("btnCancel")
+                                                            .Icon(Icon.Cross)
+                                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                                            .Cls("ButtonStyle")
+                                                            .Border(false)
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                              de =>
+                                                              {
+                                                                de.Click.Url = Url.Action("OnCancel");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeRemboursementDirect}.getSelectionModel().getSelection()[0].data" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                                de.Click.Confirmation.Title = "Direct Repayment";
+                                                                de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeRemboursementDirect}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                                                de.Click.Success = "Overview.resetButtons();";
+                                                              }
+                                                            )
+
+                                                        }
+                                                    }
+                                                )
+                                     }
+                                }
+                           ),
+
+
+                           X.FormPanel()
+                            .ID("CriteriaPanelRD")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Direct Repayment - overview" })
+                            .Region(Region.North)
+                            .Floatable(false)
+                            .Border(false)
+                            .Collapsed(true)
+                            .Collapsible(true)
+                            .BodyPadding(5)
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                            .Items
+                             (
+
+                               X.Panel()
+                                    .Border(false)
+                                    .Layout(LayoutType.Form)
+                                    .Flex(2)
+                                    .Items
+                                     (
+                                            X.ComboBox()
+                                .ID("cmbSite")
+                                .FieldLabel("Site")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .MatchFieldWidth(false)
+                                .ListConfig(new BoundList { MinWidth = 300 })
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(false)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .ForceSelection(true)
+                                .ReadOnly(true)
+                                .Value((int)ViewBag.SiteParDefaut)
+                                .Store(
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model(
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields(
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                            )
+                                        .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadAllSiteByAccess", "Site"))
+                                        .Reader(
+                                                    Html.X().JsonReader().RootProperty("data")
+                                                    )
+                                        )
+                                    ).Listeners(
+                                            ls =>
+                                            {
+                                                ls.Select.Handler = "if (App.cmbSite.value) { App.cmbFournisseur.clearValue(); App.cmbFournisseur.getStore().load(); };";
+                                            }
+                                        ) ,
+                                                    X.ComboBox()
+                                                    .ID("cmbCampagne")
+                                                    .FieldLabel("Campagne")
+                                                    .LabelWidth(20)
+                                                    .Width(10)
+                                                    .DisplayField("Designation")
+                                                    .ValueField("Designation")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Width(400)
+                                                    .Store
+                                                     (
+                                                        X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                .Fields
+                                                                (
+                                                                  new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                         )
+                                                         .Proxy
+                                                         (
+                                                             Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                         )
+
+                                                     ),
+
+                                                     X.ComboBox()
+                                                        .ID("cmbFournisseur")
+                                                        .FieldLabel("Fournisseur")
+                                                        .LabelWidth(110)
+                                                        .DisplayField("NameAndCode")
+                                                        .ValueField("ID")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .TypeAhead(true)
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .ForceSelection(true)
+                                                        .Width(400)
+                                                        .MatchFieldWidth(false)
+                                                        .Value(-1)
+                                                        .ListConfig(new BoundList { MinWidth = 350 })
+                                                        .Store
+                                                         (
+                                                               X.Store()
+                                                               .AutoLoad(true)
+                                                               .Model
+                                                               (
+                                                                   Html.X().Model()
+                                                                  .IDProperty("ID")
+                                                                  .Fields
+                                                                  (
+                                                                     new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                     new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                  )
+                                                               )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadAllCocoaBeansSuppliers", "Fournisseur"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+                                                              .Parameters
+                                                                (
+                                                                    ps =>
+                                                                    {
+                                                                        ps.Add(new StoreParameter("siteID", "App.cmbSite.getValue()", ParameterMode.Raw));
+                                                                        //ps.Add(new StoreParameter("Extend", "1", ParameterMode.Value));
+                                                                    }
+                                                                )
+
+                                                           )
+                                                         .SelectedItems
+                                                         (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                         ),
+
+
+                                                      X.ComboBox()
+                                                        .ID("cmbType")
+                                                        .FieldLabel("Type")
+                                                        .LabelWidth(110)
+                                                        .DisplayField("Designation")
+                                                        .ValueField("ID")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .TypeAhead(true)
+                                                        .ForceSelection(true)
+                                                        .Width(400)
+                                                        .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadRemboursementDirectTypeAll", "RemboursementDirectType"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+
+                                                          )
+                                                          .SelectedItems
+                                                          (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                          )
+                                         ),
+
+                                         X.Panel()
+                                            .Layout(LayoutType.Form)
+                                            .Flex(2)
+                                            .Items
+                                            (
+                                                     X.DateField().ID("dtpStartDate").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(""),
+
+                                                     X.DateField().ID("dtpEndDate").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(""),
+
+                                                     X.ComboBox()
+                                                      .ID("cmbStatus")
+                                                      .FieldLabel("Statut")
+                                                      .LabelWidth(110)
+                                                      .DisplayField("Description")
+                                                      .ValueField("ID")
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .TypeAhead(true)
+                                                      .ForceSelection(true)
+                                                      .Items
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                                             it.Add(new ListItem { Text = "Non Approuvé", Value = "NA" });
+                                                             it.Add(new ListItem { Text = "Approuvé", Value = "AP" });
+                                                         }
+                                                      )
+                                                      .SelectedItems
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                                         }
+                                                      )
+                                             ),
+
+
+                               X.Panel()
+                                .ID("formOverview")
+                                .Flex(3)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("lblSummaryRD").Text("Montant").EmptyText(""))
+                                 )
+                        ),
+
+                        X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeRemboursementDirect")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .AllowDeselect(false)
+                       .Store
+                       (
+                          X.StoreFor<Tms.Classes.Business.RemboursementDirect>()
+                          .ID("storeListeRemboursementDirect")
+                          .RemotePaging(false)
+                          .PageSize(100)
+                          .AutoLoad(true)
+                          .Proxy
+                            (
+                                Html.X().AjaxProxy()
+                                .Url(Url.Action("LoadListOfRepayment"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                          .Parameters
+                          (
+                            ps =>
+                            {
+                                ps.Add(new StoreParameter("ItemCampagne", "#{cmbCampagne}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemFournisseur", "#{cmbFournisseur}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemType", "#{cmbType}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDate}.getRawValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDate}.getRawValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemStatus", "#{cmbStatus}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemSite", "#{cmbSite}.getValue()", ParameterMode.Raw));
+                            }
+                          )
+
+                          .Listeners
+                          (
+                            ls =>
+                            {
+                                ls.Load.Handler = "Overview.SummaryRD(); Ext.net.Mask.hide();";
+                                
+                                ls.Add.Handler = "" +
+                                    "SelectNewRecordAddedOnGrid(records, #{grpListeRemboursementDirect}.id); " +
+                                    "Overview.SummaryRD(); " +
+                                    "GenerateReport(records);";
+                                
+                                ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                            }
+                           )
+
+                       )
+                       .ColumnModel
+                       (
+                            Html.X().Column().Text("").DataIndex("mIcon").Width(50).Hideable(false).Renderer("renderIcon").Filterable(false),
+                            Html.X().Column().Text("Date").DataIndex("DateRemboursementAsString").Flex(1),
+                            Html.X().Column().Text("Site").DataIndex("SiteAsString").Flex(1),
+                            Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1),
+                            Html.X().Column().Text("Fournisseur").DataIndex("FournisseurNameAndCode").Flex(2),
+                            Html.X().Column().Text("Type").DataIndex("RemboursementDirectType").Flex(1).Renderer("renderObject"),
+                            Html.X().Column().Text("Reference").DataIndex("Reference").Flex(1),
+                            Html.X().Column().Text("Montant").DataIndex("MontantAsString").Flex(1),
+                            Html.X().Column().Text("Bank").DataIndex("BanqueAsString").Flex(1),
+                            Html.X().Column().Text("Commentaire").DataIndex("Commentaire").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                            Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                            Html.X().Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                            Html.X().DateColumn().Text("Date Modification").DataIndex("DateModification").Hidden(true).Renderer("renderDateLong")
+                         )
+                         .BottomBar
+                         (
+                             Html.X().PagingToolbar()
+                            .HideRefresh(false)
+                            .Plugins(Html.X().ProgressBarPager())
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                         .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowSelectionListeRD")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(false)
+                        )
+                       .Listeners(l => { l.Select.Fn = "Overview.resetButtons"; l.Deselect.Fn = "Overview.resetButtons"; })
+                       .DirectEvents(de =>
+                       {
+                           de.RowDblClick.Url = Url.Action("OnConsult");
+                           de.RowDblClick.CleanRequest = true;
+                           de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeRD}.getSelected().items[0].data" });
+                           de.RowDblClick.EventMask.ShowMask = true;
+                           de.RowDblClick.Success = "App.RemboursementDirect_Detail.setTitle('Direct Repayment : Detail')";
+                       }
+                       )
+        )
+    )
+
+</form>
+
+<script type="text/javascript">
+    var GenerateReport = function (record) {
+        var BaseUrl = App.BaseUrl.value;
+        var id = record[0].data.ID;
+        console.log(id);
+        Ext.net.DirectMethod.request({ url: BaseUrl + "/RemboursementDirect/OnPrintRemboursementDirect?IdRemboursementDirect=" + id + "&IsCopy=0" });
+    };
+</script>

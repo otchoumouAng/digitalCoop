@@ -1,0 +1,231 @@
+﻿
+@model Tms.Classes.Business.Sales.PrefinancementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string Campagne = (new Tms.Classes.Shared.Parametres(0).Campagne);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(
+
+X.Window()
+.ID("FormPrintContratDeVentesReport")
+.Width(700)
+.Resizable(false)
+.Height(230)
+.CloseAction(Ext.Net.CloseAction.Destroy)
+.Modal(true)
+.Title("Sales Contract Report")
+.Y(50)
+.Items(
+        X.FormPanel()
+         .Items(
+                 X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenReport")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("10 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+
+                         X.Hidden().ID("SLcurrentcampagne").Value(@Campagne),
+                         X.Hidden().ID("SLTypeReport").Value(ViewData["typeReport"]),
+
+                       X.Panel()
+                        .ID("reportCol1")
+                        .Layout(LayoutType.Form)
+                        .Flex(3)
+                            .Items(
+
+                                    X.ComboBox()
+                                        .ID("SLcropYearForReport")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .AllowBlank(false)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                        .Fields(
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Listeners(ls =>
+                                                    {
+                                                        ls.Load.Handler = "#{SLcropYearForReport}.setValue(#{SLcurrentcampagne}.value)";
+                                                    })
+                                                ),
+                                    X.ComboBox()
+                                        .ID("SLexportateurForReport")
+                                        .FieldLabel("Exportateur")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                         .AutoSelect(true)
+                                        .ForceSelection(true)
+                                         .Value(-1)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                            )
+                                                    .Proxy(
+                                                        Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadExportateurAll", "Exportateur"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                ),
+                                    X.ComboBox()
+                                        .ID("SLCertificationForReport")
+                                        .FieldLabel("Certification")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AutoSelect(true)
+                                        .ForceSelection(true)
+                                         .Value(-1)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                        .Proxy
+                                                            (
+                                                                Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+
+                                                        )
+                                                        .SelectedItems
+                                                        (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                        )
+                                ),
+
+                    X.Panel()
+                        .ID("reportCol2")
+                        .Layout(LayoutType.Form)
+                        .Flex(2)
+                        .Items(
+                                X.ComboBox()
+                                    .ID("SLStatus")
+                                    .FieldLabel("Statut")
+                                    .DisplayField("Description")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Hidden((string)ViewData["typeReport"] == "Hi" ? false : true)
+                                     .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .Items
+                                    (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                            it.Add(new ListItem { Text = "Non Approuvé", Value = "NA" });
+                                            it.Add(new ListItem { Text = "Approuvé", Value = "AP" });
+                                            it.Add(new ListItem { Text = "Canceled", Value = "CA" });
+                                        }
+                                    )
+                                    .SelectedItems
+                                    (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                        }
+                                    ),
+                                X.DateField()
+                                    .ID("SLstartDateForReport")
+                                    .Hidden((string)ViewData["typeReport"] == "Ba" ? true : false)
+                                    .FieldLabel("Date Debut")
+                                    .Text(DateTime.Now.ToString())
+                                    .LabelAlign(LabelAlign.Right),
+                                X.DateField()
+                                    .ID("SLdueDateForReport")
+                                    .Hidden((string)ViewData["typeReport"] == "Ba" ? true : false)
+                                    .FieldLabel("Date Fin")
+                                    .Text(DateTime.Now.ToString())
+                                    .LabelAlign(LabelAlign.Right)
+                              )
+                    )
+                )
+
+            )
+            .Buttons(
+                        X.Button()
+                            .Text("OK")
+                            .ID("BtnGenerateContractReport")
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Url.Action("PrintSalesContract");
+                                de.Click.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "TypeReport", Value = "App.SLTypeReport.value" });
+                                de.Click.Before = "return validNew(App.FormPrintContratDeVentesReport.id);";
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                            }),
+                        X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.FormPrintContratDeVentesReport.doClose()")
+                            .Cls("btncancel")
+                        )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                /*alert(winId);*/
+                /*var winId = #{FormFournisseur}.id;*/
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Sales Contracts | Print Report : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+
+                }
+
+    };  
+</script>

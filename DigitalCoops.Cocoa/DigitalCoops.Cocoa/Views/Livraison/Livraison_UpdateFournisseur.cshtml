@@ -1,0 +1,324 @@
+﻿@model Tms.Classes.Business.LivraisonViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <script type="text/javascript">
+        var SetDefaultSite = function (val) {
+            if (App.cmbDetFournisseur.value) {
+                var DefaultFournisseur_Type = parseInt(App.hiddenTypeFournisseur.value) || 0;
+                var fournisseurtypeid = parseInt(App.cmbDetFournisseur.getSelectedRecord().data.FournisseurTypeID) || 0;
+                var agenceid = parseInt(App.cmbDetFournisseur.getSelectedRecord().data.DefaultAgenceFournisseurID) || 0;
+
+                if (DefaultFournisseur_Type == fournisseurtypeid) {
+                    if (App.hiddenExecMode.value.toString() == "AddNew") {
+                        App.cmbDetAgence.setValue(agenceid);
+                        App.cmbDetAgence.setReadOnly(false);
+                    } else if (App.hiddenExecMode.value.toString() == "Update") {
+                        App.cmbDetAgence.setReadOnly(false);
+                    }
+                }
+                else {
+                    var DfSite = parseInt(App.hiddenDefaultSite.value) || 0;
+                    App.cmbDetAgence.setReadOnly(true);
+                    App.cmbDetAgence.setValue(null);
+                }
+            }
+        };
+                
+
+        var setCtrlIsRequired = function (field, value)
+        {
+            field.allowBlank = !value;
+
+            field.setIndicator("");
+            field.setIndicatorCls('');
+            field.showIndicator();
+
+            if (value == true)
+            {
+
+                field.setIndicator("*");
+                field.setIndicatorCls('IndicatorRedStar');
+                field.showIndicator();
+            }
+        };               
+        
+
+    </script>
+
+    <style type="text/css">
+        .small-text {
+            font-size: small;
+        }
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+    </style>
+</head>
+@(
+
+X.Window()
+    .ID("frmUpdateSupplierDelivery")
+    .Width(500)
+    .Resizable(false)
+    .Height(260)
+    .BodyPadding(10)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Livraison : Modifier Fournisseur")
+    .Items(
+            X.FormPanel()
+                .Border(false)
+                .DefaultAnchor("100%")
+                .FieldDefaults(d =>
+                {
+                    d.LabelWidth = 120;
+                })                
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })                
+                .Items
+                (                   
+                    X.Hidden().ID("hiddenLivraisonID").Value(Model._Livraison.ID),
+                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                    X.Hidden().ID("hiddenOldFournisseurID").Value(Model._Livraison.Fournisseur.ID),
+                    X.Hidden().ID("hiddenTypeFournisseur").Value(Model._Parametres.ChefAgenceType),
+                    X.Hidden().ID("hiddenDefaultSite").Value(Model._Parametres.Site),
+                    X.Hidden().ID("hiddenRowversion").Value(Model._Livraison.RowVersionKey),
+                                    
+                    X.NumberField()
+                        .FieldLabel("Numero")
+                        .HideTrigger(true).MinValue(0)
+                        .LabelAlign(LabelAlign.Right)
+                        .ID("txtDeliveryNumber")
+                        .ReadOnly(true)
+                        .Text(Model._Livraison.Numero),
+                    X.ComboBox()
+                        .ID("cmbDetDeliveryType")                        
+                        //.Width(310)
+                        .ForceSelection(true)
+                        .FieldLabel("Type de livraison")
+                        .ReadOnly(true)
+                        .DisplayField("Designation")
+                        .ValueField("ID")                        
+                        .ListConfig(new BoundList { Width = 500, MinWidth = 350 })
+                        .LabelAlign(LabelAlign.Right)
+                        .Value(Model._Livraison.LivraisonType.ID)
+                        .Listeners(li =>
+                            {
+                                li.Select.Handler = "App.cmbDetFournisseur.clearValue(); App.cmbDetFournisseur.getStore().load();";
+                                li.Change.Handler = "App.cmbDetFournisseur.clearValue(); App.cmbDetFournisseur.getStore().load();";
+                            }
+                        )
+                        .Store
+                        (
+                            X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    X.Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                )
+                                .Proxy
+                                (
+                                    Html.X()
+                                    .AjaxProxy()
+                                    .Url(Url.Action("LoadLivraisonType", "LivraisonType"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                        //.Listeners(
+                                        //ls => ls.Load.Handler = "if (#{hiddenExecMode}.value != 'AddNew') { DefinirZonesObligatoires(App.cmbDetDeliveryType.getSelectedRecord().data);};"
+                                        //)
+                        ),
+                    X.TextField()
+                        .FieldLabel("Ancien Nom Fournisseur")
+                        .LabelAlign(LabelAlign.Right)
+                        .ID("txtOldSupplierName")
+                        .ReadOnly(true)
+                        .Text(Model._Livraison.Fournisseur.NameAndCode)
+                        ,
+                    X.ComboBox()
+                        .ID("cmbDetFournisseur")
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*")
+                        .FieldLabel("Nouveau Fournisseur")
+                        .DisplayField("FournisseurNameAndCode")
+                        .ValueField("ID")                        
+                        .LabelAlign(LabelAlign.Right)
+                        .ForceSelection(true)
+                        .ListConfig(new BoundList { Width = 500, MinWidth = 400 })
+                        .TypeAhead(true)
+                        .QueryMode(DataLoadMode.Local)
+                        .TriggerAction(TriggerAction.All)
+                        //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] != (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? true : false)
+                        .Value((int?)null)
+                        .Store
+                        (
+                            X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    Html.X().Model()
+                                    .IDProperty("ID")
+                                    .Fields
+                                    (
+                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                        new ModelField("FournisseurNameAndCode", ModelFieldType.String) { Mapping = "FournisseurNameAndCode" },
+                                        new ModelField("FournisseurTypeID", ModelFieldType.Int) { Mapping = "FournisseurTypeID" },
+                                        new ModelField("DefaultAgenceFournisseurID", ModelFieldType.Int) { Mapping = "DefaultAgenceFournisseurID" }
+                                    )
+                                )
+                                .Proxy
+                                (
+                                    Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadFournisseurBySupplierGroup", "Fournisseur"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Listeners(li =>
+                                {
+                                    //li.Load.Handler = "var combo = App.cmbDetFournisseur;if(App.hiddenExecMode.value == 'AddNew') { records.length > 0 ? records[0].get(combo.valueField) : 0; } ";
+                                })
+                                .Parameters
+                                (
+                                    ps => { ps.Add(new StoreParameter("TypeLivraisonID", "App.cmbDetDeliveryType.getValue()", ParameterMode.Raw)); }
+                                )
+                            )
+                                .Listeners(ls =>
+                                {
+                                    ls.Select.Handler = "SetDefaultSite();";
+                                    ls.Change.Handler = "SetDefaultSite();";
+                                }),
+                            X.ComboBox()
+                                        .ID("cmbDetAgence")
+                                            .TypeAhead(true)
+                                            .ReadOnly(true)
+                                            .Hidden(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(false)
+                                            .FieldLabel("Agence").DisplayField("Nom").ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                            .Value(Model._Livraison.CentreAchat.ID)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields
+                                                                (
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                            )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadSite", "Site"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                     //.Listeners(li => li.Load.Handler = "var combo = App.cmbDetAgence; combo.setValue(records.length > 0 ? records[0].get(combo.valueField): 0);combo.setReadOnly(true);")
+
+                    )
+                    )
+
+          )
+    .Buttons
+          (
+                X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitSupplierChangeMethod");
+                    de.Click.Before = "return validNew(App.frmUpdateSupplierDelivery.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.frmUpdateSupplierDelivery.doClose()").Cls("btncancel")
+           )
+
+
+)
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Delivery ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+
+
+
+
+
+
+
+    var setExecMode = function (winId) {
+
+
+        var TextFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textfield') || [];
+        var ComboBoxArray = Ext.ComponentQuery.query('window[id="' + winId + '"] combobox') || [];
+        var DateFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] datefield') || [];
+        var TextAreaArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textarea') || [];
+
+        /*Ensuite nous concatenons tous les tableaux obtenus obtenus
+        */
+        var allCustomComponentsOnWindowArray = TextFieldArray.concat(ComboBoxArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(DateFieldArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(TextAreaArray);
+
+        if (allCustomComponentsOnWindowArray.length > 0)
+        {
+
+            var flag = Ext.each(allCustomComponentsOnWindowArray,
+                            function (item, index, objectItSelf)
+                            {
+                                item.setReadOnly(false);
+
+                                if (App.hiddenExecMode.value == 'Consult')
+                                    item.setReadOnly(true);
+
+                            }
+                     );
+
+            return (flag === true);
+        }
+
+
+    };
+</script>
+
+
+
+

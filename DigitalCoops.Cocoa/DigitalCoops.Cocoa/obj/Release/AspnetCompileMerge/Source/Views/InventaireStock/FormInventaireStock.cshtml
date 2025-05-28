@@ -1,0 +1,408 @@
+﻿@model Tms.Classes.Business.stock.InventaireViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string DefaultCampagne = new Tms.Classes.Shared.Parametres(0).Campagne;
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 300px !important;
+    }
+</style>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript">    
+    var SummaryOfItems = function () {
+        var NetAccepte = App.storeListeItemInStock.sum('PoidsNetAccepte') || 0;
+        var NetLivre = App.storeListeItemInStock.sum('PoidsNetLivre') || 0;
+        var Quantite = App.storeListeItemInStock.sum('Quantite') || 0;
+        var PoidsBrut = App.storeListeItemInStock.sum('PoidsBrut') || 0;
+        var TareSacs = App.storeListeItemInStock.sum('TareSacs') || 0;
+        var TarePalettes = App.storeListeItemInStock.sum('TarePalette') || 0;
+        var Refaction = App.storeListeItemInStock.sum('Refaction') || 0;
+
+        App.txtPoidsNetAccepte.setValue(FormatAmount(NetAccepte));
+        App.txtPoidsNetLivre.setValue(FormatAmount(NetLivre));
+        App.txtQuantite.setValue(FormatAmount(Quantite));
+        App.txtPoidsBrut.setValue(FormatAmount(PoidsBrut));
+        App.txtTareSacs.setValue(FormatAmount(TareSacs));
+        App.txtTarePalettes.setValue(FormatAmount(TarePalettes));
+        App.txtRetention.setValue(FormatAmount(Refaction));
+    };
+
+    var OnChnageValueField = function () {     
+        if (App.grpListeItemInStock.getStore().isLoaded() == true) {
+        App.txtPoidsNetAccepte.setValue('');
+        App.txtPoidsNetLivre.setValue('');
+        App.txtQuantite.setValue('');
+        App.txtPoidsBrut.setValue('');
+        App.txtTareSacs.setValue('');
+        App.txtTarePalettes.setValue('');
+        App.txtRetention.setValue('');
+        
+        App.grpListeItemInStock.getStore().removeAll();
+        }        
+    };
+</script>
+@(
+    X.Window()
+        .ID("FormInventaireStock")
+        .Width(840).Resizable(false)
+        .Height(550).CloseAction(Ext.Net.CloseAction.Destroy)
+        .Modal(true)
+        //.X(400)
+        .Y(20).Title("Inventaire de Stock : Detail")
+        //.Layout(LayoutType.VBox).LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+        .Items(
+                    X.FormPanel()
+                        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                        .Items(
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("TxtInventaireID").Value(Model._Inventaire.ID),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._Inventaire.RowVersionKey),
+                                    X.Panel()
+                                        .Layout(LayoutType.HBox)
+                                        //.Padding(5)
+                                        .Frame(true)
+                                        .Margin(5)
+                                        .PaddingSpec("5 50")
+                                        //.Border(true)
+                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                        .Items(
+
+                                                    X.Container().Layout(LayoutType.Form).Flex(1)
+                                                        .Items(
+                                                                X.TextField()
+                                                                    .ID("txtNumeroInventaire")
+                                                                    .FieldLabel("Inventaire N°")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .Text(Model._Inventaire.Numero).ReadOnly(true),
+                                                                X.ComboBox()
+                                                                    .ID("_cmbSite")
+                                                                    .FieldLabel("Site")
+                                                                    .DisplayField("Nom")
+                                                                    .ValueField("ID")
+                                                                    .MatchFieldWidth(false)
+                                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .TypeAhead(false)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .ForceSelection(true)
+                                                                    .ReadOnly(true)
+                                                                    .Value(Model._Inventaire.Sites.ID)
+                                                                    .Store(
+                                                                            X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(
+                                                                                    Html.X().Model()
+                                                                                    .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                    )
+                                                                    .Proxy(
+                                                                                Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadSite", "Site"))
+                                                                    .Reader(
+                                                                                Html.X().JsonReader().RootProperty("data")
+                                                                                )
+                                                                    )
+                                                                ),
+                                                                X.ComboBox()
+                                                                    .ID("cmbCampagne")
+                                                                    .FieldLabel("Campagne")
+                                                                    .DisplayField("Designation")
+                                                                    .ValueField("Designation")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Inventaire.Campagne.Designation : DefaultCampagne)
+                                                                    .Store
+                                                                    (
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model
+                                                                            (
+                                                                                Html.X().Model()
+                                                                                .IDProperty("ID")
+                                                                                .Fields
+                                                                                (
+                                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                            )
+                                                                            .Proxy
+                                                                            (
+                                                                                X.AjaxProxy()
+                                                                                .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                    )
+
+
+                                                    ),
+                                                X.Container()
+                                                    .Layout(LayoutType.Form)
+                                                    .Flex(1)
+                                                    .Items(
+                                                    X.ComboBox()
+                                                                    .ID("cmbMagasinIV")
+                                                                    .FieldLabel("Magasin")
+                                                                    .DisplayField("Designation")
+                                                                    .ValueField("ID")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Inventaire.Magasin.ID : (int?)null)
+                                                                    .Store
+                                                                    (
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model
+                                                                            (
+                                                                                Html.X().Model()
+                                                                                .IDProperty("ID")
+                                                                                .Fields
+                                                                                (
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                            )
+                                                                            .Proxy
+                                                                            (
+                                                                                X.AjaxProxy()
+                                                                                .Url(Url.Action("LoadActiveMagasin", "Magasin"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                                .Parameters
+                                                                            (
+                                                                                ps =>
+                                                                                {
+                                                                                    ps.Add(new StoreParameter("SiteID", "App._cmbSite.getValue()", ParameterMode.Raw));
+                                                                                }
+                                                                            )
+                                                                            
+                                                                    )
+                                                                    .Listeners(
+                                                                        ls => {
+                                                                            ls.Select.Handler = "OnChnageValueField();";                                                                            
+                                                                        }
+                                                                ),
+                                                            X.DateField()
+                                                                .ID("txtDateInventaire")
+                                                                .FieldLabel("Date Inventaire")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Inventaire.DateInventaire.ToShortDateString() : DateTime.Now.ToShortDateString())
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .Listeners(
+                                                                        ls => ls.Select.Handler = "OnChnageValueField();"
+                                                                ),
+                                                            X.ComboBox()
+                                                                .ID("cmbPeriode")
+                                                                .FieldLabel("Periode")
+                                                                .DisplayField("Designation")
+                                                                .ValueField("ID")
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Inventaire.Periode.ID : (int?)null)
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .Store
+                                                                (
+                                                                    X.Store()
+                                                                        .AutoLoad(true)
+                                                                        .Model
+                                                                        (
+                                                                            Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                            .Fields
+                                                                            (
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                            )
+                                                                        )
+                                                                        .Proxy
+                                                                        (
+                                                                            X.AjaxProxy()
+                                                                            .Url(Url.Action("LoadActivePeriode", "Periode"))
+                                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                )
+                                                    )
+                                                ),
+                                    X.Container()
+                                        .Layout(LayoutType.HBox)
+                                        .MarginSpec("0 0 5 5")
+                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+                                        .Items(
+                                                    //X.Label().Text("Theoritical Stock").MarginSpec("0 10 0 0"),
+                                                    X.Button()
+                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                        .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                        .DirectEvents
+                                                        (
+                                                            de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("OnRefreshMouvementsInStock");
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemMagasin", Encode=true, Value= "#{cmbMagasinIV}.getValue()", Mode=ParameterMode.Raw});
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemDateInventaire", Encode=false, Value= "#{TxtDateInventaire}.getRawValue()", Mode=ParameterMode.Raw});
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Encode = false, Value = "#{cmbCampagne}.getRawValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                        )
+                                        ),
+
+                                    X.Panel()
+                                        .Layout(LayoutType.HBox)
+                                        .Frame(true)
+                                        .Hidden(true)
+                                        .Margin(5)
+                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                        .Items(
+                                                X.Container()
+                                                    .Layout(LayoutType.Form)
+                                                    .Flex(1)
+                                                    .Items(
+                                                            X.TextField().ID("txtQuantite").LabelAlign(LabelAlign.Right).FieldLabel("Nbr de sacs").Text("").ReadOnly(true),
+                                                            X.TextField().ID("txtPoidsBrut").LabelAlign(LabelAlign.Right).FieldLabel("Poids Brut").Text("").ReadOnly(true),
+                                                            X.TextField().ID("txtTareSacs").LabelAlign(LabelAlign.Right).FieldLabel("Tare des sacs").Text("").ReadOnly(true)
+                                                    ),
+                                                X.Container()
+                                                    .Layout(LayoutType.Form)
+                                                    .Flex(1)
+                                                    .Items(
+                                                            X.TextField().ID("txtTarePalettes").LabelAlign(LabelAlign.Right).FieldLabel("Tare des palettes").Text("").ReadOnly(true),
+                                                            X.TextField().ID("txtPoidsNetLivre").LabelAlign(LabelAlign.Right).FieldLabel("Net livré").Text("").ReadOnly(true)
+                                                    )
+                                                    ,
+                                                X.Container()
+                                                    .Layout(LayoutType.Form)
+                                                    .Flex(1)
+                                                    .Items(
+                                                            X.TextField().ID("txtRetention").LabelAlign(LabelAlign.Right).FieldLabel("Retention").Text("").ReadOnly(true),
+                                                            X.TextField().ID("txtPoidsNetAccepte").LabelAlign(LabelAlign.Right).FieldLabel("Accepté").Text("").ReadOnly(true)
+
+                                                    )
+                                                ),
+                                    X.Label()
+                                        .Text("Items In Stock")
+                                        .MarginSpec("0 0 0 5"),
+
+    X.Panel()
+        .Layout(LayoutType.Fit)
+        .Padding(5)
+        .Items(
+                X.GridPanel()
+                   .Layout(LayoutType.Fit)
+                   .ID("grpListeItemInStock")
+                   .Region(Region.Center)
+                   .ForceFit(true)
+                   .Border(true)
+                   .Height(270)
+                   .AllowDeselect(true)
+                   .Store(
+                            X.StoreFor<Tms.Classes.Business.stock.InventaireElementStock>()
+                                .ID("storeListeItemInStock")
+                                .AutoLoad(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .Proxy(
+                                       Html.X().AjaxProxy()
+                                       .Url(Url.Action("SelectMouvementsInStock"))
+                                       .Reader(
+                                                Html.X().JsonReader().RootProperty("data")
+                                                )
+                                  )
+                                .Listeners
+                                (
+                                     ls =>
+                                     {
+                                         ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                         ls.Load.Handler = "SummaryOfItems(); Ext.net.Mask.hide();";
+                                     }
+                                )
+                                .Parameters
+                                (
+                                ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemIventaire", "#{TxtInventaireID}.getValue()", ParameterMode.Raw));
+                                }
+                            )
+                    )
+                    .ColumnModel
+                    (
+                        Html.X().Column().Text("Type").Flex(1).DataIndex("ObjetEnStock").Hideable(false),
+                        Html.X().Column().Text("Item N°").Flex(1).DataIndex("Reference").Hideable(false),
+                        //Html.X().Column().Text("T. Of bags").Flex(1).DataIndex("SacTypeAsString"),
+                        Html.X().Column().Text("Nbr de sacs").Flex(1).DataIndex("QuantiteAsString").Hideable(false),
+                        Html.X().Column().Text("Poids Brut").Flex(1).DataIndex("PoidsBrutAsString").EmptyCellText("0").Hideable(false),
+                        Html.X().Column().Text("Tare Sacs").Flex(1).DataIndex("TareSacsAsString").EmptyCellText("0").Hideable(false),
+                        Html.X().Column().Text("Tare Palettes").Flex(1).DataIndex("TarePalettesAsString").EmptyCellText("0").Hideable(false),
+                        Html.X().Column().Text("Net Livré").Flex(1).DataIndex("PoidsNetLivreAsString").EmptyCellText("0").Hideable(false)
+                    //Html.X().Column().Text("Retention").Flex(1).DataIndex("RetentionAsString").Hideable(false),
+                    //Html.X().Column().Text("Net Acc.").Flex(1).DataIndex("PoidsNetAccepteAsString").Hideable(false)
+                    )
+                    .SelectionModel(
+                                    X.RowSelectionModel()
+                                        .ID("rowItem")
+                                        .Mode(SelectionMode.Single)
+                                        .AllowDeselect(true)
+                        )
+
+)
+
+    )
+    )
+    .Buttons(
+                X.Button().Text("OK")
+                    .ID("BtnSaveInventaire")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.Before = "return validNew(App.FormInventaireStock.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeItemInStock.getRowsValues({selectedOnly : false})" });
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormInventaireStock.doClose()").Cls("btncancel")
+                    )
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+        *   Vérification de la saisie des champs obligatoires
+        */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Codification : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please enter the delivery ID', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    }
+       
+</script>
+
+

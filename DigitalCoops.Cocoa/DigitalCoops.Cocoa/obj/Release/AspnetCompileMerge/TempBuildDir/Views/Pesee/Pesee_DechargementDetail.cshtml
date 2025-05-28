@@ -1,0 +1,761 @@
+﻿@model Tms.Classes.Business.PeseeViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .grossWeight_style {
+            font-size: large;
+            text-align: center;
+            line-height: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+
+        var setCtrlIsRequired = function (field, value)
+        {
+            field.allowBlank = !value;
+
+            field.setIndicator("");
+            field.setIndicatorCls('');
+            field.showIndicator();
+
+            if (value == true)
+            {
+
+                field.setIndicator("*");
+                field.setIndicatorCls('IndicatorRedStar');
+                field.showIndicator();
+            }
+        };
+
+        var calculerNbrSacsAcceptes = function ()
+        {
+            if (App.txtUnloadledBags.value != '' && App.txtAcceptedBags.value != '')
+            {
+                var sacsDecharges = parseInt(App.txtUnloadledBags.value, 10)||0;
+                /*var sacsRejetes = parseInt(App.txtRejectedBags.value, 10) || 0;*/
+                var sacsAcceptes = parseInt(App.txtAcceptedBags.value, 10) || 0;
+
+                App.txtRejectedBags.setValue(sacsDecharges - sacsAcceptes);
+
+                /*Added  by AA on 30th of Sept.*/
+                App.txtGoodBags.setValue(sacsAcceptes);
+            }
+        };
+
+        var calculerTareSacsAcceptes = function ()
+        {
+            if (App.txtAcceptedBags.value != '' )
+            {
+                var sacsAcceptes = parseInt(App.txtAcceptedBags.value, 10) || 0;
+                var tareSacsUnitaire = parseInt(App.hiddenTareSacsLivraison.value, 10) || 0;
+
+                /*Added  by AA on 30th of Sept.
+                if (App.hiddenCalculateVgm.value == 'false')
+                    App.txtTareOfBags.setValue(sacsAcceptes * tareSacsUnitaire);
+                else
+                    App.txtTareOfBags.setValue(0);
+
+                calculerPoidsBrut();*/
+
+                calculerNbrSacsAcceptes();
+            }
+        };
+
+        var calculerPoidsNet = function ()
+        {
+            /*if (App.txtDeliveryGrossWeight.value != '' && App.txtTareOfBags.value != '' && App.txtTareOfPallets.value != '')
+            {*/
+
+                var grossWeight = parseInt(App.txtDeliveryGrossWeight.value, 10) || 0;
+                var tareBags = parseInt(App.txtTareOfBags.value, 10) || 0;
+                var tarePallets = parseInt(App.txtTareOfPallets.value, 10) || 0;
+                var netWeight = grossWeight - tareBags - tarePallets;                
+
+                App.txtDeliveryNetWeight.setValue(netWeight);
+
+            /*}*/
+        };
+
+        var calculerPoidsBrut = function () {
+            if (App.txtFirstGrossWeight.value != '' && App.txtSecondGrossWeight.value != '') {
+
+                var firstWeight = parseInt(App.txtFirstGrossWeight.value, 10) || 0;
+                var secondWeight = parseInt(App.txtSecondGrossWeight.value, 10) || 0;
+
+                var poidsBrut = Math.abs(firstWeight - secondWeight);
+                /*var tarePalletes = parseInt(App.txtTareOfPallets.value, 10);
+                var tareSacs = parseInt(App.txtTareOfBags.value, 10);*/
+
+                App.txtDeliveryGrossWeight.setValue(poidsBrut);
+
+
+                calculerPoidsNet();
+            }
+        };
+            
+        var calculePoidsVGM = function () {
+            if (App.hiddenCalculateVgm.value == 'true') {
+                var poidsnet = 0;
+
+                var poidsConteneur = 0;
+
+                poidsnet = parseInt(App.txtDeliveryNetWeight.value) || 0;
+
+                poidsConteneur = parseInt(App.txtTareConteneur.value) || 0;
+
+                var poidsVGM = 0;
+
+                poidsVGM = poidsnet + poidsConteneur;
+
+
+                /*if (poidsConteneur > 0) {
+                    poidsVGM = poidsnet + poidsConteneur;
+                }
+                else*/
+                    
+
+                App.txtWeighingVgm.setValue(poidsVGM);
+
+            }
+            else
+                App.txtTareConteneur.setValue(0);
+        };
+        
+        var verifierNbrSacs = function ()
+        {
+            var nbrBagsLivraison = parseInt(App.txtNbrOfBags.value, 10) || 0;
+            var sacsDecharges = parseInt(App.txtUnloadledBags.value, 10) || 0;
+
+            /*if (nbrBagsLivraison < sacsDecharges)
+            {
+                App.txtUnloadledBags.setValue('');
+                App.txtUnloadledBags.focus(true);
+                Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'The number of bags of the delivery is different from the number of bags unloaded.', buttons: Ext.Msg.OK });
+            }*/
+
+        };
+
+        var verifierNbrSacsAcceptes = function ()
+        {
+            var sacsAcceptes = parseInt(App.txtAcceptedBags.value, 10) || 0;
+            var sacsDecharges = parseInt(App.txtUnloadledBags.value, 10) || 0;
+
+            if (sacsAcceptes > sacsDecharges)
+            {
+                App.txtAcceptedBags.setValue('');
+                App.txtAcceptedBags.focus(true);
+                Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'The number of bags accapted must be lesser or equels to the number of bags unloaded.', buttons: Ext.Msg.OK });
+            }
+
+        };
+        
+        var verifierNbrSacsBons = function () {
+            var nbrBagsLivraison = parseInt(App.txtNbrOfBags.value, 10) || 0;
+            var sacsDecharges = parseInt(App.txtUnloadledBags.value, 10) || 0;
+            var sacsBons = parseInt(App.txtGoodBags.value, 10) || 0;
+            var sacsMauvais = parseInt(App.txtBadBags.value, 10) || 0;
+
+            if ((sacsBons + sacsMauvais) > sacsDecharges) {
+                App.txtGoodBags.setValue('');
+                App.txtBadBags.setValue('');
+                App.txtGoodBags.focus(true);
+                Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'The number of good and bad bags must be lesser than the number of unloaded bags.', buttons: Ext.Msg.OK });
+            }
+
+
+            /*if (sacsMauvais > sacsBons) {
+                App.txtBadBags.setValue('');
+                Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'The number of bad bags must be lesser than the number of good bags.', buttons: Ext.Msg.OK });
+            }*/
+
+        };
+
+        var verifierNbrSacsNylonEtOpa = function () {
+           
+            var sacsBons = parseInt(App.txtGoodBags.value, 10) || 0;
+            var sacNylon = parseInt(App.txtNylonBags.value, 10) || 0;
+            var sacsOpa = parseInt(App.txtOPABags.value, 10) || 0;
+
+            if ((sacNylon + sacsOpa) > sacsBons)
+            {
+                App.txtNylonBags.setValue('');
+                App.txtOPABags.setValue('');
+                App.txtNylonBags.focus(true);
+                Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'The sum of nylon bags and OPA bags must be equals to good  bags.', buttons: Ext.Msg.OK });
+        }
+
+        };
+    </script>
+</head>
+@(                          X.FormPanel()
+                           .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                           .Items
+                            (
+
+
+                                        X.Window()
+                                        .ID("frmPesee")
+                                        .Width(730)
+                                        .Resizable(false)
+                                        .Height(500)
+                                        .CloseAction(Ext.Net.CloseAction.Destroy)
+                                        .Listeners(l =>
+                                        {
+                                            l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                                            l.Close.Handler = "App.TmsViewPort.unmask();";
+
+                                            // disable order controls
+                                            l.Show.Handler = "Ext.onReady(function() { "
+                                                                                + "  "
+                                                                                + "}); ";
+
+                                        })
+                                        .X(200)
+                                        .Y(10)
+                                        .Title("Unloading Infos")
+
+                                         .Layout(LayoutType.VBox)
+                                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.StretchMax })
+                                        .Items
+                                        (
+                                                    X.Panel()
+                                                    .ID("pnlFlexEven")
+                                                    .Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                    .PaddingSpec("5 5 5 5")
+                                                    //.Height(510)
+                                                    .Items
+                                                    (
+                                                                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+
+                                                                                    X.Hidden().ID("hiddenID").Value(Model._Pesee.ID),
+
+                                                                                    X.Hidden().ID("hiddenIsManual").Value(!Model.IsScaleWeighing),
+
+                                                                                    X.Hidden().ID("hiddenIsFirstWeighing").Value(Model.IsFirstWeighing),
+
+                                                                                    X.Hidden().ID("hiddenLivraisonID"),
+
+                                                                                    X.Hidden().ID("hiddenDestinationID"),
+
+                                                                                    X.Hidden().ID("hiddenCampagne"),
+
+                                                                                    X.Hidden().ID("hiddenLivraisonTypeID"),
+
+                                                                                    X.Hidden().ID("hiddenBasculeID").Value(Model._Bascule.ID),
+
+                                                                                    X.Hidden().ID("hiddenTareSacsLivraison").Value(Model.SacTypeID),
+
+                                                                                    X.Hidden().ID("hiddenCalculateVgm").Value(Model.WeighingWithVGM),
+
+                                                                                    X.Hidden().ID("hiddenRowversion").Value(Model._Pesee.RowVersionKey),
+
+                                                                                    X.Hidden().ID("hiddenDeliveryNumber").Value(Model._Pesee.Livraison.Numero.ToString()),
+
+                                                                                    X.Panel()
+                                                                                    .ID("firstLine")
+                                                                                    .Layout(LayoutType.Form)
+                                                                                    .HeaderConfig(new PanelHeader { Cls = "header_style" })
+                                                                                    .TitleConfig(new PanelTitle { MaxHeight = 5, Text = "1ere Pesée Infos", Cls = "title_style" })
+                                                                                    .Border(true)
+                                                                                    .Width(310)
+                                                                                    .MarginSpec("0 10 0 0")
+                                                                                    .Items
+                                                                                    (
+                                                                                        X.NumberField()
+                                                                                        .FieldLabel("Pesée N°")
+                                                                                        .LabelAlign(LabelAlign.Right)
+                                                                                        .HideTrigger(true)
+                                                                                        .ID("txtFirstWeighingNumber")
+                                                                                        .ReadOnly(true)
+                                                                                        .Width(300)
+                                                                                        .Text(Model._Pesee.Numero.ToString())
+
+                                                                                         ,
+
+                                                                                        X.FieldContainer()
+                                                                                        .FieldLabel("Date / Heure")
+                                                                                        .LabelAlign(LabelAlign.Right)
+                                                                                        .Layout(LayoutType.HBox)
+                                                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                                                        .Items
+                                                                                        (
+                                                                                            X.DateField()
+                                                                                            .ID("dtfFirstWeighingDate")
+                                                                                            .Width(110)
+                                                                                            .ReadOnly(!Model.IsFirstWeighing)
+                                                                                            .SelectedDate(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Pesee.DateP1 : DateTime.Now)
+
+                                                                                            ,
+
+                                                                                            X.TimeField()
+                                                                                            .ID("tmfFirstWeighing")
+                                                                                            .ReadOnly(!Model.IsFirstWeighing)
+                                                                                            .SelectedTime(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? TimeSpan.FromTicks(Model._Pesee.DateP1.Ticks) : TimeSpan.FromTicks(DateTime.Now.Ticks))
+                                                                                            .Width(80)
+                                                                                            .MarginSpec("0 0 0 5")
+                                                                                        )
+
+                                                                                        ,
+
+                                                                                        X.TextField()
+                                                                                        .ReadOnly(true)
+                                                                                        .FieldLabel("Poids (Kg)")
+                                                                                        .LabelAlign(LabelAlign.Right)
+                                                                                        //.FieldCls("weighingCapture")
+                                                                                        .ID("txtFirstGrossWeight")
+                                                                                        //.AllowBlank(false)
+                                                                                        //.IndicatorCls("IndicatorRedStar")
+                                                                                        //.IndicatorText("*")
+                                                                                        .Width(310)
+                                                                                        .Text(Model._Pesee.PoidsP1.ToString("#"))
+                                                                                    )
+                                                                                   ,
+
+                                                                                    X.Panel()
+                                                                                    .ID("Unloaded")
+                                                                                    .Layout(LayoutType.Form)
+                                                                                    //.LayoutConfig(new TableLayoutConfig { Columns = 1 })
+                                                                                    .HeaderConfig(new PanelHeader { Cls = "header_style" })
+                                                                                    .TitleConfig(new PanelTitle { MaxHeight = 5, Text = "Unloading", Cls = "title_style" })
+                                                                                    .Border(true)
+                                                                                    .MarginSpec("0 5 0 0")
+                                                                                    //.Height(239)
+                                                                                    .Width(395)
+                                                                                    .Items
+                                                                                    (
+                                                                                           X.TextField()
+                                                                                           .FieldLabel("Fournisseur")
+                                                                                           .LabelAlign(LabelAlign.Right)
+                                                                                           .ID("txtSupplierName")
+                                                                                           .ColSpan(1)
+                                                                                           .ReadOnly(true)
+                                                                                           .LabelWidth(90)
+                                                                                           .Width(320)
+                                                                                           .Text(Model._Pesee.Livraison.Fournisseur.FournisseurNameAndCode.ToString())
+
+                                                                                           ,
+
+                                                                                          X.TextField()
+                                                                                          .FieldLabel("Type de livraison")
+                                                                                          .LabelAlign(LabelAlign.Right)
+                                                                                          .ID("txtDeliveryType")
+                                                                                          .ColSpan(1)
+                                                                                          .ReadOnly(true)
+                                                                                          .LabelWidth(90)
+                                                                                          .Width(320)
+                                                                                          .Text(Model._Pesee.Livraison.LivraisonType.Designation.ToString())
+
+                                                                                          ,
+
+                                                                                          X.TextField()
+                                                                                          .FieldLabel("Type de Sacs")
+                                                                                          .LabelAlign(LabelAlign.Right)
+                                                                                          .ID("txtTypeOfBags")
+                                                                                          .ColSpan(1)
+                                                                                          .ReadOnly(true)
+                                                                                          .LabelWidth(90)
+                                                                                          .Width(320)
+                                                                                          .Text(Model._Pesee.Livraison.SacType.Designation.ToString())
+                                                                                          .ColSpan(1)
+                                                                                          ,
+
+                                                                                          X.TextField()
+                                                                                          .FieldLabel("Nbr de Sacs")
+                                                                                          .LabelAlign(LabelAlign.Right)
+                                                                                          .ID("txtNbrOfBags")
+                                                                                          .ColSpan(1)
+                                                                                          .ReadOnly(true)
+                                                                                          .LabelWidth(90)
+                                                                                          .Width(320)
+                                                                                          .Text(Model._Pesee.Livraison.SacsDeclares.ToString())
+                                                                                          .ColSpan(1)
+                                                                                    )
+
+
+                                        )
+
+                                        ,
+
+                                         X.Panel()
+                                        .ID("UnloadedCol")
+                                        //.Layout(LayoutType.Form)
+                                        //.LayoutConfig(new TableLayoutConfig { Columns = 1 })
+                                        .HeaderConfig(new PanelHeader { Cls = "header_style" })
+                                        .TitleConfig(new PanelTitle { MaxHeight = 5, Text = "Unloading", Cls = "title_style" })
+                                        .Border(true)
+                                        .MarginSpec("0 5 0 5")
+                                        //.Height(239)
+                                        .Width(710)
+                                        .Items
+                                        (
+
+                                                                                    X.NumberField()
+                                                                                    .HideTrigger(true)
+                                                                                    .ID("txtUnloadledBags")
+                                                                                    .LabelWidth(130)
+                                                                                    .FieldLabel("Sacs dechargés")
+                                                                                    .LabelAlign(LabelAlign.Right)
+                                                                                    .ReadOnly(false)
+                                                                                    .MinValue(0)
+                                                                                    //.Width(340)
+                                                                                    .AllowDecimals(false)
+                                                                                    .AllowBlank(false)
+                                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                                    .IndicatorText("*")
+                                                                                    .Listeners
+                                                                                    (
+                                                                                        li =>
+                                                                                        {
+                                                                                            li.Change.Fn = "calculerNbrSacsAcceptes";
+                                                                                            li.Blur.Fn = "verifierNbrSacs";
+
+                                                                                        }
+                                                                                    )
+                                                                                    .Text
+                                                                                    (
+                                                                                            Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                            (
+                                                                                                Model.IsFirstWeighing ?
+                                                                                                    String.Empty : Model._Pesee.SacsDecharges.ToString()
+                                                                                            )
+                                                                                            :
+                                                                                            String.Empty
+                                                                                    )
+                                                                                    ,
+
+                                                                                    X.FieldContainer()
+                                                                                    .LabelWidth(130)
+                                                                                    .FieldLabel("Sacs Acceptés / Rej")
+                                                                                    .LabelAlign(LabelAlign.Right)
+                                                                                    .Layout(LayoutType.HBox)
+                                                                                    .Items
+                                                                                    (
+                                                                                                X.NumberField()
+                                                                                                .HideTrigger(true)
+                                                                                                .ReadOnly(false)
+                                                                                                .ID("txtAcceptedBags")
+                                                                                                .Flex(1)
+                                                                                                //.Width(110)
+                                                                                                .AllowBlank(false)
+                                                                                                .IndicatorCls("IndicatorRedStar")
+                                                                                                .IndicatorText("*")
+                                                                                                .Listeners
+                                                                                                (
+                                                                                                li =>
+                                                                                                {
+                                                                                                    li.Change.Fn = "calculerTareSacsAcceptes";
+                                                                                                    li.Blur.Fn = "verifierNbrSacsAcceptes";
+                                                                                                }
+                                                                                                )
+                                                                                                .Text
+                                                                                                (
+                                                                                                    Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                                    (
+                                                                                                        !Model.IsFirstWeighing ?
+                                                                                                        Model._Pesee.SacsAcceptes.ToString() : String.Empty
+                                                                                                    )
+                                                                                                :
+                                                                                                String.Empty
+                                                                                                )
+
+                                                                                                ,
+
+                                                                                                X.NumberField()
+                                                                                                .HideTrigger(true)
+                                                                                                .ID("txtRejectedBags")                                                                                                
+                                                                                                .ReadOnly(true)
+                                                                                                .Width(90)
+                                                                                                .MarginSpec("0 0 0 5")
+                                                                                                .MinValue(0)
+                                                                                                .AllowDecimals(false)
+                                                                                                .AllowBlank(false)
+                                                                                                .IndicatorCls("IndicatorRedStar")
+                                                                                                .IndicatorText("*")
+                                                                                                .Listeners
+                                                                                                (
+                                                                                                li =>
+                                                                                                {
+                                                                                                    li.Change.Fn = "calculerNbrSacsAcceptes";
+                                                                                                }
+                                                                                                )
+                                                                                                .Text
+                                                                                                (
+                                                                                                    Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                                    (
+                                                                                                        !Model.IsFirstWeighing ?
+                                                                                                        (Model._Pesee.SacsDecharges - Model._Pesee.SacsAcceptes).ToString() : String.Empty
+                                                                                                    )
+                                                                                                :
+                                                                                                String.Empty
+                                                                                                )
+                                                                                    )
+                                                                                    ,
+                                                                                    X.FieldContainer()
+                                                                                    .FieldLabel("Sacs Bon / mauvais").LabelAlign(LabelAlign.Right)
+                                                                                    .LabelWidth(130)
+                                                                                    .Layout(LayoutType.HBox)
+                                                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                                                    .Items
+                                                                                    (
+                                                                                            X.NumberField()
+                                                                                            .HideTrigger(true)
+                                                                                            .ID("txtGoodBags")
+                                                                                            .ReadOnly(false)
+                                                                                            .MinValue(0)
+                                                                                            .Width(110)
+                                                                                            .AllowDecimals(false)
+                                                                                            .AllowBlank(false)
+                                                                                            .IndicatorCls("IndicatorRedStar")
+                                                                                            .IndicatorText("*")
+                                                                                            .Text
+                                                                                            (
+                                                                                                Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                                (
+                                                                                                    !Model.IsFirstWeighing ?
+                                                                                                    (Model._Pesee.SacsBons).ToString() : String.Empty
+                                                                                                )
+                                                                                                :
+                                                                                                String.Empty
+                                                                                            )
+                                                                                            .Listeners
+                                                                                            (
+                                                                                                li =>
+                                                                                                {
+                                                                                                    li.Blur.Fn = "verifierNbrSacsBons";
+                                                                                                }
+                                                                                            )
+
+                                                                                            ,
+
+                                                                                            X.NumberField()
+                                                                                            .HideTrigger(true)
+                                                                                            .ID("txtBadBags")
+                                                                                            .LabelWidth(65)
+                                                                                            .ReadOnly(false)
+                                                                                            .MinValue(0)
+                                                                                            .Width(90)
+                                                                                            .MarginSpec("0 0 0 5")
+                                                                                            .AllowDecimals(false)
+                                                                                            .AllowBlank(false)
+                                                                                            .IndicatorCls("IndicatorRedStar")
+                                                                                            .IndicatorText("*")
+                                                                                            .Text
+                                                                                            (
+                                                                                                Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                                (
+                                                                                                    !Model.IsFirstWeighing ?
+                                                                                                    (Model._Pesee.SacsMauvais).ToString() : String.Empty
+                                                                                                )
+                                                                                                :
+                                                                                                String.Empty
+                                                                                            )
+                                                                                            .Listeners
+                                                                                            (
+                                                                                                li =>
+                                                                                                {
+                                                                                                    li.Blur.Fn = "verifierNbrSacsBons";
+                                                                                                }
+                                                                                            )
+                                                                                    )
+
+                                                                                    ,
+
+
+                                                                                    X.FieldContainer()
+                                                                                    .FieldLabel("Nylon / OPA bags").LabelAlign(LabelAlign.Right)
+                                                                                    .LabelWidth(130)
+                                                                                    .Layout(LayoutType.HBox)
+                                                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                                                    .Items
+                                                                                    (
+                                                                                        X.NumberField()
+                                                                                        .HideTrigger(true)
+                                                                                        .ID("txtNylonBags")
+                                                                                        .ReadOnly(false)
+                                                                                        .MinValue(0)
+                                                                                        .Width(110)
+                                                                                        .AllowDecimals(false)
+                                                                                        .AllowBlank(false)
+                                                                                        .IndicatorCls("IndicatorRedStar")
+                                                                                        .IndicatorText("*")
+                                                                                        .Text
+                                                                                        (
+                                                                                            Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                            (
+                                                                                                !Model.IsFirstWeighing ?
+                                                                                                (Model._Pesee.SacsNylon).ToString() : String.Empty
+                                                                                            )
+                                                                                            :
+                                                                                            String.Empty
+                                                                                        )
+                                                                                        .Listeners
+                                                                                        (
+                                                                                            li =>
+                                                                                            {
+                                                                                                li.Blur.Fn = "verifierNbrSacsNylonEtOpa";
+                                                                                            }
+                                                                                        )
+
+                                                                                        ,
+
+                                                                                        X.NumberField()
+                                                                                        .HideTrigger(true)
+                                                                                        .ID("txtOPABags")
+                                                                                        .ReadOnly(false)
+                                                                                        .MinValue(0)
+                                                                                        .Width(90)
+                                                                                        .MarginSpec("0 0 0 5")
+                                                                                        .AllowDecimals(false)
+                                                                                        .AllowBlank(false)
+                                                                                        .IndicatorCls("IndicatorRedStar")
+                                                                                        .IndicatorText("*")
+                                                                                        .Text
+                                                                                            (
+                                                                                                Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                                (
+                                                                                                    !Model.IsFirstWeighing ?
+                                                                                                    (Model._Pesee.SacsOPA).ToString() : String.Empty
+                                                                                                )
+                                                                                                :
+                                                                                                String.Empty
+                                                                                            )
+                                                                                        .Listeners
+                                                                                        (
+                                                                                            li =>
+                                                                                            {
+                                                                                                li.Blur.Fn = "verifierNbrSacsNylonEtOpa";
+                                                                                            }
+                                                                                        )
+                                                                                    )
+
+                                                                                    ,
+
+                                                                                    X.NumberField()
+                                                                                    .HideTrigger(true)
+                                                                                    .ID("txtNbrOfPalets")
+                                                                                    .FieldLabel("Nb. Palettes")
+                                                                                    .LabelAlign(LabelAlign.Right)
+                                                                                    .LabelWidth(130)
+                                                                                    .Width(340)
+                                                                                    .ReadOnly(false)
+                                                                                    .MinValue(0)
+                                                                                    .AllowDecimals(false)
+                                                                                    .AllowBlank(false)
+                                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                                    .IndicatorText("*")
+                                                                                    .Text
+                                                                                    (
+                                                                                        Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                                                                                        (
+                                                                                            !Model.IsFirstWeighing ?
+                                                                                            (Model._Pesee.NbrePalette).ToString() : "0"
+                                                                                        )
+                                                                                        :
+                                                                                        "0"
+                                                                                    )
+                                            )
+
+
+
+                            )
+                            .Buttons
+                            (
+                                X.Button().Text("OK").ID("BtnOk")
+                                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .DirectEvents(de =>
+                                {
+                                    de.Click.Url = Url.Action("SubmitFormUnloadingMethod");
+                                    de.Click.Before = "return validNew(App.frmPesee.id);";
+                                })
+                                    ,
+                                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.frmPesee.doClose()").Cls("btncancel")
+                            )
+     )
+
+)
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+
+
+
+
+
+
+
+    var setExecMode = function (winId) {
+
+
+        var TextFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textfield') || [];
+        var ComboBoxArray = Ext.ComponentQuery.query('window[id="' + winId + '"] combobox') || [];
+        var DateFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] datefield') || [];
+        var TextAreaArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textarea') || [];
+
+        /*Ensuite nous concatenons tous les tableaux obtenus obtenus
+        */
+        var allCustomComponentsOnWindowArray = TextFieldArray.concat(ComboBoxArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(DateFieldArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(TextAreaArray);
+
+        if (allCustomComponentsOnWindowArray.length > 0)
+        {
+
+            var flag = Ext.each(allCustomComponentsOnWindowArray,
+                            function (item, index, objectItSelf)
+                            {
+                                item.setReadOnly(false);
+
+                                if (App.hiddenExecMode.value == 'Consult')
+                                    item.setReadOnly(true);
+
+                            }
+                     );
+
+            return (flag === true);
+        }
+
+
+    };
+</script>
+
+
+
+
+

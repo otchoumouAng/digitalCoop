@@ -1,0 +1,9 @@
+﻿@Html.DevExpress().DocumentViewer(settings =>
+{
+    settings.Name = "DocumentViewerWithParam";
+    settings.CallbackRouteValues = new { Controller = "Report", Action = "DocumentViewerWithParamPartial" };
+    settings.ExportRouteValues = new { Controller = "Report", Action = "DocumentViewerParamPartialExport" };
+    settings.Report = (XtraReport)Model;
+    settings.ClientSideEvents.Init = "function(s, e) { s.previewModel.reportPreview.zoom(1);}";
+    settings.ToolbarMode = DocumentViewerToolbarMode.StandardToolbar;
+}).GetHtml()

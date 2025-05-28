@@ -1,0 +1,855 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+
+
+@model Tms.Classes.Shared.Produit
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<style type="text/css">
+    .x-btn-default-small {
+        padding: 2px 7px 2px 7px !important;
+    }
+
+    .DshPanelHeaderColor{       
+        background-color : #ECEFF1 !important; 
+        border: 1px solid #CFD8DC !important;        
+    }
+
+    .x-grid-td {
+        padding: 5px;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/renderers.js"></script>
+<script>        
+    var SetCriteriaTitle = function (fournisseur) {
+        App.panelSuppliersVolume.title = "";
+        var texttitle = "";
+
+        /*if (begin) texttitle += " Du : " + begin;
+
+        if (end) texttitle += " Au : " + end*/
+
+        if (fournisseur) texttitle += "Volume ( Campagne à ce jour) | Fournisseur : " + fournisseur;       
+
+        App.panelSuppliersVolume.setTitle(texttitle);
+    };
+
+    var SetCriteriaTitleFin = function (fournisseur) {
+        App.FinancingCropYearToDatePanel.title = "";
+        var texttitle = "";
+
+        /*if (begin) texttitle += " Du : " + begin;
+
+        if (end) texttitle += " Au : " + end;*/
+
+        if (fournisseur) texttitle += "Financement ( Campagne à ce jour) | Fournisseur : " + fournisseur;        
+
+        App.FinancingCropYearToDatePanel.setTitle(texttitle);
+    };
+
+        var tipRendererSupplierChartCrCv = function (toolTip, storeItem, item) {
+            var total = 0;
+            total = parseInt(App.storeListeSupplierVolume.getRecordsValues()[2].Accepted);
+            /*App.PieSupplierVolumeCrCv.getStore().each(function (rec) {
+                total += rec.get('Total');
+            });*/
+
+            toolTip.setTitle(storeItem.get('Libelle') + ': ' + Math.round(storeItem.get('Total') / total * 100) + '%');
+        };
+
+        var tipRendererSupplierChartAcRj = function (toolTip, storeItem, item) {
+            var total = 0;
+            total = parseInt(App.storeListeSupplierVolume.getRecordsValues()[2].InProcess) + parseInt(App.storeListeSupplierVolume.getRecordsValues()[2].Accepted) + parseInt(App.storeListeSupplierVolume.getRecordsValues()[2].Rejected);
+            /*App.PieSupplierVolumeCrCv.getStore().each(function (rec) {
+                total += rec.get('Total');
+            });*/
+
+            toolTip.setTitle(storeItem.get('Libelle') + ': ' + Math.round(storeItem.get('Total') / total * 100) + '%');
+        };
+
+        var tipRendererChartFinancingSupplier = function (toolTip, storeItem, item) {
+            var total = 0;
+
+            App.storeListeFinancingChartSupplier.each(function (rec) {
+                total += rec.get('Total');                
+            });
+
+            toolTip.setTitle(storeItem.get('Libelle') + ': ' + Math.round(storeItem.get('Total') / total * 100) + '%');
+        };
+
+        var saveChart = function (btn) {
+            Ext.MessageBox.confirm('Confirm Download', 'Would you like to download the chart as an image?', function (choice) {
+                if (choice === 'yes') {
+                    btn.up('panel').down('polar').download();
+                }
+            });
+        };   
+
+        var LoadFinancingChartOfSupplier = function (model, records) {
+                  
+            if (records.length > 0) {
+                var SelectedRows = [];
+                var json;
+                var rec;
+
+                for (var i = 1; i < (records.length); i++) {
+                    rec = records[i];
+                    json = {
+                        'Libelle': rec.get('Designation'),
+                        'Total': rec.get('Allocated')
+                    };
+                    SelectedRows[i - 1] = json;
+                }
+                App.storeListeFinancingChartSupplier.loadData(SelectedRows);
+            }
+            else
+            {
+                true;
+                /*App.storeListeFinancingChartSupplier.removeAll();*/
+            }
+            
+
+        };
+
+        var LoadSupplierVolume = function (model, records) {            
+            var rec = records[2];            
+            var json1 = [{
+                'Libelle': 'Accepté',
+                'Total': rec.get('Accepted')
+            }, {
+                'Libelle': 'Refoulé',
+                'Total': rec.get('Rejected')
+            }];
+            var json2 = [{
+                'Libelle': 'Certifié',
+                'Total': rec.get('Certified')
+            }, {
+                'Libelle': 'Conventionnel',
+                'Total': rec.get('Conventional')
+            }];
+
+            App.storePieSupplierVolumeCrCv.loadData(json2);            
+            App.storePieSupplierVolumeAcRj.loadData(json1);
+
+            App.storeSupplierVolumeEvolution.load();
+
+            
+        };
+
+</script>
+@(Html.X().ResourceManager()
+            .Listeners(ls =>
+            {
+                ls.DocumentReady.Handler = "Ext.util.Format.thousandSeparator = ' '";
+            }))
+
+<form id="tms_form">
+    @(X.Viewport()
+        .Layout(LayoutType.VBox)
+        .LayoutConfig(new VBoxLayoutConfig() { Align = VBoxAlign.Stretch })
+        .Scrollable(ScrollableOption.Vertical)
+        .ID("TmsViewPort")
+        .Items(
+    #region 1 Volume Campagne To Date
+        X.FormPanel()
+            .ID("panelSuppliersVolume")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Volume Du " + DateTime.Now.ToShortDateString() })
+            .Region(Region.North)
+            .Scrollable(ScrollableOption.Vertical)
+            .Collapsed(false)
+            .Collapsible(true)
+            .BodyPadding(5)
+            .Frame(true)
+            .Height(500)
+            .HeaderConfig(new PanelHeader { Cls = "DshPanelHeaderColor" })
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items(
+                    X.Panel()
+                        .BodyPadding(10)
+                        .Layout(LayoutType.VBox)
+                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                        .Items(
+                                //Campagne REfresh and Panel
+                                X.Panel()
+                                    .BodyPadding(10)
+                                    .Layout(LayoutType.HBox)
+                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                    .Items(
+                                                //X.ComboBox()
+                                                //    .ID("CropYearSuppliersVolume")
+                                                //    .FieldLabel("Campagne")
+                                                //    .DisplayField("Designation")
+                                                //    .ValueField("ID")
+                                                //    .LabelAlign(LabelAlign.Right)
+                                                //    .ForceSelection(true)
+                                                //    .Width(220)
+                                                //    .TypeAhead(false)
+                                                //    .QueryMode(DataLoadMode.Local)
+                                                //    .TriggerAction(TriggerAction.All)
+                                                //    .Store(
+                                                //            X.Store()
+                                                //                .AutoLoad(true)
+                                                //                .Model(
+                                                //                        Html.X().Model()
+                                                //                            .IDProperty("ID")
+                                                //                                    .Fields(
+                                                //                                        new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" },
+                                                //                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                //                                    )
+                                                //                        )
+                                                //                .Proxy(Html.X().AjaxProxy()
+                                                //                    .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                //                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                //                )
+                                                //                    )
+                                                //    .DirectEvents(de =>
+                                                //    {
+                                                //        de.Select.Url = Url.Action("SetPeriod");
+                                                //        de.Select.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "ItemCampagne", Value = "#{CropYearSuppliersVolume}.getValue()" });
+                                                //        de.Select.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "IdStart", Value = "#{TxtPeriodStartSupplierVolume}.id" });
+                                                //        de.Select.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "IdEnd", Value = "#{TxtPeriodEndSupplierVolume}.id" });
+                                                //        de.Select.EventMask.ShowMask = true;
+                                                //    }),
+                                                X.ComboBox()
+                                                    .ID("SiteVolumeCropYearToDateID")
+                                                    .FieldLabel("Site")
+                                                    .DisplayField("Nom")
+                                                    .ValueField("ID")
+                                                    .Width(300)
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .TypeAhead(false)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .ForceSelection(true)
+                                                    //.ReadOnly(true)
+                                                    .Value((int)ViewBag.SiteParDefaut)
+                                                    .Store(
+                                                                X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(
+                                                                        Html.X().Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                    )
+                                                                .Proxy(
+                                                                            Html.X().AjaxProxy()
+                                                                            .Url(Url.Action("LoadSiteAll", "Site"))
+                                                                .Reader(
+                                                                            Html.X().JsonReader().RootProperty("data")
+                                                                            )
+                                                                )
+                                                        )
+                                                        .Listeners(
+                                                                ls =>
+                                                                {
+                                                                    ls.Select.Handler = "if (App.SiteVolumeCropYearToDateID.value) { App.cmbVolumeFournisseurID.clearValue(); App.cmbVolumeFournisseurID.getStore().load(); };";
+                                                                }
+                                                            ),
+                                                X.ComboBox()
+                                                    .ID("cmbVolumeFournisseurID")
+                                                    .FieldLabel("Fournisseur")
+                                                    .DisplayField("NameAndCode")
+                                                    .ValueField("ID")
+                                                    .Width(450)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ListConfig(new BoundList { Height = 250, Scrollable = ScrollableOption.Vertical })
+                                                    .ForceSelection(true)
+                                                    .TypeAhead(false)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .Store(
+                                                            X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(
+                                                                        Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                            .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                                            )
+                                                                        )
+                                                                .Proxy(Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadSupplierBySite", "Fournisseur"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                )
+                                                                .Parameters
+                                                              (
+                                                                   ps => { ps.Add(new StoreParameter("siteID", "App.SiteVolumeCropYearToDateID.getValue()", ParameterMode.Raw)); }
+                                                              )
+                                                ),
+                                            X.Button().ID("btnRefreshVolumeCropYearToDate").IconCls("action_refresh_01").Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh).MarginSpec("0 0 0 10").Border(false)
+                                                        .DirectEvents(de =>
+                                                        {
+                                                            de.Click.Url = Url.Action("onRefreshVolumeCropYearToDate");
+                                                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Value = "#{CropYearSuppliersVolume}.getValue()", Mode = ParameterMode.Raw });
+                                                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodStart", Value = "#{TxtPeriodStartSupplierVolume}.getRawValue()", Mode = ParameterMode.Raw });
+                                                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodEnd", Value = "#{TxtPeriodEndSupplierVolume}.getRawValue()", Mode = ParameterMode.Raw });
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSite", Value = "#{SiteVolumeCropYearToDateID}.getValue()", Mode = ParameterMode.Raw });
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemFournisseur", Value = "#{cmbVolumeFournisseurID}.getValue()", Mode = ParameterMode.Raw });
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "storeID", Value = "#{storeListeSupplierVolume}.storeId", Mode = ParameterMode.Raw });
+                                                            de.Click.EventMask.ShowMask = true;
+                                                            de.Click.Success = "SetCriteriaTitle(App.cmbVolumeFournisseurID.rawValue);";
+                                                        })
+
+
+                                                ),
+                                X.GridPanel()
+                                    .Layout(LayoutType.Fit).ID("grpListeSupplierVolume").Region(Region.Center).ForceFit(false).Border(true).AllowDeselect(true)
+                                    .Store(
+                                            X.StoreFor<Tms.Classes.Shared.VolumeCropYearToDate>().ID("storeListeSupplierVolume").AutoLoad(true)
+                                                .Proxy(
+                                                        X.AjaxProxy()
+                                                            .Url(
+                                                                    Url.Action("GetVolumeCropYearToDate")
+                                                                    )
+                                                            .Reader(
+                                                                        X.JsonReader()
+                                                                            .RootProperty("data")
+                                                                    )
+                                                )
+                                                .Parameters(ps =>
+                                                {
+                                                    //ps.Add(new StoreParameter("ItemCampagne", "#{CropYearSuppliersVolume}.getValue()", ParameterMode.Raw));
+                                                    //ps.Add(new StoreParameter("ItemPeriodStart", "#{TxtPeriodStartSupplierVolume}.getRawValue()", ParameterMode.Raw));
+                                                    //ps.Add(new StoreParameter("ItemPeriodEnd", "#{TxtPeriodEndSupplierVolume}.getRawValue()", ParameterMode.Raw));
+                                                    ps.Add(new StoreParameter("ItemFournisseur", "#{cmbVolumeFournisseurID}.getValue()", ParameterMode.Raw));
+                                                    ps.Add(new StoreParameter("ItemSite", "#{SiteVolumeCropYearToDateID}.getValue()", ParameterMode.Raw));
+                                                }
+                                                )
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Load.Fn = "LoadSupplierVolume";
+                                                }
+                                                    )
+                                                )
+                                        .ColumnModel
+                                        (
+                                                    Html.X().Column().Text("").DataIndex("Designation").Flex(1).Hideable(false).Sortable(false),
+                                                    Html.X().Column().Text("Total Stock").DataIndex("TotalStockString").Flex(1).Hideable(false).Sortable(false).EmptyCellText("0"),
+                                                    Html.X().Column().Text("A Quai").DataIndex("AtGateAsString").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().Column().Text("En Cours").DataIndex("InProcessAsString").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().Column().Text("Accepté").DataIndex("AcceptedAsString").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().Column().Text("Conventionnel").DataIndex("ConventionalAsString").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().Column().Text("Certification").DataIndex("CertifiedAsString").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().Column().Text("Refoulé").DataIndex("RejectedAsString").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().Column().Text("Refoulé (%)").DataIndex("RejectedPr").Flex(1).Hideable(false).EmptyCellText("0").Sortable(false),
+                                                    Html.X().NumberColumn().Text("Total Stock").DataIndex("TotalStock").Hideable(false).Flex(1).Format("0,000").Hidden(true).Sortable(false),
+                                                    Html.X().NumberColumn().Text("A quai").DataIndex("AtGate").Flex(1).Format("0,000").Hidden(true).Hideable(false).Sortable(false),
+                                                    Html.X().NumberColumn().Text("En cours").DataIndex("InProcess").Flex(1).Format("0,000").Hidden(true).Hideable(false).Sortable(false),
+                                                    Html.X().NumberColumn().Text("Accepté").DataIndex("Accepted").Flex(1).Format("0,000").Hidden(true).Hideable(false).Sortable(false),
+                                                    Html.X().NumberColumn().Text("Conventionnel").DataIndex("Conventional").Flex(1).Format("0,000").Hidden(true).Hideable(false).Sortable(false),
+                                                    Html.X().NumberColumn().Text("Certification").DataIndex("Certified").Flex(1).Format("0,000").Hidden(true).Hideable(false).Sortable(false),
+                                                    Html.X().NumberColumn().Text("Refoulé").DataIndex("Rejected").Flex(1).Format("0,000").Hidden(true).Hideable(false).Sortable(false)
+                                        ),
+                //End
+                X.Panel()
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .MarginSpec("5 0 5 0")
+                    .Items(
+    #region Pie Accepte/rejeted
+                                                        X.Panel()
+                                                            .Flex(1)
+                                                            .Border(true)
+                                                            .Height(300)
+                                                            .Margin(2)
+                                                            .Layout(LayoutType.Fit)
+                                                            .Items(
+                                                                    X.PolarChart()
+                                                                        .ID("PieSupplierVolumeAcRj")
+                                                                        .Shadow(true).InsetPadding(10).InnerPadding(20).LegendConfig(X.ChartLegend().Dock(Dock.Right))
+                                                                        .Store(
+                                                                                X.Store()
+                                                                                    .ID("storePieSupplierVolumeAcRj")
+                                                                                    .AutoLoad(false)
+                                                                                    .Data(Model)
+                                                                                    .Model(
+                                                                                            X.Model()
+                                                                                            .Fields("Libelle", "Total")
+                                                                                            )
+                                                                                    .Proxy(
+                                                                                            X.AjaxProxy()
+                                                                                                .Reader(
+                                                                                                        Html.X().JsonReader().RootProperty("data")
+                                                                                                        )
+                                                                                            )
+                                                                                )
+                                                                        .Interactions(
+                                                                                        X.ItemHighlightInteraction(),
+                                                                                        X.RotateInteraction()
+                                                                                        )
+                                                                        .Series(
+                                                                                    X.PieSeries()
+                                                                                        .AngleField("Total")
+                                                                                        .ShowInLegend(true)
+                                                                                        .Donut(0)
+                                                                                        .HighlightMargin(10)
+                                                                                        .Label(
+                                                                                                X.ChartLabel()
+                                                                                                    .Field("Libelle")
+                                                                                                    .Display(SeriesLabelDisplay.Rotate)
+                                                                                                    .FontSize("18").FontFamily("Arial")
+                                                                                                    .Renderer(r => r.Fn = "SetPieChartLabelInnerCanevas")
+                                                                                            )
+                                                                                    //.Tooltip(
+                                                                                    //                X.ChartTip()
+                                                                                    //                    .TrackMouse(true)
+                                                                                    //                    .Width(140)
+                                                                                    //                    .Height(28)
+                                                                                    //                    .Renderer(r => r.Fn = "tipRendererSupplierChartAcRj")
+                                                                                    //                    )
+
+                                                                                    )
+                                                                        ),
+    #endregion
+
+                            // Campagne To Date Pie Ac RJ
+                            X.Panel()
+                                .Flex(1)
+                                .Border(true)
+                                .Height(300)
+                                .Margin(2)
+                                .Layout(LayoutType.Fit)
+                                .Items(
+                                        X.PolarChart()
+                                            .ID("PieSupplierVolumeCrCv")
+                                            .Shadow(true).InsetPadding(10).InnerPadding(20).LegendConfig(X.ChartLegend().Dock(Dock.Right))
+                                            .Store(
+                                                    X.Store()
+                                                        .ID("storePieSupplierVolumeCrCv")
+                                                        .AutoLoad(false)
+                                                        .Data(Model)
+                                                        .Model(
+                                                                X.Model()
+                                                                .Fields("Libelle", "Total")
+                                                                )
+                                                        .Proxy(
+                                                                X.AjaxProxy()
+                                                                    .Reader(
+                                                                            Html.X().JsonReader().RootProperty("data")
+                                                                            )
+                                                                )
+                                                    )
+                                            .Interactions(
+                                                            X.ItemHighlightInteraction(),
+                                                            X.RotateInteraction()
+                                                            )
+                                            .Series(
+                                                        X.PieSeries()
+                                                            .AngleField("Total")
+                                                            .ShowInLegend(true)
+                                                            .Donut(0)
+                                                            .HighlightMargin(10)
+                                                            .Label(
+                                                                    X.ChartLabel()
+                                                                        .Field("Libelle")
+                                                                        .Display(SeriesLabelDisplay.Rotate)
+                                                                        .FontSize("18").FontFamily("Arial")
+                                                                        .Renderer(r => r.Fn = "SetPieChartLabelInnerCanevas")
+                                                                )
+                                                        //.Tooltip(
+                                                        //                X.ChartTip()
+                                                        //                    .TrackMouse(true)
+                                                        //                    .Width(140)
+                                                        //                    .Height(28)
+                                                        //                    .Renderer(r => r.Fn = "tipRendererSupplierChartCrCv")
+                                                        //                    )
+
+                                                        )
+                                            )
+                                    ),
+                            // ENd Campagne To Date Pie Ac RJ
+
+
+                            //Progress Bar and Bars
+                            X.Panel()
+                                .Flex(1)
+                                .Height(300)
+                                .Border(true)
+                                .MarginSpec("0 0 5 0")
+                                .Layout(LayoutType.Fit)
+                                .Items(
+                                        X.CartesianChart()
+                                            .ID("Chartline1")
+                                            //.Title("Volume Progress")
+                                            .StyleSpec("background:#fff;")
+                                            .Shadow(true)
+                                            .InnerPadding("20")
+                                            .StandardTheme(StandardChartTheme.Category1)
+                                            .LegendConfig(X.ChartLegend().Dock(Dock.Right))
+                                            .Store(
+                                                    X.Store()
+                                                        .ID("storeSupplierVolumeEvolution")
+                                                        .AutoLoad(true)
+                                                        .Data(Model)
+                                                        .Model(
+                                                                X.Model()
+                                                                .Fields("Designation", "Accepted", "Rejected")
+                                                                )
+                                                        .Proxy(
+                                                                X.AjaxProxy()
+                                                                    .Url(
+                                                                            Url.Action("GetVolumeCropYearToDateProgress")
+                                                                 )
+                                                        .Reader(
+                                                                    X.JsonReader()
+                                                                        .RootProperty("data")
+                                                                    )
+                                                        ).Parameters(ps =>
+                                                        {
+                                                            //ps.Add(new StoreParameter("ItemCampagne", "#{CropYearSuppliersVolume}.getValue()", ParameterMode.Raw));
+                                                            //ps.Add(new StoreParameter("ItemPeriodStart", "#{TxtPeriodStartSupplierVolume}.getRawValue()", ParameterMode.Raw));
+                                                            //ps.Add(new StoreParameter("ItemPeriodEnd", "#{TxtPeriodEndSupplierVolume}.getRawValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemFournisseur", "#{cmbVolumeFournisseurID}.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemSite", "#{SiteVolumeCropYearToDateID}.getValue()", ParameterMode.Raw));
+                                                        }
+                                                        )
+                                                    )
+                                            .Axes(
+                                                    X.NumericAxis()
+                                                        .Position(Position.Left)
+                                                        .Fields(new string[] { "Accepted", "Rejected" })
+                                                        //.Title("Number of Hits")
+                                                        .MinorTickSteps(50)
+                                                        //.Minimum(0)
+                                                        //.Maximum(2000)
+                                                        .GridConfig(
+                                                                        X.AxisGrid()
+                                                                            .Odd(
+                                                                                    X.Sprite()
+                                                                                        .Opacity(1)
+                                                                                        .FillStyle("#ddd")
+                                                                                        .StrokeStyle("#bbb")
+                                                                                        .LineWidth(0.5)
+                                                                                        )
+                                                                            ),
+                                                    X.CategoryAxis()
+                                                        .Position(Position.Bottom)
+                                                        .Fields("Designation")
+                                                //.Title("Month of the Year")
+                                                )
+                                            .Series(
+                                                        X.LineSeries()
+                                                            .XField("Designation")
+                                                            .YField("Accepted")
+                                                            .HighlightConfig(
+                                                                                X.Sprite().Scaling(2)
+                                                                                )
+                                                            .Marker(
+                                                                        X.Sprite()
+                                                                            .SpriteType(SpriteType.Cross)
+                                                                            .Radius(4)
+                                                                            .LineWidth(0)
+                                                                            ),
+
+                                                        X.LineSeries()
+                                                            .XField("Designation")
+                                                            .YField("Rejected")
+                                                            .Smooth(3)
+                                                            .HighlightConfig(
+                                                                                X.Sprite()
+                                                                                .Radius(7)
+                                                                                )
+                                                            .Marker(
+                                                                        X.CircleSprite()
+                                                                            .Radius(4)
+                                                                            .LineWidth(0)
+                                                                            )
+
+                                                )
+                                            .Interactions(i => i.Add(X.ItemHighlightInteraction())
+                                            )
+                            )
+
+
+
+                            )
+
+            ),
+    #endregion
+    #region 2 FinanCing
+        X.FormPanel()
+            .ID("FinancingCropYearToDatePanel")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Financement ( Campagne To Date )" })
+            .Region(Region.North)
+            .Scrollable(ScrollableOption.Vertical)
+            .Collapsed(false)
+            .Collapsible(true)
+            .BodyPadding(5)
+            .HeaderConfig(new PanelHeader { Cls = "DshPanelHeaderColor" })
+            .Frame(true)
+            .Height(500)
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items(
+                    X.Panel()
+                    .BodyPadding(5)
+                    .Layout(LayoutType.VBox)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items(
+                    X.Panel()
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("5 10 10 0")
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                        .Items(
+                                //X.ComboBox()
+                                //    .ID("CropYearSupplierVolumeID")
+                                //    .FieldLabel("Campagne")
+                                //    .DisplayField("Designation")
+                                //    .ValueField("ID")
+                                //    .LabelAlign(LabelAlign.Right)
+                                //    .ForceSelection(true)
+                                //    .TypeAhead(false)
+                                //    .Width(220)
+                                //    .QueryMode(DataLoadMode.Local)
+                                //    .TriggerAction(TriggerAction.All)
+                                //    .Store(
+                                //            X.Store()
+                                //                .AutoLoad(true)
+                                //                .Model(
+                                //                        X.Model()
+                                //                            .IDProperty("ID")
+                                //                            .Fields(
+                                //                                    new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" },
+                                //                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                //                            )
+                                //                        )
+                                //                .Proxy(
+                                //                        X.AjaxProxy()
+                                //                            .Url(
+                                //                                    Url.Action("LoadCampagne", "Campagne")
+                                //                                    )
+                                //                            .Reader(
+                                //                                        Html.X().JsonReader().RootProperty("data")
+                                //                                        )
+                                //                )
+                                //            )
+                                //    .DirectEvents(de =>
+                                //    {
+                                //        de.Select.Url = Url.Action("SetPeriod");
+                                //        de.Select.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "ItemCampagne", Value = "#{CropYearSupplierVolumeID}.getValue()" });
+                                //        de.Select.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "IdStart", Value = "#{TxtPeriodStartVolumeSupplierFinancing}.id" });
+                                //        de.Select.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "IdEnd", Value = "#{TxtPeriodEndVolumeSupplierFinancing}.id" });
+                                //        de.Select.EventMask.ShowMask = true;
+                                //    }
+                                //    ),
+                                X.ComboBox()
+                                                    .ID("SiteVolumeFinancingID")
+                                                    .FieldLabel("Site")
+                                                    .DisplayField("Nom")
+                                                    .ValueField("ID")
+                                                    .Width(300)
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .TypeAhead(false)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .ForceSelection(true)
+                                                    //.ReadOnly(true)
+                                                    .Value((int)ViewBag.SiteParDefaut)
+                                                    .Store(
+                                                                X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(
+                                                                        Html.X().Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                    )
+                                                                .Proxy(
+                                                                            Html.X().AjaxProxy()
+                                                                            .Url(Url.Action("LoadSiteAll", "Site"))
+                                                                .Reader(
+                                                                            Html.X().JsonReader().RootProperty("data")
+                                                                            )
+                                                                )
+                                                        )
+                                                        .Listeners(
+                                                                ls =>
+                                                                {
+                                                                    ls.Select.Handler = "if (App.SiteVolumeFinancingID.value) { App.cmbVolumeFinancingFournisseurID.clearValue(); App.cmbVolumeFinancingFournisseurID.getStore().load(); };";
+                                                                }
+                                                            ),
+                                X.ComboBox()
+                                    .ID("cmbVolumeFinancingFournisseurID")
+                                    .FieldLabel("Fournisseur")
+                                    .DisplayField("NameAndCode")
+                                    .ValueField("ID")
+                                    .Width(450)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .ListConfig(new BoundList { Height = 250, Scrollable = ScrollableOption.Vertical })
+                                    .ForceSelection(true)
+                                    .TypeAhead(false)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .Store(
+                                            X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields(
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                            )
+                                                        )
+                                                .Proxy(Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadSupplierBySite", "Fournisseur"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                 .Parameters
+                                                (
+                                                    ps => { ps.Add(new StoreParameter("siteID", "App.SiteVolumeFinancingID.getValue()", ParameterMode.Raw)); }
+                                                )
+                                                ),
+                                //X.FieldContainer().FieldLabel("").LabelAlign(LabelAlign.Right)
+                                //                .Layout(LayoutType.HBox)
+                                //                .MarginSpec("0 10 0 0")
+                                //                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                //                .FieldDefaults(ds =>
+                                //                {
+                                //                    ds.LabelWidth = 50;
+                                //                })
+                                //                .Items(
+                                //                        X.DateField().ID("TxtPeriodStartVolumeSupplierFinancing").FieldLabel("Du").Width(200).LabelAlign(LabelAlign.Right).Text("")
+                                //                        ,
+                                //                        X.DateField().ID("TxtPeriodEndVolumeSupplierFinancing").FieldLabel("Au").Width(200).LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToShortDateString())
+                                //                    ),
+                                X.Button()
+                                    .ID("btnRefreshFinancing")
+                                    .IconCls("action_refresh_01")
+                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                    .MarginSpec("0 0 0 10")
+                                    .Border(false)
+                                    //.Cls("ButtonStyle")
+                                    .DirectEvents(de =>
+                                    {
+                                        de.Click.Url = Url.Action("onRefreshFinancingStatus");
+                                        //de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Value = "#{CropYearSupplierVolumeID}.getValue()", Mode = ParameterMode.Raw });
+                                        //de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodStart", Value = "#{TxtPeriodStartVolumeSupplierFinancing}.getRawValue()", Mode = ParameterMode.Raw });
+                                        //de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodEnd", Value = "#{TxtPeriodEndVolumeSupplierFinancing}.getRawValue()", Mode = ParameterMode.Raw });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemFournisseur", Value = "#{cmbVolumeFinancingFournisseurID}.getValue()", Mode = ParameterMode.Raw });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "storeID", Value = "#{storeSupplierVolumeFinancingStatus}.storeId", Mode = ParameterMode.Raw });
+                                        de.Click.EventMask.ShowMask = true;
+                                        de.Click.Success = "SetCriteriaTitleFin(App.cmbVolumeFinancingFournisseurID.rawValue);";
+                                    }
+                                        )
+                                ),
+                    X.GridPanel()
+                        .ID("grpSupplierVolumeFinancingStatus")
+                        .Layout(LayoutType.Fit)
+                        .Region(Region.Center)
+                        .MarginSpec("0 0 5 0")
+                        .ForceFit(false)
+                        .EmptyText("No Data Found")
+                        .Border(true).AllowDeselect(true)
+                        .Store(
+                                X.StoreFor<Tms.Classes.Shared.FinancingCropYearToDate>()
+                                    .ID("storeSupplierVolumeFinancingStatus")
+                                    .AutoLoad(true)
+                                    .Proxy(
+                                            X.AjaxProxy()
+                                                .Url(Url.Action("GetFinancingStatus"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(ps =>
+                                    {
+                                        //ps.Add(new StoreParameter("ItemPeriodStart", "#{TxtPeriodStartVolumeSupplierFinancing}.getRawValue()", ParameterMode.Raw));
+                                        //ps.Add(new StoreParameter("ItemPeriodEnd", "#{TxtPeriodEndVolumeSupplierFinancing}.getRawValue()", ParameterMode.Raw));
+                                        //ps.Add(new StoreParameter("ItemCampagne", "#{CropYearSupplierVolumeID}.getValue()", ParameterMode.Raw));
+                                        ps.Add(new StoreParameter("ItemSite", "#{SiteVolumeFinancingID}.getValue()", ParameterMode.Raw));
+                                        ps.Add(new StoreParameter("ItemFournisseur", "#{cmbVolumeFinancingFournisseurID}.getValue()", ParameterMode.Raw));
+
+                                    }
+                                    )
+                                    .Listeners(ls =>
+                                    {
+                                        //ls.Load.Handler = "#{storeListeDshVolumeTodayChart}.load();";
+                                        ls.Load.Fn = "LoadFinancingChartOfSupplier";
+                                    })
+                        )
+                        .ColumnModel
+                        (
+                            Html.X().Column().Text("").DataIndex("Designation").Flex(1).Hideable(false).Sortable(false),
+                            Html.X().NumberColumn().Text("Alloué").DataIndex("Allocated").Flex(1).Format("0,000").Hideable(false).Sortable(false),
+                            Html.X().NumberColumn().Text("Payé").DataIndex("Recovered").Flex(1).Format("0,000").Hideable(false).Sortable(false),
+                            Html.X().NumberColumn().Text("Solde").DataIndex("Balance").Flex(1).Format("0,000").Hideable(false).Sortable(false),
+                            Html.X().NumberColumn().Text("Mec").DataIndex("Saving").Flex(1).Format("0,000").Hideable(false).Sortable(false),
+                            Html.X().NumberColumn().Text("Risque").DataIndex("Exposure").Flex(1).Format("0,000").Hideable(false).Sortable(false)
+                        ),
+                    X.Panel()
+                        .Border(true)
+                        .Height(400)
+                        .MarginSpec("0 0 5 0")
+                        .Layout(LayoutType.Fit)
+                        .Flex(1)
+                        .Items(
+                                X.PolarChart()
+                                    .ID("ChartSupplierVolumeFinancingToday")
+                                    .Shadow(true)
+                                    .InsetPadding(10)
+                                    .InnerPadding(20)
+                                    .LegendConfig(
+                                                    X.ChartLegend().Dock(Dock.Right))
+                                    .Store(
+                                            X.Store()
+                                                .AutoLoad(false)
+                                                .Data(Model)
+                                                .ID("storeListeFinancingChartSupplier")
+                                                .Model(X.Model().Fields("Libelle", "Total"))
+                                                .Proxy(
+                                                        X.AjaxProxy()
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                        )
+                                    .Interactions(X.ItemHighlightInteraction(), X.RotateInteraction())
+                                    .Series(
+                                            X.PieSeries()
+                                                .AngleField("Total")
+                                                .ShowInLegend(true)
+                                                .Donut(0)
+                                                .HighlightMargin(10)
+                                                .Label(
+                                                            X.ChartLabel()
+                                                                .Field("Libelle")
+                                                                .Display(SeriesLabelDisplay.Rotate)
+                                                                .FontSize("18")
+                                                                .FontFamily("Arial")
+                                                                .Renderer(r => r.Fn = "SetPieChartLabelInnerCanevas")
+                                                                )
+                                            //.Tooltip(
+                                            //            X.ChartTip()
+                                            //                .TrackMouse(true)
+                                            //                .Width(180)
+                                            //                .Height(28)
+                                            //                .Renderer(r => r.Fn = "tipRendererChartFinancingSupplier")
+                                            //                )
+                                            )
+
+                            )
+
+        //End Left PAnel
+
+        )
+    )
+
+
+    #endregion
+
+    )
+    )
+</form>

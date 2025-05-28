@@ -1,0 +1,700 @@
+﻿
+@model Tms.Classes.Business.Sites.PrefinancementAgenceViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    //double tauxDevise = (new Tms.Classes.Shared.Parametres(0).ValeurTauxEuro);
+    //int TypeApc = (new Tms.Classes.Shared.Parametres(0).PrefinancementTypeApc);
+    //int TypeBlank = (new Tms.Classes.Shared.Parametres(0).PrefinancementTypeBlank);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 30px;
+        min-height: 60px !important;
+    }
+    #txtAmount-labelTextEl, #txtAmountEuro-labelTextEl {
+        font-weight: bold;
+    }
+    #txtAmount-inputEl, #txtAmountEuro-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+
+    #txtAmountTotal-labelTextEl {
+        font-weight: bold;
+    }
+
+    #txtAmountTotal-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+
+    var Detail =
+    {
+        resetButtons: function () {
+
+            App.btnEditPaiementCheque.disable();
+            App.btnRemovePaiementCheque.disable();
+
+            if (App.rowSelectionPaiementChequeAgence.hasSelection()) {
+
+                App.btnEditPaiementCheque.enable();
+                App.btnRemovePaiementCheque.enable();
+            }
+
+
+        }
+
+    }
+
+</script>
+@(
+
+      X.Window()
+            .ID("PrefinancementAgence_CashDisbursement")
+            .Width(1000)
+            .Modal(true)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(530)
+            .BodyPadding(5)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Y(5)
+            .Title("Expenses")
+            .Items
+            (
+            X.FormPanel()
+           .FieldDefaults(d => d.ReadOnly = true)
+
+            .Items(
+                X.Panel()
+                    .Frame(true)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenSH1")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden()
+                                        .ID("pfhiddenExecMode")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                        X.Hidden()
+                                            .ID("pfhiddenRowversion")
+                                            .Value(Model._PrefinancementAgence.RowVersionKey)
+                                            ,
+
+                                        X.Hidden()
+                                            .ID("txtPrefinancementAgenceID")
+                                            .Value(Model._PrefinancementAgence.ID)
+                                            ,
+                                            //X.Hidden().ID("PaymentPermissionRemove").Value(ViewData["PaymentPermissionRemove"]).ReadOnly(true),
+                                            //X.Hidden().ID("PaymentPermissionEdit").Value(ViewData["PaymentPermissionEdit"]).ReadOnly(true),
+                                            X.Panel()
+                                             .ID("firstColSH")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(1)
+                                             .Items
+                                             (
+                                                 X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Number")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+
+                                                             X.TextField()
+                                                             .ID("txtNumber")
+                                                             .ReadOnly(true)
+                                                             .Width(340)
+                                                             .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.Numero : string.Empty)
+
+
+                                                ),
+                                                 X.ComboBox()
+                                                      .ID("_cmbSite")
+                                                      .FieldLabel("Site")
+                                                      .DisplayField("Nom")
+                                                      .ValueField("ID")
+                                                      .MatchFieldWidth(false)
+                                                      .ListConfig(new BoundList { MinWidth = 300 })
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .TypeAhead(false)
+                                                      .QueryMode(DataLoadMode.Local)
+                                                      .TriggerAction(TriggerAction.All)
+                                                      .ForceSelection(true)
+                                                      .Value(Model._PrefinancementAgence.Site.ID)
+                                                      .Store(
+                                                              X.Store()
+                                                              //.Listeners(l => l.Load.Handler = "App._cmbSite.setValue(App._cmbSite.getStore().getAt(0));")
+                                                              .AutoLoad(true)
+                                                              .Model(
+                                                                      Html.X().Model()
+                                                                      .IDProperty("ID")
+                                                                      .Fields(
+                                                                                  new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                  new ModelField("Nom", ModelFieldType.String) { Mapping = "Designation" }
+                                                                              )
+                                                                  )
+                                                      .Proxy(
+                                                                  Html.X().AjaxProxy()
+                                                                  .Url(Url.Action("LoadSiteByAccess", "Site"))
+                                                      .Reader(
+                                                                  Html.X().JsonReader().RootProperty("data")
+                                                                  )
+                                                      )
+                                                  ),
+                                                X.ComboBox()
+                                                 .ID("_cmbCampagne")
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Campagne")
+                                                 .DisplayField("Designation")
+                                                 .ValueField("Designation")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._PrefinancementAgence.Campagne)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                   .AutoLoad(false)
+                                                   .Model
+                                                   (
+                                                       Html.X().Model()
+                                                      .IDProperty("Designation")
+                                                      .Fields
+                                                      (
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                      )
+                                                   )
+                                                   .Proxy
+                                                   (
+                                                     Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                   )
+                                                ),
+
+                                                X.DateField()
+                                                    .ID("txtDateCP")
+                                                    .Text(Model._PrefinancementAgence.Date.ToShortDateString())
+                                                    //.Value(DateTime.Now.ToString())
+                                                    .AllowBlank(false)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .MarginSpec("0 10 0 0")
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .FieldLabel("Date")
+
+
+
+                                 //1stCol
+                                 ),
+                                 X.Panel()
+                                 .ID("secondColSH")
+                                 .Layout(LayoutType.Form)
+                                 .Flex(1)
+                                 .Items
+                                 (
+
+
+                                            //X.TextField()
+                                            //.FieldLabel(" Tonnage (Kg)")
+                                            //.LabelAlign(LabelAlign.Right)
+                                            //.ID("txtTonnage")
+                                            //.ReadOnly((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update && (string)ViewData["type"] == "Blank") || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                            //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Prefinancement.TonnageAsString : string.Empty)
+                                            //.Width(170)
+                                            //.Listeners(ls => {
+                                            //    ls.Change.Fn = "CalculAmountTonnage";
+                                            //    ls.Blur.Handler = "if (App.txtTonnage.value && !App.txtTonnage.readOnly) {#{txtTonnage}.setValue(formatNumber(#{txtTonnage}.getValue()))}";
+                                            //    ls.Focus.Handler = "if (App.txtTonnage.value && !App.txtTonnage.readOnly) { #{txtTonnage}.setRawValue(unformatNumber(#{txtTonnage}.getValue()));}";
+
+                                            //})
+                                            // ,
+
+                                            // X.FieldContainer().Layout(LayoutType.HBox)
+                                            //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                            //    .FieldLabel("Paid (Kg)/ Prix (CFA)")
+                                            //    .LabelAlign(LabelAlign.Right)
+                                            //    .Items(
+                                            //                 X.TextField()
+                                            //                 .ID("txtPaid")
+                                            //                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Prefinancement.TonnagePayeAsString : string.Empty)
+                                            //                 .MaskRe("[0123456789]")
+                                            //                 .Width(160)
+                                            //                 .MarginSpec("0 10 0 0")
+                                            //                 .ReadOnly((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update && (string)ViewData["type"] == "Blank") || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+
+                                            //                 .Listeners(ls =>
+                                            //                 {
+                                            //                     ls.Change.Fn = "CalculAmountPaid";
+                                            //                     ls.Blur.Handler = "if (App.txtPaid.value && !App.txtPaid.readOnly) {#{txtPaid}.setValue(formatNumber(#{txtPaid}.getValue()))}";
+                                            //                     ls.Focus.Handler = "if (App.txtPaid.value && !App.txtPaid.readOnly) { #{txtPaid}.setRawValue(unformatNumber(#{txtPaid}.getValue()));}";
+
+                                            //                 })
+
+                                            //                 ,
+                                            // X.TextField()
+                                            // .ID("txtPrice")
+                                            // .Width(160)
+                                            //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.PrixAsString : string.Empty)
+
+                                            // .ReadOnly((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update && (string)ViewData["type"] == "Blank") || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew  ? true : false)
+
+                                            // .Listeners(ls => {
+                                            //     ls.Change.Fn = "CalculAmountPrice";
+                                            //     ls.Blur.Handler = "if (App.txtPrice.value && !App.txtPrice.readOnly) {#{txtPrice}.setValue(formatNumber(#{txtPrice}.getValue()))}";
+                                            //     ls.Focus.Handler = "if (App.txtPrice.value && !App.txtPrice.readOnly) { #{txtPrice}.setRawValue(unformatNumber(#{txtPrice}.getValue()));}";
+
+                                            // })
+
+                                            //),
+
+
+                                            X.TextField()
+                                             .ID("txtAmount")
+                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.MontantAsString : string.Empty)
+                                             .FieldLabel("Montant (CFA)")
+                                             .AllowBlank(false)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .LabelAlign(LabelAlign.Right)
+                                             //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? true : false)
+
+                                             .Listeners
+                                                 (
+                                                   ls =>
+                                                   {
+                                                       //ls.Change.Fn = "ConvertAmount";
+                                                       //ls.Blur.Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) {#{txtAmount}.setValue(formatNumber(#{txtAmount}.getValue()))}";
+                                                       //ls.Focus.Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) { #{txtAmount}.setRawValue(unformatNumber(#{txtAmount}.getValue()));}";
+
+                                                   }
+
+                                                 )
+                                            ,
+                                             //X.TextField()
+                                             // .ID("txtAmountEuro")
+                                             // .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Prefinancement.MontantEuroAsString : string.Empty)
+                                             // .FieldLabel("Amount (Euro)")
+                                             // .AllowBlank(false)
+                                             // .IndicatorCls("IndicatorRedStar")
+                                             // .IndicatorText("*")
+                                             // .LabelAlign(LabelAlign.Right)
+                                             // .ReadOnly(true)
+                                             // .Listeners
+                                             //     (
+                                             //       ls =>
+                                             //       {
+                                             //           ls.Blur.Handler = "if (App.txtAmountEuro.value && !App.txtAmountEuro.readOnly) {#{txtAmountEuro}.setValue(formatNumber(#{txtAmountEuro}.getValue()))}";
+                                             //           ls.Focus.Handler = "if (App.txtAmountEuro.value && !App.txtAmountEuro.readOnly) { #{txtAmountEuro}.setRawValue(unformatNumber(#{txtAmountEuro}.getValue()));}";
+
+                                             //       }
+
+                                             //     )
+                                             //,
+
+
+
+                                             X.TextArea()
+                                              .ID("txtComment")
+                                              .FieldLabel("Commentaire")
+                                              .LabelAlign(LabelAlign.Right)
+                                              .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.Description : string.Empty)
+
+
+                                 //2ndCol
+                                 )
+
+
+                              //End first panel
+                              ),
+                        X.Panel()
+                       .Frame(false)
+                        .Border(false)
+                        .ID("pnlFlexEvenSH2")
+                        .Layout(LayoutType.VBox)
+                        .MarginSpec("10 0 5 0")
+
+                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+
+                        .Items
+                        (
+                        X.Label().Text("Disbursements").StyleSpec("Font-size:15px; text-decoration: underline ").MarginSpec("0 0 0 10"),
+                            X.Panel()
+                            .Height(39)
+                            //.Width(515)
+                            .Layout(LayoutType.Fit)
+                            .TopBar
+                             (
+                                new Toolbar()
+                                {
+                                    Items =
+                                {
+
+                                    X.Button()
+                                    .ID("btnAddPaiementCheque")
+                                    .IconCls("glyphicon-plus red")
+                                    .Text("Ajouter")
+                                    .Cls("ButtonStyle")
+                                    .Border(false)
+                                    .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                    .Disable(true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                        de.Click.Url = Url.Action("OnAdd","PaiementChequeAgence");
+                                        de.Click.Success = "App.PaiementChequeAgence_CashDisbursement.setTitle('Cash Disbursement : Add')";
+                                        de.Click.EventMask.ShowMask = true;
+
+
+                                      }
+                                    )
+                                    ,
+
+
+                                     X.ToolbarSeparator(),
+
+                                    X.Button()
+                                    .ID("btnEditPaiementCheque")
+                                    .IconCls("action_modify_02")
+                                    .Border(false)
+                                    .Cls("ButtonStyle")
+                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                    .Disabled(true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                        de.Click.Url = Url.Action("OnEdit","PaiementChequeAgence");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailPaiementChequeAgence}.getSelectionModel().getSelection()[0].data" });
+                                        de.Click.Success = "App.PaiementChequeAgence_CashDisbursement.setTitle('Cash Disbursement : Edit')";
+                                        de.Click.EventMask.ShowMask = true;
+
+                                      }
+                                    ),
+
+
+                                    X.ToolbarSeparator(),
+
+                                    X.Button()
+                                    .ID("btnRemovePaiementCheque")
+                                    .IconCls("glyphicon glyphicon-minus-sign red")
+                                    .Border(false)
+                                    .Cls("ButtonStyle")
+                                    .Text("Retirer")
+                                    .Disabled(true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                        de.Click.Url = Url.Action("OnRemove","PaiementChequeAgence");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailPaiementChequeAgence}.getSelectionModel().getSelection()[0].data" });
+                                        de.Click.ExtraParams.Add(new StoreParameter { Name = "ItemCount", Mode = ParameterMode.Raw, Value = "#{grpDetailPaiementChequeAgence}.getRowsValues().length" });
+                                        de.Click.EventMask.ShowMask = true;
+                                        de.Click.Confirmation.ConfirmRequest = true;
+                                        de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Cash Disbursement  : Retirer'; config.confirmation.message = 'Do you want to remove this item? ';";
+                                      }
+                                    )
+                                    ,
+                                    X.ToolbarSeparator(),
+                                    X.Label()
+                                        .ID("txtNombrePaiement")
+                                        .Text(""),
+                                    X.ToolbarSeparator(),
+                                    X.TextField()
+                                        .ID("txtAmountTotal")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        //.FieldLabel("Tot(CFA)")
+                                        .Width(200)
+                                        .ReadOnly(true)
+                                        //.LabelWidth(200)
+                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsNetAsString : string.Empty)
+                                                .Listeners(ls =>
+                                                {
+
+                                                    ls.Blur.Handler = "if (App.txtAmountTotal.value && !App.txtAmountTotal.readOnly) {#{txtAmountTotal}.setValue(formatNumber(#{txtAmountTotal}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtAmountTotal.value && !App.txtAmountTotal.readOnly) { #{txtAmountTotal}.setRawValue(unformatNumber(#{txtAmountTotal}.getValue()));}";
+
+                                                })
+
+
+
+                                 }
+                                }
+
+                             ),
+                              X.GridPanel()
+                              .Layout(LayoutType.Fit)
+                              .ID("grpDetailPaiementChequeAgence")
+
+                              .Border(false)
+                              .Frame(true)
+                              .Height(170)
+                              //.Width(515)
+                              .AllowDeselect(true)
+                              .Store
+                              (
+                                X.StoreFor<Tms.Classes.Business.Sites.PaiementChequeAgence>()
+                                .ID("storeListPaiementChequeAgence")
+                                .Proxy
+                                 (
+                                   Html.X().AjaxProxy()
+                                   .Url(Url.Action("LoadListPayment"))
+                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                 )
+                                  .Parameters
+                                 (
+                                    ps =>
+                                    {
+                                        ps.Add(new StoreParameter("ItemExecMode", "#{pfhiddenExecMode}.getValue()", ParameterMode.Raw));
+                                        ps.Add(new StoreParameter("ItemPrefinancementID", "#{txtPrefinancementAgenceID}.getValue()", ParameterMode.Raw));
+                                    }
+                                 )
+                               .Listeners
+                                         (
+                                             l =>
+                                             {
+                                                 l.Add.Handler = "LoadAmountTotal(); App.txtNombrePaiement.setText(App.grpDetailPaiementChequeAgence.getRowsValues().length + ' Disbursement(s)');";
+                                                 l.Load.Handler = "LoadAmountTotal(); App.txtNombrePaiement.setText(App.grpDetailPaiementChequeAgence.getRowsValues().length + ' Disbursement(s)');";
+                                                 l.Update.Handler = "LoadAmountTotal();";
+                                                 l.Remove.Handler = "LoadAmountTotal(); App.txtNombrePaiement.setText(App.grpDetailPaiementChequeAgence.getRowsValues().length + ' Disbursement(s)');";
+
+                                             }
+                                         )
+                               )
+                               .ColumnModel
+                               (
+                                   Html.X().Column().Text("").DataIndex("mIcon").Width(80).Renderer("renderIcon"),
+                                   Html.X().DateColumn().Text("Date").DataIndex("Date").Format("dd/MM/Y").Flex(2),
+                                   Html.X().Column().Text("Montant (CFA)").DataIndex("MontantAsString").Flex(2),
+                                   Html.X().Column().Text("Commentaire").DataIndex("Commentaire").Flex(3)
+
+                               )
+                               .SelectionModel
+                               (
+                                    X.RowSelectionModel()
+                                    .ID("rowSelectionPaiementChequeAgence")
+                                    .Mode(SelectionMode.Single)
+                                    .AllowDeselect(false)
+                               )
+                               .Listeners(l =>
+                               {
+                                   if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                   {
+                                       l.Select.Fn = "Detail.resetButtons";
+                                       l.Deselect.Fn = "Detail.resetButtons";
+
+
+                                   }
+
+                               })
+
+                        //End Panel
+                        )
+
+
+
+                      //End form panel
+                      )
+
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOk")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                    .DirectEvents
+                    (
+
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitCD");
+                            de.Click.ExtraParams.Add(new Parameter { Name = "storeListPaiementChequeAgence", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDetailPaiementChequeAgence.getRowsValues({selectedOnly : false})" });
+                            de.Click.Before = "return validNew(App.PrefinancementAgence_CashDisbursement.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+                    X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                    .ID("BtnApproveOk")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitApproval");
+                            de.Click.Before = "return validNew(App.PrefinancementAgence_CashDisbursement.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ?  "Fermer" : "Annuler")
+                    .Handler("App.PrefinancementAgence_CashDisbursement.doClose()")
+                    .Cls("btncancel")
+
+                //End Button
+                )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Expenses : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = Number(unformatNumber(App.txtAmount.value));
+        
+
+        if(!Ext.isNumeric(Amount) && parseFloat(Amount) < 0 ) {
+            Ext.Msg.show({ title: 'Expenses : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+
+
+        /**Verifiaction d'articles**/
+        if (App.grpDetailPaiementChequeAgence.getRowsValues().length <= 0) {
+            Ext.Msg.show({ title: 'Expenses:  Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please make sure you add payments.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        /**Verification des payments en etat de modification**/
+        if (App.grpDetailPaiementChequeAgence.getRowsValues().length >= 1) {
+            var compteur = 0;
+            for (i = 0; i < App.grpDetailPaiementChequeAgence.getRowsValues().length; i++) {
+                if (App.grpDetailPaiementChequeAgence.getRowsValues()[i].Desactive == 0) {
+                    compteur++;
+
+                }
+            }
+
+            if (compteur == 0) {
+                Ext.Msg.show({ title: 'Expenses: Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Please make sure you add payments.', buttons: Ext.Msg.OK });
+                return false;
+            }
+
+        }
+
+        /******/
+        var AmountPayment =  0;
+        
+        if (App.grpDetailPaiementChequeAgence.getRowsValues().length >= 1) {
+            var compteur = 0;
+            for (i = 0; i < App.grpDetailPaiementChequeAgence.getRowsValues().length; i++) {
+                if (App.grpDetailPaiementChequeAgence.getRowsValues()[i].Desactive == 0) {
+                    AmountPayment = AmountPayment + App.grpDetailPaiementChequeAgence.getRowsValues()[i].Montant;
+
+                }
+            }
+
+        }
+
+        if (AmountPayment > parseFloat(Amount)) {
+            Ext.Msg.show({ title: 'Expenses : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'please check the sum of the payment amounts', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+     var LoadAmountTotal = function () {
+       
+        var amount = parseFloat(App.storeListPaiementChequeAgence.sum('Montant')) || 0;
+        
+        App.txtAmountTotal.setValue(formatNumber(amount));
+
+    };
+
+
+    function formatNumberDecimal(amount) {
+        console.log(amount);
+        amount = thousands_separators(amount.toString().replace(".", ","));
+        console.log(amount);
+        formatted = amount.replace(".", ",");
+
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    }
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var RoundIntSup = function (v) {
+        try {
+                if (v < 1000)
+                {
+                    var valeur = (v / 100);
+                    return RoundInt(valeur)*100;
+                }
+                else
+                {
+                    var valeur = (v / 1000);
+                    return RoundInt(valeur)*1000;
+
+                }
+            
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    
+
+</script>

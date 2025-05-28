@@ -1,0 +1,480 @@
+﻿
+@model Tms.Classes.Business.Sales.FactureFinaleViewModel
+
+
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+<style>
+    .x-table-form-item {
+        margin-bottom: 5px;
+    }
+
+    #txtNetAmount-labelTextEl, #txtGrossAmount-labelTextEl, #txtCommercialInvoice-labelTextEl {
+        font-weight: bold;
+    }
+
+    #txtNetAmount-inputEl, #txtGrossAmount-inputEl, #txtCommercialInvoice-inputEl {
+        text-align: right !important;
+        font-weight: bold !important;
+    }
+
+    #txtNetAmount-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+</style>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript">
+
+
+    var Detail =
+    {
+            resetButtons: function () {
+
+
+            }
+
+
+    }
+
+</script>
+@(
+X.Window()
+    .ID("FactureFinale_Detail")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+    .Width(1100)
+    .Resizable(false)
+    .Height(360)
+    .Title("Facture Finale")
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = ((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult) || (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve)) ? true : false)
+            .Items
+            (
+                X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+                X.Panel()
+                    .Frame(true)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEven")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 5 5 5")
+                    .PaddingSpec("0 15 0 15")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                    .Height(200)
+                    .Items
+                    (
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenID").Value(Model._FactureFinale.ID),
+
+                        X.Panel()
+                            .ID("firstCol")
+                            .Layout(LayoutType.Form)
+                            //.MarginSpec("0 0 0 0")
+                            .Flex(4)
+
+                            .Items
+                            (
+
+                                              X.TextField()
+                                               .ID("txtNumber")
+                                               .FieldLabel("Number")
+                                               .ReadOnly(true)
+                                               .LabelAlign(LabelAlign.Right)
+                                               .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Numero : string.Empty)
+                                               ,
+                                             X.FieldContainer().Layout(LayoutType.HBox)
+                                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                            .FieldLabel("N° Shipment")
+                                            .LabelAlign(LabelAlign.Right)
+                                              .Items
+                                             (
+
+                                               X.TextField()
+                                                    .ID("txtShipmentNumber")
+                                                    .Width(140)
+                                                    .ReadOnly(true)
+                                                    .MarginSpec("0 20 0 0").Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Embarquement.Numero : string.Empty)
+                                                    ,
+                                                        X.Hidden()
+                                                    .ID("txtEmbarquementID")
+                                                    .Hidden(true)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Embarquement.ID : Guid.Empty)
+                                                    ,
+
+                                                    X.Button()
+                                                    .Text("...")
+                                                    .Height(20)
+                                                    .Width(40)
+                                                    .Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .ID("btnSelectShipment")
+                                                    .DirectEvents
+                                                    (
+                                                        de =>
+                                                        {
+                                                            de.Click.Url = Url.Action("OnSelectShipment");
+                                                            de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available shipment')";
+                                                            de.Click.EventMask.ShowMask = true;
+                                                        }
+                                                    )
+
+
+                                                   ),
+                                           X.DateField().ID("dtfInvoiceDate")
+                                            .AllowBlank(false)
+                                            .IndicatorText("*")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .FieldLabel("Date Facture")
+                                            .LabelAlign(LabelAlign.Right)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+
+                                            ,
+
+                                            X.TextField()
+                                               .ID("txtNumberOfBags")
+                                                .FieldLabel("Number Of Bags")
+                                               .ReadOnly(true)
+                                               .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Embarquement.NbreSacsAsString : string.Empty)
+
+                                               ,
+                                             X.TextField()
+                                               .ID("txtQuantity")
+                                               .FieldLabel("Quantity (T)")
+                                               .ReadOnly(true)
+                                               .LabelAlign(LabelAlign.Right)
+                                               .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Embarquement.QuantiteAsString : string.Empty)
+
+
+                                      //End first col
+                                      ),
+
+                                         X.Panel()
+                                          .ID("secondCol")
+                                          .Layout(LayoutType.Form)
+                                          .Flex(4)
+                                          .Items
+                                          (
+
+
+                                            X.TextField()
+                                               .ID("txtStandardWeight")
+                                               .AllowBlank(false)
+                                               .ReadOnly(true)
+                                               .LabelAlign(LabelAlign.Right)
+                                               .FieldLabel("Standard Poids (Kg)")
+                                               .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.PoidsNetStandardAsString : string.Empty)
+
+                                                ,
+                                           X.TextField()
+                                                .ID("txtNetWeightReceive")
+                                                .AllowBlank(false)
+                                                .ReadOnly(true)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .FieldLabel("Poids Net Received (Kg)")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.PoidsRecuAsString : string.Empty)
+
+                                             ,
+
+                                             X.TextField()
+                                                .ID("txtWeightSurplus")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .EmptyText("0")
+                                                .EmptyValue(0)
+                                                .Text("0")                                                
+                                                .RawText("0")
+                                                .AllowBlank(false)
+                                                .FieldLabel("Weight Surplus (Kg)")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.PoidsSurplusAsString : string.Empty)
+
+                                             ,
+
+
+                                             X.TextField()
+                                                .ID("txtSampleWeight")
+                                                .ReadOnly(true)
+                                                .AllowBlank(false)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .FieldLabel("Sample Poids (Kg)")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.PoidsEchantillonAsString : string.Empty)
+                                             ,
+                                             X.TextField()
+                                                .ID("txtTotalSurplus")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .AllowBlank(false)
+                                                .FieldLabel("Total Surplus (Kg)")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.TotalSurplusAsString : string.Empty)
+
+                                 //End second col
+                                 ),
+                                  X.Panel()
+                                          .ID("thirdCol")
+                                          .Layout(LayoutType.Form)
+                                          .Flex(5)
+                                          .Items
+                                          (
+
+                                          X.FieldContainer()
+                                             .FieldLabel("CAF Price (Euro) / Fob Price (Euro) ")
+                                             .LabelAlign(LabelAlign.Right)
+                                             .Layout(LayoutType.HBox)
+                                             .Items
+                                             (
+                                                X.TextField()
+                                                .ID("txtPriceCAF")
+                                                .Width(91)
+                                                .AllowBlank(false)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .MarginSpec("0 10 0 0")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Embarquement.Contrat.PrixAsString : string.Empty)
+                                                ,
+
+                                                X.TextField()
+                                                .ID("txtPriceFob")
+                                                .Width(91)
+                                                .AllowBlank(false)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.Embarquement.Contrat.PrixFobAsString : string.Empty)
+                                            ),
+                                            X.NumberField()
+                                                .ID("txtRateBonus")
+                                                .FieldLabel("Bonus Rate")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .HideTrigger(true)
+                                                .AllowDecimals(true)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.TauxBonusAsString : string.Empty)
+                                                .Listeners(l => l.Change.Fn = "ChangeBonusRate")
+                                                ,
+                                               X.TextField()
+                                            .ID("txtAmountBonus")
+                                            .FieldLabel("Bonus Amount (Euro)")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .AllowBlank(false)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.MontantBonusAsString : string.Empty)
+
+                                            ,
+                                            X.TextField()
+                                            .ID("txtGrossAmount")
+                                            .FieldLabel("Poids Brut (Euro)")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .AllowBlank(false)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.MontantBrutAsString : string.Empty)
+                                            ,
+                                             X.TextField()
+                                            .ID("txtCommercialInvoice")
+                                            .FieldLabel("Facture Commerciale (Euro)")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .AllowBlank(false)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.MontantFactureCommercialeAsString : string.Empty)
+                                 //End second col
+                                 )
+
+                   ),
+
+                    X.Panel()
+                    .ID("ColC")
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                    .MarginSpec("5 5 0 5")
+                    //.PaddingSpec("5 5 0 5")
+                    .Height(40)
+                    .Frame(true)
+                    .Items
+                    (
+
+                        X.TextField()
+                        .ID("txtNetAmount")
+                        .FieldLabel("Balance Due (Euro)")
+                        .LabelAlign(LabelAlign.Right)
+                        .ReadOnly(true)
+                        .Width(350)
+                        .MarginSpec("0 10 0 -120")
+                        .LabelWidth(200)
+                        .AllowBlank(false)
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureFinale.MontantNetAsString : string.Empty)
+
+
+
+                //End
+                )
+
+              //End Form Panel
+              )
+           //End windows
+           )
+
+
+      .Buttons
+            (
+                  X.Button()
+                   .Text("OK")
+                   .ID("BtnOkDetail")
+                   .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult|| Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                   .Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                   .DirectEvents
+                   (
+                     de =>
+                     {
+                         de.Click.Url = Url.Action("SubmitFormMethod");
+                         de.Click.Before = "return validNew(App.FactureFinale_Detail.id);";
+                         de.Click.FormID = "#(return this.up('window').down('form');)";
+
+
+                     }
+                   ),
+                   X.Button()
+                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                        .ID("BtnApproveOk")
+                        .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+                        .DirectEvents
+                        (
+                            de =>
+                            {
+                                de.Click.Url = Url.Action("SubmitApprovalMethod");
+                                de.Click.Before = "return validNew(App.FactureFinale_Detail.id);";
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                            }
+                        ),
+                  X.Button()
+                  .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                  .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                  .Handler("App.FactureFinale_Detail.doClose()")
+                  .Cls("btncancel")
+             )
+
+)
+
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Facture : Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+    
+
+
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var FormatNetWeight = function () {
+        try
+        {
+            var mNetWeight = parseFloat(App.txtNetWeight.value.toString().replace(' ', ''));
+            var NetWeightFormat = FormatAmount(mNetWeight);
+            App.txtNetWeight.setValue(NetWeightFormat);
+        }
+        catch (err)
+        {
+            return 0;
+        }
+    };
+
+    var ChangeBonusRate = function () {
+        var taux = parseFloat(App.txtRateBonus.value);
+        var totalSurplus = unformatNumber(App.txtTotalSurplus.value) || 0;
+        var prixCaf = unformatNumber(App.txtPriceCAF.value.replace(",", ".")) || 0;
+        var prixFob = unformatNumber(App.txtPriceFob.value.replace(",", ".")) || 0;
+       
+        var poidsStandard = unformatNumber(App.txtStandardWeight.value) || 0;
+        var poidsEchantillon = unformatNumber(App.txtSampleWeight.value) || 0;
+        var poidsSurplus = unformatNumber(App.txtWeightSurplus.value) || 0;
+        var montantFactureCom = unformatNumber(App.txtCommercialInvoice.value.replace(",",".")) || 0;
+        var montantBonus =(((totalSurplus * taux) / 100) * (prixCaf/1000)).toFixed(3);
+       
+        if(Ext.isNumeric(montantBonus) && montantBonus >= 0)
+        {
+            var montantBrut = ((poidsStandard * (prixFob/1000)) + (poidsEchantillon * (prixFob/1000)) + (poidsSurplus * (prixCaf/1000)) + Number(montantBonus)).toFixed(3);
+           
+            var montantNet = (montantBrut - montantFactureCom).toFixed(3);
+
+            App.txtAmountBonus.setValue(formatAmountDecimal(montantBonus));
+            App.txtGrossAmount.setValue(formatAmountDecimal(montantBrut));
+            App.txtNetAmount.setValue(formatAmountDecimal(montantNet));
+        }
+        else
+        {
+            Ext.Msg.show({ title: 'Final invoice : Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Bonus Rate invalid.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+    
+    
+
+    function formatNumberDecimal(amount) {
+        amount = thousands_separators(amount.replace(".", ","));
+        formatted = amount.replace(".", ",");
+
+        return formatted;
+    };
+
+    function formatAmountDecimal(amount) {
+        amount = FormatAmount(amount);
+        formatted = amount.replace(".", ",");
+
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    }
+
+ 
+</script>
+
+
+
+
+

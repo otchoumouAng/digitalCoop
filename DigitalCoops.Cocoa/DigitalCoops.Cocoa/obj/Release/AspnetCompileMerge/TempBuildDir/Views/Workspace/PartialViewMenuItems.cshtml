@@ -1,0 +1,72 @@
+﻿@*@model IEnumerable<Tms2017.MVC.Models.Module>*@
+@model Tms.Classes.Security.Application
+
+<link rel="stylesheet" href="~/Content/new.bootsrap.min.css" />
+
+<style type="text/css">
+    div.item-wrap 
+    {
+        border: 1px solid transparent;
+        margin: 5px 10px 5px 10px;
+        width: 100px;
+        cursor: pointer;
+        height: 130px;
+        text-align: center;
+    }
+  
+    #wrapper
+    {
+       
+       
+        
+        /*width:400px;        
+        margin:0 auto;
+        position:absolute;
+        top:25%; 
+        left:25%;
+        width:600px;
+        height:200px;
+        position:absolute;
+        left:50%;
+        top:30%;
+        margin:-100px 0 0 -300px;
+        background-color: white; 
+
+        */
+
+    }
+
+    #wrapper p
+    {    
+        width:inherit;
+    }
+
+    .item_selected
+    {
+        font-weight:bold;
+        text-decoration:underline;
+        color:gray;
+    }
+
+    .item_deselected
+    {
+        font-weight:normal;
+    }
+            
+    
+</style>
+
+
+
+@(Html.X().ResourceManager())
+
+@Html.Action("ShowApplications")
+
+   
+<div id="wrapper" >       
+    @*@Html.Action("ShowFunctions")*@
+    @Html.Action("ShowUserModule")
+</div>
+
+
+

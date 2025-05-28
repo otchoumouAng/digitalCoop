@@ -1,0 +1,303 @@
+﻿@model Tms.Classes.Business.stock.InventaireViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 300px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+
+    var OverviewCode =
+    {
+        SetButtons: function () {
+
+            if (App.rowCode.hasSelection()) {
+                if (App.CdhiddenPermRemove.value == 'true')
+                    App.BtnRemoveCode.enable();
+
+                if (App.CdhiddenPermPrintCode.value == 'true')
+                    App.BtnPrintCode.enable();
+
+            } else {
+
+                App.BtnRemoveCode.disable();
+                App.BtnPrintCode.disable();
+
+            }
+        }
+    };
+
+    var SummaryInventaire = function () {
+        var nbrOfrows = App.grpInventaireEcart.getStore().getCount();
+        var qteTheorique = App.storeInventaireEcart.sum('Quantite') || 0;
+        var poidsTheorique = App.storeInventaireEcart.sum('PoidsBrut') || 0;
+
+        var qtePhysique = App.storeInventaireEcart.sum('QuantitePhysique') || 0;
+        var poidsPhysique = App.storeInventaireEcart.sum('PoidsBrutPhysique') || 0;
+        var qte = qteTheorique - qtePhysique;
+        var poids = poidsTheorique - poidsPhysique;
+        App.txtQuantiteAjustee.setValue(FormatAmount(qte));
+        App.txtPoidsAjuste.setValue(FormatAmount(poids));
+    };
+</script>
+@(
+X.Window()
+    .ID("FormApprouveStock")
+    .Width(700)
+    .Resizable(false)
+    .Height(500)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    //.X(400)
+    .Y(20).Title("Inventaire de Stock : Confirmer Stock")
+    .Layout(LayoutType.VBox).LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Items(
+                        X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .Padding(5)
+                            .Border(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items(
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._Inventaire.RowVersionKey),
+                                    X.Hidden().ID("TxtinventaireID").Value(Model._Inventaire.ID),
+                                    X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                    X.TextField().ID("").FieldLabel("Site ").LabelAlign(LabelAlign.Right).Text(Model._Inventaire.Sites.Nom).ReadOnly(true),
+                                                    X.TextField().ID("").FieldLabel("Inventaire N°").LabelAlign(LabelAlign.Right).Text(Model._Inventaire.Numero).ReadOnly(true),
+                                                    X.TextField().ID("").FieldLabel("Magasin").LabelAlign(LabelAlign.Right).Text(Model._Inventaire.Magasin.Designation).ReadOnly(true)
+                                                ),
+                                    X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                    X.DateField().ID("").FieldLabel("Date Inventaire").LabelAlign(LabelAlign.Right).Text(Model._Inventaire.DateInventaire.ToShortDateString()).ReadOnly(true),
+                                                    X.TextField().ID("").FieldLabel("Periode").LabelAlign(LabelAlign.Right).Text(Model._Inventaire.Periode.Designation).ReadOnly(true)
+                                                )
+                                    ),
+                        X.Label().Text("Theoritical Stock").MarginSpec("0 0 0 5"),
+                        X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .Margin(5)
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                            .Items(
+                                    X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.TextField().ID("txtQuantiteTheorique").LabelAlign(LabelAlign.Right).FieldLabel("Nbr de sacs").Text(Model._Inventaire.QuantiteAsString).ReadOnly(true),
+                                                X.TextField().ID("txtPoidsTheorique").LabelAlign(LabelAlign.Right).FieldLabel("Poids Brut").Text(Model._Inventaire.PoidsBrutAsString).ReadOnly(true),
+                                                X.TextField().LabelAlign(LabelAlign.Right).FieldLabel("Tare des sacs").Text(Model._Inventaire.TareSacsAsString).ReadOnly(true)
+
+                                        ),
+                                    X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.TextField().LabelAlign(LabelAlign.Right).FieldLabel("Tare des palettes").Text(Model._Inventaire.TarePalettesAsString).ReadOnly(true),
+                                                X.TextField().LabelAlign(LabelAlign.Right).FieldLabel("Net livré").Text(Model._Inventaire.PoidsNetLivreAsString).ReadOnly(true)
+                                            ),
+                                    X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.TextField().LabelAlign(LabelAlign.Right).FieldLabel("Retention").Text(Model._Inventaire.RetentionAsString).ReadOnly(true),
+                                                X.TextField().LabelAlign(LabelAlign.Right).FieldLabel("Accepté").Text(Model._Inventaire.PoidsNetAccepteAsString).ReadOnly(true)
+                                                )
+                                    ),
+                        X.Label().Text("Physical Stock").MarginSpec("0 0 0 5"),
+                        //X.Panel()
+                        //    .Layout(LayoutType.HBox)
+                        //    .Margin(5)
+                        //    .Frame(true)
+                        //    .BodyPadding(15)
+                        //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        //    .Items(
+                        //            X.TextField().ID("txtQuantitePhysique").LabelAlign(LabelAlign.Right).MaskRe("[0123456789]").FieldLabel("Nbr de sacs").Text("")
+                        //                .Listeners
+                        //                (
+                        //                    ls =>
+                        //                    {
+                        //                        ls.Change.Handler = "CalculateQtyAjusted(); CalculatePhysicalWeight();";
+                        //                        ls.Blur.Handler = "#{txtQuantitePhysique}.setValue(formatNumber(#{txtQuantitePhysique}.getValue()));";
+                        //                        ls.Focus.Handler = "if (App.txtQuantitePhysique.value) { #{txtQuantitePhysique}.setRawValue(unformatNumber(#{txtQuantitePhysique}.getValue()));}";
+                        //                    }
+                        //                ),
+                        //            X.TextField().ID("txtPoidsPhysique").ReadOnly(true).LabelAlign(LabelAlign.Right).MaskRe("[0123456789]").FieldLabel("Poids Brut").Text("")
+                        //                .Listeners
+                        //                (
+                        //                    ls =>
+                        //                    {
+                        //                        ls.Change.Handler = "CalculateWgtAjusted();";
+                        //                        ls.Blur.Handler = "#{txtPoidsPhysique}.setValue(formatNumber(#{txtPoidsPhysique}.getValue())); CalculateWgtAjusted();";
+                        //                        ls.Focus.Handler = "if (App.txtPoidsPhysique.value) { #{txtPoidsPhysique}.setRawValue(unformatNumber(#{txtPoidsPhysique}.getValue()));}";
+                        //                    }
+                        //                )
+                        //            ),
+    #region Grid
+                X.GridPanel()
+                   .Layout(LayoutType.Fit)
+                   .ID("grpInventaireEcart")
+                   .Region(Region.Center)
+                   .ForceFit(true)
+                   .Border(true)
+                   .Margin(5)
+                   .Height(100)
+                   .AllowDeselect(true)
+                   .Store(
+                            X.StoreFor<Tms.Classes.Business.stock.InventaireElementStock>()
+                                .ID("storeInventaireEcart")
+                                .AutoLoad(true)
+                                .Proxy(
+                                       Html.X().AjaxProxy()
+                                       .Url(Url.Action("SelectItemsWithShrink"))
+                                       .Reader(
+                                                Html.X().JsonReader().RootProperty("data")
+                                                )
+                                  )
+                                .Listeners
+                                (
+                                     ls =>
+                                     {
+                                         ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                         ls.Load.Handler = "Ext.net.Mask.hide(); SummaryInventaire();";
+                                     }
+                                )
+                                .Parameters
+                                (
+                                ps =>
+                                {
+                                    ps.Add(new StoreParameter("inventaireID", Model._Inventaire.ID.ToString(), ParameterMode.Value));
+                                }
+                            )
+                    )
+                    .ColumnModel
+                    (
+                        Html.X().Column().Text("Item Type").Flex(1).DataIndex("ObjetEnStock").Hideable(false),
+                        Html.X().Column().Text("Item N°").Flex(1).DataIndex("Reference").Hideable(false),
+                        Html.X().Column().Text("Nbr de sacs").Flex(1).DataIndex("QuantiteAsString").Hideable(false),
+                        Html.X().Column().Text("Poids Brut").Flex(1).DataIndex("PoidsBrutAsString").Hideable(false),                                                                        
+                        Html.X().Column().Text("Sacs Physique").Flex(1).DataIndex("QuantitePhysiqueAsString").Hideable(false),
+                        Html.X().Column().Text("Poids Physique").Flex(1).DataIndex("PoidsBrutPhysiqueAsString").Hideable(false)
+                    ),
+    #endregion
+                        X.Label().Text("Ajustement de Stock").MarginSpec("0 0 0 5"),
+                        X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .Margin(5)
+                            .Frame(true)
+                            .BodyPadding(10)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items(
+                                        X.TextField().ID("txtQuantiteAjustee")
+                                            //.AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                            .LabelWidth(150).LabelAlign(LabelAlign.Right).ReadOnly(true).MaskRe("[0123456789]").FieldLabel("Nbr de Sacs Ajusté").Text(""),
+                                        X.Hidden().ID("txtQuantiteAjusteeHid").ReadOnly(true),
+                                        X.TextField().ID("txtPoidsAjuste")
+                                            //.AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                            .LabelWidth(150).LabelAlign(LabelAlign.Right).ReadOnly(true).MaskRe("[0123456789]").FieldLabel("Poids Brut Ajusté").Text(""),
+                                        X.Hidden().ID("txtPoidsAjusteHid").ReadOnly(true)
+                                    )
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                    .ID("BtnSave")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("OnConfirmStock");
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                            de.Click.Before = "return validNew(App.FormApprouveStock.id);";
+                            de.Click.Success = "Overview.resetButtons();";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpInventaireEcart.getRowsValues({selectedOnly : false})" });
+                        }
+                    ),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.FormApprouveStock.doClose()").Cls("btncancel")
+        )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+        *   Vérification de la saisie des champs obligatoires
+        */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Inventaire : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please Fill empty fields', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var CalculateQtyAjusted = function () {
+
+        var qteTheorique = parseFloat(unformatNumber(App.txtQuantiteTheorique.value)) || 0;
+        var qtePhysique = parseFloat(unformatNumber(App.txtQuantitePhysique.value)) || 0;
+
+        var result = qteTheorique - qtePhysique;
+
+        App.txtQuantiteAjusteeHid.setValue(result);
+
+        if (result >= 0)
+            result = formatNumber(result);
+        
+        App.txtQuantiteAjustee.setValue(result);
+
+    };
+
+    var CalculateWgtAjusted = function () {
+
+        var poidsTheorique = parseFloat(unformatNumber(App.txtPoidsTheorique.value)) || 0;
+        var poidsPhysique = parseFloat(unformatNumber(App.txtPoidsPhysique.value)) || 0;
+
+        var result = poidsTheorique - poidsPhysique;
+
+        App.txtPoidsAjusteHid.setValue(result);
+
+        if (result >= 0)
+            result = formatNumber(result);
+
+        App.txtPoidsAjuste.setValue(result);
+
+    };
+
+
+    var CalculatePhysicalWeight = function () {
+        var poidsTheorique = parseFloat(unformatNumber(App.txtPoidsTheorique.value)) || 0;
+        var quantiteTheorique = parseFloat(unformatNumber(App.txtQuantiteTheorique.value)) || 0;
+        var quantitePhysique = parseFloat(unformatNumber(App.txtQuantitePhysique.value)) || 0;
+        var totalWeight = 0;
+
+        totalWeight = (quantitePhysique * poidsTheorique) / quantiteTheorique;
+        App.txtPoidsPhysique.setValue(formatNumber(totalWeight));
+    };
+</script>
+
+

@@ -1,0 +1,248 @@
+﻿@model Tms.Classes.Business.PayementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+<script src="~/Scripts/FormatAmount.js"></script>
+@(
+X.Window()
+    .ID("FormPayementDetail")
+    .Width(700)
+    .Resizable(false)
+    .Height(470)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .X(400)
+    .Y(20)
+    .Title("Detail Paiement")    
+    .Items(
+            X.FormPanel()
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                .FieldDefaults(d => d.ReadOnly = true)
+                .Items(
+
+                                X.Panel()
+                                    .Layout(LayoutType.Form)
+                                    .MaxWidth(550)
+                                    .Items(
+                                        
+                                            X.Hidden().ID("PayementHiddenExecMode").Value(Model._ExecMode),
+                                            X.Hidden().ID("hiddenRowversion").Value(Model._Payement.RowVersionKey),
+                                            X.Hidden().ID("hiddenPayementID").Value(Model._Payement.ID),
+                                            X.ComboBox()                                                
+                                                .FieldLabel("Site")
+                                                .DisplayField("Nom")
+                                                .ValueField("ID")
+                                                .MatchFieldWidth(false)
+                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(false)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .ForceSelection(true)
+                                                //.ReadOnly(true)
+                                                .Value(Model._Payement.Sites.ID)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X().Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                            )
+                                                                )
+                                                            .Proxy(
+                                                                        Html.X().AjaxProxy()
+                                                                        .Url(Url.Action("LoadSite", "Site"))
+                                                            .Reader(
+                                                                        Html.X().JsonReader().RootProperty("data")
+                                                                        )
+                                                        )
+                                                ),
+                                            X.FieldContainer()
+                                                        .Layout(LayoutType.HBox).Width(350).FieldLabel("Date Paiement").LabelAlign(LabelAlign.Right)
+                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                        .Items(
+                                                                    X.DateField()
+                                                                        .Width(130)
+                                                                        .ID("TxtPayementDate")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .Text(Model._Payement.DatePayement.ToShortDateString())
+                                                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                        .MarginSpec("0 10 0 0"),
+                                                                    X.TimeField()
+                                                                        .ID("TxtPayementDateTime")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .Text(Model._Payement.DatePayement.ToShortTimeString())
+                                                                )
+                                                ,
+                                            X.TextField()
+                                                .FieldLabel("Type de Paiement")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._Payement.PayementType.Designation)
+                                                .MarginSpec("0 10 0 0"),
+                                            X.TextField()
+                                                .FieldLabel("Mode De Paiement")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._Payement.PayementMode.Designation)
+                                                .MarginSpec("0 10 0 0"),
+                                            X.TextField()
+                                                .FieldLabel("Fournisseur")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._Payement.Fournisseur.Nom)
+                                                .MarginSpec("0 10 0 0")
+
+                                            ),
+                           X.Panel()
+                                .Layout(LayoutType.Fit)
+                                .MarginSpec("10 10 5 10")
+                                .Items(
+                                    X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListePendingInvoice")
+                                       .Region(Region.Center)
+                                       .ForceFit(true)
+                                       .Border(true)
+                                       .Height(160)
+                                       .AllowDeselect(true)
+                                       .Store(
+                                                X.StoreFor<Tms.Classes.Business.PayementTransaction>()
+                                                    .ID("storePendingPayementItem")
+                                                    .AutoLoad(true)
+                                                    .Proxy(
+                                                           Html.X().AjaxProxy()
+                                                           .Url(Url.Action("SelectDetailsPayementItems"))
+                                                           .Reader(
+                                                                    Html.X().JsonReader().RootProperty("data")
+                                                                    )
+                                                      )
+                                                    .Parameters(ps =>
+                                                    {
+                                                        ps.Add(new StoreParameter("payementID", "#{hiddenPayementID}.value", ParameterMode.Raw));
+                                                    })
+                                                    .Listeners(ls => ls.Load.Fn = "GetTotalAmount")
+                                        )
+                                        .ColumnModel
+                                        (
+                                            Html.X().Column().Text("Item N°").DataIndex("ElementRef"),
+                                            Html.X().Column().Text("Item Type").DataIndex("PayementType").Renderer("renderObject"),
+                                            Html.X().Column().Text("Description").DataIndex("Commentaire"),
+                                            Html.X().Column().Text("Montant").DataIndex("ElementSoldeToString").EmptyCellText("0")
+                                        )
+                                        .SelectionModel(
+                                            X.RowSelectionModel()
+                                            .Mode(SelectionMode.Single)
+                                            .AllowDeselect(true)
+
+
+                                        )
+                            ),
+                           X.Panel()
+                           .MarginSpec("0 10 0 0")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right })
+                            .Items(
+                                    X.TextField()
+                                        .ID("TxtTotalPayement")
+                                        .FieldLabel("Total")
+                                        .LabelStyle("font-weight:bold;")
+                                        .LabelAlign(LabelAlign.Right).Text("0")
+                                        .ReadOnly(true)
+                                        .FieldStyle("text-align: right; font-weight: bold;")
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Change.Url = Url.Action("SetAmountToLetter");
+                                            de.Change.ExtraParams.Add(new Parameter { Name = "Amount", Mode = ParameterMode.Raw, Value = "App.TxtTotalPayement.value" });
+                                        })
+                            ),
+                           X.Panel()
+                            .MarginSpec("0 10 0 10")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                            .Items(
+                                    X.DisplayField()
+                                        .ID("TxtTotalPayementInLetter")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .FieldCls("AmountLetterStyle")
+                            //.FieldStyle("text-align: right; font-weight: bold; text-transform: capitalize;")
+
+                            )
+
+            )
+        )
+            .Buttons(
+                        X.Button().Text("Fermer").ID("BtnSavePayement")
+                        .Handler("App.FormPayementDetail.doClose()")
+
+                    )
+
+            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                    /*alert(winId);*/
+                    /*var winId = #{FormFournisseur}.id;*/
+                    var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                    /*
+                   *   Vérification de la saisie des champs obligatoires
+                   */
+                    if (!areAllrequiredFieldsFilled) {
+                        console.log('error fileds');
+                        Ext.Msg.show({ title: 'Payment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please enter the delivery ID', buttons: Ext.Msg.OK });
+                        return false;
+                    }
+
+                }
+
+        /*Ext.onReady(function() {
+         #{BtnOk}.on(#{BtnOk}.clickEvent,validNew );
+        //})*/
+</script>
+<script type="text/javascript">
+    var GetTotalAmount = function () {
+        var nbr = App.grpListePendingInvoice.getStore().getCount();;
+        var total = 0;
+        if (nbr > 0) {
+
+            for (var i = 0; i < nbr; i++) {                
+                var newvalue = parseFloat(App.grpListePendingInvoice.getRowsValues()[i].ElementSolde);
+                total += newvalue;
+            }
+            var tot = FormatAmount(total);
+            App.TxtTotalPayement.setValue(tot);
+        } else {
+            App.TxtTotalPayement.setValue(0);
+        }
+
+    };
+
+    /*//var FormatAmount = function (val) {
+    //    val = val.toString();
+    //    val = val.replace(/ /g, '');
+    //    val = val.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    //    return val;
+    //};*/
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    };
+</script>
+
+

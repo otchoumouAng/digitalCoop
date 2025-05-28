@@ -1,0 +1,241 @@
+﻿
+@model Tms.Classes.Business.Sales.EmpotageViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 30px;
+        min-height: 80px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+           X.Window()
+            .ID("Empotage_Detail")
+            .Width(1000)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(200)
+            .BodyPadding(5)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Modal(true)
+            .Title("Stuffing")
+            .Items
+            (
+            X.FormPanel()
+
+            .Items(
+                X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenST1")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden()
+                                        .ID("hiddenExecMode")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                        X.Hidden()
+                                            .ID("hiddenRowversion")
+                                            .Value(Model._Empotage.RowVersionKey)
+                                            ,
+                                        
+                                        X.Hidden()
+                                            .ID("txtEmpotageID")
+                                            .Value(Model._Empotage.ID)
+                                            ,
+                                            X.Panel()
+                                             .ID("firstColST")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(1)
+                                             .Items
+                                             (
+
+
+                                                 X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Shipment Number")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                             X.TextField()
+                                                            .ID("txtShipmentNumber")
+                                                            .Width(270)
+                                                            .ReadOnly(true)
+                                                            .MarginSpec("0 20 0 0")
+
+                                                            ,
+                                                            X.TextField()
+                                                                    .ID("txtEmbarquementID")
+                                                                    .Hidden(true)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Embarquement.ID : Guid.Empty)
+                                                                    ,
+                                                                   
+                                                            X.Button()
+
+                                                                .Text("...")
+                                                                .Height(20)
+                                                                .Width(40)
+                                                                .ID("btnSelectShipment")
+                                                                .DirectEvents
+                                                                (
+                                                                    de =>
+                                                                    {
+                                                                        de.Click.Url = Url.Action("OnSelectShipment", "Empotage");
+                                                                        de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available of shipment')";
+                                                                        de.Click.EventMask.ShowMask = true;
+                                                                    }
+                                                                    )
+                                                ),
+
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Stuffing Date")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                        X.DateField()
+                                                             .ID("txtDate")
+                                                             .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                             .AllowBlank(false)
+                                                             .Width(160)
+                                                             .IndicatorCls("IndicatorRedStar")
+                                                             .IndicatorText("*")
+
+
+
+                                                )
+                                                ,
+                                                 X.ComboBox()
+                                                 .ID("_cmbStation")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Stuffing Station")
+                                                 .DisplayField("Nom")
+                                                 .ListConfig(new BoundList { MinWidth = 300 })
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.StationEmpotage.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "StationEmpotage"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+                                                
+                                 //1stCol
+                                 ),
+                                 X.Panel()
+                                 .ID("secondColST")
+                                 .Layout(LayoutType.Form)
+                                 .Flex(1)
+                                 .Items
+                                 (
+                                            
+
+                                             X.TextArea()
+                                              .ID("txtComment")
+                                              .FieldLabel("Commentaire")
+                                              .LabelAlign(LabelAlign.Right)
+                                              .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Commnetaire : string.Empty)
+
+
+                                 //2ndCol
+                                 )
+
+
+                              //End first panel
+                              )
+
+                      //End form panel
+                      )
+
+            //End Windows
+            )
+            .Buttons
+            (
+                X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents
+                (
+
+                    de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormNewMethod");
+                        de.Click.Before = "return validNew(App.Empotage_Detail.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                    }
+                ),
+
+
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.Empotage_Detail.doClose()")
+                .Cls("btncancel")
+
+            )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Stuffing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+        
+    };
+</script>

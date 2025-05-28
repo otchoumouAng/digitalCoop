@@ -1,0 +1,123 @@
+﻿@model Tms.Classes.Shared.stock.EmplacementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormEmplacement")
+    .Width(500)
+    .Resizable(false)
+    .Height(180)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Listeners(l =>
+    {
+        l.Show.Handler = "#{TxtDesignation}.focus();";
+    })
+    //.X(400)
+    .Y(20)
+    .Title("Location : Detail")
+    .BodyPadding(6)
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._Emplacement.RowVersionKey),
+                            X.Hidden().ID("TxtEmplacementID").Value(Model._Emplacement.ID),
+                            X.TextField().ID("TxtDesignation").FieldLabel("Nom").TabIndex(1)
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Emplacement.Designation : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                            X.ComboBox()
+                                .ID("cmbMagasin")
+                                .TabIndex(2)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .FieldLabel("Type")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Emplacement.Magasin.ID : (int?)null)
+                                .Store
+                                (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                    )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadActiveMagasin", "Magasin"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                            )
+
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK").ID("BtnSubmitAgent")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.Before = "return validNew(App.FormEmplacement.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormEmplacement.doClose()").Cls("btncancel")
+
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Location : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+

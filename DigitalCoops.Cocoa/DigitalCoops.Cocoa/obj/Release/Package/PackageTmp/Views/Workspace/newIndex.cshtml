@@ -1,0 +1,587 @@
+﻿@using Tms2017.MVC.Models;
+@using System.Security.Claims
+
+@{
+    Layout = null;
+    string mUser = "Brice Gnamessou";
+    var X = Html.X();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>WorkSpace</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="~/Content/new.bootsrap.min.css" />
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="~/Content/new.bootstrap.theme.css" />
+
+
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/preloader.css" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <script src="~/Scripts/FunctionHelpers.js"></script>
+    <script>
+            var displayReport = function () {
+
+                var selectId = data.selectId;
+                var rptId = data.reportId;
+                addTab(window.parent.Ext.getCmp('tabCenter'), selectId, 'Fournisseur/Index', this, rptId);
+            };
+
+
+            function logOff() {
+                var urlR = $('input#base_url_index').val() + '/Workspace/LogOut';
+                $.ajax({
+                    'url': urlR,
+                    'content-type': 'application/html; charset=utf-8',
+                    'type': 'GET',
+                    'dataType': 'html'
+                })
+                        .success(function (result) {
+                            var urlL = $('input#base_url_index').val() + '/login';
+                            parent.window.location = urlL;
+
+                        })
+                        .error(function (xhr, status) {
+
+                            console.log(xhr);
+                        })
+            };
+    </script>
+
+
+
+
+
+    <style type="text/css">
+            .x-body {
+                font-size: 13px;
+                line-height: 17px;
+                font-weight: 300;
+                font-family: 'Segoe UI', 'Helvetica Neue', helvetica, arial, verdana, sans-serif !important;
+            }
+
+
+            /* Positionner l'icône de Bootstrap avant le texte du menu item*/
+            .glyphicon {
+                position: absolute !important;
+                top: 5px !important;
+                line-height: normal !important;
+            }
+
+            .x-panel-default, .header_title_north {
+                background-color: #7f7f7f !important;
+            }
+
+            /* entête du panel du worksapce*/
+            .x-panel-header-default {
+                /*background-color:#CFD8DC!important;*/
+                /*border: 1px solid #CFD8DC!important;*/
+                /*background-image:none;*/
+                background-color: #696969 !important;
+                /* border: 1px solid #CFD8DC!important; */
+                background-image: none;
+            }
+
+                /* entête du panel latéral*/
+
+
+                /* icône du panneau latérale*/
+                .x-panel-header-default .x-tool-tool-el {
+                    /*background-color: #CFD8DC;*/
+                    background-color: transparent !important;
+                }
+
+            /* police texte latérale*/
+            .x-panel-header-title-default {
+                /*color:black;*/
+                color: #fff;
+            }
+
+
+            /* icônes  des ménus latéraux*/
+            .x-accordion-hd .x-tool-img {
+                background-image: none;
+                background-color: none;
+                color: #f7f7f7;
+            }
+
+            .TitleColor {
+                color: #fff !important;
+            }
+
+
+            #pnlNorth_header {
+                padding: 10px 30px 30px 10px !important;
+            }
+
+
+            #pnlNorth_header {
+                background-color: #78909C !important;
+                border: 1px solid #78909C !important;
+                background-image: none;
+            }
+
+            .removeButtonBackground {
+                -webkit-border-radius: 0;
+                -moz-border-radius: 0;
+                -ms-border-radius: 0;
+                -o-border-radius: 0;
+                border-radius: 0;
+                padding: 7px 7px 7px 7px;
+                border-style: solid;
+                background-color: none !important;
+            }
+
+            .dashBoardButtonStyle {
+                background-color: transparent;
+                border-width: 0px !important;
+            }
+
+
+            .bg-color-white {
+                color: #fff;
+                font-weight: bold;
+                font-family: 'Segoe UI', 'Helvetica Neue', helvetica, arial, verdana, sans-serif !important;
+            }
+
+            .x-toolbar-default {
+                padding: 6px 0 6px 8px;
+                border-style: solid;
+                border-color: #d0d0d0;
+                /* border-width: 1px; */
+                background-image: none;
+                /*background-color: #B0BEC5;*/
+                background-color: #606060;
+            }
+
+
+            #pnlNorth-body {
+                padding: 0px;
+                width: 1366px;
+                left: 0px;
+                top: 0px;
+                height: 30px;
+            }
+
+            .x-panel-header-default-vertical {
+                /*background-color: #CFD8DC !important;
+        border: 1px solid #CFD8DC !important;*/
+                background-color: #606060 !important;
+                border: none !important;
+                background-image: none;
+            }
+            /*= > panneau latérale*/
+
+            .x-menu-body-default {
+                background: #F5F5F5 !important;
+            }
+
+            .x-accordion-layout-ct {
+                background-color: #FAFAFA !important;
+            }
+
+            .IconToolBar {
+                background-image: url('Images/Icons/beans1.png');
+                background-repeat: round;
+                height: 30px;
+                width: 30px;
+            }
+    </style>
+</head>
+<body>
+    @(Html.X().ResourceManager())
+    <!--<div id="tms_header" class="container-fluid">
+        <p class="text-center">Telcar Management System 2017</p>
+    </div>-->
+    @*<br>
+        <div id="tms_settings" class="container-fluid">
+            <div class="row">
+                <div class="col-md-3 col-md-offset-9">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <span class="glyphicon glyphicon-cog"></span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="#">Database settings</a></li>
+                            <li><a href="#">Database settings</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+
+
+    @using (Html.BeginForm())
+    {
+        @(X.Viewport()
+                    .Layout(LayoutType.Border)
+                    .ID("vwp")
+                    .Cls("ViewportStyle")
+                    .Items(
+                             X.Panel()
+                            .Title("")
+                            .Region(Region.South)
+                            .Split(false)
+                            .Collapsible(false)
+                            .TitleAlign(TitleAlign.Center)
+                            .Height(25)
+                            //.Html(String.Format("<p style='width: 100%;text-align: center;padding-bottom: 10px; margin-left:-5px; padding-top:3px;font-size: 14px;position: absolute;top: 0;font-weight: normal; background-color:#607D8B;color:white;'>Server : {0} | Database: {1} | Version : 1.0.0 | Business Tech &copy; {2} </p>", (new Tms.Components.Data.DataConfig().Server), new Tms.Components.Data.DataConfig().DataBase, DateTime.Now.Year))
+                            .Html(String.Format("<p style='width: 100%;text-align: center;padding-bottom: 10px; padding-top:3px;font-size: 14px;position: absolute;top: 0;font-weight: normal; background-color:#607D8B;color:white;'>Server : {0} | Database: {1} | Version : 1.0.0 | Business Tech &copy; {2} </p>", (new Tms.Components.Data.DataConfig().Server), new Tms.Components.Data.DataConfig().DataBase, DateTime.Now.Year))
+                            //.BodyPadding(6)
+                            ,
+                             X.Panel()
+                            .ID("pnlNorth")
+                            .LiquidLayout(true)
+                            //.TitleConfig(new PanelTitle { Height = 10, MinHeight = 10, PaddingSpec = "0 0 0 0", Text = "Telcar Management System 2017", TextAlign = TitleAlign.Center, Cls = "bg-color-white" })
+                            .Region(Region.North)
+                            .Split(false)
+                            //.TopBar(X.Toolbar().Items(items =>
+                            //{
+                            //    items.Add(new ToolbarTextItem { Text = "Telcar Management System 2017" });
+                            //    items.Add(new Button { Text = "Jack Smith" });
+                            //    items.Add(X.Button()
+                            //                .ID("tnDashboar")
+                            //                .Text("Tableau de Bord")
+                            //                .Icon(Icon.ChartPie)
+                            //                .Listeners
+                            //                (
+                            //                    li => li.Click.Handler = "addTab(window.parent.Ext.getCmp('tabCenter'),'idcc2558ba-d16d-4725-8f52-5c371e0ee2v6', '" + new Tms.Classes.Shared.Parametres(0).Base_url + @"/DashBoard', this,'DashBoard','')"
+                            //                )
+                            //                .Cls("dashBoardButtonStyle"));
+                            //    items.Add(new ToolbarFill());
+                            //    items.Add(X.Button()
+                            //                .ID("btnDashoard")
+                            //                .Text("Tableau de Bord")
+                            //                .Icon(Icon.ChartPie)
+                            //                .Listeners
+                            //                (
+                            //                    li => li.Click.Handler = "addTab(window.parent.Ext.getCmp('tabCenter'),'idcc2558ba-d16d-4725-8f52-5c371e0ee2v6', '" + new Tms.Classes.Shared.Parametres(0).Base_url + @"/DashBoard', this,'DashBoard','')"
+                            //                )
+                            //                .Cls("dashBoardButtonStyle"));
+                            //    items.Add(new ToolbarFill());
+                            //    items.Add(X.Button()
+                            //                .ID("btnshoard")
+                            //                .Text("Tableau de Bord")
+                            //                .Icon(Icon.ChartPie)
+                            //                .Listeners
+                            //                (
+                            //                    li => li.Click.Handler = "addTab(window.parent.Ext.getCmp('tabCenter'),'idcc2558ba-d16d-4725-8f52-5c371e0ee2v6', '" + new Tms.Classes.Shared.Parametres(0).Base_url + @"/DashBoard', this,'DashBoard','')"
+                            //                )
+                            //                .Cls("dashBoardButtonStyle"));
+                            //}))
+                            //.Height(85)
+                            //.BodyPadding(6)
+                            //.StyleHtmlContent(true)
+                            //.Html
+                            //(
+                            //  String.Format("<p style='width: 100%;text-align: center;padding-bottom: 10px; margin-left:-5px; padding-top:3px;font-size: 14px;position: absolute;top: 0;font-weight: normal; background-color:#607D8B;color:white;'>{0} </p>", "TELCAR MANAGEMENT SYSTEM 2017")
+                            //)
+                            .TopBar
+                            (
+                                bb =>
+                                {
+
+                                    var welcomeText = "";
+                                    if (Request.IsAuthenticated)
+                                    {
+
+                                        var claimIdentity = User.Identity as ClaimsIdentity;
+
+                                        if (claimIdentity != null)
+                                        { welcomeText = "Welcome, " + claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value; }
+
+
+                                    }
+
+
+
+
+                                    bb.Add(
+                                            new Toolbar
+                                            {
+                                                Items =
+                                                       {
+                                                                X.Component().Cls("IconToolBar"),
+                                                                X.ToolbarTextItem().Text("Telcar Management System 2017").Cls("bg-color-white"),
+                                                                X.ToolbarSeparator(),
+                                                                X.Button()
+                                                                .ID("btnDashboard")
+                                                                .Text("Tableau de Bord")
+                                                                .Icon(Icon.ChartPie)
+                                                                .Listeners
+                                                                (
+                                                                    li => li.Click.Handler = "addTab(window.parent.Ext.getCmp('tabCenter'),'idcc2558ba-d16d-4725-8f52-5c371e0ee2v6', '"+ new Tms.Classes.Shared.Parametres(0).Base_url+@"/DashBoard', this,'DashBoard','')"
+                                                                )
+                                                                .Cls("dashBoardButtonStyle")
+
+                                                                ,
+                                                                X.Button()
+                                                                .ID("btnDeliveryMonitor")
+                                                                .Text("Delivery monitor")
+                                                                .Icon(Icon.Lorry)
+                                                                .Cls("dashBoardButtonStyle")
+                                                                .Listeners
+                                                                (
+                                                                    li => li.Click.Handler = "addTab(window.parent.Ext.getCmp('tabCenter'),'idcc2558ba-d16d-4725-8f52-5c371e0ee2b6', '"+ new Tms.Classes.Shared.Parametres(0).Base_url+@"/LivraisonSuivi', this,'Moniteur de Livraison','')"
+                                                                )
+                                                                ,
+                                                                X.Button()
+                                                                .ID("btnReporting")
+                                                                .Text("Reporting")
+                                                                .Icon(Icon.ServerChart)
+                                                                .Listeners
+                                                                (
+                                                                    li => li.Click.Handler = "addTab(window.parent.Ext.getCmp('tabCenter'),'idcc2558ba-d16d-4725-8f52-5c371e0ee2n6', '"+ new Tms.Classes.Shared.Parametres(0).Base_url+@"/ReportViewer', this,'Reporting','')"
+                                                                )
+                                                                .Cls("dashBoardButtonStyle")
+                                                                ,
+                                                                X.ToolbarFill()
+                                                                ,
+                                                                X.Button()
+                                                                .Icon(Icon.Help)
+                                                                .Cls("dashBoardButtonStyle")
+                                                                ,
+                                                                X.Button()
+                                                                .Icon(Icon.Cog)
+                                                                .Cls("dashBoardButtonStyle")
+                                                                .Menu(
+                                                                    X.Menu()
+                                                                          .Items(
+                                                                              X.MenuItem()
+                                                                               .Text("Change Password")
+                                                                               .Icon(Icon.GroupEdit)
+                                                                               .DirectEvents( de =>{
+                                                                                    de.Click.Url  = Url.Action("OnChangePassWord","Utilisateur");
+                                                                                    de.Click.EventMask.ShowMask = true;
+                                                                               } ),
+                                                                              X.MenuItem()
+                                                                               .Text("Parameters")
+                                                                               .ID("AppParameters")
+                                                                               .Icon(Icon.ApplicationEdit)
+                                                                               .Hidden(true)
+                                                                               .Disabled(true)
+                                                                               .DirectEvents( de =>{
+                                                                                    de.Click.Url  = Url.Action("onEdit","Parametres");
+                                                                                    de.Click.EventMask.ShowMask = true;
+                                                                                } )
+                                                                       )
+                                                                       )
+                                                                ,
+                                                                X.ToolbarTextItem()
+                                                                .Text(welcomeText)
+
+                                                                ,
+                                                                X.Button()
+                                                                .Icon(Icon.ControlPowerBlue)
+                                                                .Cls("dashBoardButtonStyle")
+                                                                .Listeners
+                                                                (
+                                                                    li =>
+                                                                        {
+                                                                             li.Click.Fn = "logOff";
+                                                                        }
+
+                                                                )
+                                                           }
+                                            }
+                                            );
+                                }
+                            )
+                            //.Loader
+                            //(
+                            //    X.ComponentLoader()
+                            //    .Url(Url.Action("RenderPartialNorth"))
+                            //    .Mode(LoadMode.Frame)
+                            //    .Params(new { containerId = "pnlNorth" })
+                            //    .LoadMask(lm => lm.ShowMask = true)
+                            //)
+                            //.TitleAlign(TitleAlign.Center)
+                            .Collapsible(false),
+
+                            X.Panel()
+                            .Title("Side Menu")
+                            .Cls("TitleColor")
+                            .Region(Region.West)
+                            .Layout(LayoutType.Accordion)
+                            .Width(250)
+                            .MinWidth(250)
+                            .MaxWidth(400)
+                            .Split(false)
+                            .Collapsible(true)
+                            .Collapsed(true)
+                            .Items(i =>
+                            {
+                                //List<Module> mItems = Module.GetAll();
+                                List<Module> mItems = Module.GetItemsForUser(ViewBag.UserID, -1, -1);
+
+                                foreach (var mItem in mItems)
+                                {
+
+                                    var e = Html.X().MenuPanel()
+                                        .Title(mItem.Title)
+                                        .SaveSelection(false);
+
+                                    foreach (var item in mItem.Items)
+                                    {
+                                        var menuItem = new Ext.Net.MenuItem
+                                        {
+                                            Text = item.Title,
+
+                                            IconCls = "glyphicon glyphicon-play-circle  #7f7f7f"
+                                            //Icon = Icon.ApplicationFormAdd
+                                        };
+
+                                        menuItem.Listeners.Click.Handler = string.Format("addTab(window.parent.Ext.getCmp('tabCenter'), '{0}', '{1}', this, '{2}', 'overview');", item.ID.ToString(), item.Url, item.Title);
+
+                                        e.Menu(m =>
+                                        {
+                                            m.Add(menuItem);
+                                            //m.Listeners.Click.Handler = string.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'id{0}', '{1}', this, '{2}');", item.Title + item.ID.ToString(), item.Url, item.Title);
+                                        });
+                                    }
+                                    i.Add(e);
+                                }
+
+                            }),
+
+
+                            X.TabPanel()
+                            .ID("tabCenter")
+                            .Region(Region.Center)
+                            //.UserCls("background-color: white;")
+                            .Border(false)
+                            .MessageBusListeners(l =>
+                            {
+                                l.Add(new MessageBusListener { Name = "Msg.DisplayReport", Fn = "displayReport" });
+                            })
+
+                .Items(
+                         X.Panel()
+                        .ID("tabMenuItems")
+                        .Title("Menu")
+                        .Closable(false)
+                        .Border(false)
+                        .BodyStyle("background: #FAFAFA;")
+                        .BodyPadding(6)
+                        .Loader(
+                        X.ComponentLoader()
+                        .Url(Url.Action("RenderPartialMenuItems"))
+                        .Mode(LoadMode.Frame)
+                        .Params(new { containerId = "tabMenuItems" })
+                        .LoadMask(lm => lm.ShowMask = true)
+
+                    )
+                )
+
+
+        )
+        )
+    }
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script>
+
+
+            var timeInSecondsAfterSessionOut = 30; // change this to change session time out (in seconds).
+            var secondTick = 0;
+
+            function ResetThisSession() {
+                secondTick = 0;
+            }
+
+            function StartThisSessionTimer() {
+                var sessionExpired = false;
+
+                var pathArray = location.href.split('/');
+                var protocol = pathArray[0];
+                var host = pathArray[2];
+                /* var baseurl = protocol + '//' + host; */
+                var baseurl = $('#base_url').val();
+
+                $.ajax({
+                    'url': baseurl,
+                    'content-type': 'application/html; charset=utf-8',
+                    'type': 'GET',
+                    'dataType': 'html'
+                })
+                      .success(function (result) {
+
+                          sessionExpired = result;
+
+
+
+                          if (sessionExpired == 'True') {
+                              clearTimeout(tick);
+                              console.log('session expirée');
+                              window.location = window.origin + "/Login";
+                              return;
+                          }
+
+
+
+                      })
+                      .error(function (xhr, status) {
+                          console.log('session erreur !!!');
+                      })
+
+                /*console.log('session continue');*/
+                tick = setTimeout("StartThisSessionTimer()", 1000);
+            }
+
+            StartThisSessionTimer();
+    </script>
+    <input type="hidden" id="base_url" value="@(new Tms.Classes.Shared.Parametres(0).Base_url)/Workspace/CheckSessionExpiration" />
+    <input type="hidden" id="base_url_index" value="@(new Tms.Classes.Shared.Parametres(0).Base_url)" />
+
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

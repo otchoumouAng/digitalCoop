@@ -1,0 +1,206 @@
+﻿
+@model Tms.Classes.Shared.AnalyseurViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.Window()
+    .ID("FormAnalyseur")
+    .Width(700)
+    .Modal(true)
+    .Resizable(false)
+    .Height(300)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Listeners(l =>
+    {
+        l.Show.Handler = "#{TxtNomAnalyseur}.focus();";
+    })
+    .Y(20)
+    .Title("Quality Agent : Detail")
+    .BodyPadding(6)
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._Analyseur.RowVersionKey),
+                            X.Hidden().ID("TxtAnalyseurID").Value(Model._Analyseur.ID),
+                            X.TextField().ID("TxtNomAnalyseur").FieldLabel("Nom")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Analyseur.Nom.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                            X.Checkbox().ID("ChkAnalyseurPeutApprouver").FieldLabel("Can Appove")
+                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Analyseur.PeutApprouver : false)
+                                .LabelAlign(LabelAlign.Right)
+                                ),
+                             X.Container()
+                    .Layout(LayoutType.VBox)
+                    .Flex(1)
+                    //.Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                    .Items
+                    (
+
+    #region Grid
+                            X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListeAutreSite")
+                                       .Flex(3)
+                                       .Frame(true)
+                                       .Region(Region.Center)
+                                       .ForceFit(true)
+                                       .Height(180)
+                                       .MarginSpec("0 5 0 0")
+                                       .AllowDeselect(true)
+                                       .Store(
+                                                X.StoreFor<Tms.Classes.Shared.Sites.AnalyseurSite>()
+                                                    .ID("storeListeAutreSite")
+                                                    .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .Proxy(
+                                                            X.AjaxProxy()
+                                                                .Url(
+                                                                        Url.Action("SelectSite")
+                                                                )
+                                                                .Reader(
+                                                                        X.JsonReader().RootProperty("data")
+                                                                )
+                                                      )
+                                                      .Parameters(
+                                                        ps => ps.Add(new StoreParameter("AnalyseurID", "#{TxtAnalyseurID}.getValue()", ParameterMode.Raw))
+                                                        )
+                                        //.Listeners(
+                                        //      ls =>
+                                        //      {
+                                        //          ls.Load.Handler = "GetNbrOfSites();";
+                                        //          ls.Add.Handler = "GetNbrOfSites();";
+                                        //          ls.Remove.Handler = "GetNbrOfSites();";
+                                        //      }
+                                        //  )
+                                        )
+                                        .ColumnModel
+                                        (
+                                            //X.RowNumbererColumn(),
+                                            X.Column().Text("Site").Flex(2).DataIndex("SiteAsString").Hideable(false)
+                                        )
+                                        .DockedItems(
+                                                X.Toolbar()
+                                                    .Dock(Dock.Top)
+                                                    .Items(
+                                                            X.Label().Text("Additional Sites"),
+                                                            X.ToolbarSpacer(15),
+                                                            X.Button()
+                                                                .ID("btnAddSite")
+                                                                .IconCls("action_new_02")
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Ajouter")
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("onAddSite");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "AnalyseurID", Mode = ParameterMode.Raw, Encode = false, Value = "App.TxtAnalyseurID.getValue()" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }),
+                                                            X.Button()
+                                                                .ID("btnRemoveSite")
+                                                                //.IconCls("action_filter_02")
+                                                                .Icon(Icon.Delete)
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Retirer")
+                                                                .Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("RemoveSiteToAnalyseur");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeAutreSite.getRowsValues({selectedOnly : true})" });
+                                                                    //de.Click.ExtraParams.Add(new Parameter { Name = "storeListeDelivery", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeCodeOverview.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Site : Retirer'; config.confirmation.message = 'Do you want to remove this Location ? ';";
+                                                                })
+                                                            )
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowSiteFS")
+                                                            .Mode(SelectionMode.Single)
+                                                            .AllowDeselect(true)
+                                        )
+                                        .Listeners(l =>
+                                        {
+                                            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                            {
+                                                l.Select.Handler = "App.btnRemoveSite.enable();";
+                                                l.Deselect.Handler = "App.btnRemoveSite.disable();";
+                                            }
+                                        }
+                                    )
+    #endregion
+                    )
+
+                    )
+        )
+            .Buttons(
+                X.Button()
+                .Text("OK").ID("BtnSubmitAnalyseur")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormAnalyseur.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeAutreSite.getRowsValues({selectedOnly : false})" });
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormAnalyseur.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Quality Agent : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

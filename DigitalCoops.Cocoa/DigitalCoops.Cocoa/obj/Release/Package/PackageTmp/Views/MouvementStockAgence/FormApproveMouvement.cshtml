@@ -1,0 +1,534 @@
+﻿@model Tms.Classes.Business.stock.MouvementStockAgence
+@{
+    Layout = null;
+    var X = Html.X();
+    Tms.Classes.Shared.Parametres mParam = new Tms.Classes.Shared.Parametres(0);    
+    string DefaultCampagne = mParam.Campagne;
+    int DefaultMagasin = mParam.Magasin.ID;
+    string StartDate = DateTime.Now.AddDays(-1).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    /*.x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }*/
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script>
+    var SetPendingListeResume = function () {
+        var nbr = App.grpListPendingMouvement.getStore().getCount();
+        var tNetAccepte = App.storeListPendingMouvement.sum('PoidsNetAccepte') || 0;
+        var tNetLivre = App.storeListPendingMouvement.sum('PoidsNetLivre') || 0;
+        var tQuantite = App.storeListPendingMouvement.sum('Quantite') || 0;
+        var tPoidsBrut = App.storeListPendingMouvement.sum('PoidsBrut') || 0;
+
+        tNetAccepte = FormatAmount(tNetAccepte);
+        tNetLivre = FormatAmount(tNetLivre);
+        tQuantite = FormatAmount(tQuantite);
+        tPoidsBrut = FormatAmount(tPoidsBrut);
+        App.lblSummaryPendingMouvement.setHtml("Nbr Of Pending Movement : " + nbr + "<br/>Total Nbr de sacs : " + tQuantite + "<br/>Total Poids Brut : " + tPoidsBrut + "<br/>Total Livré : " + tNetLivre + "<br/>Total Accepted : " + tNetAccepte);       
+
+    };
+
+    var SetBtnApprove = function () {
+        if (App.rowPendingMouvement.hasSelection())
+            App.btnApproveMouvement.enable();
+        else
+            App.btnApproveMouvement.disable();
+    };
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+        var icon_url = ovListe.getIcons(value);
+
+        return Ext.String.format(tpl, icon_url);
+    };
+    var ovListe =
+    {
+        getIcons: function (value) {
+            if (value === 1) {
+                return 'glyphicon-arrow-right green';
+            }
+            else {
+                return 'glyphicon-arrow-left green';
+            }            
+        }
+
+    };
+
+</script>
+@(                    
+X.Window()
+    .ID("FormApproveMouvement")
+    .Width(1300)
+    .Resizable(false)
+    .Height(540)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(200)
+    .Y(20)
+    .BodyPadding(5)
+    .Title("Pending movements")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig( new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start})
+    .Items
+    (
+        X.Panel()
+            .ID("PendingMouvementCP")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Criterias", Height = 30 })
+            .Region(Region.North)
+            //.Border(true)
+            //.Floatable(false)
+            //.Collapsed(true)
+            //.Collapsible(true)
+            //.BodyPadding(0)
+            .MarginSpec("0 0 5 0")
+            .Frame(true)
+            //.BodyPadding(5)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+            .HeaderConfig(new PanelHeader
+            {
+                Items = {
+                            X.Button()
+                                .ID("btnRefreshPendingList")
+                                .IconCls("action_refresh_01")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url  = Url.Action("OnRefreshPending","MouvementStockAgence");
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSite", Encode=true, Value= "#{_cmbSite}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=true, Value= "#{cmbCampagne}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemMagasin", Encode=true, Value= "#{cmbMagasin}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExportateur", Encode=true, Value= "#{cmbExportateur}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemMouvementTypeID", Encode=true, Value= "#{cmbMouvementType}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSens", Encode=true, Value= "#{cmbSens}.getValue()", Mode=ParameterMode.Raw});
+                                        //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDateFD}.getRawValue()",   Mode=ParameterMode.Raw});
+                                        //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDateFD}.getRawValue()",     Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCertification",Encode=true, Value= "#{cmbCertification}.getRawValue()",     Mode=ParameterMode.Raw});
+                                        //de.Click.Success = "App.PendingMouvementCP.setTitle('Fournisseur : ' + App.cmbFournisseurFD.rawValue + ' , du  '+ App.dtpStartDateFD.rawValue  + ' au  '+ App.dtpEndDateFD.rawValue )";
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                )
+                                }
+            }
+            )
+            .Items
+            (
+    #region Zone Gauche
+                X.Container()
+                    //.Border(true)
+                    //.Frame(true)
+                    .Margin(5)
+                    .Height(70)
+                    .Flex(1)
+                    .Layout(LayoutType.Form)
+                    .Items
+                    (
+                        X.Hidden().ID("_cmbSite").Value((int)ViewData["SiteParDefaut"]),
+                        X.ComboBox()
+                            .ID("cmbMagasin")
+                            .ValueField("ID")
+                            .DisplayField("Designation")
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .FieldLabel("Magasin")
+                            .LabelAlign(LabelAlign.Right)
+                            .Value((int)ViewData["MagasinParDefaut"])
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(true)
+                                    .Listeners(l => l.Load.Handler = "App.cmbMagasin.setValue(App.cmbMagasin.getStore().getAt(0));")
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                    )
+                                .Proxy
+                                (
+                                    Html.X().AjaxProxy()
+                                    .Url(Url.Action(ViewData["LoadMagasin"].ToString(), "Magasin"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Parameters
+                                (
+                                    ps =>
+                                    {
+                                        ps.Add(new StoreParameter("SiteID", "App._cmbSite.getValue()", ParameterMode.Raw));
+                                    }
+                                )
+                            //.Listeners
+                            //(
+                            //        li =>
+                            //        {
+                            //            li.Load.Handler = "var combo = App.cmbMagasin; combo.setValue(records.length > 0 ? records[0].data.ID : 0);";
+                            //        }
+                            //)
+                            )
+                            .Listeners
+                            (
+                                li =>
+                                {
+                                    li.Select.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                    li.AfterRender.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                    //li.Change.Handler = "App.cmbMouvementType.clearValue(); App.cmbMouvementType.getStore().load();";
+                                }
+                            ),
+                        X.ComboBox()
+                            .ID("cmbCampagne")
+                            .FieldLabel("Campagne")
+                            .DisplayField("Designation")
+                            .ValueField("Designation")
+                            .LabelAlign(LabelAlign.Right)
+                            .Value(DefaultCampagne)
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(false)
+                                    .Model
+                                    (
+                                        X.Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                    )
+                                    .Proxy
+                                    (
+                                        X.AjaxProxy()
+                                            .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                            ),
+
+                        X.ComboBox()
+                            .ID("cmbExportateur")
+                            .FieldLabel("Exportateur")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .Hidden(true)
+                            .LabelAlign(LabelAlign.Right)
+                            .Store
+                            (
+                                X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                                Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                            )
+                                            )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                )
+                            .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                            }
+                            )
+
+
+                                   ),
+
+    #endregion
+    #region Droite                 
+                    X.Container()
+                        .Border(false)
+                        //.Frame(true)  
+                        .Margin(5)
+                        .Height(70)
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (X.ComboBox()
+                                                          .ID("cmbCertification")
+                                                          .FieldLabel("Certification")
+                                                          .LabelWidth(110)
+                                                          .Hidden(true)
+                                                          .DisplayField("Designation")
+                                                          .ValueField("ID")
+                                                          .LabelAlign(LabelAlign.Right)
+                                                          .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+
+                                                          )
+                                                          .SelectedItems
+                                                          (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                          ),
+                                X.ComboBox()
+                                    .ID("cmbSens")
+                                    .FieldLabel("E/S")
+                                    .DisplayField("Designation")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items
+                                    (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "{Tous}", Value = "-2" });
+                                            it.Add(new ListItem { Text = "Input", Value = "1" });
+                                            it.Add(new ListItem { Text = "OutPut", Value = "-1" });
+                                        }
+                                    )
+                                .Listeners
+                                (li =>
+                                {
+                                    li.Select.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                    li.AfterRender.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                    //li.Change.Handler = "App.cmbMouvementType.clearValue(); App.cmbMouvementType.getStore().load();";
+                                }
+                                )
+                                .SelectedItems
+                                    (
+                                    it =>
+                                    {
+                                        it.Add(new ListItem { Text = "{Tous}", Value = "-2" });
+                                    }
+                                    )
+                                ,
+                                       X.ComboBox()
+                                        .ID("cmbMouvementType")
+                                        .FieldLabel("Type Of Movement")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(-2)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 320 })
+                                        .Store
+                                        (
+                                           X.Store()
+                                                .AutoLoad(false)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                       .IDProperty("ID")
+                                                       .Fields
+                                                       (
+                                                         new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                         new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                       )
+                                                    )
+                                                    .Proxy
+                                                    (
+                                                      Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadActiveMouvementStockTypeAll", "MouvementStockType"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                    .Parameters
+                                                    (
+                                                        ps => {
+                                                            ps.Add(new StoreParameter("SensMouvement", "App.cmbSens.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemMagasin", "App.cmbMagasin.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemVisibleSurSite", "1", ParameterMode.Value));
+                                                        }
+                                                    )
+                                                    .Listeners
+                                                    (
+                                                            li =>
+                                                            {
+                                                                li.Load.Handler = "var combo = App.cmbMouvementType; combo.setValue(records.length > 0 ? records[0].data.ID : -2);";
+                                                            }
+                                                    )
+                                         )
+                                         .SelectedItems
+                                         (
+                                               it =>
+                                               {
+                                                   it.Add(new ListItem { Text = "{Tous}", Value = "-2" });
+                                               }
+                                         )
+                                   // ,
+
+                                   //X.FieldContainer()
+                                   // .FieldLabel("From/To")
+                                   // .LabelAlign(LabelAlign.Right)
+                                   // .Layout(LayoutType.HBox)
+                                   // .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                   // .Items
+                                   // (
+                                   //    X.DateField().ID("dtpStartDateFD").Width(100).Text(@StartDate),
+                                   //    X.DateField().ID("dtpEndDateFD").Width(100).Text(@EndDate).Flex(1)
+                                   //)
+
+                                   ),
+    #endregion
+    #region REsume
+            X.Container()
+                .Flex(1)
+                .Border(false)
+                .Margin(5)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig( new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center } )
+                .Items
+                    (
+                        X.Container()
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Start })
+                            .Items(
+                                    X.Label()
+                                        .ID("lblSummaryPendingMouvement")
+                                        .Text("Resume")
+                                //.StyleSpec("style='font-weight: 650; text-align: right;'")
+                                //.EmptyText("")
+                                )
+                    )
+    #endregion
+                               ),
+                           X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListPendingMouvement")
+                            .Height(285)
+                            .ForceFit(true)
+                            .Frame(true)
+                            .AllowDeselect(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.stock.MouvementStockAgence>()
+                                .ID("storeListPendingMouvement")
+                                .AutoLoad(false)
+                             .Proxy
+                             (
+                              Html.X().AjaxProxy()
+                                  //.Url(Url.Action("LoadListOfAvailableDeliveries", "Livraison"))
+                                  .Url(Url.Action("SelectPending","MouvementStockAgence"))
+                                  .Reader(Html.X().JsonReader().RootProperty("data"))
+                             )
+                             .Listeners(
+                                   ls => ls.Load.Handler = "SetPendingListeResume();"
+                                   )
+                             .Parameters
+                             (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemCampagne", "#{cmbCampagne}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemSite", "#{_cmbSite}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemMagasin", "#{cmbMagasin}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemExportateur", "#{cmbExportateur}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemMouvementTypeID", "#{cmbMouvementType}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemSens", "#{cmbSens}.getValue()", ParameterMode.Raw));
+                                   //ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDateFD}.getRawValue()", ParameterMode.Raw));
+                                   //ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDateFD}.getRawValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemCertification", "#{cmbCertification}.getValue()", ParameterMode.Raw));
+                               }
+                             )
+                             )
+                             .ColumnModel
+                             (
+                                Html.X().Column().Text("").DataIndex("mIcon").Width(35).Renderer("renderIcon"),
+                                //Html.X().Column().Text("E/S").DataIndex("Sens").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Type of Mvt").DataIndex("MouvementTypeAsString").Flex(3).Hideable(false),
+                                Html.X().Column().Text("Date").DataIndex("DateMouvement").Flex(3).Renderer("renderDateLong").Hideable(false),
+                                Html.X().Column().Text("Ref 1").DataIndex("Reference1").Flex(2).Hideable(false),
+                                Html.X().Column().Text("Ref 2").DataIndex("Reference2").Flex(2).Hideable(false),
+                                Html.X().Column().Text("Certification").DataIndex("CertificationAsString").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Type de Sacs").DataIndex("SacTypeAsString").Flex(2).Hideable(false),
+                                Html.X().Column().Text("Bags").DataIndex("QuantiteAsString").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(2).Hideable(false),
+                                Html.X().Column().Text("Tr.").DataIndex("TareSacsAsString").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Pallets").DataIndex("TarePalettesAsString").Flex(1).EmptyCellText("0").Hideable(false),
+                                Html.X().Column().Text("Deliv.").DataIndex("PoidsNetLivreAsString").Flex(2).Hideable(false),
+                                Html.X().Column().Text("Retention").DataIndex("RetentionAsString").Flex(1).EmptyCellText("0").Hideable(false),
+                                Html.X().Column().Text("Accept.").DataIndex("PoidsNetAccepteAsString").Flex(2).Hideable(false)
+                             )
+                             .Plugins(
+                                    X.FilterHeader()
+                                )
+                             .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                                .ID("rowPendingMouvement")
+                                                .Mode(SelectionMode.Multi)
+                                                .AllowDeselect(true)
+                                                .Listeners(l =>
+                                                {
+                                                    l.Select.Handler = "SetBtnApprove();";
+                                                    l.Deselect.Handler = "SetBtnApprove();";
+                                                })
+
+                                        )
+                       )
+
+                       .Buttons
+                       (
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                            .ID("btnApproveMouvement")
+                            .Disabled(true)
+                           .DirectEvents
+                           (
+                              de =>
+                              {
+                                  de.Click.Url = Url.Action("onSelectPosition");
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "magasinID", Encode = false, Mode = ParameterMode.Raw, Value = "App.cmbMagasin.value" });
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "magasinText", Encode = false, Mode = ParameterMode.Raw, Value = "App.cmbMagasin.rawValue" });
+                                  de.Click.EventMask.ShowMask = true;
+                                  //de.Click.Url = Url.Action("GenerateMouvement", "MouvementStock");
+                                  //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListPendingMouvement.getRowsValues({selectedOnly : true})" });
+                              }
+                           ),
+
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.FormApproveMouvement.doClose()")
+                            .Cls("btncancel")
+
+                          )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+

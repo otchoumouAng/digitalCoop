@@ -1,0 +1,172 @@
+﻿@model Tms.Classes.Business.stock.MouvementStockAgence
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+    .x-form-display-field-default {    
+    font-weight: bold !important;
+    margin-top: 5px !important;
+}
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript" src="~/Scripts/FormatAmount.js"></script>
+@(
+X.Window()
+    .ID("FormDetailLot")
+    .Width(880)
+    .Resizable(false)
+    .Height(400)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Détail des lots")
+    .Items
+    (
+    #region GridPanel
+            X.GridPanel()
+                .Layout(LayoutType.Fit)
+                .ID("grpListeDetailLot")
+                .ForceFit(false)
+                .Height(310)
+                .Region(Region.Center)
+                .Frame(true)
+                .Flex(1)
+                .Store
+                (
+                        X.StoreFor<Tms.Classes.Business.stock.MouvementStockAgence>()
+                           .ID("storeListeDetailLot")
+                           .PageSize(100)
+                           .RemotePaging(false)
+                           //.SorterFor(Model, m => m.DateLivraison, Ext.Net.SortDirection.DESC)
+                           .AutoLoad(true)
+                           .Proxy
+                            (
+                                 Html.X().AjaxProxy().Timeout(480000)
+                                .Url(Url.Action("Select", "SituationStockAgence"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                            .Parameters
+                            (
+                                ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemCampagne", Model.mCampagne.Designation, ParameterMode.Value));
+                                    ps.Add(new StoreParameter("ItemSite", Model.Sites.ID.ToString(), ParameterMode.Value));
+                                    ps.Add(new StoreParameter("ItemMagasin", Model.Magasin.ID.ToString(), ParameterMode.Value));
+                                    ps.Add(new StoreParameter("ItemExportateur", "-1", ParameterMode.Value));
+                                    //ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpFiltreStartDate}.getRawValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriodEnd", Model.DateMouvement.ToString(), ParameterMode.Value));
+                                    ps.Add(new StoreParameter("ItemEmplacement", "-1", ParameterMode.Value));
+                                }
+                            )
+                            .Listeners
+                            (
+                             ls =>
+                             {
+                                 ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                 ls.Load.Handler = "SummaryDetails(); Ext.net.Mask.hide();";
+                             }
+                          )
+                       )
+                       .ColumnModel
+                       (
+                            //Html.X().Column().Text("").DataIndex("mIcon").Width(40).Hideable(false).Renderer("renderIcon"),
+                            //Html.X().Column().Text("Magasin").DataIndex("MagasinAsString").Flex(1),
+                            Html.X().Column().Text("# Lot").DataIndex("Reference2").Flex(1),
+                            Html.X().Column().Text("Exportateur").DataIndex("ExportateurAsString").Flex(1),
+                            //Html.X().Column().Text("Item N°").DataIndex("Reference1").Flex(1),
+                            //Html.X().Column().Text("Delivery N°").DataIndex("LivraisonID").Flex(1),
+                            //Html.X().Column().Text("BE N°").DataIndex("BordereauNumero").Flex(1),
+                            //Html.X().Column().Text("Lot N°").DataIndex("LotNumero").Flex(1),
+
+                            Html.X().Column().Text("Nbr de sacs").DataIndex("QuantiteAsString").Flex(1),
+                            Html.X().Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(1),
+                            Html.X().Column().Text("Tare Des Sacs").DataIndex("TareSacsAsString").EmptyCellText("0").Flex(1),
+                            Html.X().Column().Text("Tare Des Palettes").DataIndex("TarePalettesAsString").EmptyCellText("0").Flex(1),
+                            //Html.X().Column().Text("Net Livré").DataIndex("PoidsNetLivreAsString").Flex(1),
+                            //Html.X().Column().Text("Ret").DataIndex("RetentionAsString").Flex(1),
+                            Html.X().Column().Text("Poids Net").DataIndex("PoidsNetAccepteAsString").Flex(1)
+                         )
+                        .DockedItems(
+                            X.Toolbar()
+                                .Dock(Dock.Top)
+                                .Items(
+                                        X.DisplayField().ID("_dNbLot").FieldLabel("#").LabelAlign(LabelAlign.Right),
+                                        X.DisplayField().ID("_dNbSac").FieldLabel("Sacs").LabelAlign(LabelAlign.Right),
+                                        X.DisplayField().ID("_dPoidsBrut").FieldLabel("Poids Brut (Kg)").LabelAlign(LabelAlign.Right),
+                                        X.DisplayField().ID("_dNPoidsNet").FieldLabel("Poids Net (Kg)").LabelAlign(LabelAlign.Right)
+                            )
+                        )
+                         .BottomBar
+                         (
+                             Html.X().PagingToolbar()
+                            .HideRefresh(true)
+                            .Plugins(Html.X().ProgressBarPager())
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowDetail")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(true)
+                        )
+                        .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+    #endregion
+
+    //X.FormPanel()
+    //    .Layout(LayoutType.HBox)
+    //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+    //    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+    //    .Items( 
+
+    //    )
+    )
+    .Buttons
+    (
+        X.Button()
+            .TabIndex(15)
+            .Text("Fermer")
+            .Handler("App.FormDetailLot.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var SummaryDetails = function () {
+        var nbrOfrows = App.grpListeDetailLot.getStore().getCount();
+        var totalNbSac = App.storeListeDetailLot.sum('Quantite') || 0;
+        var totalpoidsBrut = App.storeListeDetailLot.sum('PoidsBrut') || 0;
+        var totalpoidsNet = App.storeListeDetailLot.sum('PoidsNetAccepte') || 0;
+
+        totalNbSac = FormatAmount(totalNbSac);
+        totalpoidsBrut = FormatAmount(totalpoidsBrut);
+        totalpoidsNet = FormatAmount(totalpoidsNet);
+        App._dNbLot.setValue(nbrOfrows);
+        App._dNbSac.setValue(totalNbSac);
+        App._dPoidsBrut.setValue(totalpoidsBrut);
+        App._dNPoidsNet.setValue(totalpoidsNet);
+
+    }
+</script>

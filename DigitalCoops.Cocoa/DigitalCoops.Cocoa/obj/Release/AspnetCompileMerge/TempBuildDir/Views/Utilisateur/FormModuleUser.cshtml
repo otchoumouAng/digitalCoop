@@ -1,0 +1,213 @@
+﻿
+@model Tms.Classes.Security.UtilisateurViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<script type="text/javascript">
+
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        return Ext.String.format(tpl, icon_url);
+    };
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';/*Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');*/
+            }
+            else if (value == 1) {
+                return 'action_approve_02';/* 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');*/
+            }
+            else if (value == 2) {
+                return 'action_new_02';/*'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok*/
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-file green';
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+        },
+        resetButtons: function () {
+
+            if (App.rowSelectionModuleUser.hasSelection()) {
+                App.BtnRemoveModuleToUser.enable();
+            } else {
+                App.BtnRemoveModuleToUser.disable();
+            }
+        }
+    };
+
+
+</script>
+
+@(X.FormPanel()
+    .Items(
+            X.Window()
+            .ID("FormModuleUser")
+            .Width(800)
+            .Resizable(false)
+            .Height(450)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+            })
+            .X(400)
+            .Y(20)
+            .Title("User")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                .Items(
+                        X.Panel().Layout(LayoutType.Form)                        
+                        .Items(
+                                
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._Utilisateur.RowVersionKey),
+                                    X.Hidden().ID("Txtuserid").Value(Model._Utilisateur.IDUtilisateur),
+
+                                    X.TextField().ID("").FieldLabel("Nom")
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Utilisateur.Name : string.Empty)
+                                    .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        ,
+                                    X.TextField().ID("").FieldLabel("User Name")
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Utilisateur.UserName : string.Empty)
+                                    .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                           
+                                ),
+                        X.Panel().Layout(LayoutType.Fit)
+                        .TopBar(new Toolbar()
+                        {
+                            Items = {
+                                        X.Button()
+                                            .ID("BtnAddModuleToUser")
+                                            .IconCls("action_new_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text("Ajouter")
+                                            .Disable(false)
+                                            .DirectEvents( de =>{
+                                                de.Click.Url  = Url.Action("AddModuleToUser");
+                                                de.Click.EventMask.ShowMask = true;
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemUser", Mode = ParameterMode.Raw, Value = "#{Txtuserid}.getRawValue()" });
+                                            } ),
+                                        X.Button()
+                                        .ID("BtnRemoveModuleToUser")
+                                        .Icon(Icon.Delete)
+                                        .Border(false)
+                                        .Cls("ButtonStyle")
+                                        .Text("Retirer")
+                                        .Disabled(true)
+                                        .DirectEvents(de =>
+                                                {
+                                                    de.Click.Url = Url.Action("RemoveModuleToUser");
+                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeModuleUser}.getSelectionModel().getSelection()[0].data" });
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'User : Retirer Module'; config.confirmation.message = 'Do you want to remove this module ? ';";
+                                                }),
+
+                                    }
+                        }),
+                            X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListeModuleUser")
+                            .ForceFit(true)
+                            .Height(230)
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Security.ModuleUsers>().ID("storeListeModuleUser")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectModule"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(ps =>
+                                    {
+                                        ps.Add(new StoreParameter("ItemUser", "#{Txtuserid}.getRawValue()", ParameterMode.Raw));                                        
+                                    }
+                                        )
+                                )
+                            .ColumnModel
+                            (
+                                Html.X().Column().Text("").DataIndex("mIcon").Width(20).Renderer("renderIcon").Width(40),
+                                //Html.X().Column().Text("Module").DataIndex("ModuleAsString").Flex(1),
+                                Html.X().Column().Text("Module").DataIndex("ModuleAsString").Flex(1)
+                            )
+                            //.Plugins(
+                            //    X.FilterHeader()
+                            //    )
+                            .SelectionModel(
+                                    X.RowSelectionModel()
+                                    .ID("rowSelectionModuleUser")
+                                    .Mode(SelectionMode.Single)
+                                    .AllowDeselect(true)
+                                )
+                            .Listeners(l =>
+                            {
+                                l.Select.Fn = "Overview.resetButtons";
+                                l.Deselect.Fn = "Overview.resetButtons";
+                            }
+                            )
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitModuleUser");                    
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeModuleUser.getRowsValues({selectedOnly : false})" });
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormModuleUser.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Role : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+

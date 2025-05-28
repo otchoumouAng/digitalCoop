@@ -1,0 +1,6 @@
+﻿@Html.DevExpress().WebDocumentViewer(settings =>
+{
+    settings.Name = "Ordre De Transit";
+    settings.ClientSideEvents.Init = "function(s, e) { s.previewModel.reportPreview.zoom(1);}";
+}).Bind((XtraReport)ViewData["Report"]).GetHtml()
+

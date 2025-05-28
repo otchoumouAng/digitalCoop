@@ -1,0 +1,59 @@
+﻿@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(X.FormPanel()
+    .Items(
+        X.Window()
+        .ID("FrmSupplierFilter")
+        .Width(400)
+        .Resizable(false)
+        .Height(250)        
+        .CloseAction(CloseAction.Destroy)        
+        .X(300)
+        .Y(100)
+        .Title("Criteria : Supplier overview")
+        .Layout(LayoutType.Form)
+        .Items(
+                X.ComboBox()
+                .ID("")
+                .FieldLabel("Groupe")
+                .LabelWidth(110)
+                .LabelAlign(LabelAlign.Right)
+                .DirectEvents(de =>
+                    {
+                        de.Select.Url = Url.Action("OnSelectSupplierGroup");
+                    }),
+                X.ComboBox()
+                .ID("")
+                .FieldLabel("Type de fournisseur")
+                .LabelWidth(110)
+                .LabelAlign(LabelAlign.Right)
+                .DirectEvents(de =>
+                    {
+                        de.Select.Url = Url.Action("OnSelectSupplierGroup");
+                    }),
+                X.ComboBox()
+                .ID("")
+                .FieldLabel("Certification")
+                .LabelWidth(110)
+                .LabelAlign(LabelAlign.Right)
+                .DirectEvents(de =>
+                    {
+                        de.Select.Url = Url.Action("OnSelectSupplierGroup");
+                    }
+                )                
+                ).Buttons(
+                    X.Button().Text("OK")
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitSupplierFilter");
+                        }),
+                    X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                )
+            )
+    )
+)
+
+

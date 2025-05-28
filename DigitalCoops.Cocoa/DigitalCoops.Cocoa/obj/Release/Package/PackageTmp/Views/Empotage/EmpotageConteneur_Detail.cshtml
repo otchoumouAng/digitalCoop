@@ -1,0 +1,472 @@
+﻿
+@model Tms.Classes.Business.Sales.EmpotageViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 30px;
+        min-height: 80px !important;
+    }
+</style>
+@Scripts.Render("~/bundles/CommonScripts")
+<script type="text/javascript">
+    var GetNbrSacsCont = function () {
+        var total = parseFloat(App.storeListeConteneur.sum('NbreSacs')) || 0;
+        total = FormatAmount(total);
+        App.LblNbrSacsConteneur.setText(total + ' Sac(s)');
+    };
+
+    var Detail =
+    {
+        resetButtons: function () {
+
+            App.btnEditContainer.disable();
+            App.btnRemoveContainer.disable();
+
+            if (App.rowSelectionListeConteneur.hasSelection()) {
+
+                if (App.ConteneurPermissionEdit.value == 'true')
+                    App.btnEditContainer.enable();
+                else
+                    App.btnEditContainer.disable();
+
+
+
+                if (App.ConteneurPermissionRemove.value == 'true') {
+                    if (App.rowSelectionListeConteneur.lastSelected.data.Desactive == false) {
+                        App.btnRemoveContainer.setText("Remove");
+                        App.btnRemoveContainer.setIconCls('glyphicon glyphicon-minus-sign red');
+                        App.btnRemoveContainer.enable();
+                    }
+                }
+                else {
+                    if (App.rowSelectionListeConteneur.lastSelected.data.Desactive == false) {
+                        App.btnRemoveContainer.setText("Remove");
+                        App.btnRemoveContainer.setIconCls('glyphicon glyphicon-minus-sign red');
+                        App.btnRemoveContainer.disable();
+                    }
+                }
+
+
+
+
+            }
+            else {
+                App.btnRemoveContainer.setText("Remove");
+                App.btnRemoveContainer.setIconCls('glyphicon glyphicon-minus-sign red');
+                App.btnRemoveContainer.disable();
+            }
+        }
+    };
+
+</script>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+        X.Window()
+        .ID("EmpotageConteneur_Detail")
+        .Width(1000)
+        .Resizable(false)
+        .AutoScroll(true)
+        .Scrollable(ScrollableOption.Vertical)
+        .Height(500)
+        .BodyPadding(5)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        .Modal(true)
+        .Y(5)
+        .Title("Stuffing")
+        .Items
+        (
+                X.FormPanel()
+
+                    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .Items(
+
+                             X.Panel()
+                                .Frame(true)
+                                .Border(false)
+                                .FrameHeader(false)
+                                .ID("pnlFlexEvenECD1")
+                                .Layout(LayoutType.HBox)
+                                .MarginSpec("0 0 5 0")
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                (
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._Empotage.RowVersionKey),
+                                    X.Hidden().ID("hiddenEmpotageID").Value(Model._Empotage.ID),
+                                    X.Hidden().ID("ConteneurPermissionRemove").Value(ViewData["ConteneurPermissionRemove"]).ReadOnly(true),
+                                    X.Hidden().ID("ConteneurPermissionEdit").Value(ViewData["ConteneurPermissionEdit"]).ReadOnly(true),
+                                    X.Panel()
+                                            .ID("firstColECD")
+                                            .Layout(LayoutType.Form)
+                                            .Flex(1)
+                                            .Items
+                                            (
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Shipment Number")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                         X.TextField()
+                                                            .ID("txtShipmentNumber")
+                                                            .Width(270)
+                                                            .ReadOnly(true)
+                                                            .MarginSpec("0 20 0 0")
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Embarquement.Numero : string.Empty),
+                                                        X.TextField()
+                                                            .ID("txtEmbarquementID")
+                                                            .Hidden(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Embarquement.ID : Guid.Empty),
+                                                        X.Button()
+                                                            .Text("...")
+                                                            .Height(20)
+                                                            .Width(40)
+                                                            .ID("btnSelectShipment")
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnSelectShipment", "Empotage");
+                                                                    de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available of shipment')";
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            )
+
+                                                ),
+
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Stuffing Date")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                        X.DateField()
+                                                             .ID("txtDate")
+                                                             .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                             .AllowBlank(false)
+                                                             .Width(160)
+                                                             .IndicatorCls("IndicatorRedStar")
+                                                             .IndicatorText("*")
+                                                )
+                                                ,
+                                                 X.ComboBox()
+                                                 .ID("_cmbStation")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Stuffing Station")
+                                                 .DisplayField("Nom")
+                                                 .ListConfig(new BoundList { MinWidth = 300 })
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.StationEmpotage.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "StationEmpotage"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+
+
+                                            //End First Col
+                                            ),
+                                            X.Panel()
+                                                 .ID("secondColECD")
+                                                 .Layout(LayoutType.Form)
+                                                 .Flex(1)
+                                                 .Items
+                                                 (
+                                                             X.TextArea()
+                                                              .ID("txtComment")
+                                                              .FieldLabel("Commentaire")
+                                                              .LabelAlign(LabelAlign.Right)
+                                                              .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Empotage.Commnetaire : string.Empty)
+
+                                                 //End 2nd Col
+                                                 )
+                                //End first Panel
+                                )
+                                ,
+                                X.Panel()
+                                .Frame(false)
+                                .Border(false)
+                                .ID("pnlFlexEvenECD2")
+                                .Layout(LayoutType.VBox)
+                                .MarginSpec("10 0 5 0")
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                (
+                                    X.Label().Text("Containers").StyleSpec("Font-size:15px; text-decoration: underline ").MarginSpec("0 0 0 10"),
+                                    X.Panel()
+                                    .Height(39)
+                                    .Layout(LayoutType.Fit)
+                                    .TopBar
+                                     (
+                                        new Toolbar()
+                                        {
+                                            Items =
+                                                    {
+
+                                                        X.Button()
+                                                            .ID("btnAddContainer")
+                                                            .IconCls("glyphicon-plus red")
+                                                            .Text("Ajouter")
+                                                            .Cls("ButtonStyle")
+                                                            .Border(false)
+                                                            .Disabled((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (bool)ViewData["ConteneurPermissionAdd"] == false )? true : false)
+                                                            .Disable(true)
+                                                           .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnAddContainer","Conteneur");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmpotageID", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenEmpotageID}.getValue()" });
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmbarquementID", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtEmbarquementID}.getValue()" });
+                                                                    de.Click.Success = "App.ConteneurLot_Detail.setTitle('Container : Add')";
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            ),
+
+                                                   X.ToolbarSeparator(),
+
+                                                         X.Button()
+                                                            .ID("btnEditContainer")
+                                                             .IconCls("action_modify_02")
+                                                            .Border(false)
+                                                            .Cls("ButtonStyle")
+                                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                 de.Click.Url = Url.Action("OnEditContainer","Conteneur");
+                                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailConteneur}.getSelectionModel().getSelection()[0].data" });
+                                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmbarquementID", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtEmbarquementID}.getValue()" });
+                                                                 de.Click.Success = "App.ConteneurLot_Detail.setTitle('Container : Edit')";
+                                                                 de.Click.EventMask.ShowMask = true;                                                                }
+                                                            ),
+
+                                                    X.ToolbarSeparator(),
+
+                                                         X.Button()
+                                                            .ID("btnRemoveContainer")
+                                                            .IconCls("glyphicon glyphicon-minus-sign red")
+                                                            .Border(false)
+                                                            .Cls("ButtonStyle")
+                                                            .Text("Retirer")
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                de.Click.Url = Url.Action("OnRemoveContainer","Conteneur");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailConteneur}.getSelectionModel().getSelection()[0].data" });
+                                                                de.Click.ExtraParams.Add(new StoreParameter { Name = "ItemCount", Mode = ParameterMode.Raw, Value = "#{grpDetailConteneur}.getRowsValues().length" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                                de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Container  : Retirer'; config.confirmation.message = 'Do you want to permanently remove this item? ';";
+                                                                }
+                                                            ),
+                                                         X.ToolbarSeparator(),
+                                                         X.Label().ID("LblNbrSacsConteneur").Text("sacs")
+
+                                        }
+                                        }
+
+                             ),
+                              X.GridPanel()
+                              .Layout(LayoutType.Fit)
+                              .ID("grpDetailConteneur")
+                              .Border(false)
+                              .Frame(true)
+                              .Height(225)
+                              .AllowDeselect(true)
+                              .Store
+                              (
+                                X.StoreFor<Tms.Classes.Business.Sales.Conteneur>()
+                                .ID("storeListeConteneur")
+                                .Proxy
+                                 (
+                                   Html.X().AjaxProxy()
+                                   .Url(Url.Action("LoadListOfContainer"))
+                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                 )
+                                 .Parameters
+                                 (
+                                    ps =>
+                                    {
+                                        ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecMode}.getValue()", ParameterMode.Raw));
+                                        ps.Add(new StoreParameter("ItemEmpotageID", "#{hiddenEmpotageID}.getValue()", ParameterMode.Raw));
+                                    }
+                                 )
+
+                                .Listeners
+                                (
+                                    l =>
+                                    {
+                                        l.Add.Handler = "RefreshContainer();GetNbrSacsCont();";
+                                        l.Load.Handler = "RefreshContainer();GetNbrSacsCont();"; 
+                                        l.Update.Handler = "RefreshContainer();GetNbrSacsCont();";
+                                        l.Remove.Handler = "RefreshContainer();GetNbrSacsCont();";
+
+                                    }
+                                )
+
+
+                               )
+                               .ColumnModel
+                               (
+                                   Html.X().Column().Text("").DataIndex("mIcon").Width(40).Renderer("renderIcon"),
+                                   Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1),
+                                   Html.X().Column().Text("Type ").DataIndex("ConteneurTypeAsString").Flex(1),
+                                   Html.X().Column().Text("N° Seal Ship Line").DataIndex("NumPlombCompMaritime").Flex(1),
+                                   Html.X().Column().Text("N° Seal").DataIndex("NumPlombTelcar").Flex(1),
+                                   Html.X().Column().Text("N° Livraison").DataIndex("LivraisonNumero").Flex(1),
+                                   Html.X().Column().Text("Number Of Bags").DataIndex("NbreSacsAsString").Flex(1),
+                                   Html.X().Column().Text("Lots").DataIndex("LotsConteneur").Flex(2)
+
+                               )
+                               .SelectionModel
+                               (
+                                    X.RowSelectionModel()
+                                    .ID("rowSelectionListeConteneur")
+                                    .Mode(SelectionMode.Single)
+                                    .AllowDeselect(true)
+                               )
+                                .Listeners(l =>
+                                {
+                                    if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                    {
+                                        l.Select.Fn = "Detail.resetButtons";
+                                        l.Deselect.Fn = "Detail.resetButtons";
+
+
+                                    }
+
+                                })
+
+
+                                //End second Panel
+                                )
+                    //End FormPanel
+                    )
+
+        //End Windows
+        )
+        .Buttons
+        (
+             X.Button()
+             .Text("Ok")
+             .ID("btnok")
+             .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+             .DirectEvents
+             (
+
+                 de =>
+                 {
+                     de.Click.Url = Url.Action("SubmitFormNew2Method");
+                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmpotageID", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenEmpotageID}.getValue()" });
+                     de.Click.Before = "return validNew(App.EmpotageConteneur_Detail.id);";
+                     de.Click.FormID = "#(return this.up('window').down('form');)";
+                 }
+            ),
+
+
+            X.Button()
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.EmpotageConteneur_Detail.doClose()")
+            .Cls("btncancel")
+
+        )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Stuffing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if (App.grpDetailConteneur.getRowsValues().length < 1) {
+            
+            Ext.Msg.show({ title: 'Stuffing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: '¨Pease add lots.', buttons: Ext.Msg.OK });
+            return false;
+        }
+       
+    };
+
+    var RefreshContainer = function () {
+        
+        if (App.grpDetailConteneur.getRowsValues().length < 1) 
+        {
+            App.btnSelectShipment.enable();
+        }
+        else
+        {
+            App.btnSelectShipment.disable();
+        }
+
+    };
+    
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+   
+</script>

@@ -1,0 +1,435 @@
+﻿using Ext.Net.MVC;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Tms.Components.Data;
+
+namespace Tms.Classes.Shared
+{
+    public class Analyseur : DataPersist
+    {
+        #region "Fields"
+
+        private int _ID;
+        private string _Nom;
+        private bool _PeutApprouver;
+        private bool _Desactive;
+        private string _SitesAnalyseur;
+        #endregion
+
+        #region "Properties"
+
+        [ModelField(IDProperty = true)]
+        public int ID
+        {
+            get { return _ID; }
+            set { _ID = value; }
+        }
+        public string Nom
+        {
+            get { return _Nom; }
+            set { _Nom = value; }
+        }
+
+
+        public bool PeutApprouver
+        {
+            get { return _PeutApprouver; }
+            set { _PeutApprouver = value; }
+        }
+
+        public bool Desactive
+        {
+            get { return _Desactive; }
+            set { _Desactive = value; }
+        }
+
+        public int mIcon
+        {
+            get {
+                if (_Desactive)
+                    return 0;
+                else return 2;
+            }            
+        }
+
+        public string SitesAnalyseur
+        {
+            get
+            {
+                return _SitesAnalyseur;
+            }
+
+            set
+            {
+                _SitesAnalyseur = value;
+            }
+        }
+
+        #endregion
+
+        #region Constructor
+        public Analyseur()
+        {
+
+        }
+
+        public Analyseur(int myId)
+        {
+            this.fnGet(myId);
+        }
+
+        #endregion
+
+        #region methods
+        public override bool fnGet(object Id)
+        {
+            IDataReader mDataReader = null;
+            try
+            {
+                mDataReader = db().ExecuteReader("Analyseur_Get", (int)Id);
+                if (mDataReader.Read())
+                {
+                    MapFromDataReader(this, mDataReader);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().Name + ":fnGet");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
+
+        public override List<DataPersist> fnSelect()
+        {
+            return fnSelect(-1,-1,-1);
+        }
+
+        public List<DataPersist> fnSelect(int mStatus, int EstApprobateur, int visibleEnAgence = -1)
+        {
+            List<DataPersist> mList = new List<DataPersist>();
+            IDataReader mDataReader = null;
+
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("Analyseur_Select"); 
+                db().AddInParameter(mCommande, "@Status", SqlDbType.SmallInt, mStatus);
+                db().AddInParameter(mCommande, "@EstApprobateur", SqlDbType.SmallInt, EstApprobateur);
+                mDataReader = db().ExecuteReader(mCommande);
+
+                while (mDataReader.Read())
+                {
+                    Analyseur mClass = new Analyseur();
+
+                    MapFromDataReader(mClass, mDataReader);
+                    mList.Add(mClass);
+                }
+                return mList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnSelect");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
+        public List<DataPersist> fnSelectBySite(int mStatus, int EstApprobateur, int SiteID = 1)
+        {
+            List<DataPersist> mList = new List<DataPersist>();
+            IDataReader mDataReader = null;
+
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("Analyseur_SelectBySite");
+                db().AddInParameter(mCommande, "@Status", SqlDbType.SmallInt, mStatus);
+                db().AddInParameter(mCommande, "@EstApprobateur", SqlDbType.SmallInt, EstApprobateur);
+                db().AddInParameter(mCommande, "@SiteID", SqlDbType.SmallInt, SiteID);
+                mDataReader = db().ExecuteReader(mCommande);
+
+                while (mDataReader.Read())
+                {
+                    Analyseur mClass = new Analyseur();
+
+                    MapFromDataReader(mClass, mDataReader);
+                    mList.Add(mClass);
+                }
+                return mList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnSelect");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
+
+        public override bool fnUpdate()
+        {
+            bool Result;
+            DataCommand mCommande;
+            try
+            {
+                if (this._isnew)
+                {
+
+                    mCommande = db().CreateStoredProcCommand("Analyseur_New");
+
+                    db().AddOutParameter(mCommande, "@ID", SqlDbType.Int, 0);
+                    db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, _UtilisateurCreation);
+                }
+                else
+                {
+                    mCommande = db().CreateStoredProcCommand("Analyseur_Modify");
+                    db().AddInParameter(mCommande, "@ID", SqlDbType.Int, _ID);
+                    db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification);
+                }
+
+                db().AddInParameter(mCommande, "@nom", SqlDbType.VarChar, _Nom);
+                db().AddInParameter(mCommande, "@PeutApprouver", SqlDbType.Bit, _PeutApprouver);
+
+                db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
+
+                if (!this._isnew)
+                {
+                    db().AddParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0, _RowVersionKey, ParameterDirection.InputOutput);
+                }
+                else
+                {
+                    db().AddOutParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0);
+                }
+
+                db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);
+                db().ExecuteNonQuery(ref mCommande);
+                switch ((int)db().Parameters(mCommande, "ReturnValue"))
+                {
+                    case 0:
+                        //Everything OK
+                        base.UpdateAuditFields();
+                        Result = true;
+
+                        _RowVersionKey = db().Parameters(mCommande, "@RowVersion");
+                        _ID = (int)db().Parameters(mCommande, "@ID");
+
+                        _isnew = false;
+                        break;
+                    default:
+                        //Unkown error
+                        Result = false;
+                        string ErrorMessage = (string)db().Parameters(mCommande, "@ErrorMessage");
+                        throw new Exception(ErrorMessage);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+                throw new Exception(ex.Message + "\r\n" + "Analyseur:fnUpdate");
+
+            }
+            return Result;
+        }
+
+        public bool fnUpdate(DataTransaction mTran)
+        {
+            bool Result;
+            DataCommand mCommande;
+            try
+            {
+                if (this._isnew)
+                {
+
+                    mCommande = db().CreateStoredProcCommand("Analyseur_New");
+
+                    db().AddOutParameter(mCommande, "@ID", SqlDbType.Int, 0);
+                    db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, _UtilisateurCreation);
+                }
+                else
+                {
+                    mCommande = db().CreateStoredProcCommand("Analyseur_Modify");
+                    db().AddInParameter(mCommande, "@ID", SqlDbType.Int, _ID);
+                    db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification);
+                }
+
+                db().AddInParameter(mCommande, "@nom", SqlDbType.VarChar, _Nom);
+                db().AddInParameter(mCommande, "@PeutApprouver", SqlDbType.Bit, _PeutApprouver);
+
+                db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
+
+                if (!this._isnew)
+                {
+                    db().AddParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0, _RowVersionKey, ParameterDirection.InputOutput);
+                }
+                else
+                {
+                    db().AddOutParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0);
+                }
+
+                db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);
+                db().ExecuteNonQuery(ref mCommande, mTran);
+                switch ((int)db().Parameters(mCommande, "ReturnValue"))
+                {
+                    case 0:
+                        //Everything OK
+                        base.UpdateAuditFields();
+                        Result = true;
+
+                        _RowVersionKey = db().Parameters(mCommande, "@RowVersion");
+                        _ID = (int)db().Parameters(mCommande, "@ID");
+
+                        _isnew = false;
+                        break;
+                    default:
+                        //Unkown error
+                        Result = false;
+                        string ErrorMessage = (string)db().Parameters(mCommande, "@ErrorMessage");
+                        throw new Exception(ErrorMessage);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+                throw new Exception(ex.Message + "\r\n" + "Analyseur:fnUpdate");
+
+            }
+            return Result;
+        }
+
+
+        public override bool fnActivate()
+        {
+            bool Result;
+            DataCommand mCommande = db().CreateStoredProcCommand("Analyseur_Activate");
+            db().AddInParameter(mCommande, "@ID", SqlDbType.Int, _ID);
+            db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification);
+            db().AddParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0, _RowVersionKey, ParameterDirection.InputOutput);
+            db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
+            db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);
+            try
+            {
+                db().ExecuteNonQuery(ref mCommande);
+                switch ((int)db().Parameters(mCommande, "ReturnValue"))
+                {
+                    case 0:
+                        //Everything OK
+                        Result = true;
+                        Desactive = false;
+                        _RowVersionKey = db().Parameters(mCommande, "@RowVersion");
+                        break;
+                    default:
+                        Result = false;
+                        string ErrorMessage = (string)db().Parameters(mCommande, "@ErrorMessage");
+                        throw new Exception(ErrorMessage);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+                throw new Exception(ex.Message + "\r\n" + "Analyseur:fnActivate");
+            }
+            return Result;
+        }
+
+        public override bool fnDeActivate()
+        {
+            bool Result;
+            DataCommand mCommande = db().CreateStoredProcCommand("Analyseur_DeActivate");
+            db().AddInParameter(mCommande, "@ID", SqlDbType.Int, _ID);
+            db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification);
+            db().AddParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0, _RowVersionKey, ParameterDirection.InputOutput);
+            db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
+            db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);
+            try
+            {
+                db().ExecuteNonQuery(ref mCommande);
+                switch ((int)db().Parameters(mCommande, "ReturnValue"))
+                {
+                    case 0:
+                        //Everything OK
+                        Result = true;
+                        Desactive = true;
+                        _RowVersionKey = db().Parameters(mCommande, "@RowVersion");
+                        break;
+                    default:
+                        Result = false;
+                        string ErrorMessage = (string)db().Parameters(mCommande, "@ErrorMessage");
+                        throw new Exception(ErrorMessage);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+                throw new Exception(ex.Message + "\r\n" + "Analyseur:fnDeActivate");
+            }
+            return Result;
+        }
+
+        #endregion
+
+        #region "Static Member"
+        public static string SortPropertyName = "Nom";
+        public static string IdPropertyName = "ID";
+
+        public static string DisplayProperty = "Nom";
+        public static string valueProperty = "ID";
+        #endregion
+
+        #region "Private Members"
+
+        public override string ToString()
+        {
+            return _Nom;
+        }
+
+        private static void MapFromDataReader(Analyseur mClass, IDataReader mDataReader)
+        {
+            try
+            {
+                if (mDataReader != null)
+                {
+                    mClass.IsNew = false;
+
+                    if (!DBNull.Value.Equals(mDataReader["ID"])) mClass._ID = (int)mDataReader["ID"];
+                    if (!DBNull.Value.Equals(mDataReader["NomAnalyseur"])) mClass._Nom = (string)mDataReader["NomAnalyseur"];
+                    if (!DBNull.Value.Equals(mDataReader["PeutApprouver"])) mClass._PeutApprouver = (bool)mDataReader["PeutApprouver"];
+                    if (!DBNull.Value.Equals(mDataReader["Desactive"])) mClass._Desactive = (bool)mDataReader["Desactive"];
+                    if (!DBNull.Value.Equals(mDataReader["CreationUtilisateur"])) mClass.UtilisateurCreation = (string)mDataReader["CreationUtilisateur"];
+                    if (!DBNull.Value.Equals(mDataReader["CreationDate"])) mClass.DateCreation = (DateTime)mDataReader["CreationDate"];
+                    if (!DBNull.Value.Equals(mDataReader["ModificationUtilisateur"])) mClass.UtilisateurModification = (string)mDataReader["ModificationUtilisateur"];
+                    if (!DBNull.Value.Equals(mDataReader["ModificationDate"])) mClass.DateModification = (DateTime)mDataReader["ModificationDate"];
+                    if (!DBNull.Value.Equals(mDataReader["RowVersionKey"])) mClass.RowVersionKey = (object)mDataReader["RowVersionKey"];
+
+                    if (!DBNull.Value.Equals(mDataReader["SitesAnalyseur"])) mClass.SitesAnalyseur = (string)mDataReader["SitesAnalyseur"];
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n Analyseur:MapFromDataReader");
+            }
+        }
+        #endregion
+
+    }
+
+    public partial class AnalyseurViewModel
+    {
+        public Analyseur _Analyseur { get; set; }
+        public Tms.Components.Settings.EnumsDefinition.eExecMode _ExecMode { get; set; }
+    }
+}

@@ -1,0 +1,372 @@
+﻿
+@model Tms.Classes.Business.FactureTransportViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+<script src="~/Scripts/FormatNumber.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+@(X.FormPanel()
+    .Items(
+            X.Window()
+            .ID("FormFactureTransport")
+            .Width(1050)
+            .Resizable(false)
+            .Height(470)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+                //l.Show.Handler = "App.grpListePendingDeductionTr.getStore().load();";
+
+            })
+            //.X(300)
+            .Y(10)
+            .Title("Facture Transport")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+            .Items(
+                                //X.Panel().ID("DeliveryCodingFormPanel")
+                                //    .Layout(LayoutType.Form)
+                                //    //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                //.Items(
+                                X.Panel()
+                                    .Layout(LayoutType.Form)
+                                    .MaxWidth(500)
+                                    .Items(
+                                            X.Hidden().ID("FactureTransportHiddenExecMode").Value(Model._ExecMode),
+                                            X.Hidden().ID("hiddenRowversion").Value(Model._FactureTransport.RowVersionKey),
+                                            X.Hidden().ID("hiddenNumeroFactureTransport").Value(Model._FactureTransport.Numero),
+                                            X.Hidden().ID("hiddenFactureTransportTotalTonnage").Value(Model._FactureTransport.Tonnage),
+                                            // X.Container().Layout(LayoutType.HBox).LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Top }).Items(
+                                            X.FieldContainer()
+                                                        .Layout(LayoutType.HBox).Width(350).FieldLabel("Date Facture").LabelAlign(LabelAlign.Right)
+                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                        .Items(
+                                                                    X.DateField()
+                                                                        .Width(120)
+                                                                        .ID("TxtFactureTransportDate")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .Text(DateTime.Now.ToShortDateString())
+                                                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                        .MarginSpec("0 10 0 0"),
+                                                                    X.TimeField()
+                                                                        .ID("TxtFactureTransportDateTime")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .Text(DateTime.Now.ToShortTimeString())
+                                                                )
+                                                ,
+                                            X.ComboBox()
+                                                .ID("CmbFactureTransportTransporteurID")
+                                                .FieldLabel("Transporteur")
+                                                .LabelWidth(120)
+                                                .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .MatchFieldWidth(false)
+                                                .ListConfig(new BoundList { MinWidth = 350 })
+                                                .DisplayField("Nom")
+                                                .ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(false)
+                                                .ForceSelection(true)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X()
+                                                                        .Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                )
+                                                                    )
+                                                            .Proxy(
+                                                                    Html.X()
+                                                                        .AjaxProxy()
+                                                                        .Url(
+                                                                                Url.Action("LoadTransporteurWithPendingInvoice", "Transporteur")
+                                                                            )
+                                                                        .Reader(
+                                                                                Html.X().JsonReader().RootProperty("data")
+                                                                                )
+                                                                )
+
+
+                                                        )
+                                                .Listeners(li =>
+                                                {
+                                                    li.Select.Handler = "App.storePendingDeductionTransportItem.removeAll(); App.grpListePendingDeductionTr.getStore().load();";
+                                                    li.Change.Handler = "App.storePendingDeductionTransportItem.removeAll(); App.grpListePendingDeductionTr.getStore().load();";
+                                                }
+                                                ),
+                                            X.ComboBox()
+                                                .ID("CmbFactureTransportPayementModeID")
+                                                .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .FieldLabel("Mode De Paiement")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .Value(Model._Parametres.PayementMode.ID)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(false)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .ForceSelection(true)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X()
+                                                                        .Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                        )
+                                                            .Proxy(
+                                                                        Html.X().AjaxProxy()
+                                                                        .Url(
+                                                                                Url.Action("Load", "PayementMode")
+                                                                                )
+                                                                        .Reader(
+                                                                                    Html.X().JsonReader().RootProperty("data")
+                                                                 ))
+                                                        )
+
+                                            // )                                   
+                                            ),
+                           X.Panel()
+                                .Layout(LayoutType.Fit)
+                                .MarginSpec("10 10 5 10")
+                                .Items(
+                                    X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListePendingDeductionTr")
+                                       .Region(Region.Center)
+                                       .ForceFit(false)
+                                       .Border(true)
+                                       .Height(160)
+                                       .AllowDeselect(true)
+                                       .Store(
+                                                X.StoreFor<Tms.Classes.Business.FactureDeduction>()
+                                                    .ID("storePendingDeductionTransportItem")
+                                                    .AutoLoad(false)
+                                                    .Proxy(
+                                                           Html.X().AjaxProxy()
+                                                           .Url(Url.Action("SelectFactureTransportItems"))
+                                                           .Reader(
+                                                                    Html.X().JsonReader().RootProperty("data")
+                                                                    )
+                                                      )
+                                                    .Parameters(ps =>
+                                                    {
+                                                        ps.Add(new StoreParameter("ItemTransporteur", "#{CmbFactureTransportTransporteurID}.getValue()", ParameterMode.Raw));
+                                                    })
+                                        )
+                                        .ColumnModel
+                                        (
+                                            Html.X().Column().Text("Date").DataIndex("DateFacture").Flex(2).MaxWidth(150).Hideable(false),
+                                            Html.X().Column().Text("Facture N°").DataIndex("Facture").Renderer("renderObject").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Livraison N°").DataIndex("NumeroLivraison").Width(90).Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Fournisseur").DataIndex("NomFournisseur").Flex(1).Flex(3).Hideable(false),
+                                            Html.X().Column().Text("Tonnage").DataIndex("Tonnage").Flex(1).Hideable(false),
+                                            //Html.X().Column().Text("Taux").DataIndex("Taux").Flex(1),
+                                            Html.X().Column().Text("Montant").DataIndex("MontantAsString").Flex(1).Hideable(false).EmptyCellText("0"),
+                                            Html.X().Column().Text("Deduction").DataIndex("DeductionAsString").Flex(1).Hideable(false).EmptyCellText("0")
+                                        )
+                                        .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                            .Listeners(ls =>
+                                            {
+                                                ls.Select.Fn = "GetTotalAmount";
+                                                ls.SelectionChange.Fn = "GetTotalAmount";
+                                            })
+
+                                        )
+                            ),
+                           X.Panel()
+                           .MarginSpec("0 10 0 0")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right })
+                            .Items(
+                                    X.TextField()
+                                        .ID("TxtTotalFactureTransport")
+                                        .FieldLabel("Total")
+                                        .LabelStyle("font-weight:bold;")
+                                        .LabelAlign(LabelAlign.Right).Text("0")
+                                        .ReadOnly(true)
+                                        .FieldStyle("text-align: right; font-weight: bold;")
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Change.Url = Url.Action("SetAmountToLetter");
+                                            de.Change.Before = "return CheckValues();";
+                                            de.Change.ExtraParams.Add(new Parameter { Name = "Amount", Mode = ParameterMode.Raw, Value = "App.TxtTotalFactureTransport.value" });
+                                        })
+                            ),
+                           X.Panel()
+                           .MarginSpec("0 10 0 0")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right })
+                            .Items(
+                                    X.TextField()
+                                        .ID("TxtDeductionFactureTransport")
+                                        .FieldLabel("Deductions")
+                                        .LabelStyle("font-weight:bold;")
+                                        .LabelAlign(LabelAlign.Right).Text("0")
+                                        .EmptyText("0")
+                                        .FieldStyle("text-align: right; font-weight: bold;")
+                                        .Listeners(ls => {
+                                            ls.Change.Handler = "CalculateTotalInvoice();";
+                                            //ls.Blur.Handler = "CalculateTotalInvoice();";
+                                            ls.Blur.Handler = "if (App.TxtDeductionFactureTransport.value) { #{TxtDeductionFactureTransport}.setValue(formatNumber(#{TxtDeductionFactureTransport}.getValue()));}";
+                                            ls.Focus.Handler = "if (App.TxtDeductionFactureTransport.value) { #{TxtDeductionFactureTransport}.setRawValue(unformatNumber(#{TxtDeductionFactureTransport}.getValue()));}";
+
+                                        })
+                            //.DirectEvents(de =>
+                            //{
+                            //    de.Blur.Url = Url.Action("CalculateTotalInvoice");
+                            //    //de.Change.ExtraParams.Add(new Parameter { Name = "Amount", Mode = ParameterMode.Raw, Value = "App.TxtTotalFactureTransport.value" });
+                            //})
+                            ),
+                           X.Panel()
+                           .MarginSpec("0 10 0 0")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right })
+                            .Items(
+                                    X.TextField()
+                                        .ID("TxtTotalInvoiceFactureTransport")
+                                        .FieldLabel("Montant à payer")
+                                        .LabelStyle("font-weight:bold;")
+                                        .LabelAlign(LabelAlign.Right).Text("0")
+                                        .ReadOnly(true)
+                                        .EmptyText("0")
+                                        .FieldStyle("text-align: right; font-weight: bold;")
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Change.Url = Url.Action("SetAmountToLetter");
+                                            de.Change.Before = "return CheckValues();";
+                                            de.Change.ExtraParams.Add(new Parameter { Name = "Amount", Mode = ParameterMode.Raw, Value = "App.TxtTotalInvoiceFactureTransport.value" });
+                                        })
+                            ),
+                           X.Panel()
+                            .MarginSpec("0 10 0 10")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                            .Items(
+                                    X.DisplayField()
+                                        .ID("TxtTotalFactureTransportInLetter")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .FieldCls("AmountLetterStyle")
+                            )
+
+            )
+            .Buttons(
+                        X.Button().Text("OK").ID("BtnSaveFactureTransport")
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitFormMethod");
+                            de.Click.Before = "return validNew(App.FormFactureTransport.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListePendingDeductionTr.getRowsValues({selectedOnly : true})" });
+                        }),
+                        X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormFactureTransport.doClose()").Cls("btncancel")
+
+                    )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                    /*alert(winId);*/
+                    /*var winId = #{FormTransporteur}.id;*/
+                    var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                    /*
+                   *   Vérification de la saisie des champs obligatoires
+                   */
+                    if (!areAllrequiredFieldsFilled) {                        
+                        Ext.Msg.show({ title: 'Facture Transport : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please enter the delivery ID', buttons: Ext.Msg.OK });
+                        return false;
+                    }
+                    var totalinvoice = parseFloat(unformatNumber(App.TxtTotalFactureTransport.value)) || 0;
+                    var deduction = parseFloat(unformatNumber(App.TxtDeductionFactureTransport.value)) || 0;
+                    if (deduction > totalinvoice) {                        
+                        Ext.Msg.show({ title: 'Facture Transport : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Deduction must be lower than Montant à payer', buttons: Ext.Msg.OK });
+                        return false;
+                    }
+
+                }
+        
+</script>
+<script type="text/javascript">
+    var GetTotalAmount = function () {
+        var nbr = App.grpListePendingDeductionTr.getSelectionModel().getCount();
+        var total = 0;
+        var totaltonnage = 0;
+        if (nbr > 0) {
+
+            for (var i = 0; i < nbr; i++) {                
+                var newvalue = parseFloat(App.grpListePendingDeductionTr.getSelectionModel().getSelection()[i].data.Montant);
+                total += newvalue;
+            }
+            var tot = formatNumber(total);
+            App.TxtTotalFactureTransport.setValue(tot);
+            var deductions = parseFloat(unformatNumber(App.TxtDeductionFactureTransport.value)) || 0;
+
+            var AmountPay = total - deductions;
+            AmountPay = formatNumber(AmountPay);
+            App.TxtTotalInvoiceFactureTransport.setValue(AmountPay);
+
+            for (var i = 0; i < nbr; i++) {
+                var newTnvalue = parseFloat(App.grpListePendingDeductionTr.getSelectionModel().getSelection()[i].data.Tonnage);
+                totaltonnage += newTnvalue;
+            }
+            App.hiddenFactureTransportTotalTonnage.setValue(totaltonnage);
+        } else {
+            App.TxtTotalFactureTransport.setValue(0);
+            App.hiddenFactureTransportTotalTonnage.setValue(0);
+        }
+
+    };
+   
+
+    var CalculateTotalInvoice = function () {
+        var totalinvoice = parseFloat(unformatNumber(App.TxtTotalFactureTransport.value)) || 0;
+        var deduction = parseFloat(unformatNumber(App.TxtDeductionFactureTransport.value)) || 0;
+        /*var deduc = formatNumber(deduction);
+        App.TxtDeductionFactureTransport.setValue(deduc);*/
+        
+        if (deduction > totalinvoice) {
+            console.log('Facture Transport : Error');
+            Ext.Msg.show({ title: 'Facture Transport : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Deduction must be lower than Montant Total to pay', buttons: Ext.Msg.OK });            
+        }
+
+        var total = totalinvoice - deduction;
+        var totFormatted = formatNumber(total);
+        App.TxtTotalInvoiceFactureTransport.setValue(totFormatted);
+    };
+
+    var CheckValues = function () {
+        var totalinvoice = parseFloat(unformatNumber(App.TxtTotalFactureTransport.value)) || 0;
+        var deduction = parseFloat(unformatNumber(App.TxtDeductionFactureTransport.value)) || 0;       
+
+        if (deduction > totalinvoice) 
+            return false;
+        else
+            return true;        
+    };
+</script>
+
+
+

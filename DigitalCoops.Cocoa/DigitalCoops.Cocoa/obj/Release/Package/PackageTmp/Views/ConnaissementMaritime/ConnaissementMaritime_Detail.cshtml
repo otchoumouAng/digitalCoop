@@ -1,0 +1,260 @@
+﻿@model Tms.Classes.Business.Sales.ConnaissementMaritimeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 25px;
+        min-height: 70px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("ConnaissementMaritime_Detail")
+    .Width(800)
+    .Resizable(false)
+    .AutoScroll(true)
+    .Scrollable(ScrollableOption.Vertical)
+    .Height(280)
+    .BodyPadding(5)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Y(100)
+    .Title("BL")
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items(
+    #region A
+                    X.Panel()
+                        .ID("pnlFlexEvenSH1")
+                        .Layout(LayoutType.Form)
+                        //.MarginSpec("0 0 5 0")
+                        .Flex(1)
+                        .Items
+                        (
+                            X.Hidden()
+                                .ID("hiddenExecMode")
+                                .Value(Model._ExecMode),
+                            X.Hidden()
+                                .ID("hiddenRowversion")
+                                .Value(Model._ConnaissementMaritime.RowVersionKey),
+
+                            //X.Hidden()
+                            //    .ID("hiddenNumero")
+                            //    .Value(Model._ConnaissementMaritime.Numero)
+                            //    ,
+                            X.Hidden()
+                                .ID("txtConnaissementMaritimeID")
+                                .Value(Model._ConnaissementMaritime.ID)
+                                ,
+                            X.FieldContainer()
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                                .FieldLabel("Shipment Number")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .LabelAlign(LabelAlign.Right)
+                                .Items(
+                                        X.TextField()
+                                            .ID("txtShipmentNumber")
+                                            .Width(120)
+                                            .ReadOnly(true)
+                                            .MarginSpec("0 10 0 0")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.Embarquement.Numero : string.Empty),
+                                        X.TextField()
+                                            .ID("txtEmbarquementID")
+                                            .Hidden(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.Embarquement.ID : Guid.Empty),
+                                        X.Button()
+                                            .Text("...")
+                                            .Height(20)
+                                            .Width(40)
+                                            .ID("btnSelectShipment")
+                                            .DirectEvents
+                                            (
+                                                de =>
+                                                {
+                                                    de.Click.Url = Url.Action("OnSelectShipment", "ConnaissementMaritime");
+                                                    de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available shipment')";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                            )
+
+                                    ),
+                             X.DateField()
+                                .ID("txtDate")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                //.Width(150)
+                                .FieldLabel("Date")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*"),
+                             X.TextField()
+                                .ID("txtNumberBL")
+                                .FieldLabel("BL number")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .AllowBlank(false)
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.NumeroBL : string.Empty),
+                             X.TextField()
+                                .ID("txtFolderNumber")
+                                .FieldLabel("Folder number")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.NumeroDossier : string.Empty),
+                             X.TextField()
+                                .ID("txtD6Number")
+                                .FieldLabel("D6 number")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.NumeroD6 : string.Empty)
+                        ),
+    #endregion
+                            X.Panel()
+                                .ID("firstColBL")
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Items
+                                (
+                                    X.FieldContainer()
+                                        .Layout(LayoutType.HBox)
+                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                        .FieldLabel("Vessel")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Items(
+                                                X.ComboBox()
+                                                    .ID("cmbNavire")
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .MarginSpec("0 5 0 0")
+                                                    .DisplayField("Nom")
+                                                    .Width(180)
+                                                    .ValueField("ID")
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { Width = 300, MinWidth = 200 })
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.Navire.ID : (int?)null)
+                                                    .Store
+                                                    (
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                                X.Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                    )
+                                                            )
+                                                            .Proxy
+                                                            (
+                                                                X.AjaxProxy()
+                                                                    .Url(Url.Action("LoadNavireActive", "Navire"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                    ),                                                            
+                                                X.Button()
+                                                    .Text(" + ")
+                                                    .Height(20)
+                                                    .Width(40)
+                                                    .ID("btnAddVessel")
+                                                    .DirectEvents
+                                                    (
+                                                        de =>
+                                                        {
+                                                            de.Click.Url = Url.Action("OnAddVeselShipment", "Navire");
+                                                            de.Click.Success = "App.FormNavire.setTitle('Vesel : Add')";
+                                                            de.Click.EventMask.ShowMask = true;
+                                                        }
+                                                    )
+                                            ),
+                                    X.TextField()
+                                        .ID("txtNumeroAffaire")
+                                        .FieldLabel("Numero Affaire")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.NumeroAffaire : string.Empty),
+                                    X.TextField()
+                                        .ID("txtNumeroBesc")
+                                        .FieldLabel("BESC Number")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.NumeroBesc : string.Empty),
+                                    X.TextField()
+                                        .ID("txtNumeroDeclaration")
+                                        .FieldLabel("Decl. Number")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConnaissementMaritime.NumeroDeclaration : string.Empty)
+                                )
+
+
+
+
+                    )
+    //End Windows
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(12)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.ConnaissementMaritime_Detail.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                }
+            ),
+        X.Button()
+            .TabIndex(13)
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.ConnaissementMaritime_Detail.doClose()")
+            .Cls("btncancel")
+
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'BL : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+        
+    };
+</script>
+

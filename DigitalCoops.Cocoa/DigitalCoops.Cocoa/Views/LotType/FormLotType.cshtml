@@ -1,0 +1,328 @@
+﻿@model Tms.Classes.Shared.stock.LotTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+                X.Window()
+                    .ID("FormLotType")
+                    .Width(700)
+                    .Resizable(false)
+                    .Height(280)
+                    .Modal(true)
+                    .CloseAction(Ext.Net.CloseAction.Destroy)
+                    //.X(400)
+                    .Y(20)
+                    .Title("Type Of Lot")
+                    .Items
+                    (
+                        X.FormPanel()
+                            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                            .Items(
+    #region Zone Gauche
+                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items
+                                        (
+                                            X.Hidden().ID("TxtLotTypeID").ReadOnly(true).Value(Model._LotType.ID),
+                                            X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                                            X.TextField()
+                                                .ID("TxtDesignation")
+                                                .FieldLabel("Designation")
+                                                .TabIndex(1)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.Designation : string.Empty)
+                                                .IndicatorText("*"),
+                                            X.TextField()
+                                                .ID("TxtNombreSacs")
+                                                .FieldLabel("Nbr de sacs")
+                                                .MaskRe("[0123456789]")
+                                                .TabIndex(2)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.NombreSacs.ToString("n0") : string.Empty)
+                                                .IndicatorText("*")
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Blur.Handler = "#{TxtNombreSacs}.setValue(formatNumber(#{TxtNombreSacs}.getValue()));";
+                                                    ls.Focus.Handler = "if (App.TxtNombreSacs.value) { #{TxtNombreSacs}.setRawValue(unformatNumber(#{TxtNombreSacs}.getValue()));}";
+                                                }),
+                                            X.TextField()
+                                                .ID("TxtNombrePalettes")
+                                                .FieldLabel("Nbr Of Pallets")
+                                                .MaskRe("[0123456789]")
+                                                .TabIndex(3)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.NombrePalette.ToString("n0") : string.Empty)
+                                                .IndicatorText("*")
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Blur.Handler = "#{TxtNombrePalettes}.setValue(formatNumber(#{TxtNombrePalettes}.getValue()));";
+                                                    ls.Focus.Handler = "if (App.TxtNombrePalettes.value) { #{TxtNombrePalettes}.setRawValue(unformatNumber(#{TxtNombrePalettes}.getValue()));}";
+                                                }),
+                                            X.TextField()
+                                                .ID("TxtNombreSacsParPalettes")
+                                                .FieldLabel("Bags Per Pallets")
+                                                .MaskRe("[0123456789]")
+                                                .TabIndex(4)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.NombreSacsParPalettes.ToString("n0") : string.Empty)
+                                                .IndicatorText("*")
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Blur.Handler = "#{TxtNombreSacsParPalettes}.setValue(formatNumber(#{TxtNombreSacsParPalettes}.getValue()));";
+                                                    ls.Focus.Handler = "if (App.TxtNombreSacsParPalettes.value) { #{TxtNombreSacsParPalettes}.setRawValue(unformatNumber(#{TxtNombreSacsParPalettes}.getValue()));}";
+                                                })
+                                            ),
+    #endregion
+    #region Zone Droite
+                    X.Panel()
+                        .Layout(LayoutType.Form)
+                        //.Height(350)
+                        .Flex(1)
+                        .Items
+                        (
+
+                            X.TextField()
+                                .ID("TxtPoidsStandard")
+                                .FieldLabel("Standard Weight")
+                                .MaskRe("[0123456789]")
+                                .TabIndex(5)
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.PoidsStandard.ToString("n0") : string.Empty)
+                                .IndicatorText("*")
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{TxtPoidsStandard}.setValue(formatNumber(#{TxtPoidsStandard}.getValue()));";
+                                    ls.Focus.Handler = "if (App.TxtPoidsStandard.value) { #{TxtPoidsStandard}.setRawValue(unformatNumber(#{TxtPoidsStandard}.getValue()));}";
+                                }),
+
+                            X.TextField()
+                                .ID("TxtPoidsMin")
+                                .MaskRe("[0123456789]")
+                                .FieldLabel("Min Poids (Kg)")
+                                .HideTrigger(true)
+                                .TabIndex(6)
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.PoidsMin.ToString("n0") : string.Empty)
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{TxtPoidsMin}.setValue(formatNumber(#{TxtPoidsMin}.getValue())); ";
+                                    ls.Focus.Handler = "if (App.TxtPoidsMin.value) { #{TxtPoidsMin}.setRawValue(unformatNumber(#{TxtPoidsMin}.getValue()));}";
+                                }),
+                            X.TextField()
+                                .ID("TxtPoidsMax")
+                                .MaskRe("[0123456789]")
+                                .TabIndex(7)
+                                .FieldLabel("Max Poids (Kg)")
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.PoidsMax.ToString("n0") : string.Empty)
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{TxtPoidsMax}.setValue(formatNumber(#{TxtPoidsMax}.getValue()));";
+                                    ls.Focus.Handler = "if (App.TxtPoidsMax.value) { #{TxtPoidsMax}.setRawValue(unformatNumber(#{TxtPoidsMax}.getValue()));}";
+                                }),
+                            X.NumberField()
+                                .ID("TxtTareSacsUnitaire")
+                                .TabIndex(8)
+                                //.MaskRe("[0123456789]")
+                                .HideTrigger(true)
+                                .FieldLabel("Tare Sacs")
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .AllowDecimals(true)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.TareSacsUnitaire : (decimal?)null),
+                                //.Listeners(ls =>
+                                //{
+                                //    ls.Blur.Handler = "#{TxtTareSacsUnitaire}.setValue(formatNumber(#{TxtTareSacsUnitaire}.getValue()));";
+                                //    ls.Focus.Handler = "if (App.TxtTareSacsUnitaire.value) { #{TxtTareSacsUnitaire}.setRawValue(unformatNumber(#{TxtTareSacsUnitaire}.getValue()));}";                                    
+                                //}),
+                            X.TextField()
+                                .ID("TxtPrefixe")
+                                .TabIndex(9)
+                                .MaxLength(1)
+                                .EnforceMaxLength(true)
+                                .FieldLabel("Prefix")
+                                .LabelAlign(LabelAlign.Right)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LotType.Prefixe : string.Empty)
+
+                        )
+    #endregion
+
+                    )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(20)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormLotType.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                }
+            ),
+        X.Button()
+            .TabIndex(21)
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormLotType.doClose()")
+            .Cls("btncancel")
+    )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Type Of Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var minval = parseFloat(App.TxtPoidsMin.value);
+        var maxval = parseFloat(App.TxtPoidsMax.value);
+
+        if (maxval < minval) {
+            Ext.Msg.show({ title: 'Type of Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Max weight must be higher than min weight .', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var calculerNetLivre = function () {
+        var tareBags = parseInt(unformatNumber(App.txtTareSacs.value), 10) || 0;
+        var tarePallets = parseInt(unformatNumber(App.txtTarePalette.value), 10) || 0;
+        var poidsbrut = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+        var poidsnet = poidsbrut - tareBags - tarePallets;
+
+        poidsnet = formatNumber(poidsnet);
+        App.txtPoidsNetLivre.setValue(poidsnet);
+
+    };
+
+    var calculerNetAccepte = function () {
+        var poidsnetlivre = parseInt(unformatNumber(App.txtPoidsNetLivre.value), 10) || 0;
+        var retentionPoids = parseInt(unformatNumber(App.txtRetention.value), 10) || 0;
+
+        var poidsnetaccepte = poidsnetlivre - retentionPoids;
+
+        poidsnetaccepte = formatNumber(poidsnetaccepte);
+        App.txtPoidsNetAccepte.setValue(poidsnetaccepte);
+
+    };
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var validEstimatedWeight = function () {
+        var combo = App.cmbSacType;
+        var record = App.cmbSacType.getSelectedRecord().data;
+        if (!record)
+            return;
+        else
+            CheckGrossWeight(record);
+
+    };
+
+    var CheckGrossWeight = function (record) {
+
+        if (!record)
+            return;
+
+        if (App.txtQuantite.value != null && App.txtPoidsBrut.value != null) {
+
+            var mNbSacsDeclares = parseInt(unformatNumber(App.txtQuantite.value), 10) || 0;
+
+            var mPoidsDeclare = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+
+            if (record.PoidsMax > 0 && unformatNumber(App.txtPoidsBrut.value) > 0) {
+                if ((mPoidsDeclare > record.PoidsMax * mNbSacsDeclares) || (mPoidsDeclare < record.PoidsMin * mNbSacsDeclares)) {
+                    /*App.txtPoidsBrut.setValue('');
+                    App.txtPoidsBrut.focus(true);*/
+                    Ext.Msg.show({ title: 'Erreur : Delivery ', msg: 'The estimated weight is out of the range of theoritical weight. Min= ' + record.PoidsMin * mNbSacsDeclares + ' ,Max= ' + record.PoidsMax * mNbSacsDeclares, buttons: Ext.Msg.OK });
+                }
+            }
+
+        }
+    };
+
+    var CalculateMontant = function () {
+        var prix = parseInt(unformatNumber(App.txtPrix.value), 10) || 0;
+        var weight = parseInt(unformatNumber(App.txtPoidsNetAccepte.value), 10) || 0;
+        var result = prix * weight;
+        App.txtMontant.setValue(formatNumber(result));
+
+    };
+
+    var CalculateTareBags = function () {
+        var tareunitaire = parseFloat(App.cmbSacType.getSelectedRecord().data.Tare) || 1;
+        var NombreSacs = parseFloat(App.txtQuantite.value) || 0;
+
+        App.txtTareSacs.setValue(formatNumber(NombreSacs * tareunitaire));
+    };
+</script>
+
+

@@ -1,0 +1,395 @@
+﻿@model Tms.Classes.Business.Sites.PrefinancementAgenceViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    //double tauxDevise = (new Tms.Classes.Shared.Parametres(0).ValeurTauxEuro);
+    //int TypeApc = (new Tms.Classes.Shared.Parametres(0).PrefinancementTypeApc);
+    //int TypeBlank = (new Tms.Classes.Shared.Parametres(0).PrefinancementTypeBlank);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 30px;
+        min-height: 60px !important;
+    }
+    #txtAmount-labelTextEl, #txtAmountEuro-labelTextEl {
+        font-weight: bold;
+    }
+    #txtAmount-inputEl, #txtAmountEuro-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+
+    #txtAmountTotal-labelTextEl {
+        font-weight: bold;
+    }
+
+    #txtAmountTotal-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+
+    //var Detail =
+    //{
+    //    resetButtons: function () {
+
+    //        App.btnEditPaiementCheque.disable();
+    //        App.btnRemovePaiementCheque.disable();
+
+    //        if (App.rowSelectionPaiementChequeAgence.hasSelection()) {
+
+
+    //            if (App.PaymentPermissionEdit.value == 'true')
+    //                App.btnEditPaiementCheque.enable();
+    //            else
+    //                App.btnEditPaiementCheque.disable();
+
+
+
+    //            if (App.PaymentPermissionRemove.value == 'true')
+    //            {
+    //                if (App.rowSelectionPaiementChequeAgence.lastSelected.data.Desactive == false) {
+    //                    App.btnRemovePaiementCheque.setText("Remove");
+    //                    App.btnRemovePaiementCheque.setIconCls('glyphicon glyphicon-minus-sign red');
+    //                    App.btnRemovePaiementCheque.enable();
+    //                } else {
+    //                    App.btnRemovePaiementCheque.setText("Reset");
+    //                    App.btnRemovePaiementCheque.setIconCls('glyphicon glyphicon-ok-sign green');
+    //                    App.btnRemovePaiementCheque.enable();
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (App.rowSelectionPaiementChequeAgence.lastSelected.data.Desactive == false) {
+    //                    App.btnRemovePaiementCheque.setText("Remove");
+    //                    App.btnRemovePaiementCheque.setIconCls('glyphicon glyphicon-minus-sign red');
+    //                    App.btnRemovePaiementCheque.disable();
+    //                } else {
+    //                    App.btnRemovePaiementCheque.setText("Reset");
+    //                    App.btnRemovePaiementCheque.setIconCls('glyphicon glyphicon-ok-sign green');
+    //                    App.btnRemovePaiementCheque.disable();
+    //                }
+    //            }
+
+    //        }
+    //        else {
+    //            App.btnRemovePaiementCheque.setText("Remove");
+    //            App.btnRemovePaiementCheque.setIconCls('glyphicon glyphicon-minus-sign red');
+    //            App.btnRemovePaiementCheque.disable();
+    //        }
+
+
+
+    //    }
+
+    //}
+
+</script>
+@(
+X.Window()
+    .ID("PrefinancementAgence_Detail")
+    .Width(700)
+    .Modal(true)
+    .Resizable(false)
+    .Height(210)
+    .BodyPadding(5)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(5)
+    .Title("Sales Prefinancing")
+    .Items
+    (
+        X.FormPanel()
+           .FieldDefaults(d => d.ReadOnly = ((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult) || (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve)) ? true : false)
+           .Layout(LayoutType.HBox)
+           .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+           .Items(
+                X.Panel()
+                    .Layout(LayoutType.Form)
+                    .Flex(3)
+                    .ID("pnlFlexEvenSH1")
+                    .Items
+                    (
+                        X.Hidden()
+                            .ID("pfhiddenExecMode")
+                            .Value(Model._ExecMode),
+                        X.Hidden()
+                            .ID("pfhiddenRowversion")
+                            .Value(Model._PrefinancementAgence.RowVersionKey),
+                        X.Hidden()
+                            .ID("txtPrefinancementAgenceID")
+                            .Value(Model._PrefinancementAgence.ID),
+                        //X.Hidden().ID("PaymentPermissionRemove").Value(ViewData["PaymentPermissionRemove"]).ReadOnly(true),
+                        //X.Hidden().ID("PaymentPermissionEdit").Value(ViewData["PaymentPermissionEdit"]).ReadOnly(true),
+                        X.TextField()
+                            .ID("txtNumber")
+                            .FieldLabel("Number")
+                            .Hidden(true)
+                            .LabelAlign(LabelAlign.Right)
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.Numero : string.Empty),
+                        X.ComboBox()
+                            .ID("_cmbSite")
+                            .FieldLabel("Site")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .ReadOnly(true)
+                            .MatchFieldWidth(false)
+                            .ListConfig(new BoundList { MinWidth = 300 })
+                            .LabelAlign(LabelAlign.Right)
+                            .TypeAhead(false)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .ForceSelection(true)
+                            .Value(Model._PrefinancementAgence.Site.ID)
+                            .Store(
+                                        X.Store()
+                                        //.Listeners(l => l.Load.Handler = "App._cmbSite.setValue(App._cmbSite.getStore().getAt(0));")
+                                        .AutoLoad(true)
+                                        .Model(
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields(
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                            )
+                                .Proxy(
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadSiteByAccess", "Site"))
+                                .Reader(
+                                            Html.X().JsonReader().RootProperty("data")
+                                            )
+                                )
+                            ),
+                        X.ComboBox()
+                            .ID("_cmbCampagne")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .FieldLabel("Campagne")
+                            .DisplayField("Designation")
+                            .ValueField("Designation")
+                            .LabelAlign(LabelAlign.Right)
+                            .Value(Model._PrefinancementAgence.Campagne)
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(false)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                        .IDProperty("Designation")
+                                        .Fields
+                                        (
+                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCampagne", "Campagne"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                                ),
+
+                                X.DateField()
+                                    .ID("txtDateCP")
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                    .AllowBlank(false)
+                                    .FieldLabel("Date")
+                                    .IndicatorCls("IndicatorRedStar")
+                                    .IndicatorText("*")
+                                    .LabelAlign(LabelAlign.Right)
+
+
+                                //1stCol
+                                ),
+                X.Panel()
+                    .ID("secondColSH")
+                    .Layout(LayoutType.Form)
+                    .Flex(2)
+                    .Items
+                    (
+
+                        X.TextField()
+                            .ID("txtAmount")
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.MontantAsString : string.Empty)
+                            .FieldLabel("Montant (CFA)")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .LabelAlign(LabelAlign.Right)
+                            .Listeners
+                            (
+                                ls =>
+                                {
+                                    //ls.Change.Fn = "ConvertAmount";
+                                    ls.Blur.Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) {#{txtAmount}.setValue(formatNumber(#{txtAmount}.getValue()))}";
+                                    ls.Focus.Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) { #{txtAmount}.setRawValue(unformatNumber(#{txtAmount}.getValue()));}";
+
+                                }
+
+                            ),
+
+                        X.TextArea()
+                            .ID("txtComment")
+                            .FieldLabel("Commentaire")
+                            .LabelAlign(LabelAlign.Right)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrefinancementAgence.Description : string.Empty)
+
+
+                        //2ndCol
+                        )
+                    //End form panel
+                    )
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOk")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                    .DirectEvents
+                    (
+
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("UpdateFormMethod");
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "storeListPaiementChequeAgence", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDetailPaiementChequeAgence.getRowsValues({selectedOnly : false})" });
+                            de.Click.Before = "return validNew(App.PrefinancementAgence_Detail.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+                    X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                    .ID("BtnApproveOk")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitApproval");
+                            de.Click.Before = "return validNew(App.PrefinancementAgence_Detail.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ?  "Fermer" : "Annuler")
+                    .Handler("App.PrefinancementAgence_Detail.doClose()")
+                    .Cls("btncancel")
+
+                //End Button
+                )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Financing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = Number(unformatNumber(App.txtAmount.value));
+        
+
+        if(!Ext.isNumeric(Amount) && parseFloat(Amount) < 0 ) {
+            Ext.Msg.show({ title: 'Prefinnancing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+    
+    var LoadAmountTotal = function () {
+       
+        var amount = parseFloat(App.storeListPaiementChequeAgence.sum('Montant')) || 0;
+        
+        App.txtAmountTotal.setValue(formatNumber(amount));
+
+    };
+
+
+    function formatNumberDecimal(amount) {
+        console.log(amount);
+        amount = thousands_separators(amount.toString().replace(".", ","));
+        console.log(amount);
+        formatted = amount.replace(".", ",");
+
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    }
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var RoundIntSup = function (v) {
+        try {
+                if (v < 1000)
+                {
+                    var valeur = (v / 100);
+                    return RoundInt(valeur)*100;
+                }
+                else
+                {
+                    var valeur = (v / 1000);
+                    return RoundInt(valeur)*1000;
+
+                }
+            
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    
+
+</script>

@@ -1,0 +1,247 @@
+﻿
+@model Tms.Classes.Business.AnalysePhysique
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px;
+    }
+</style>
+<script>
+
+    var SetValidBtnOK = function () {
+        if (App.RowPendingLivforWeighing.hasSelection())
+            App.BtnSendBlDelivery.enable();
+        else
+            App.BtnSendBlDelivery.disable();
+    };
+</script>
+@(
+X.Window()
+    .ID("AnalysePhysique_Deliveries")
+    .Width(720)
+    .Resizable(false)
+    .Height(460)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(200)
+    .Y(20)
+    .Title("BE Disponibles")
+    .Layout(LayoutType.VBox)
+    .BodyPadding(5)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items
+    (
+        X.Panel()
+            .Border(true)
+            //.Frame(true)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items
+            (
+    #region Zone A
+                    X.Container()
+                        .Flex(3)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("livCmbFournisseur")
+                                .EmptyText("")
+                                .ForceSelection(true)
+                                .TypeAhead(true)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .FieldLabel("Fournisseur")
+                                .DisplayField("NameAndCode")
+                                //.MatchFieldWidth(false)
+                                .ListConfig(new BoundList { MinWidth = 300 })
+                                .ValueField("ID")
+                                .LabelWidth(102)
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(-1)
+                                //.Width(390)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                                Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadAllSupplierBySite", "Fournisseur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        .Parameters
+                                        (
+                                            ps => {
+                                                ps.Add(new StoreParameter("siteID", string.Format("{0}", Model.Sites.ID.ToString()), ParameterMode.Value));
+                                                ps.Add(new StoreParameter("Extend", "1", ParameterMode.Value));
+                                            }
+                                        )
+                                )
+
+                        ),
+    #endregion
+    #region Zone B
+                    X.Container()
+                        .Flex(2)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.DateField().ID("livFiltreDateDebut").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToString()),
+                            X.DateField().ID("txtFiltreDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToString())
+                        )
+    #endregion
+        ),
+        //X.Button().ID("BtnReloadListe").Text("OK").Hidden(true)
+        //    .DirectEvents(de =>
+        //    {
+        //        de.Click.Url = Url.Action("SetAvailableNbrSacs");
+        //        de.Click.FormID = "#(return this.up('window').down('form');)";
+        //        de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeAdded", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+        //        de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeToAdd", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListDelivery.getRowsValues({selectedOnly : false})" });
+
+        //    }),
+        X.GridPanel()
+            .Layout(LayoutType.Fit)
+            .ID("grpListDelivery")
+            .MarginSpec("5 0 0 0")
+            .Frame(true)
+            .Height(290)
+            .AllowDeselect(true)
+            .Store
+            (
+                X.StoreFor<Tms.Classes.Business.Livraison>()
+                    .ID("storeListDeliveryNotes")
+                    .AutoLoad(true)
+                    .Proxy
+                    (
+                    Html.X().AjaxProxy()
+                        .Url(Url.Action("LoadListOfAvailableDeliveries"))
+                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                    )
+                    .Listeners(
+                        ls =>
+                        {
+                            ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                            ls.Load.Handler = "Ext.net.Mask.hide();";
+                            //ls.Load.Handler = "Ext.net.Mask.hide(); App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);";
+                        }
+                    )
+                    .Parameters
+                    (
+                        ps =>
+                        {
+                            ps.Add(new StoreParameter("ItemSite", string.Format("{0}", Model.Sites.ID.ToString()), ParameterMode.Value));
+                            ps.Add(new StoreParameter("ItemFournisseur", "App.livCmbFournisseur.getValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemPeriodStart", "#{livFiltreDateDebut}.getRawValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemPeriodEnd", "#{txtFiltreDateFin}.getRawValue()", ParameterMode.Raw));
+                            //ps.Add(new StoreParameter("ItemPeseeID", "App.TxtPeseePauID.getValue()", ParameterMode.Raw));
+                        }
+                    )
+            )
+            //.Listeners(ls => ls.Add.Handler = "App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);")
+            .ColumnModel
+            (
+                Html.X().Column().Text("Date Liv.").DataIndex("DateLivraisonAsShortDateString").Flex(1).Hideable(false),
+                Html.X().Column().Text("Fournisseur").DataIndex("FournisseurNameAsString").Flex(2).Hideable(false),
+                Html.X().Column().Text("Livraison N°").DataIndex("Numero").Flex(1).Hideable(false),
+                Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(false),
+                Html.X().Column().Text("Nbr de sacs").DataIndex("SacsDeclares").Flex(1).Hideable(false),
+                Html.X().Column().Text("Poids Brut (Kg)").DataIndex("PoidsDeclareAsString").Flex(1).Hideable(false)
+            )
+            .Plugins
+            (
+                X.FilterHeader()
+            )
+            .DockedItems(
+                            X.Toolbar()
+                                .Dock(Dock.Top)
+                                .Items(
+                                        X.Button()
+                                            .ID("btnRefreshList")
+                                            .IconCls("action_refresh_01")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Disable(false)
+                                            .Listeners(
+                                                ls => ls.Click.Handler = "App.grpListDelivery.getStore().load();"
+                                            )
+                                         )
+
+            )
+            .SelectionModel(
+                X.RowSelectionModel()
+                    .ID("RowPendingLivforWeighing")
+                    .Mode(SelectionMode.Single)
+                    .Listeners
+                    (
+                        l =>
+                        {
+                            l.Select.Handler = "SetValidBtnOK();";
+                            l.Deselect.Handler = "SetValidBtnOK();";
+                        })
+            )
+            .DirectEvents(de =>
+            {
+                de.RowDblClick.Url = Url.Action("SubmitDelivery");
+                de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDelivery}.getSelectionModel().getSelection()[0].data" });
+            }
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+                    .Text("Selectionner")
+                    .ID("BtnSendBlDelivery")
+                    .Disabled(true)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitDelivery");
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDelivery}.getSelectionModel().getSelection()[0].data" });
+                        }
+                    ),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.AnalysePhysique_Deliveries.doClose()")
+                    .Cls("btncancel")
+            )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+<script>
+    var FilterDelivery = function () {
+        App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);
+    };
+</script>
+
+
+
+
+
+
+
+
+

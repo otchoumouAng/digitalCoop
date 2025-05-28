@@ -1,0 +1,220 @@
+﻿@model Tms.Classes.Business.stock.PeseeAvantUsinage
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtPoidsBrutPAU-inputEl {
+            font-size: 30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align: center !important;
+            line-height: 30px !important;
+        }
+        /*grossWeight_style {
+            font-size: large;
+            text-align: center;
+            line-height: 10px;
+        }*/
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 90px !important;
+        }
+    </style>
+    
+</head>
+@(
+X.Window()
+    .ID("FormAddWeight")
+    .Width(360)
+    .Resizable(false)
+    .Height(280)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Poids des Palettes")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+    .Items
+    (
+        X.Hidden().ID("baseUrlVal").Value(new Tms.Classes.Shared.Parametres(0).Base_url),
+
+        X.FormPanel()
+            .Layout(LayoutType.VBox)
+            .LayoutConfig( new VBoxLayoutConfig {  Align = VBoxAlign.Stretch, Pack = BoxPack.Center})
+            .FieldDefaults(d => d.LabelWidth = 100)
+            .Padding(5)
+            .Items
+            (
+                X.Hidden().ID("hidImmatriculation").Value(ViewData["LivraisonImmatriculation"]),
+                X.Hidden().ID("hidBonDeLivraisonID").Value(ViewData["BonDeLivraisonID"]),
+                X.Hidden().ID("hidDeliveryNumero").Value(ViewData["NumeroLivraison"]),
+                X.Hidden().ID("hidTareUnitaire").Value(ViewData["tareSacs"]),
+                X.Hidden().ID("NombreSacsLivraison").Value(ViewData["NbrSacLivraisons"]),
+                //X.NumberField()
+                //    .FieldLabel("N°")
+                //    .LabelAlign(LabelAlign.Right)
+                //    .FieldCls("weighingCapture")
+                //    .ID("txtNumeroPAU")
+                //    .ReadOnly(true)
+                //    .MinValue(0)
+                //    .HideTrigger(true),
+                //X.FieldContainer()
+                //    .FieldLabel("Livraison N°")
+                //    .LabelAlign(LabelAlign.Right)
+                //    .Layout(LayoutType.HBox)
+                //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                //    .Items(
+                //            X.TextField()
+                //                .ID("txtDeliveryNumero")
+                //                .AllowBlank(false)
+                //                .Text("")
+                //                .IndicatorCls("IndicatorRedStar")
+                //                .IndicatorText("*")
+                //                .Listeners
+                //                (
+                //                    ls =>
+                //                    {
+                //                        ls.SpecialKey.Fn = "onSearchByDeliveryID";
+                //                    }
+                //                )
+                //                .Flex(4),
+                //            X.Button()
+                //                .Text("...")
+                //                .Height(18)
+                //                .Flex(1)
+                //                .ID("btnSelectDelivery")
+                //                .DirectEvents
+                //                (
+                //                    de =>
+                //                    {
+                //                        de.Click.Url = Url.Action("OnSelectDelivery");
+                //                        de.Click.ExtraParams.Add(new Parameter { Name = "productionID", Mode = ParameterMode.Raw, Encode = false, Value = "App.cmbProduction.getValue()" });
+                //                        //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Value, Encode = true, Value = "#{grpListeWeightPAU}.getRowsValues({selectedOnly : false})" });
+                //                        de.Click.EventMask.ShowMask = true;
+                //                    }
+                //                )
+                //        ),
+                X.NumberField()
+                    .FieldLabel("Nbr de sacs")
+                    .LabelAlign(LabelAlign.Right)
+                    .ID("txtNombreSacsPAU")
+                    .MinValue(0)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .HideTrigger(true),
+                //X.Hidden()
+                //    .ID("hidNombreSacsLivraison")
+                //    .Value(""),
+                //X.NumberField()
+                //    .FieldLabel("Del. Poids Brut")
+                //    .LabelAlign(LabelAlign.Right)
+                //    .ID("txtPoidsBrutComposition")
+                //    .MinValue(0)
+                //    .Hidden(true)
+                //    .ReadOnly(true)
+                //    .HideTrigger(true),
+                X.FieldContainer()
+                    .Layout(LayoutType.HBox)
+                    .FieldLabel("Poids (Kg)")
+                    .LabelAlign(LabelAlign.Right)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                    .Items(
+                            X.NumberField()
+                                .FieldCls("weighingCapture")
+                                .ID("txtPoidsBrutPAU")
+                                .AllowBlank(false)
+                                .Flex(2)
+                                .ReadOnly(!Model.IsManual)
+                                .MinValue(0)
+                                .HideTrigger(true)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*"),
+                            X.Button()
+                                .Text("Lire")
+                                .Flex(1)
+                                .ID("btnFirstWeightRead")
+                                .Height(40)
+                                .Hidden(Model.IsManual)
+                                //.Width(80)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("OnCaptureWeight");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "sacs", Mode = ParameterMode.Raw, Encode = false, Value = "App.txtNombreSacsPAU.value" });
+                                        //de.Click.EventMask.ShowMask = true;
+                                    }
+                                )
+                            )
+
+                        )
+                    )
+                .Buttons
+                (
+                    X.Button()
+                        .Text("OK")
+                        .ID("BtnOkFW")
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitWeightPAU");
+                            de.Click.Before = "return validNew(App.FormAddWeight.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";                            
+                            de.Click.ExtraParams.Add(new Parameter { Name = "peseeID", Mode = ParameterMode.Raw, Encode = false, Value = "App.TxtPeseePauID.value" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "nbrSacs", Mode = ParameterMode.Raw, Encode = false, Value = "App.txtNombreSacsPAU.value" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "poidsPalette", Mode = ParameterMode.Raw, Encode = false, Value = "App.txtPoidsBrutPAU.value" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+                        })
+                            ,
+                        X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormAddWeight.doClose()").Cls("btncancel")
+                )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var onSearchByDeliveryID = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            var param = App.txtOrdreProduction.value;
+            var baseurl = App.baseUrlVal.value;
+            Ext.net.DirectMethod.request({ url: baseurl + "/PeseeAvantUsinage/GetDelivery?ItemNumero=" + param });            
+            e.stopEvent();
+        }
+    };
+</script>
+
+
+
+
+
+

@@ -1,0 +1,88 @@
+@using Ext.Net;
+@using Ext.Net.MVC;
+
+@model Tms2017.MVC.Models.ExtNetModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Ext.NET MVC Sample</title>
+   
+</head>
+<body>
+    @(Html.X().ResourceManager())
+    
+    @using (Html.BeginForm()) {
+    
+       @(X.Viewport()
+        .Layout(LayoutType.Border)
+        .Items(
+            X.Panel()
+
+                .Region(Region.North)
+                .Split(false)
+                .Height(60)
+                .BodyPadding(10)
+                .Border(false)
+                .Html("TMS")
+                        
+                .StyleHtmlContent(false)
+                .Collapsible(false),
+
+            X.Panel()
+                .Title("West")
+                .Region(Region.West)
+                .Layout(LayoutType.Accordion)
+                .Width(250)
+                .MinWidth(250)
+                .MaxWidth(400)
+                .Split(true)
+                .Collapsible(true)
+                .Items(
+                    X.Panel()
+                        .Title("Navigation")
+                        .Border(false)
+                        .BodyPadding(6)
+                        .Icon(Icon.FolderGo)
+                        .Html("West"),
+
+                    X.Panel()
+                        .Title("Settings")
+                        .Border(false)
+                        .BodyPadding(6)
+                        .Icon(Icon.FolderWrench)
+                        .Html("Some settings in here")
+                ),
+
+            X.TabPanel()
+                .ID("tabCenter")
+                .Region(Region.Center)
+                .Header(true)
+                .Items(
+                    X.Panel()
+                        .Title("Center")
+                        .Border(false)
+                        .BodyPadding(6)
+                        .Html("<h1>Viewport with BorderLayout</h1>"),
+
+                    X.Panel()
+                        .Title("Close Me")
+                        .Closable(true)
+                        .Border(false)
+                        .BodyPadding(6)
+                        .Html("Closeable Tab")
+                )
+        )
+    )
+
+    }
+
+
+</body>
+</html>

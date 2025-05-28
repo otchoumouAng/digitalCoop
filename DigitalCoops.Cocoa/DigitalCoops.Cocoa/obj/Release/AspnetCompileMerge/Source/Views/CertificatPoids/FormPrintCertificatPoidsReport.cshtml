@@ -1,0 +1,192 @@
+﻿
+@model Tms.Classes.Business.Sales.CertificatPoidsViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string Campagne = (new Tms.Classes.Shared.Parametres(0).Campagne);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(
+
+X.Window()
+.ID("FormPrintCertificatPoidsReport")
+.Width(630)
+.Resizable(false)
+.Height(230)
+.CloseAction(Ext.Net.CloseAction.Destroy)
+.Modal(true)
+.Title("Weighing Certificate Report")
+.Y(50)
+.Items(
+        X.FormPanel()
+         .Items(
+                 X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenReport")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("10 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+
+                         X.Hidden().ID("Enrcurrentcampagne").Value(@Campagne),
+                         X.Hidden().ID("EnrTypeReport").Value(ViewData["typeReport"]),
+
+                       X.Panel()
+                        .ID("reportCol1")
+                        .Layout(LayoutType.Form)
+                        .Flex(4)
+                            .Items(
+
+                                    X.ComboBox()
+                                        .ID("EnrcropYearForReport")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .AllowBlank(false)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                        .Fields(
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Listeners(ls =>
+                                                    {
+                                                        ls.Load.Handler = "#{EnrcropYearForReport}.setValue(#{Enrcurrentcampagne}.value)";
+                                                    })
+                                                ),
+                                    X.ComboBox()
+                                        .ID("EnrexportateurForReport")
+                                        .FieldLabel("Exportateur")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                         .AutoSelect(true)
+                                        .ForceSelection(true)
+                                         .Value(-1)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                            )
+                                                    .Proxy(
+                                                        Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadExportateurAll", "Exportateur"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                )
+                                
+                                ),
+
+                    X.Panel()
+                        .ID("reportCol2")
+                        .Layout(LayoutType.Form)
+                        .Flex(3)
+                        .Items(
+                                X.ComboBox()
+                                    .ID("EnrStatus")
+                                    .FieldLabel("Statut")
+                                    .DisplayField("Description")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Hidden((string)ViewData["typeReport"] == "Hi" ? false : true)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .Items
+                                    (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                            it.Add(new ListItem { Text = "Actived", Value = "0" });
+                                            it.Add(new ListItem { Text = "Desactived", Value = "1" });
+                                        }
+                                    )
+                                    .SelectedItems
+                                    (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                        }
+                                    ),
+                                X.DateField()
+                                    .ID("EnrstartDateForReport")
+                                    .FieldLabel("Date Debut")
+                                    .Text(DateTime.Now.ToString())
+                                    .LabelAlign(LabelAlign.Right),
+                                X.DateField()
+                                    .ID("EnrdueDateForReport")
+                                    .FieldLabel("Date Fin")
+                                    .Text(DateTime.Now.ToString())
+                                    .LabelAlign(LabelAlign.Right)
+                              )
+                    )
+                )
+
+            )
+            .Buttons(
+                        X.Button()
+                            .Text("OK")
+                            .ID("BtnGenerateWeighing CertificateReport")
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Url.Action("PrintWeighingCertificate");
+                                de.Click.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "TypeReport", Value = "App.EnrTypeReport.value" });
+                                de.Click.Before = "return validNew(App.FormPrintCertificatPoidsReport.id);";
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                            }),
+                        X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.FormPrintCertificatPoidsReport.doClose()")
+                            .Cls("btncancel")
+                        )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                /*alert(winId);*/
+                /*var winId = #{FormFournisseur}.id;*/
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Weighing Certificate | Print Report : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+
+                }
+
+    };  
+</script>

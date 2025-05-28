@@ -1,0 +1,129 @@
+﻿
+@model Tms.Classes.Shared.TransporteurViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 110px !important;
+    }
+</style>
+@(X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Items(
+                X.Window()
+                .ID("FormTransporteur")
+                .Width(750)
+                .Resizable(false)
+                .Height(240)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners(l =>
+                {
+                    l.Close.Handler = "App.TmsViewPort.unmask();";
+                    l.Show.Handler = "#{TxtNomTransporteur}.focus();";
+                })
+                //.X(400)
+                .Y(20)
+                .Title("Transporter : Detail")
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                .BodyPadding(6)
+                    .Items(                            
+                                                                                    
+
+                            X.Panel().Layout(LayoutType.Form).Flex(1)                               
+                                .Items(
+                                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._Transporteur.RowVersionKey),
+                                        X.Hidden().ID("TxtTransporteurID").Value(Model._Transporteur.ID),
+                                        X.TextField().ID("TxtNomTransporteur").FieldLabel("Nom")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.Nom.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.NumberField().ID("TxtTauxTransporteur")
+                                            .FieldLabel("Taux")
+                                            .AllowDecimals(true)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.Taux : (decimal?)null)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtAdresseTransporteur").FieldLabel("Adresse")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.Adresse.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right),
+                                        X.TextField().ID("TxtTelephoneFixeTransporteur").FieldLabel("N° Telephone Fixe")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.TelephoneFixe.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        ),
+                                X.Panel().Layout(LayoutType.Form).Flex(1)                                
+                                .Items(
+                                        X.TextField().ID("TxtTelephoneMobileTransporteur").FieldLabel("N° Telephone Mobile")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.TelephoneMobile.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtFaxTransporteur").FieldLabel("Fax N°")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.Fax.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right),
+                                        X.TextField().ID("TxtEmailTransporteur").FieldLabel("Email")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Transporteur.Email.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right)
+                                )
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitTransporteur")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormTransporteur.id);";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormTransporteur.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Transporter : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

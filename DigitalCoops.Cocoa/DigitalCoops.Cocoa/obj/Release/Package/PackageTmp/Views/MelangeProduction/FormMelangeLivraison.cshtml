@@ -1,0 +1,443 @@
+﻿@model Tms.Classes.Business.stock.CompositionUsinageLivraisonViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    /*.x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }*/
+    #btnRefreshDelivery {
+        padding: 2px 7px 2px 7px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var SetAvailableDeliveriesInfos = function () {
+        var TotalNbrSacs = App.storeListDeliveriesProd.sum('NombreSacs') || 0;
+        var nbrOfrows = App.grpListDeliveriesProd.getStore().getCount();
+
+        App.summaryLivProd.setHtml("Delivery (ies): " + nbrOfrows + "<br/>Nbr de sacs : " + formatNumber(TotalNbrSacs));
+
+    };
+
+    var SetBtnOK = function () {
+        if (App.rowSelectBLPendingDeliveries.hasSelection())
+            App.BtnSendDelivery.enable();
+        else
+            App.BtnSendDelivery.disable();
+    };
+
+    var OnChangeMelange = function () {
+        if (App.grpListDeliveriesProd.getStore().isLoaded()) {
+            var val = App.cmbMelangeProduction.getValue() || 1;
+            var valDesignation = App.cmbMelangeProduction.getRawValue();
+            console.log(val);
+            App.grpListDeliveriesProd.store.each(function (records)
+            {
+                var rec = {
+                    ID: val,
+                    Designation: valDesignation
+                };
+                records.set('Melange',rec);
+                records.set('MelangeID', val);
+                records.set('MelangeAsString', valDesignation);
+            })
+        }
+    };
+
+    var OnChangeMelangeSelected = function () {
+        if (App.grpListDeliveriesProd.getStore().isLoaded()) {
+            var val = App.cmbMelangeProduction.getValue();
+            var valDesignation = App.cmbMelangeProduction.getRawValue();
+            console.log(val);
+            App.grpListDeliveriesProd.store.each(function (records) {
+                records.set('Melange.ID', val);
+                records.set('MelangeID', val);
+                records.set('MelangeAsString', valDesignation);
+            })
+        }
+        return true;
+    };
+</script>
+@(
+X.Window()
+    .ID("FormMelangeLivraison")
+    .Width(1300)
+    .Resizable(false)
+    .Height(500)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .BodyPadding(5)
+    .Title("Livraisons disponibles")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items
+    (
+        X.Panel()
+            .ID("ProdAvailableDeliveriesCP")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Livraisons disponibles", Height = 30 })
+            .Collapsed(false)
+            .Collapsible(false)
+            .BodyPadding(0)
+            .MarginSpec("0 0 5 0")
+            .Frame(true)
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+            .HeaderConfig
+            (
+                new PanelHeader
+                {
+                    Items = {
+                                X.Button()
+                                    .ID("btnRefreshDelivery")
+                                    .IconCls("action_refresh_01")
+                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                    .Border(false)
+                                    .Disable(false)
+                                    .DirectEvents
+                                    (
+                                        de =>
+                                        {
+                                            de.Click.Url  = Url.Action("OnRefreshForProduction");
+                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCertification", Encode=true, Value= "#{cmbCertificationLiv}.getValue()", Mode=ParameterMode.Raw});
+                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemLivraisonType", Encode=true, Value= "#{cmbLivraisonType}.getValue()", Mode=ParameterMode.Raw});
+                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtDateDebutLiv}.getRawValue()",   Mode=ParameterMode.Raw});
+                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtDateFinLiv}.getRawValue()",     Mode=ParameterMode.Raw});
+                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Value= "#{cmbCropYearLiv}.getRawValue()",     Mode=ParameterMode.Raw});
+                                            de.Click.Success = "App.ProdAvailableDeliveriesCP.setTitle('Type De Livraison = ' + App.cmbLivraisonType.rawValue + ' , Certification = ' + App.cmbCertificationLiv.rawValue + ' , du  '+ App.txtDateDebutLiv.rawValue  + ' au  '+ App.txtDateFinLiv.rawValue )";
+                                            de.Click.EventMask.ShowMask = true;
+                                        }
+                                    )
+                            }
+                }
+            )
+            .Items
+            (
+    #region Zone A
+                X.Container()
+                    .Flex(1)
+                    .Layout(LayoutType.Form)
+                    .Items
+                    (
+                        X.ComboBox()
+                            .ID("cmbMelangeProduction")
+                            .FieldLabel("Blending")
+                            .DisplayField("Designation")
+                            .ValueField("ID")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .LabelAlign(LabelAlign.Right)
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        X.Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadActiveMelange", "Melange"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                            )
+                            .Listeners(
+                                ls =>
+                                {
+                                    ls.Select.Handler = "OnChangeMelange();";
+                                    ls.Change.Handler = "OnChangeMelange();";
+                                }
+                            ),
+                        X.ComboBox()
+                            .ID("cmbLivraisonType")
+                            .FieldLabel("Type de livraison")
+                            .DisplayField("Designation")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                       X.Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadLivraisonTypeAll", "LivraisonType"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                            )
+                            .SelectedItems
+                            (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                            ),
+                        X.ComboBox()
+                            .ID("cmbCertificationLiv")
+                            .FieldLabel("Certification")
+                            .DisplayField("Designation")
+                            .ValueField("ID")
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .LabelAlign(LabelAlign.Right)
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        X.Model()
+                                             .IDProperty("ID")
+                                             .Fields
+                                             (
+                                               new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                               new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                             )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                            )
+                            .SelectedItems
+                            (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                            )
+                    ),
+
+    #endregion
+                X.Container()
+                    .Layout(LayoutType.Form)
+                    .Flex(1)
+                    .Items
+                    (
+                        X.ComboBox()
+                            .ID("cmbCropYearLiv")
+                            .FieldLabel("Campagne")
+                            .LabelWidth(20)
+                            .Width(10)
+                            .DisplayField("Designation")
+                            .ValueField("Designation")
+                            .LabelAlign(LabelAlign.Right)
+                            .Width(400)
+                            .Value(Model._Campagne)
+                            .Store
+                                (
+                                X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    Html.X().Model()
+                                        .IDProperty("Designation")
+                                        .Fields
+                                        (
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+
+                             ),
+                        X.DateField().ID("txtDateDebutLiv").LabelAlign(LabelAlign.Right).FieldLabel("Date Debut").Text(@StartDate),
+                        X.DateField().ID("txtDateFinLiv").LabelAlign(LabelAlign.Right).FieldLabel("Date Fin").Text(@EndDate)
+                    ),
+                X.Container()
+                    .Layout(LayoutType.Center)
+                    .Flex(1)
+                    .Items(
+                            X.Label()
+                                .ID("summaryLivProd")
+                                .Text("Resume")
+                                .EmptyText("")
+                            )
+            ),
+        X.Button().ID("BtnReloadListe").Text("OK").Hidden(true)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SetAvailableNbrSacs");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeAdded", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeToAdd", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListDeliveriesProd.getRowsValues({selectedOnly : false})" });
+
+                }),
+        X.GridPanel()
+            .Layout(LayoutType.Fit)
+            .ID("grpListDeliveriesProd")
+            .Height(250)
+            //.Border(true)
+            .Frame(true)
+            .FrameHeader(false)
+            .AllowDeselect(true)
+            .Store
+            (
+                X.StoreFor<Tms.Classes.Business.stock.CompositionUsinageLivraison>()
+                    .ID("storeListDeliveriesProd")
+                    .AutoLoad(false)
+                    .Proxy
+                    (
+                        X.AjaxProxy()
+                            .Url(Url.Action("SelectForProduction"))
+                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                    )
+                    .Listeners(
+                        ls => ls.Load.Handler = "SetAvailableDeliveriesInfos();"
+                    )
+                    .Parameters
+                    (
+                        ps =>
+                        {
+                            ps.Add(new StoreParameter("ItemCertification", "#{cmbCertificationLiv}.getValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemLivraisonType", "#{cmbLivraisonType}.getValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemPeriodStart", "#{txtDateDebutLiv}.getRawValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemPeriodEnd", "#{txtDateFinLiv}.getRawValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemCampagne", "#{cmbCropYearLiv}.getRawValue()", ParameterMode.Raw));
+                        }
+                    ).Listeners(
+                        ls =>
+                        {
+                            ls.Load.Handler = "OnChangeMelange(); FilterDeliveries(); SetAvailableDeliveriesInfos();";
+                            //ls.Add.Handler = "FilterDeliveries();";
+                        }
+
+                    )
+            )
+            //.Listeners(
+            //            ls =>
+            //            {
+            //                ls..Handler = "FilterDeliveries();";
+            //            }
+
+            //        )
+            .ColumnModel
+            (
+                Html.X().Column().Text("melange").DataIndex("MelangeAsString").Flex(1).Hidden(true).Hideable(false),
+                Html.X().Column().Text("Date Livraison").DataIndex("DateLivraisonAstring").Flex(1).Hideable(false),
+                Html.X().Column().Text("Livraison N°").DataIndex("LivraisonID").Flex(1).Hideable(false),
+                Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(false),
+                Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false).Editor(Html.X().NumberField().ID("NewNbrSacs").HideTrigger(true)),
+                Html.X().Column().Text("Type De Livraison").DataIndex("LibelleTypeDeLivraison").Flex(1).Hideable(false),
+                Html.X().Column().Text("Certification").DataIndex("LibelleCertification").Flex(1).Hideable(false),
+                Html.X().Column().Text("Humidite").DataIndex("Humidite").Flex(1).Hideable(false).Editor(Html.X().NumberField().ID("HumditeBeans").HideTrigger(true)),
+                Html.X().Column().Text("Moisie)").DataIndex("Moisi").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Beans Count").DataIndex("Grainage").Flex(1).Hideable(false),
+                Html.X().Column().Text("Weevil").DataIndex("Mite").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Slaty").DataIndex("Ardoisee").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Foreign Matter").DataIndex("MatiereEtrangere").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Tamis").DataIndex("Sievings").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true))
+            )
+            .Plugins
+            (
+                X.CellEditing().ClicksToEdit(2),
+                X.FilterHeader()
+            )
+            .Listeners(
+                ls => ls.BeforeEdit.Handler = "App.NewNbrSacs.setMaxValue(e.record.data.NombreSacs);"
+            )
+            .SelectionModel(
+                            X.CheckboxSelectionModel()
+                                .ID("rowSelectBLPendingDeliveries")
+                                .Mode(SelectionMode.Multi)
+                                .Listeners
+                                (
+                                    l =>
+                                    {
+                                        l.Select.Handler = "SetBtnOK();";
+                                        l.Deselect.Handler = "SetBtnOK();";
+                                    }
+                                )
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnSendDelivery")
+            .Disabled(true)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitDeliveries");
+                    de.Click.Before = "return validNew(App.FormMelangeLivraison.id);";
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeliveriesProd}.getRowsValues({selectedOnly : true})" });
+                    de.Click.ExtraParams.Add(new Parameter { Name = "rowsDeliveriesInListe", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+                }
+            ),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.FormMelangeLivraison.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Blending ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+    var FilterDeliveries = function () {
+        App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);
+        /*Ext.net.DirectMethod.request({ url: baseurl + "/OrdreProduction/FilterDeliveries" });*/
+    };
+</script>
+
+
+
+
+
+
+
+
+

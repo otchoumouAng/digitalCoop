@@ -1,0 +1,484 @@
+﻿
+@model Tms.Classes.Business.stock.LotViewModel
+@{
+    Layout = null;
+    var X = Html.X();    
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 120px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<style>
+    .x-table-form-item {
+        margin-bottom: 5px;
+    }
+
+    #txtGrossWeight2-labelTextEl, #txtNetWeight2-labelTextEl, #txtTotalBags-labelTextEl {
+        font-weight: bold;
+    }
+
+    #txtGrossWeight2-inputEl, #txtNetWeight2-inputEl, #txtTotalBags-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+</style>
+<script type="text/javascript">
+
+
+    var Detail =
+    {
+        resetButtons: function () {
+
+            App.btnRemove.disable();
+
+            if (App.rowSelectionListLot2.hasSelection()) {
+
+
+
+                if (App.LotPermissionRemove.value == 'true')
+                {
+                    if (App.rowSelectionListLot2.lastSelected.data.Desactive == false) {
+                        App.btnRemove.setText("Remove");
+                        App.btnRemove.setIconCls('glyphicon glyphicon-minus-sign red');
+                        App.btnRemove.enable();
+                    }
+                }
+                else
+                {
+                    if (App.rowSelectionListLot2.lastSelected.data.Desactive == false) {
+                        App.btnRemove.setText("Remove");
+                        App.btnRemove.setIconCls('glyphicon glyphicon-minus-sign red');
+                        App.btnRemove.disable();
+                    }
+                }
+            }
+            else {
+                App.btnRemove.setText("Remove");
+                App.btnRemove.setIconCls('glyphicon glyphicon-minus-sign red');
+                App.btnRemove.disable();
+            }
+        }
+    }
+
+</script>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .Modal(true)
+    .ID("Lot_Detail")
+    .Width(900)
+    .Resizable(false)
+    .AutoScroll(true)
+    .Scrollable(ScrollableOption.Vertical)
+    .Height(400)
+    .BodyPadding(10)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .DirectEvents
+    (
+        de =>
+        {
+            de.AfterRender.Url = Url.Action("GetOldLots", "Embarquement");
+            //de.AfterRender.ExtraParams.Add(new Parameter { Name = "rows", Value = "", Encode = true })
+            de.AfterRender.ExtraParams.Add(new Parameter { Name = "rows", Mode = ParameterMode.Raw, Encode = false, Value = "App.grpDetailLot.getRowsValues({selectedOnly : false})" });
+        }
+    )
+    //.Listeners(l => l.AfterRender.Handler =  "") 
+    .Title("Lots : Details")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items(
+                    X.Panel()
+                        .Frame(false)
+                        .Border(false)
+                        .FrameHeader(false)
+                        .ID("pnlFlexEvenLot1")
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("0 0 5 0")
+                        .PaddingSpec("10 0 10 0")
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                        (
+                            X.Hidden()
+                                .ID("HiExecMode")
+                                .Value(Model._ExecMode),
+                            X.Hidden().ID("HiEmbarquementID").Value(ViewData["HiEmbarquementID"]),
+                            X.Hidden().ID("HiCampagne").Value(ViewData["HiCampagne"]),
+                            X.Hidden().ID("HiExportateurID").Value(ViewData["HiExportateurID"]),
+                            X.Hidden().ID("HiCertificationID").Value(ViewData["HiCertificationID"]),
+                            X.Hidden().ID("LotPermissionRemove").Value(ViewData["LotPermissionRemove"]).ReadOnly(true),
+                            X.Hidden().ID("HiPoidsStdBrutUnitaire").Value(int.Parse(ViewData["PoidsStdBrutUnitaire"].ToString())),
+                            X.Hidden().ID("HiPoidsStdNetUnitaire").Value(int.Parse(ViewData["PoidsStdNetUnitaire"].ToString())),
+                            X.Panel()
+                                .ID("firstColLot1")
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Frame(true)
+                                .PaddingSpec("10 10 0 10")
+                                //.Height(400)
+                                .Items
+                                (
+                                     X.Label().Text("Lots").StyleSpec("Font-size:15px; text-decoration: underline ").MarginSpec("0 0 0 0"),
+    #region TopBar
+                                    X.Panel()
+                                        .Height(39)
+                                        //.Width(515)
+                                        .Layout(LayoutType.Fit)
+                                        //.MarginSpec("0 0 0 0")
+                                        .TopBar
+                                        (
+                                            new Toolbar()
+                                            {
+                                                Items =
+                                                {
+                                                    X.Button()
+                                                        .ID("btnAdd")
+                                                        .IconCls("glyphicon-plus red")
+                                                        .Text("Ajouter")
+                                                        .Cls("ButtonStyle")
+                                                        .Border(false)
+                                                        .Disabled((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (bool)ViewData["LotPermissionAdd"] == false )? true : false)
+                                                        .Disable(true)
+                                                        .DirectEvents
+                                                        (
+                                                            de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("OnAddAvailableLot", "Embarquement");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiCampagne}.getValue()" });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemExportateurID", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiExportateurID}.getValue()" });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCertificationID", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiCertificationID}.getValue()" });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmbarquementID", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiEmbarquementID}.getValue()" });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiExecMode}.getValue()" });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "rowsInList", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailLot2}.getRowsValues({selectedOnly : false})" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                        ),
+
+                                                        X.ToolbarSeparator(),
+
+                                                        X.Button()
+                                                        .ID("btnRemove")
+                                                        .IconCls("glyphicon glyphicon-minus-sign red")
+                                                        .Border(false)
+                                                        .Cls("ButtonStyle")
+                                                        .Text("Retirer")
+                                                        .Disabled(true)
+                                                        .DirectEvents
+                                                        (
+                                                          de =>
+                                                          {
+                                                            de.Click.Url = Url.Action("OnRemove","Embarquement");
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailLot2}.getSelectionModel().getSelection()[0].data" });
+                                                            de.Click.ExtraParams.Add(new StoreParameter { Name = "ItemCount", Mode = ParameterMode.Raw, Value = "#{grpDetailLot2}.getRowsValues().length" });
+                                                            de.Click.EventMask.ShowMask = true;
+                                                            de.Click.Confirmation.ConfirmRequest = true;
+                                                            de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Lot  : Retirer'; config.confirmation.message = 'Do you want to remove this item? ';";
+                                                          }
+                                                        ),
+                                                        X.ToolbarSeparator(),
+                                                        X.Button()
+                                                        .ID("btnNewLot")
+                                                        .IconCls("glyphicon-plus red")
+                                                        .Border(false)
+                                                        .Cls("ButtonStyle")
+                                                        //.Hidden(true)
+                                                        .Text("Creer Lot Fictif")
+                                                        //.Disabled(true)
+                                                        .DirectEvents
+                                                        (
+                                                          de =>
+                                                          {
+                                                            de.Click.Url = Url.Action("OnAddLotFictif","Embarquement");
+                                                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailLot2}.getSelectionModel().getSelection()[0].data" });
+                                                            //de.Click.ExtraParams.Add(new StoreParameter { Name = "ItemCount", Mode = ParameterMode.Raw, Value = "#{grpDetailLot2}.getRowsValues().length" });
+                                                            de.Click.EventMask.ShowMask = true;
+                                                          }
+                                                        )
+                                                     }
+                                            }
+                                            ),
+    #endregion
+                                    X.GridPanel()
+                                        .Layout(LayoutType.Fit)
+                                        .ID("grpDetailLot2")
+                                        .Region(Region.Center)
+                                        .Frame(true)
+                                        .Height(150)
+                                        .AllowDeselect(true)
+                                        .Store
+                                        (
+                                            X.StoreFor<Tms.Classes.Business.stock.Lot>()
+                                                .ID("storeListLot2")
+                                                .AutoLoad(false)
+                                                .Proxy
+                                                 (
+                                                        X.AjaxProxy()
+                                                            .Url(Url.Action("LoadListOfLot2"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                 )
+                                                 .Parameters
+                                                 (
+                                                    ps =>
+                                                    {
+                                                        ps.Add(new StoreParameter("ItemExecMode", "#{HiExecMode}.getValue()", ParameterMode.Raw));
+                                                        ps.Add(new StoreParameter("ItemEmbarquementID", "#{HiEmbarquementID}.getValue()", ParameterMode.Raw));
+                                                    }
+                                                 )
+
+                                                .Listeners
+                                                (
+                                                    l =>
+                                                    {
+                                                        l.Add.Fn = "RefreshLot2";
+                                                        l.Load.Fn = "RefreshLot2";
+                                                        l.Remove.Fn = "RefreshLot2";
+                                                    }
+                                                )
+                                               )
+                                               .ColumnModel
+                                               (
+                                                    Html.X().Column().Text("N° Lot").DataIndex("NumeroLot").Flex(1),
+                                                    Html.X().Column().Text("Poids Brut (kg)").DataIndex("PoidsBrutNAsString").Flex(1),
+                                                    Html.X().Column().Text("Poids Net (kg)").DataIndex("PoidsNetNAsString").Flex(1),
+                                                    Html.X().Column().Text("Nbr. Of Bags").DataIndex("NombreSacs").Flex(1),
+                                                    Html.X().Column().Text("Std. Poids Brut (Kg)").DataIndex("PoidsBrutAsString").Flex(1),
+                                                    Html.X().Column().Text("Std. Poids Net (Kg)").DataIndex("PoidsNetAsString").Flex(1)
+                                               )
+                                               .SelectionModel
+                                               (
+                                                    X.RowSelectionModel()
+                                                    .ID("rowSelectionListLot2")
+                                                    .Mode(SelectionMode.Single)
+                                                    .AllowDeselect(true)
+                                               )
+                                                .Listeners(l =>
+                                                {
+                                                    if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                                    {
+                                                        l.Select.Fn = "Detail.resetButtons";
+                                                        l.Deselect.Fn = "Detail.resetButtons";
+
+
+                                                    }
+
+                                                })
+
+                                    //3st Col
+                                    )
+
+                    //End first panel
+                    ),
+                    X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    //.FrameHeader(false)
+                    .ID("pnlFlexEvenSw2")
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.End })
+                    .Items
+                    (
+
+
+
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                        X.Container()
+
+                                                                    .Layout(LayoutType.VBox)
+                                                                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
+                                                                    .Items(
+                                                                            X.TextField()
+                                                                                .ID("txtTotalBags")
+                                                                                 .LabelAlign(LabelAlign.Right)
+                                                                                 .LabelWidth(120)
+                                                                                .AllowBlank(false)
+                                                                                .ReadOnly(true)
+                                                                                     //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsBrutAsString : string.Empty)
+                                                                                     .Listeners(ls =>
+                                                                                     {
+
+                                                                                         ls.Blur.Handler = "if (App.txtTotalBags.value && !App.txtTotalBags.readOnly) {#{txtTotalBags}.setValue(formatNumber(#{txtTotalBags}.getValue()))}";
+                                                                                         ls.Focus.Handler = "if (App.txtTotalBags.value && !App.txtTotalBags.readOnly) { #{txtTotalBags}.setRawValue(unformatNumber(#{txtTotalBags}.getValue()));}";
+
+                                                                                     })
+                                                                        )
+                                                            ,
+                                                        X.Container()
+                                                            .Layout(LayoutType.VBox)
+                                                             .MarginSpec("0 0 0 20")
+                                                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
+                                                            .Items(
+                                                                    X.TextField()
+                                                                        .ID("txtGrossWeight2")
+                                                                         //.FieldLabel("Poids Brut (kg)")
+                                                                         .LabelAlign(LabelAlign.Right)
+                                                                         .LabelWidth(120)
+                                                                        .AllowBlank(false)
+                                                                        .ReadOnly(true)
+                                                                             //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsBrutAsString : string.Empty)
+                                                                             .Listeners(ls =>
+                                                                             {
+
+                                                                                 ls.Blur.Handler = "if (App.txtGrossWeight2.value && !App.txtGrossWeight2.readOnly) {#{txtGrossWeight2}.setValue(formatNumber(#{txtGrossWeight2}.getValue()))}";
+                                                                                 ls.Focus.Handler = "if (App.txtGrossWeight2.value && !App.txtGrossWeight2.readOnly) { #{txtGrossWeight2}.setRawValue(unformatNumber(#{txtGrossWeight2}.getValue()));}";
+
+                                                                             })
+                                                                )
+                                                    ,
+                                                     X.Container()
+                                                            .Layout(LayoutType.VBox)
+                                                            .MarginSpec("0 40 0 20")
+                                                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
+                                                            .Items(
+                                                                     X.TextField()
+                                                                        .ID("txtNetWeight2")
+                                                                         //.Hidden(true)
+                                                                         //.FieldLabel("Poids Net (kg)")
+                                                                         .LabelAlign(LabelAlign.Right)
+                                                                        .AllowBlank(false)
+                                                                        .ReadOnly(true)
+                                                                        .LabelWidth(120)
+                                                                             //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsNetAsString : string.Empty)
+                                                                             .Listeners(ls =>
+                                                                             {
+
+                                                                                 ls.Blur.Handler = "if (App.txtNetWeight2.value && !App.txtNetWeight2.readOnly) {#{txtNetWeight2}.setValue(formatNumber(#{txtNetWeight2}.getValue()))}";
+                                                                                 ls.Focus.Handler = "if (App.txtNetWeight2.value && !App.txtNetWeight2.readOnly) { #{txtNetWeight2}.setRawValue(unformatNumber(#{txtNetWeight2}.getValue()));}";
+
+                                                                             })
+                                                                )
+
+
+                                                )
+
+                    //Second Panel
+                    )
+
+                  //End form panel
+                  )
+
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOk2")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents
+                    (
+
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("AddListMethod");
+                            de.Click.Before = "return validAdd(App.Lot_Detail.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDetailLot2.getRowsValues({selectedOnly : false})" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = true, Value = "App.HiExecMode.getValue()" });
+
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                        }
+                    ),
+                    X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Lot_Detail.doClose()")
+                    .Cls("btncancel")
+
+                )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validAdd = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+       
+
+        var PoidsBrut = unformatNumber(App.txtGrossWeight2.value) || '';
+
+      
+        if (App.grpDetailLot2.getRowsValues().length < 1) {
+
+            Ext.Msg.show({ title: 'Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please add lots.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if (PoidsBrut < 0 ) {
+            Ext.Msg.show({ title: 'Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: '.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+
+    };
+
+
+    var RefreshLot2 = function () {
+        /*var totalNetAccepte = App.storeListeMouvementStock.sum('PoidsNetAccepte') || 0;*/
+
+        /***Calcul des poids***/
+       
+        var NbreSac = 0;
+        var StdBrutUnitaire = Number(App.HiPoidsStdBrutUnitaire.value) || 0;
+        var StdNetUnitaire = Number(App.HiPoidsStdNetUnitaire.value) || 0;
+        NbreSac = App.storeListLot2.sum('NombreSacs') || 0;
+        
+        var PoidsNet = NbreSac * StdNetUnitaire;
+        var PoidsBrut = NbreSac * StdBrutUnitaire;
+
+        App.txtGrossWeight2.setValue(formatNumber(PoidsBrut));
+        App.txtNetWeight2.setValue(formatNumber(PoidsNet));
+        App.txtTotalBags.setValue(formatNumber(NbreSac));
+        /**Control**/
+        
+        /*if (App.grpDetailLot2.getRowsValues().length >= 1) {
+                for (i = 0; i < App.grpDetailLot2.getRowsValues().length; i++) {
+                    if (App.grpDetailLot2.getRowsValues()[i].Desactive == 0) {
+    
+                        NbreSac = NbreSac + App.grpDetailLot2.getRowsValues()[i].NombreSacs;
+    
+                    }
+                }
+    
+            }*/
+    };
+</script>
+
+

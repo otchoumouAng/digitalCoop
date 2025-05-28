@@ -1,0 +1,14 @@
+﻿@*@Html.DevExpress().DocumentViewer(settings =>
+{
+    settings.Name = "DocumentViewer";
+    //settings.CallbackRouteValues = new { Controller = "ContratPeriode", Action = "ViewBalanceReport" };
+    settings.ExportRouteValues = new { Controller = "ContratPeriode", Action = "ViewBalanceReportExport" };
+    settings.Report = (XtraReport)ViewData["Report"];    
+    settings.ToolbarMode = DocumentViewerToolbarMode.StandardToolbar;
+}).GetHtml()*@
+
+@Html.DevExpress().WebDocumentViewer(settings =>
+{
+    settings.Name = "WebDocumentViewer";
+    settings.ClientSideEvents.Init = "function(s, e) { s.previewModel.reportPreview.zoom(1);}";
+}).Bind((XtraReport)ViewData["Report"]).GetHtml()

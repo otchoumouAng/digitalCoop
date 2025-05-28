@@ -1,0 +1,301 @@
+﻿@model Tms.Classes.Business.Sales.PrefinancementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    //string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    //string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var SetAvailablePrefinancingsInfos = function () {
+        var Qty = App.storeListPrefinancing.sum('Montant') || 0;
+
+        var mChaine = Ext.String.format('Montant Total : {0} (CFA)', formatNumber(Qty));
+        App.LblResumeAvlbPrefinancings.setText(mChaine);
+
+    };
+
+    var SetBtnOK = function () {
+        if (App.rowSelectionListPrefinancing.hasSelection())
+            App.BtnSendPrefinancing.enable();
+        else
+            App.BtnSendPrefinancing.disable();
+    };
+</script>
+@(
+
+                        X.Window()
+                        .ID("ListOfPrefinancings")
+                        .Width(1200)
+                        .Resizable(false)
+                        .Height(470)
+                        .Modal(true)
+                        .CloseAction(Ext.Net.CloseAction.Destroy)
+                        .Y(20)
+                        .BodyPadding(5)
+                        .Title("List of Prefinancings")
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                                    X.Hidden()
+                                    .ID("hidExportateur")
+                                    .Value((string)ViewData["Exportateur"])
+                                    ,
+                            X.FormPanel()
+                            .ID("CriteriaPanelShi")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Facture Commerciale - Prefinancings", Height = 30 })
+                            .Region(Region.North)
+                            //.Border(true)
+                            .Collapsed(true)
+                            .Collapsible(true)
+                            .BodyPadding(0)
+                            .MarginSpec("0 0 5 0")
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+                            .HeaderConfig(new PanelHeader
+                            {
+                                Items = {
+                                            X.Button()
+                                                .ID("btnRefreshPrefinancing")
+                                                .IconCls("action_refresh_01")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                .Border(false)
+                                                .Disable(false)
+                                                .DirectEvents
+                                                (
+                                                  de =>
+                                                  {
+                                                    de.Click.Url  = Url.Action("OnRefreshForAvailablePrefinancings");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExportateur", Encode=true, Value= "#{hidExportateur}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemType", Encode=true, Value= "#{cmbTypeFD}.getValue()", Mode=ParameterMode.Raw});
+                                                   de.Click.Success = "App.CriteriaPanelShi.setTitle('Type = '+ App.cmbTypeFD.rawValue)";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                  }
+                                               )
+                                }
+                            }
+                            )
+                            .Height(150)
+                            .Items
+                             (
+                                X.Panel()
+                                 .Border(false)
+                                 .Frame(true)
+                                 .Margin(10)
+                                 .Width(350)
+                                 .Height(80)
+                                 .Layout(LayoutType.Form)
+                                 .BodyPadding(0)
+                                 .Items
+                                 (
+                                          //X.ComboBox()
+                                          // .ID("cmbExportateurFD")
+                                          // .FieldLabel("Exportateur")
+                                          // .LabelWidth(30)
+                                          // .DisplayField("Nom")
+                                          // .ValueField("ID")
+                                          // .Width(340)
+                                          // .LabelAlign(LabelAlign.Right)
+                                          // .TypeAhead(true)
+                                          // .ForceSelection(true)
+
+                                          // .Store
+                                          // (
+                                          //   X.Store()
+                                          //    .AutoLoad(true)
+                                          //    .Model
+                                          //    (
+                                          //      Html.X().Model()
+                                          //      .IDProperty("ID")
+                                          //      .Fields
+                                          //      (
+                                          //        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                          //        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                          //      )
+                                          //    )
+                                          //    .Proxy
+                                          //    (
+                                          //      Html.X().AjaxProxy()
+                                          //      .Url(Url.Action("LoadExportateurAll", "Exportateur"))
+                                          //      .Reader(Html.X().JsonReader().RootProperty("data"))
+                                          //    )
+                                          //  )
+                                          //  .SelectedItems
+                                          //  (
+                                          //    it =>
+                                          //    {
+                                          //        it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                          //    }
+                                          //  ),
+                                          X.ComboBox()
+                                        .ID("cmbTypeFD")
+                                        .FieldLabel("Type")
+                                        .LabelWidth(30)
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .Width(340)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(true)
+                                        .ForceSelection(true)
+
+                                        .Store
+                                        (
+                                          X.Store()
+                                           .AutoLoad(true)
+                                           .Model
+                                           (
+                                             Html.X().Model()
+                                             .IDProperty("ID")
+                                             .Fields
+                                             (
+                                               new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                               new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                             )
+                                           )
+                                           .Proxy
+                                           (
+                                             Html.X().AjaxProxy()
+                                             .Url(Url.Action("LoadAll", "PrefinancementType"))
+                                             .Reader(Html.X().JsonReader().RootProperty("data"))
+                                           )
+                                         )
+                                         .SelectedItems
+                                         (
+                                           it =>
+                                           {
+                                               it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                           }
+                                         )
+
+                                   ),
+
+
+                               X.Panel()
+                                .ID("formOverviewSelectPrefinancing")
+                                .Width(500)
+                                //.Margin(10)
+                                .Flex(1)
+                                //.Frame(true)
+                                .Height(80)
+                                //.TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                                .Border(false)
+                                //.BodyPadding(0)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("LblResumeAvlbPrefinancings").Text("").EmptyText(""))
+                                 )
+
+                               ),
+
+                           X.Hidden()
+                            .ID("TxtExecMode")
+                            .Value(Model._ExecMode)
+                            ,
+                           X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListPrefinancing")
+                            .Height(300)
+                            //.Border(true)
+                            .Frame(true)
+                            .FrameHeader(false)
+                            .AllowDeselect(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.Sales.Embarquement>()
+                                .ID("storeListPrefinancing")
+                                .AutoLoad(true)
+                             .Proxy
+                             (
+                              Html.X().AjaxProxy()
+                                  .Url(Url.Action("LoadListOfAvailablePrefinancings"))
+                                  .Reader(Html.X().JsonReader().RootProperty("data"))
+                             )
+                             .Listeners(
+                                   ls => ls.Load.Handler = "SetAvailablePrefinancingsInfos();"
+                                   )
+                             .Parameters
+                             (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemExportateur", "#{hidExportateur}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemType", "#{cmbTypeFD}.getValue()", ParameterMode.Raw));
+                               }
+                             )
+                             )
+                             .ColumnModel
+                             (
+                                //Html.X().DateColumn().Text("Date").DataIndex("Date").Format("dd/m/Y").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1).Hideable(false),
+                                Html.X().Column().Text("Exportateur").DataIndex("ExportateurNameAndCode").Flex(1),
+                                Html.X().Column().Text("Type").DataIndex("LibellePrefinancementType").Flex(1),
+                                Html.X().Column().Text("External Ref").DataIndex("ReferenceExterne").Flex(1),
+                                Html.X().Column().Text("Tonnage (Kg)").DataIndex("TonnageAsString").Flex(1),
+                                Html.X().Column().Text("Paid (Kg)").DataIndex("TonnagePayeAsString").Flex(1),
+                                Html.X().Column().Text("Prix (CFA)").DataIndex("PrixAsString").Flex(1),
+                                Html.X().Column().Text("Montant (CFA)").DataIndex("MontantAsString").Flex(1),
+                                Html.X().Column().Text("Balance (CFA)").DataIndex("SoldeAsString").EmptyCellText("0").Flex(1)
+                             )
+                             .Plugins(
+                                X.FilterHeader()
+                            )
+                            .SelectionModel(X.RowSelectionModel().ID("rowSelectionListPrefinancing").Mode(SelectionMode.Single)
+                           .Listeners(l =>
+                           {
+                               l.Select.Handler = "SetBtnOK();";
+                               l.Deselect.Handler = "SetBtnOK();";
+                           })
+
+                           )
+                       )
+
+                       .Buttons
+                       (
+                           X.Button()
+                            .Text("OK")
+                            .ID("BtnSendPrefinancing")
+                            .Disabled(true)
+                           //.Handler("validNew(App.FormExportateur.id)")
+                           .DirectEvents
+                           (
+                              de =>
+                              {
+                                  de.Click.Url = Url.Action("SubmitOnSelectPrefinancing");
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListPrefinancing}.getSelectionModel().getSelection()[0].data" });
+                              }
+                           ),
+
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.ListOfPrefinancings.doClose()")
+                            .Cls("btncancel")
+
+                          )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+

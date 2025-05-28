@@ -1,0 +1,48 @@
+﻿
+@*@model IEnumerable<Tms2017.MVC.Models.Module>*@
+@model IEnumerable<Tms.Classes.Security.Fonction>
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<link rel="stylesheet" href="~/Content/new.bootsrap.min.css" />
+
+<style type="text/css">
+    .NoBackgroundStyle{
+         background : none;
+    }
+
+</style>
+@(X.Panel()
+        .Layout(LayoutType.Table)
+        .BodyCls("NoBackgroundStyle")
+        .LayoutConfig(new TableLayoutConfig { Columns = 3 })
+        .BodyPadding(20)
+        .Items(it =>
+        {
+            var baseUrl = new Tms.Classes.Shared.Parametres(0).Base_url;
+            foreach (var fonction in Model)
+            {
+                var bt = new Ext.Net.Button {
+                    Text = fonction.ShortFunctionName,
+                    Margin = 10,
+                    Width = 250,
+                    Height = 50,
+                    Flat = true,
+                    ToolTip = fonction.Description
+                };
+
+                //bt.DirectEvents.Click.Url = Url.Action(fonction.MethodeName, fonction.ControllerName);
+                bt.DirectEvents.Click.Url = baseUrl + "/"+ fonction.ControllerName+"/"+ fonction.MethodeName;
+                bt.DirectEvents.Click.EventMask.ShowMask = true;
+                it.Add(bt);
+            }
+
+        }
+        )
+)
+
+
+
+
+

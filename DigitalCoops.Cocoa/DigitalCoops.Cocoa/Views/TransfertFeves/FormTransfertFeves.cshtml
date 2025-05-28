@@ -1,0 +1,681 @@
+﻿@model Tms.Classes.Business.Sites.TransfertFevesViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtSecondGrossWeight-inputEl, #txtFirstGrossWeight-inputEl {
+            font-size: 30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align: center !important;
+            line-height: 34px !important;
+        }
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+    <script type="text/javascript">
+        var GetNbrOfPallets = function () {
+            var nbrOfrows = App.grpListeBL.getStore().getCount();
+            App.txtNombrePalette.setValue(nbrOfrows);
+
+            /* set Fields to ReadOnly*/
+            if (nbrOfrows > 0) {                
+                App.btnAddNewLivraison.disable();
+                App.PanelBtnSave.hide();
+                /*App.BtnAddWeight.enable();*/
+            } else {                
+                App.btnAddNewLivraison.enable();
+                App.PanelBtnSave.show();
+                /*App.BtnAddWeight.disable();*/
+            }
+        };
+
+      var CalculateValues = function () {
+          var totalNbrSacs = App.storeListeBL.sum('NombreSacs') || 0;
+          var totalPoidsBrut = App.storeListeBL.sum('PoidsBrut') || 0;
+          var totaTare = App.storeListeBL.sum('TareSacs') || 0;
+          var totalPrix = App.storeListeBL.sum('PrixMoyen') || 0;
+          var totalMontant = App.storeListeBL.sum('Montant') || 0;
+          var nbrOfrows = App.grpListeBL.getStore().getCount();
+
+          if (nbrOfrows > 0) {
+              totalPrix = (totalMontant / totalPoidsBrut);
+              totalPrix = parseFloat(totalPrix).toFixed(2) || 0;
+              if (totalPrix > 0)
+                  totalPrix = totalPrix.replace('.', ',');
+          }
+
+          App.txtNombreSacs.setValue(formatNumber(totalNbrSacs));
+          App.txtPoidsBrut.setValue(formatNumber(totalPoidsBrut));
+          App.txtTareSacs.setValue(formatNumber(totaTare));
+          /*App.txtPrixMoyen.setValue(formatNumber(totalPrix));*/
+          App.txtPrixMoyen.setValue(totalPrix);
+      };
+
+      var CalculateNetWeight = function () {
+          var totalNbrSacs = App.storeListeBL.sum('NombreSacs') || 0;
+          var totalPoidsBrut = App.storeListeBL.sum('PoidsBrut') || 0;
+          var tareSacs = App.storeListeBL.sum('TareSacs') || 0;
+          /*var tareSacs = App.txtTareSacs.value;*/
+          var tarePalettes = App.txtTarePalettes.value;
+          if (App.txtTarePalettes.value != "0")
+              tarePalettes = parseFloat(unformatNumber(App.txtTarePalettes.value)) || 0;
+
+
+          var netWeight = parseFloat(totalPoidsBrut) - parseFloat(tareSacs) - parseFloat(tarePalettes);          
+          App.txtNetWeight.setValue(formatNumber(netWeight));
+      };
+
+      var CheckChangedData = function () {          
+          /*var totalNbrSacs = App.storeTransferList.sum('NombreSacs') || 0;
+          var totalPoidsBrut = App.storeTransferList.sum('PoidsBrut') || 0;
+          
+          var fldNbrSacs = unformatNumber(App.txtNombreSacs.value) || 0;
+          var fldPoidsBrut = unformatNumber(App.txtPoidsBrut.value) || 0;
+          
+          if (totalNbrSacs != fldNbrSacs || totalPoidsBrut != fldPoidsBrut)*/
+              App.btnResumeTransfert.fireEvent('click', App.btnResumeTransfert);
+          
+      };
+
+      var RoundInt = function (v) {
+          try {
+              if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                  return parseInt(v) + 1;
+              }
+              else {
+                  return parseInt(v);
+              }
+          } catch (err) {
+              return 0;
+          }
+      };
+    </script>
+
+</head>
+@(
+X.Window()
+    .ID("FormTransfertFeves")
+    .Width(800)
+    .Resizable(false)
+    .Height(500)
+    .Modal(true)
+    //.CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Beans Transfer : Nouveau")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .BodyPadding(5)
+    //.Listeners(
+    //    ls =>  ls.Close.Handler = "CheckChangedData();"
+    //)
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items
+            (
+                X.Hidden().ID("TxtTransfertID").Value(Model._TransfertFeves.ID),
+                X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+
+    #region firstLineScnW
+
+                X.Panel()
+                    .Layout(LayoutType.HBox)
+                    .Flex(1)
+                    .Frame(true)
+                    .Padding(5)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                    .Items
+                    (
+    #region Zone A
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                        .Flex(3)
+                                        .Items
+                                        (
+                                            X.TextField()
+                                                .ID("txtSiteID")
+                                                .Value(Model._TransfertFeves.Sites.ID)
+                                                .Hidden(true)
+                                                .ReadOnly(true),
+                                            X.TextField()
+                                                .ID("txtNomSite")
+                                                .FieldLabel("Site")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .AllowBlank(false)
+                                                .Text(Model._TransfertFeves.Sites.Nom)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*"),
+                                            X.ComboBox()
+                                                .ID("cmbDetCrop")
+                                                .FieldLabel("Campagne")
+                                                .MarginSpec("0 8 5 0")
+                                                .DisplayField("Designation")
+                                                .ValueField("Designation")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._TransfertFeves.Campagne.Designation)
+                                                .Store
+                                                (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                            .IDProperty("Designation")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            X.AjaxProxy().Url(Url.Action("LoadCampagne", "Campagne"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                    )
+
+
+
+                                            ),
+    #endregion
+    #region Zone B
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                        .Flex(3)
+                                        .Items
+                                        (
+                                            X.ComboBox()
+                                                .ID("cmbDetDestination")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .FieldLabel("Destination")
+                                                .DisplayField("Nom").ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .EmptyText("")
+                                                .ValueNotFoundText("")
+                                                .ForceSelection(true)
+                                                .TypeAhead(true)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                //.ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                                .Value(Model._TransfertFeves.Destination.ID)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            //.Listeners(l => l.Load.Handler = "App.cmbDetDestination.setValue(App.cmbDetDestination.getStore().getAt(0));")
+                                                            .Model(Html.X().Model()
+                                                            .IDProperty("ID")
+                                                                    .Fields(
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                    )
+                                                                )
+                                                            .Proxy(
+                                                                    Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadDestination", "Destination"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                            .Parameters(p =>
+                                                            {
+                                                                p.Add(new StoreParameter("siteID", "App.txtSiteID.getValue()", ParameterMode.Raw));
+                                                            })
+                                            ),
+                                            X.DateField()
+                                                .ID("txtDateTransfert")
+                                                .FieldLabel("Date")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.DateTransfert.ToShortDateString() : DateTime.Now.ToShortDateString())
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                        ),
+    #endregion
+    #region Zone C
+                    X.Panel()
+                        .Layout(LayoutType.Form)
+                        .ID("PanelBtnSave")
+                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                        .Flex(1)
+                        .Items
+                        (
+                        X.Panel().Layout(LayoutType.Center).Items(
+                            X.Button()
+                                .Text("OK")
+                                .Width(60)
+                                .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("SubmitFormBeforeDeliveries");
+                                        de.Click.Before = "return validNew(App.FormTransfertFeves.id);";
+                                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                                        de.Click.EventMask.ShowMask = true;
+
+                                    }
+                                )
+                                ))
+    #endregion
+
+
+                    ),
+
+    #endregion
+                    X.Container()
+                        .ID("zonePalettes")
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("5 0 0 0")
+                        .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                        .Items
+                        (
+    #region full pallets
+                            X.Button()
+                                .Hidden(true)
+                                .ID("btnAddNewLivraison")
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("SubmitWeighingPallet");
+                                        de.Click.Before = "return validNew(App.FormTransfertFeves.id);";
+                                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "TransfertID", Mode = ParameterMode.Raw, Encode = false, Value = "App.TxtTransfertID.value" });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
+                                    }
+                                ),
+                            X.Panel()
+                                .ID("UnloadedColScndw")
+                                .Flex(4)
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Frame(true)
+                                .MarginSpec("0 5 0 0")
+                                .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .Items
+                                (
+                                    X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListeBL")
+                                       .Region(Region.Center)
+                                       .ForceFit(true)
+                                       .Height(280)
+                                       //.Disabled(true)
+                                       .AllowDeselect(true)
+                                       .Store(
+                                                X.StoreFor<Tms.Classes.Business.Sites.TransfertFevesDetail>()
+                                                    .ID("storeListeBL")
+                                                    .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .Proxy(
+                                                            X.AjaxProxy()
+                                                                .Url(
+                                                                        Url.Action("SelectDeliveries")
+                                                                )
+                                                                .Reader(
+                                                                        X.JsonReader().RootProperty("data")
+                                                                )
+                                                      )
+                                                      .Parameters(
+                                                        ps => ps.Add(new StoreParameter("TransfertID", "#{TxtTransfertID}.getValue()", ParameterMode.Raw))
+                                                        )
+                                                      .Listeners(
+                                                            ls =>
+                                                            {
+                                                                ls.Load.Handler = "GetNbrOfPallets();";
+                                                                ls.Add.Handler = "CalculateValues(); CalculateNetWeight(); GetNbrOfPallets(); ";
+                                                                ls.Remove.Handler = "CalculateValues(); CalculateNetWeight(); GetNbrOfPallets();";
+                                                            }
+                                                        )
+                                        )
+                                        .ColumnModel
+                                        (
+                                            //X.RowNumbererColumn(),
+                                            //X.Column().Text("Date").Flex(2).DataIndex("DateTransfertDetailLongAsString").Hideable(false),
+                                            X.Column().Text("Livraison N°").Flex(1).DataIndex("NumeroLivraison").Hideable(false),
+                                            X.Column().Text("BE Num.").Flex(1).DataIndex("NumeroBonDeLivraison").Hideable(false),
+                                            X.Column().Text("N.bags").Flex(1).DataIndex("NombreSacs").Hideable(false),
+                                            X.Column().Text("G. Weight").Flex(1).DataIndex("PoidsBrutAsString").Hideable(false),
+                                            X.Column().Text("Tr. Pallet").Flex(1).DataIndex("TarePalette").Hideable(false),
+                                            X.Column().Text("Prix").Flex(1).DataIndex("PrixMoyenAsString").Hideable(false)
+                                        )
+                                        .DockedItems(
+                                                X.Toolbar()
+                                                    .Dock(Dock.Top)
+                                                    .Items(
+                                                            X.Label().Text("Livraisons"),
+                                                            X.ToolbarSpacer(15),
+                                                            X.Button()
+                                                                .ID("BtnAddLivraison")
+                                                                .IconCls("action_new_02")
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Ajouter")
+                                                                //.Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnSelectDelivery");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "siteID", Mode = ParameterMode.Raw, Encode = false, Value = "App.txtSiteID.getValue()" });
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "TransfertID", Mode = ParameterMode.Raw, Encode = false, Value = "App.TxtTransfertID.value" });
+                                                                    //de.Click.FormID = "#(return this.up('window').down('form');)";
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }),
+                                                            X.Button()
+                                                                .ID("BtnRemoveBL")
+                                                                //.IconCls("action_filter_02")
+                                                                .Icon(Icon.Delete)
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Retirer")
+                                                                .Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnRemoveDelivery");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeBL}.getSelectionModel().getSelection()[0].data" });
+                                                                    //de.Click.ExtraParams.Add(new Parameter { Name = "storeListeDelivery", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeCodeOverview.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Beans Transfer : Retirer'; config.confirmation.message = 'Voulez-vous retirer cette livraison ? ';";
+                                                                })
+                                                            )
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowBL")
+                                                            .Mode(SelectionMode.Single)
+                                                            .AllowDeselect(true)
+                                        )
+                                        .Listeners(l =>
+                                        {
+                                            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                            {
+                                                l.Select.Handler = "App.BtnRemoveBL.enable();";
+                                                l.Deselect.Handler = "App.BtnRemoveBL.disable();";
+                                            }
+                                        }
+                                    )
+                            ),
+    #endregion
+
+    #region Empty Pallets
+                                    X.Panel()
+                                        .ID("firstWeighingColScndw")
+                                        .Flex(2)
+                                        .Layout(LayoutType.VBox)
+                                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                        .Frame(true)
+                                        .Items
+                                        (
+                                            X.Container()
+                                                .Layout(LayoutType.Center)
+                                                .Items(
+                                                       X.Container()
+                                                            .ID("zone3")
+                                                            .Layout(LayoutType.Form)
+                                                            .Flex(2)
+                                                            .PaddingSpec("0 15 0 0")
+                                                            .Items
+                                                            (
+                                                                X.TextField()
+                                                                    .FieldLabel("Nbr Of Pallets")
+                                                                    .LabelWidth(180)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ReadOnly(true)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .ID("txtNombrePalette")
+                                                                    .Text(""),
+                                                                X.TextField()
+                                                                    .FieldLabel("Total Nbr de sacs")
+                                                                    .LabelWidth(180)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ReadOnly(true)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .ID("txtNombreSacs")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.NombreSacs.ToString() : string.Empty),
+                                                                X.TextField()
+                                                                    .FieldLabel("Total Poids Brut")
+                                                                    .ReadOnly(true)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .LabelWidth(180)
+                                                                    .EmptyText("0")
+                                                                        .Text("0")
+                                                                        .RawText("0")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ID("txtPoidsBrut")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.PoidsBrut.ToString("#,#") : string.Empty),
+                                                                X.TextField()
+                                                                    .FieldLabel("Tare Des Sacs")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .LabelWidth(180)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .ReadOnly(true)
+                                                                    .ID("txtTareSacs")
+                                                                    .AllowBlank(false)
+                                                                    .Text("0")
+                                                                    .EmptyText("0")
+                                                                    .RawText("0")
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.TareSacs.ToString("#") : string.Empty),
+                                                                        //X.FieldContainer()
+                                                                        //      .Layout(LayoutType.HBox)
+                                                                        //      //.LabelWidth(180)
+                                                                        //      .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                                        //      .FieldLabel("Tare Des Palettes")
+                                                                        //      .Flex(1)
+                                                                        //      .LabelAlign(LabelAlign.Right)
+                                                                        //      .Items
+                                                                        //       (
+                                                                        X.TextField()
+                                                                            .FieldLabel("")
+                                                                            //.Value(0)
+                                                                            .LabelAlign(LabelAlign.Right)
+                                                                            //.HideTrigger(true)
+                                                                            .AllowBlank(false)
+                                                                            .FieldLabel("Tare Des Palettes")
+                                                                            .MaskRe("[0123456789]")
+                                                                            //.ReadOnly(!Model._TransfertFeves.IsManual)
+                                                                            //.Flex(2)
+                                                                            .IndicatorCls("IndicatorRedStar")
+                                                                            .IndicatorText("*")
+                                                                            .ID("txtTarePalettes")
+                                                                            .EmptyText("0")
+                                                                            .Text("0")
+                                                                            .RawText("0")
+                                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.TarePalette.ToString("#,#") : "0")
+                                                                            .Listeners(
+                                                                                ls =>
+                                                                                {
+                                                                                    ls.Change.Handler = "CalculateNetWeight();";
+                                                                                    ls.Blur.Handler = "#{txtTarePalettes}.setValue(formatNumber(#{txtTarePalettes}.getValue()));";
+                                                                                    ls.Focus.Handler = "if (App.txtTarePalettes.value) { #{txtTarePalettes}.setRawValue(unformatNumber(#{txtTarePalettes}.getValue()));}";
+                                                                                }
+                                                                           ),
+                                                                    //X.Button()
+                                                                    //    .Text("Lire")
+                                                                    //    .ID("btnTare")
+                                                                    //    .Flex(1)
+                                                                    //    .Hidden(Model._TransfertFeves.IsManual)
+                                                                    //    .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                                    //   //.Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                                    //   .DirectEvents
+                                                                    //   (
+                                                                    //       de =>
+                                                                    //       {
+                                                                    //           //de.Click.Url = Url.Action("OnSelectDelivery", "Livraison");
+                                                                    //           de.Click.Url = Url.Action("OnCaptureTare");
+                                                                    //           de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
+                                                                    //           //de.Click.EventMask.ShowMask = true;
+                                                                    //       }
+                                                                    //    )
+                                                                    //),
+
+                                                                    X.TextField()
+                                                                        .FieldLabel("Poids Net")
+                                                                        .LabelWidth(180)
+                                                                        .EmptyText("0")
+                                                                        .Text("0")
+                                                                        .RawText("0")
+                                                                        .MaskRe("[0123456789]")
+                                                                        .ReadOnly(true)
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .ID("txtNetWeight")
+                                                                        .AllowBlank(false)
+                                                                            .IndicatorCls("IndicatorRedStar")
+                                                                            .IndicatorText("*")
+                                                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.PoidsNet.ToString("#,#") : string.Empty),
+                                                                     X.NumberField()
+                                                                            .FieldLabel("Prix")
+                                                                            .LabelWidth(180)
+                                                                            .LabelAlign(LabelAlign.Right)
+                                                                            .ReadOnly(true)
+                                                                            .EmptyText("0")
+                                                                            .RawText("0")
+                                                                            .HideTrigger(true)
+                                                                            .AllowDecimals(true)
+                                                                            //.Hidden(true)                                                                            
+                                                                            .ID("txtPrixMoyen")
+                                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._TransfertFeves.PrixMoyen : (decimal?)null)
+                                                                    )
+                                                        )
+                                    )
+    #endregion
+                        )
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("Finaliser")
+            .ID("BtnFinalizeWeight")
+            //.Disabled(!(bool)ViewData["CanFinalize"])
+            .Hidden(true)
+            //.Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("Finalize");
+                de.Click.Before = "return validNew(App.FormTransfertFeves.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+                de.Click.EventMask.ShowMask = true;
+                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
+            }),
+        X.Button()
+            .Text("OK")
+            //.Hidden(true)
+            .ID("btnResumeTransfert")
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("SubmitFormMethod");
+                de.Click.Before = "return validNew(App.FormTransfertFeves.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+                de.Click.EventMask.ShowMask = true;
+                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
+            }),
+    X.Button()
+        .Text("Fermer")
+        .Handler("App.FormTransfertFeves.doClose();")
+        .Cls("btncancel")
+    )
+)
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Beans Transfer ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var enterKeyPressHandler = function (f, e) {
+        /*if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            var param = App.txtOrdreProduction.value;
+            var baseurl = App.baseUrlVal.value;
+            Ext.net.DirectMethod.request({ url: baseurl + "/PeseeAvantUsinage/SubmitOrdreProduction?ItemNumero=" + param });
+            e.stopEvent();
+
+        }*/
+    };
+
+    var onSearchByDeliveryID = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            var param = App.txtSiteID.value;
+            var baseurl = App.baseUrlVal.value;
+            Ext.net.DirectMethod.request({ url: baseurl + "/PeseeAgence/GetDelivery?ItemNumero=" + param });
+            e.stopEvent();
+        }
+    };
+
+    var CheckFieldsToFill = function () {
+        /*if (App.cmbProduction.value && App.hiddenExecMode.value == 'AddNew')
+        {
+            App.btnAddNewLivraison.enable();
+        };
+
+        if (App.cmbProduction.value && App.txtDeliveryNumero.value) {
+            App.txtDeliveryNumero.setValue("");
+            App.txtNombreSacsDelivery.setValue("");
+            App.txtBonDeLivraisonID.setValue("");
+        };*/
+    }
+</script>
+
+
+
+
+
+
+
+

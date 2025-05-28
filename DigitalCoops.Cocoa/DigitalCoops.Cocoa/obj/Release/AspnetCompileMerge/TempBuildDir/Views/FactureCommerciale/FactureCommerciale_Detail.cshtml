@@ -1,0 +1,1060 @@
+﻿@model Tms.Classes.Business.Sales.FactureCommercialeViewModel
+
+
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+<style>
+    .x-table-form-item {
+        margin-bottom: 5px;
+    }
+
+    #txtAmount-labelTextEl, #txtTotalValorization-labelTextEl, #txtTotalDeduction-labelTextEl {
+        font-weight: bold;
+    }
+     #labelAmount-labelTextEl{
+        font-weight: bold;
+    }
+
+    #txtAmount-inputEl, #txtTotalValorization-inputEl, #txtTotalDeduction-inputEl {
+        text-align: right !important;
+        font-weight: bold !important;
+    }
+
+    #txtGrossAmount-inputEl,#txtAmountAT-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+    #btnSelectShipment-inputEl {
+        text-align: center !important;
+    }
+</style>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript">
+
+
+    var Detail =
+    {
+        resetButtons: function () {
+
+            App.btnEditPrefinancing.disable();
+            App.btnRemovePrefinancing.disable();
+            App.btnEditOtherDeduction.disable();
+            App.btnRemoveOtherDeduction.disable();
+            
+            if (App.rowSelectionValorisation.hasSelection()) {
+
+                if (App.rowSelectionValorisation.lastSelected.data.Desactive == false)
+                    App.btnEditPrefinancing.enable();
+                else
+                    App.btnEditPrefinancing.disable();
+
+                if (App.rowSelectionValorisation.lastSelected.data.Desactive == false)
+                    App.btnRemovePrefinancing.enable();
+                else
+                    App.btnRemovePrefinancing.disable();
+            }
+           
+
+
+            if (App.rowSelectionDeduction.hasSelection()) {
+                if (App.rowSelectionDeduction.lastSelected.data.IsAuto == false && App.rowSelectionDeduction.lastSelected.data.Desactive == false)
+                    App.btnEditOtherDeduction.enable();
+                else
+                    App.btnEditOtherDeduction.disable();
+
+                if (App.rowSelectionDeduction.lastSelected.data.Desactive == false && App.rowSelectionDeduction.lastSelected.data.IsAuto == false) 
+                    App.btnRemoveOtherDeduction.enable();
+                else 
+                    App.btnRemoveOtherDeduction.disable();
+                    
+                
+
+            }
+            
+
+
+
+
+
+
+        }
+
+    }
+
+</script>
+@(
+X.Window()
+    .ID("FactureCommerciale_Detail")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+    .BodyPadding(5)
+    .Width(1250)
+    .Resizable(false)
+    .Height(500)
+    .Title("Facture Commerciale")
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Y(10)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .FieldDefaults(d => d.ReadOnly = ((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult) || (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve)) ? true : false)
+            .Items
+            (
+                X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+    #region First Line
+                X.Panel()
+                    .Frame(true)
+                    .Border(false)
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenID").Value(Model._FactureCommerciale.ID),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._FactureCommerciale.RowVersionKey),
+                        X.Hidden().ID("hiddenTotalValorisation"),
+                        X.Hidden().ID("hiddenTotalDeduction"),
+                        X.Hidden().ID("hiddenMontantAPayer"),
+                        X.Hidden().ID("hiddenMontantPrefinancmentBlank"),
+                        X.Hidden().ID("hiddenMontantPrefinancmentAPC"),
+                        X.Hidden().ID("hiddenExportateurID"),
+    #region Colonne 1
+                        X.Panel()
+                            .ID("firstCol")
+                            //.MarginSpec("0 0 0 -15")
+                            .Layout(LayoutType.Form)
+                            .Flex(2)
+                            .Items
+                            (
+                                X.TextField()
+                                    .ID("txtNumber")
+                                    .ReadOnly(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Numero : string.Empty)
+                                    .FieldLabel("Number")
+                                    .LabelAlign(LabelAlign.Right),
+
+                                X.FieldContainer()
+                                    .Layout(LayoutType.HBox)
+                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                    .FieldLabel("N° Shipment")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items
+                                    (
+                                        X.TextField()
+                                            .ID("txtShipmentNumber")
+                                            .Width(150)
+                                            .ReadOnly(true)
+                                            .MarginSpec("0 20 0 0").Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Embarquement.Numero : string.Empty)
+                                            ,
+                                        X.Hidden()
+                                            .ID("txtEmbarquementID")
+                                            .Hidden(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Embarquement.ID : Guid.Empty)
+                                            ,
+                                        X.Hidden()
+                                            .ID("txtExportateurID")
+                                            .Hidden(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Embarquement.Exportateur.ID : (int?)null)
+                                            .Listeners(l => {
+                                                l.Change.Handler = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "App._cmbAccountNumber.clearValue();App._cmbAccountNumber.getStore().load();" : "";
+                                                l.Render.Handler = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? "App._cmbAccountNumber.clearValue();App._cmbAccountNumber.getStore().load();" : "";
+                                            }
+                                            ),
+                                        X.Hidden()
+                                            .ID("txtDomiciliationID")
+                                            .Hidden(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Embarquement.Domiciliation.ID : (int?)null)
+                                            ,
+                                        X.Button()
+                                            .Text("...")
+                                            .Height(20)
+                                            .Width(28)
+                                            .Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                            .ID("btnSelectShipment")
+                                            .DirectEvents
+                                            (
+                                                de =>
+                                                {
+                                                    de.Click.Url = Url.Action("OnSelectShipment");
+                                                    de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available shipment')";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                            )
+
+                                        ),
+                                    X.DateField().ID("txtDateFactureCommerciale")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        .IndicatorText("*")
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .FieldLabel("Date Facture")
+                                        .LabelAlign(LabelAlign.Right)
+                                  //End 1st col
+                                  ),
+    #endregion
+    #region Colonne 2
+                        X.Panel()
+                            .ID("secondCol")
+                            .Layout(LayoutType.Form)
+                            //.MarginSpec("0 0 0 -70")
+                            .Flex(2)
+                            .Items
+                            (
+                                X.TextField()
+                                    .ID("txtDomiciliation")
+                                    .AllowBlank(false)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .ReadOnly(true)
+                                    .FieldLabel("Domiciliation")
+                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Embarquement.Domiciliation.Nom : string.Empty),
+
+                                X.ComboBox()
+                                    .ID("_cmbAccountNumber")
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .FieldLabel("Account Number")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .AllowBlank(false)
+                                    //.IndicatorCls("IndicatorRedStar")
+                                    //.IndicatorText("*")
+                                    .DisplayField("Numero")
+                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                    .ValueField("ID")
+                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.CompteBancaire.ID : (int?)null)
+                                    .Store
+                                    (
+                                        X.Store()
+                                            .AutoLoad(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                            .Model
+                                            (
+                                                X.Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Numero", ModelFieldType.String) { Mapping = "Numero" }
+                                                    )
+                                            )
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                .Url(Url.Action("Load", "CompteBancaire"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                            .Listeners(li => li.Load.Handler = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "var combo = App._cmbAccountNumber; combo.setValue(records.length  > 0  ? records[0].get(combo.valueField): 0); (records.length == 1) ? combo.setReadOnly(true) :'' ;" : "")
+                                            .Parameters
+                                            (
+                                            ps =>
+                                            {
+
+                                                ps.Add(new StoreParameter("ItemBanqueID", "App.txtDomiciliationID.getValue()", ParameterMode.Raw));
+                                                ps.Add(new StoreParameter("ItemExportateurID", "App.txtExportateurID.getValue()", ParameterMode.Raw));
+
+                                            }
+                                            )
+                                    ),
+                                X.FieldContainer()
+                                    .FieldLabel("Quantity(T) / N° Of Bag")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Layout(LayoutType.HBox)
+                                    .Items
+                                    (
+                                        X.TextField()
+                                            .ID("txtQuantity")
+                                            .Width(90)
+                                            .AllowBlank(false)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .MarginSpec("0 10 0 0")
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.Embarquement.QuantiteAsString : string.Empty)
+                                            .Listeners(ls =>
+                                            {
+                                                ls.Blur.Handler = "if (App.txtQuantity.value && !App.txtQuantity.readOnly) {#{txtQuantity}.setValue(formatNumber(#{txtQuantity}.getValue()))}";
+                                                ls.Focus.Handler = "if (App.txtQuantity.value && !App.txtQuantity.readOnly) { #{txtQuantity}.setRawValue(unformatNumber(#{txtQuantity}.getValue()));}";
+
+                                            })
+                                            ,
+
+                                        X.TextField()
+                                            .ID("txtNumberOfBags")
+                                            .Width(90)
+                                            .AllowBlank(false)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.NbreSacs : (int?)null)
+
+                                    )
+                             //End second Col
+
+                             ),
+    #endregion
+    #region Colonne 3
+                        X.Panel()
+                            .ID("thirdCol")
+                            .Layout(LayoutType.Form)
+                            //.MarginSpec("0 0 0 -120")
+                            .Flex(3)
+                            .Items
+                            (
+                                X.FieldContainer()
+                                    .FieldLabel("Poids Brut(Kg) / Poids Net(Kg)")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Layout(LayoutType.HBox)
+                                    .Items
+                                    (
+                                        X.TextField()
+                                            .ID("txtGrossWeight")
+                                            .Width(125)
+                                            .AllowBlank(false)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .MarginSpec("0 10 0 0")
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.PoidsBrutTheoriqueAsString : string.Empty)
+                                            .Listeners(ls =>
+                                            {
+                                                ls.Blur.Handler = "if (App.txtGrossWeight.value && !App.txtQuantity.readOnly) {#{txtGrossWeight}.setValue(formatNumber(#{txtGrossWeight}.getValue()))}";
+                                                ls.Focus.Handler = "if (App.txtGrossWeight.value && !App.txtQuantity.readOnly) { #{txtGrossWeight}.setRawValue(unformatNumber(#{txtGrossWeight}.getValue()));}";
+
+                                            })
+                                            ,
+
+                                        X.TextField()
+                                            .ID("txtNetWeight")
+                                            .Width(125)
+                                            .AllowBlank(false)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.PoidsNetTheoriqueAsString : string.Empty)
+                                            .Listeners(ls =>
+                                            {
+                                                ls.Blur.Handler = "if (App.txtNetWeight.value && !App.txtNetWeight.readOnly) {#{txtNetWeight}.setValue(formatNumber(#{txtNetWeight}.getValue()))}";
+                                                ls.Focus.Handler = "if (App.txtNetWeight.value && !App.txtNetWeight.readOnly) { #{txtNetWeight}.setRawValue(unformatNumber(#{txtNetWeight}.getValue()));}";
+
+                                            })
+                                          )
+
+                                         ,
+
+                                      X.FieldContainer()
+                                         .FieldLabel("CAF Price(Euro/T) /Fob Price(Euro/T)")
+                                         .LabelAlign(LabelAlign.Right)
+                                         .Layout(LayoutType.HBox)
+                                         .Items
+                                         (
+                                            X.TextField()
+                                                .ID("txtPriceCAF")
+                                                .Width(125)
+                                                .AllowBlank(false)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .MarginSpec("0 10 0 0")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.PrixCAF : (decimal?)null)
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.AfterRender.Handler = "if (App.txtPriceCAF.value && App.txtPriceCAF.readOnly) {#{txtPriceCAF}.setValue(formatNumberDecimal(#{txtPriceCAF}.getValue()))}";
+                                                    ls.Change.Handler = "if (App.txtPriceCAF.value && App.txtPriceCAF.readOnly) {#{txtPriceCAF}.setValue(formatNumberDecimal(#{txtPriceCAF}.getValue()))}";
+
+                                                }),
+
+                                            X.TextField()
+                                                .ID("txtPriceFob")
+                                                .Width(125)
+                                                .AllowBlank(false)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.PrixFob : (decimal?)null)
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.AfterRender.Handler = "if (App.txtPriceFob.value && App.txtPriceFob.readOnly) {#{txtPriceFob}.setValue(formatNumberDecimal(#{txtPriceFob}.getValue()))}";
+                                                    ls.Change.Handler = "if (App.txtPriceFob.value && App.txtPriceFob.readOnly) {#{txtPriceFob}.setValue(formatNumberDecimal(#{txtPriceFob}.getValue()))}";
+                                                })
+
+                                          )
+                                          ,
+
+                                      X.FieldContainer()
+                                         .FieldLabel("Poids Brut(Euro) / 99%")
+                                         .LabelAlign(LabelAlign.Right)
+                                         .ID("labelAmount")
+                                         .Layout(LayoutType.HBox)
+                                         .Items
+                                         (
+                                            X.TextField()
+                                            .ID("txtGrossAmount")
+                                            .Width(125)
+                                            .AllowBlank(false)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .MarginSpec("0 10 0 0")
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.MontantBrut : (decimal?)null)
+                                            .Listeners(ls =>
+                                            {
+                                                ls.AfterRender.Handler = "if (App.txtGrossAmount.value && App.txtGrossAmount.readOnly) {#{txtGrossAmount}.setValue(formatNumberDecimal(#{txtGrossAmount}.getValue()))}";
+
+                                            })
+
+                                            ,
+                                            X.TextField()
+                                            .ID("txtAmountAT")
+                                            .Width(125)
+                                            .AllowBlank(false)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommerciale.MontantAT : (decimal?)null)
+                                            .Listeners(ls =>
+                                            {
+                                                ls.Change.Fn = "UpdateAmountAT";
+                                                ls.AfterRender.Handler = "if (App.txtAmountAT.value && App.txtAmountAT.readOnly) {#{txtAmountAT}.setValue(formatNumberDecimal(#{txtAmountAT}.getValue()))}";
+
+                                            })
+
+                                          )
+
+                             //End third Col
+
+                             )
+    #endregion
+                    ),
+    #endregion
+    #region Second Line
+                X.Panel()
+                    .Frame(true)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEven2")
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                    .Items
+                    (
+    #region Valorisation
+                       X.Panel()
+                            .Frame(false)
+                            .Border(false)
+                            .ID("pnlFlexEvenFactureValorisation")
+                            .Layout(LayoutType.VBox)
+                            .Flex(1)
+                            .Padding(5)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.End })
+                            // .Height(245)
+                            .Items
+                            (
+                                X.Panel()
+                                    .Height(39)
+                                    //.Width(515)
+                                    .Layout(LayoutType.Fit)
+                                    .TopBar
+                                    (
+                                       new Toolbar()
+                                       {
+                                           Items =
+                                            {
+                                                X.Label().Text("Prefinancings").StyleSpec("Font-size:15px; text-decoration: underline ").MarginSpec("0 10 0 0"),
+                                    //X.ToolbarSeparator(),
+                                                X.Button()
+                                                    .ID("btnAddPrefinancing")
+                                                    .IconCls("glyphicon-plus red")
+                                                    .Text("Ajouter")
+                                                    .Cls("ButtonStyle")
+                                                    .Border(false)
+                                                    .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? false : true)
+                                                    .DirectEvents
+                                                    (
+                                                      de =>
+                                                      {
+                                                        de.Click.Url  = Url.Action("OnAddPreFinancing", "FactureCommerciale");
+                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemExportateur", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtExportateurID}.getValue()" });
+                                                        de.Click.EventMask.ShowMask = true;
+                                                      }
+                                                    ),
+                                               X.ToolbarSeparator(),
+                                    X.Button()
+                                        .ID("btnEditPrefinancing")
+                                        .IconCls("action_modify_02")
+                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                        .Cls("ButtonStyle")
+                                        .Border(false)
+                                        .Disabled(true)
+                                        .DirectEvents
+                                        (
+                                          de =>
+                                          {
+                                            de.Click.Url  = Url.Action("OnEditPreFinancing", "FactureCommerciale");
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExportateur", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtExportateurID}.getValue()" });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenExecMode}.getValue()" });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailValorisation}.getSelectionModel().getSelection()[0].data" });
+                                            de.Click.EventMask.ShowMask = true;
+                                          }
+                                        ),
+                                   X.ToolbarFill(),
+
+                                    X.Button()
+                                        .ID("btnRemovePrefinancing")
+                                        .Icon(Icon.Delete)
+                                        .Border(false)
+                                        .Cls("ButtonStyle")
+                                        .Text("Retirer")
+                                        .Disabled(true)
+                                        .DirectEvents
+                                        (
+                                          de =>
+                                          {
+                                            de.Click.Url = Url.Action("OnRemovePrefinancing");
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailValorisation}.getSelectionModel().getSelection()[0].data" });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenExecMode}.getValue()" });
+                                            de.Click.EventMask.ShowMask = true;
+                                            de.Click.Confirmation.ConfirmRequest = true;
+                                            de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Facture : Retirer item'; config.confirmation.message = 'Do you want to remove selected item ? ';";
+                                          }
+                                        )
+                                 }
+                                       }
+                           ),
+
+                           X.GridPanel()
+                              .Layout(LayoutType.Fit)
+                              .ID("grpDetailValorisation")
+                              .ForceFit(false)
+                              .Border(false)
+                              .Frame(true)
+                              .Height(175)
+                              //.Width(520)
+                              .Store
+                              (
+                            X.StoreFor<Tms.Classes.Business.Sales.FactureCommercialePrefinancement>()
+                            .ID("storeListValorisation")
+                            .Proxy
+                            (
+                              Html.X().AjaxProxy()
+                              .Url(Url.Action("LoadListOfValorisation", "FactureCommerciale"))
+                              .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                            .Parameters
+                            (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecMode}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemFacture", "#{hiddenID}.getValue()", ParameterMode.Raw));
+                               }
+                            )
+                           .Listeners
+                           (
+                               l =>
+                               {
+                                   l.Remove.Fn = "UpdateTotalValorisations";
+                                   l.Add.Fn = "UpdateTotalValorisations";
+                                   l.Load.Fn = "UpdateTotalValorisations";
+                                   l.Update.Fn = "UpdateTotalValorisations";
+                               }
+                           )
+
+                           )
+                           .ColumnModel
+                           (
+                              Html.X().Column().Text("").DataIndex("mIcon").Width(40).Renderer("renderIcon"),
+                              Html.X().Column().Text("Numero").DataIndex("PrefinancementAsString").Flex(1),
+                              Html.X().Column().Text("Type").DataIndex("TypeAsString").Flex(1),
+                              Html.X().Column().Text("Montant (CFA)").DataIndex("MontantCFAAsString").Flex(2),
+                              Html.X().Column().Text("Amount (Euro)").DataIndex("MontantAsString").Flex(2)
+                           )
+                            .Listeners(l =>
+                            {
+                                if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult && Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve)
+                                {
+                                    l.Select.Fn = "Detail.resetButtons";
+                                    l.Deselect.Fn = "Detail.resetButtons";
+
+
+                                }
+
+                            })
+
+                           .SelectionModel
+                           (
+                                X.RowSelectionModel()
+                                .ID("rowSelectionValorisation")
+                                .Mode(SelectionMode.Single)
+                                .AllowDeselect(true)
+                           ),
+                           X.Container()
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
+                                .Items(
+                                        X.TextField()
+                                            .ID("txtTotalValorization")
+                                            .FieldLabel("Total Prefinancing(Euro)")
+                                            .ReadOnly(true)
+                                            .MarginSpec("5 0 0 0")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .LabelWidth(220)
+
+                                    )
+
+
+                         ),
+    #endregion
+    #region Deduction
+                        X.Panel()
+                        .Frame(false)
+                        .Border(false)
+                        .ID("pnlFlexEvenFactureDeduction")
+                        .Layout(LayoutType.VBox)
+                        .PaddingSpec("0 5 0 5")
+                        .Flex(1)
+                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                        //.Height(245)
+                        .Items
+                        (
+                           X.Panel()
+                            .Height(39)
+                            //.Width(515)
+                            .Layout(LayoutType.Fit)
+                            .TopBar
+                             (
+                               new Toolbar()
+                               {
+                                   Items =
+                                {
+
+
+                                    X.Label().Text("Deductions").StyleSpec("Font-size:15px; text-decoration: underline ").MarginSpec("0 10 0 0"),
+
+                                    //X.ToolbarSeparator(),
+
+                                    X.Button()
+                                    .ID("btnAddOtherDeduction")
+                                    .IconCls("glyphicon-plus red")
+                                    .Text("Ajouter")
+                                    .Cls("ButtonStyle")
+                                    .Border(false)
+                                    .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? false : true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                        de.Click.Url  = Url.Action("OnAddOtherDeduction", "FactureCommerciale");
+                                        //de.Click.ExtraParams.Add(new Parameter { Name = "ItemOthersDeductions", Mode = ParameterMode.Raw, Encode = false, Value = "Ext.encode(App.grpDetailDeduction.getRowsValues())" });
+                                        de.Click.EventMask.ShowMask = true;
+                                      }
+                                    ),
+                                     X.ToolbarSeparator(),
+
+
+                                    X.Button()
+                                    .ID("btnEditOtherDeduction")
+                                    .IconCls("action_modify_02")
+                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                    .Cls("ButtonStyle")
+                                    .Border(false)
+                                    .Disabled(true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                        de.Click.Url  = Url.Action("OnEditOtherDeduction", "FactureCommerciale");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailDeduction}.getSelectionModel().getSelection()[0].data" });
+                                        de.Click.EventMask.ShowMask = true;
+                                      }
+                                    ),
+
+                                   X.ToolbarFill(),
+
+                                    X.Button()
+                                    .ID("btnRemoveOtherDeduction")
+                                    .Icon(Icon.Delete)
+                                    .Border(false)
+                                    .Cls("ButtonStyle")
+                                    .Text("Retirer")
+                                    .Disabled(true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                        de.Click.Url = Url.Action("OnRemoveOtherDeduction");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailDeduction}.getSelectionModel().getSelection()[0].data" });
+                                        de.Click.EventMask.ShowMask = true;
+                                        de.Click.Confirmation.ConfirmRequest = true;
+                                        de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Facture : Retirer item'; config.confirmation.message = 'Do you want to remove selected item ? ';";
+                                      }
+                                    )
+                                 }
+                               }
+                           ),
+                           X.GridPanel()
+                          .Layout(LayoutType.Fit)
+                          .ID("grpDetailDeduction")
+                          .ForceFit(false)
+                          .Border(false)
+                          .Frame(true)
+                          .Height(175)
+                          //.Width(515)
+                          .AllowDeselect(true)
+                          .Store
+                          (
+                            X.StoreFor<Tms.Classes.Business.Sales.FactureCommercialeDeduction>()
+                            .ID("storeListDeduction")
+                           .Proxy
+                            (
+                              Html.X().AjaxProxy()
+                              .Url(Url.Action("LoadListOfDeduction", "FactureCommerciale"))
+                              .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                            .Parameters
+                            (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecMode}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemFacture", "#{hiddenID}.getValue()", ParameterMode.Raw));
+                               }
+                            )
+
+                           .Listeners
+                           (
+                               l =>
+                               {
+                                   l.Add.Fn = "UpdateTotalDeductions";
+                                   l.Load.Fn = "UpdateTotalDeductions";
+                                   l.Update.Fn = "UpdateTotalDeductions";
+                                   l.Remove.Fn = "UpdateTotalDeductions";
+                               }
+                           )
+                           )
+                           .ColumnModel
+                           (
+                               //Html.X().Column().Text("").DataIndex("mIcon").Width(40).Renderer("renderIcon"),
+                               Html.X().Column().Text("Type").DataIndex("FactureCommercialeDeductionTypeAsString").Flex(2),
+                               Html.X().Column().Text("Taux").DataIndex("TauxAsString").Flex(1),
+                               Html.X().Column().Text("Montant (CFA)").DataIndex("MontantCFAAsString").Flex(1),
+                               Html.X().Column().Text("Amount (Euro)").DataIndex("MontantAsString").Flex(1)
+                           )
+                           .Listeners(l =>
+                           {
+                               if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult && Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve)
+                               {
+                                   l.Select.Fn = "Detail.resetButtons";
+                                   l.Deselect.Fn = "Detail.resetButtons";
+
+
+                               }
+
+                           })
+                           .SelectionModel
+                           (
+                                X.RowSelectionModel()
+                                .ID("rowSelectionDeduction")
+                                .Mode(SelectionMode.Single)
+                                .AllowDeselect(true)
+                           )
+                           .Listeners(l =>
+                           {
+                               if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                               {
+                                   l.Select.Fn = "Detail.resetButtons";
+                                   l.Deselect.Fn = "Detail.resetButtons";
+                               }
+
+                           })
+                           ,
+                           X.Container()
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
+                                .Items(
+                                        X.TextField()
+                                        .ID("txtTotalDeduction")
+                                        .FieldLabel("Total Deduction(Euro)")
+                                        .ReadOnly(true)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .LabelWidth(220)
+                                        .MarginSpec("5 0 0 0")
+
+                                    )
+                        )
+    #endregion
+                   ),
+    #endregion
+    #region Third Line
+                X.Panel()
+                    .ID("ColC")
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                    .MarginSpec("5 0 0 0")
+                    .Height(30)
+                    .Frame(true)
+                    .Items
+                    (
+                        X.TextField()
+                              .ID("txtAmount")
+                              .FieldLabel("Amount Net(Euro)")
+                              //.MarginSpec("0 0 0 -70")
+                              .LabelAlign(LabelAlign.Left)
+                              .ReadOnly(true)
+                              .LabelWidth(150)
+                              .Width(310)
+                              .LabelStyle("font-weight:bold;")
+                              .FieldStyle("text-align: left; font-weight: bold;")
+                    )
+    #endregion
+            )
+            //End Form Panel
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOkDetail")
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+            .Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("UpdateFormMethod");
+                    de.Click.Before = "return validNew(App.FactureCommerciale_Detail.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ListeOfValorization", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpDetailValorisation.getRowsValues({selectedOnly : false})" });
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ListeOfDeduction", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpDetailDeduction.getRowsValues({selectedOnly : false})" });
+
+                }
+            ),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+            .ID("BtnApproveOk")
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitApprovalMethod");
+                    de.Click.Before = "return validNew(App.FactureCommerciale_Detail.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                }
+            ),
+        X.Button()
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.FactureCommerciale_Detail.doClose()")
+            .Cls("btncancel")
+    )
+
+)
+
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Facture Commerciale : Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = unformatNumber(App.txtAmount.value.replace(",","."));
+        if ((Ext.isNumeric(Amount) && Amount < 0) || (!Ext.isNumeric(Amount))) {
+            Ext.Msg.show({ title: 'Facture Commerciale : Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+   
+
+
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var FormatNetWeight = function () {
+        try
+        {
+            var mNetWeight = parseFloat(App.txtNetWeight.value.toString().replace(' ', ''));
+            var NetWeightFormat = FormatAmount(mNetWeight);
+            App.txtNetWeight.setValue(NetWeightFormat);
+        }
+        catch (err)
+        {
+            return 0;
+        }
+    };
+
+    var UpdateTotalDeductions = function () {
+        try
+        {
+            var mTotalDeduction = 0;
+
+            if (App.grpDetailDeduction.getRowsValues().length >= 1)
+            {
+                for (i = 0; i < App.grpDetailDeduction.getRowsValues().length; i++)
+                {
+                    mTotalDeduction += App.grpDetailDeduction.getRowsValues()[i].Montant;
+                }
+                mTotalDeduction = mTotalDeduction.toFixed(3);
+                App.hiddenTotalDeduction.setValue(mTotalDeduction);
+                App.txtTotalDeduction.setValue(formatNumberDecimal(mTotalDeduction));
+            } else {
+
+                App.hiddenTotalDeduction.setValue(mTotalDeduction);
+                App.txtTotalDeduction.setValue(formatNumberDecimal(mTotalDeduction));
+            }
+
+            var mTotalValorisation = App.hiddenTotalValorisation.value || 0;
+            var MontantAT = unformatNumber(App.txtAmountAT.value.replace(",", ".")) || 0;
+            var Amount = 0;
+
+
+            if (Ext.isNumeric(MontantAT) && Ext.isNumeric(mTotalValorisation) && Ext.isNumeric(mTotalDeduction)) {
+                Amount = MontantAT - mTotalValorisation - mTotalDeduction;
+                App.txtAmount.setValue(formatAmountDecimal(Amount));
+            }
+            else {
+                App.txtAmount.setValue(formatAmountDecimal(MontantAT));
+            }
+        }
+        catch (err)
+        {
+            return 0;
+        }
+    };
+
+    var UpdateTotalValorisations = function () {
+        try {
+            var mTotalValorisation = 0;
+            var mTotalAPC = 0;
+            var mTotalBlank = 0;
+
+            if (App.grpDetailValorisation.getRowsValues().length >= 1) {
+                for (i = 0; i < App.grpDetailValorisation.getRowsValues().length; i++) {
+                    if (App.grpDetailValorisation.getRowsValues()[i].Desactive == false)
+                    {
+                        mTotalValorisation += App.grpDetailValorisation.getRowsValues()[i].Montant;
+
+                        if (App.grpDetailValorisation.getRowsValues()[i].Prefinancement.LibellePrefinancementType == "Blank")
+                            mTotalBlank += App.grpDetailValorisation.getRowsValues()[i].Montant;
+                        else
+                            mTotalAPC += App.grpDetailValorisation.getRowsValues()[i].Montant;
+                    }
+                  
+                }
+                mTotalValorisation = mTotalValorisation.toFixed(3);
+                mTotalBlank = mTotalBlank.toFixed(3);
+                mTotalAPC = mTotalAPC.toFixed(3);
+                App.hiddenTotalValorisation.setValue(mTotalValorisation);
+                App.hiddenMontantPrefinancmentBlank.setValue(formatNumberDecimal(mTotalBlank));
+                App.hiddenMontantPrefinancmentAPC.setValue(formatNumberDecimal(mTotalAPC));
+
+                mTotalVal = formatNumberDecimal(mTotalValorisation);
+
+                App.txtTotalValorization.setValue(mTotalVal);
+            }else
+            {
+                
+                App.hiddenTotalValorisation.setValue(mTotalValorisation);
+
+                mTotalVal = formatNumberDecimal(mTotalValorisation);
+
+                App.txtTotalValorization.setValue(mTotalVal);
+            }
+
+            var mTotalDeduction = App.hiddenTotalDeduction.value || 0 ;
+            var MontantAT = unformatNumber(App.txtAmountAT.value.replace(",", ".")) || 0;
+            Amount = 0;
+
+            if (Ext.isNumeric(MontantAT) && Ext.isNumeric(mTotalValorisation) && Ext.isNumeric(mTotalDeduction)) {
+                Amount = MontantAT - mTotalValorisation - mTotalDeduction;
+                App.txtAmount.setValue(formatAmountDecimal(Amount));
+            }else
+            {
+                App.txtAmount.setValue(formatAmountDecimal(MontantAT));
+            }
+        }
+        catch (err) {
+            return 0;
+        }
+    };
+
+    var UpdateAmountAT = function () {
+        try {
+           
+            var mTotalDeduction = App.hiddenTotalDeduction.value || 0;
+            var mTotalValorisation = App.hiddenTotalValorisation.value || 0;
+            var MontantAT = unformatNumber(App.txtAmountAT.value.replace(",", ".")) || 0;
+            Amount = 0;
+
+            if (Ext.isNumeric(MontantAT) && Ext.isNumeric(mTotalValorisation) && Ext.isNumeric(mTotalDeduction)) {
+                Amount = MontantAT - mTotalValorisation - mTotalDeduction;
+              
+                App.txtAmount.setValue(formatAmountDecimal(Amount));
+            } else {
+                App.txtAmount.setValue(formatAmountDecimal(MontantAT));
+            }
+        }
+        catch (err) {
+            return 0;
+        }
+    };
+
+    function formatNumberDecimal(amount) {
+
+        amount = thousands_separators(amount.toString().replace(".", ","));
+
+        formatted = amount.toString().replace(".", ",");
+
+        return formatted;
+    };
+
+    function formatAmountDecimal(amount) {
+        amount = FormatAmount(amount);
+        formatted = amount.replace(".", ",");
+
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    }
+
+</script>
+
+
+
+
+

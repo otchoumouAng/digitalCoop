@@ -1,0 +1,246 @@
+﻿@model Tms.Classes.Business.stock.PeseeLotCertifie
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtTare-inputEl {
+            font-size: 30px !important;
+            font-weight: bold !important;
+           /*height: 40px !important;*/
+            text-align: center !important;
+            line-height: 30px !important;
+        }
+        /*grossWeight_style {
+            font-size: large;
+            text-align: center;
+            line-height: 10px;
+        }*/
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 90px !important;
+        }
+    </style>
+    <script type="text/javascript">
+
+    </script>
+</head>
+@(
+X.Window()
+    .ID("FormAddWeight")
+    .Width(330)
+    .Resizable(false)
+    .Height(280)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(250)
+    .Y(20)
+    .Title("Poids des Palettes")
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Padding(5)
+            //.PaddingSpec("10 10 0 0")
+            .Items
+            (
+                X.Hidden().ID("txtTareUnitaire"),
+                X.Hidden().ID("txtBonLivraisonID"),
+                //X.NumberField()
+                //    .FieldLabel("Pallets N°")
+                //    .LabelAlign(LabelAlign.Right)
+                //    .FieldCls("weighingCapture")
+                //    .ID("txtNumeroPalette")
+                //    .ReadOnly(false)
+                //    .MinValue(0)
+                //    .HideTrigger(true),
+                X.FieldContainer()
+                    .FieldLabel("Livraison N°")
+                    .LabelAlign(LabelAlign.Right)
+                    .Layout(LayoutType.HBox)
+                    //.Width(350)                                                                 
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                    .Items(
+                            X.TextField()
+                                .ID("txtLivraisonNumero")
+                                .AllowBlank(false)
+                                .Text("")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                //.Listeners
+                                //(
+                                //    ls =>
+                                //    {
+                                //        ls.SpecialKey.Fn = "onSearchByDeliveryID";
+                                //    }
+                                //)
+                                .Flex(4),
+                            X.Button()
+                                .Text("...")
+                                .Height(18)
+                                .Flex(1)
+                                .ID("btnSelectDelivery")
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("OnSelectDelivery");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ficheID", Mode = ParameterMode.Raw, Encode = false, Value = "App.cmbFicheLotCertifie.getValue()" });
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                )
+                        ),
+                X.TextField()
+                    .FieldLabel("Immatriculation")
+                    .LabelAlign(LabelAlign.Right)
+                    .ID("txtLivraisonImmatriculation"),
+                X.NumberField()
+                    .FieldLabel("Nbr de sacs")
+                    .LabelAlign(LabelAlign.Right)
+                    .ID("txtNombreSacsPesees")
+                    .MinValue(0)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .HideTrigger(true),
+                X.FieldContainer()
+                    .Layout(LayoutType.HBox)
+                    .FieldLabel("Poids (Kg)")
+                    .Hidden(false)
+                    .LabelAlign(LabelAlign.Right)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                    .Items(
+                            X.NumberField()
+                                .FieldCls("weighingCapture")
+                                .ID("txtTare")
+                                .AllowBlank(false)
+                                .Flex(2)
+                                .ReadOnly(!Model.IsManual)
+                                .MinValue(0)
+                                //.Width(80)
+                                .HideTrigger(true)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*"),
+                            X.Button()
+                                .Text("Lire")
+                                .Flex(1)
+                                .ID("btnFirstWeightRead")
+                                //.Height(40)
+                                .Hidden(Model.IsManual)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("OnCaptureWeight");
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "sacs", Mode = ParameterMode.Raw, Encode = false, Value = "App.txtNombreSacsPesees.value" });
+                                    }
+                                )
+                            )
+
+                        )
+                    )
+                .Buttons
+                (
+                    X.Button()
+                        .Text("OK")
+                        .ID("BtnOkFW")
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitWeight");
+                            de.Click.Before = "return validNew(App.FormAddWeight.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "TypeLotID", Value = "App.cmbTypeLot.getSelectedRecord().data.ID", Mode = ParameterMode.Raw });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "NombreTotalSac", Value = "App.cmbTypeLot.getSelectedRecord().data.NombreSacs", Mode = ParameterMode.Raw });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "CurrentNombreSacs", Value = "App.txtNombreSacs.getValue()", Mode = ParameterMode.Raw });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListePoidsCertifie.getRowsValues({selectedOnly : false})" });
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        })
+                            ,
+                        X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormAddWeight.doClose()").Cls("btncancel")
+                )
+)
+
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+
+
+
+
+
+
+
+    var setExecMode = function (winId) {
+
+
+        var TextFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textfield') || [];
+        var ComboBoxArray = Ext.ComponentQuery.query('window[id="' + winId + '"] combobox') || [];
+        var DateFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] datefield') || [];
+        var TextAreaArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textarea') || [];
+
+        /*Ensuite nous concatenons tous les tableaux obtenus obtenus
+        */
+        var allCustomComponentsOnWindowArray = TextFieldArray.concat(ComboBoxArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(DateFieldArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(TextAreaArray);
+
+        if (allCustomComponentsOnWindowArray.length > 0)
+        {
+
+            var flag = Ext.each(allCustomComponentsOnWindowArray,
+                            function (item, index, objectItSelf)
+                            {
+                                item.setReadOnly(false);
+
+                                if (App.hiddenPeseeExecMode.value == 'Consult')
+                                    item.setReadOnly(true);
+
+                            }
+                     );
+
+            return (flag === true);
+        }
+
+
+    };
+</script>
+
+
+
+
+
+
+

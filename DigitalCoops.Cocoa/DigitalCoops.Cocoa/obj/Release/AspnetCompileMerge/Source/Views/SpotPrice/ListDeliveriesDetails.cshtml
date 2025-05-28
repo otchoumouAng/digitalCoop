@@ -1,0 +1,91 @@
+﻿
+
+@model Tms.Classes.Business.PrixNegocieViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(
+                        //X.FormPanel()
+                        //            .Items(
+                    X.Window()
+                        .ID("ListDeliveriesDetails")
+                        .Width(550)
+                        .Resizable(false)
+                        .Height(400)
+                        .Modal(true)
+                        .CloseAction(Ext.Net.CloseAction.Destroy)
+                        .Listeners(l =>
+                        {
+                            //l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                            if (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                            {
+                                l.Close.Handler = "App.TmsViewPort.unmask();";
+                            }
+
+                            //l.Show.Handler = "App.grpListDeliveriesSP.getStore().load();";
+                        })
+                        //.X(800)
+                        .Y(60)
+                        .Title("Livraison")
+                        .Layout(LayoutType.Form)
+                        .Items(
+                            X.Hidden().ID("TxtExecMode").Value(Model._ExecMode),
+                                 X.GridPanel()
+                                   .Layout(LayoutType.Fit)
+                                   .ID("grpListDeliveriesSP")
+                                   .ForceFit(true)
+                                   .Height(300)
+                                   //.MinHeight(230)
+                                   .AllowDeselect(true)
+                                    .Store(
+                                        X.StoreFor<Tms.Classes.Business.Livraison>().ID("storeListDeliveriesSP").AutoLoad(true)
+                                .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadListDeliveryBySpotPrice", "SpotPrice"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                            .Parameters(ps =>
+                                            {
+                                                ps.Add(new StoreParameter("ItemFournisseur", Model._PrixNegocie.Fournisseur.ID.ToString(), ParameterMode.Raw));
+                                            }
+                                                )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("Date Livraison").DataIndex("DateLivraisonAsShortDateString").Flex(1),
+                                        Html.X().Column().Text("Livraison N°").DataIndex("Numero").Flex(1),
+                                        Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1)
+                                    )
+                                    .SelectionModel(X.CheckboxSelectionModel().Mode(SelectionMode.Multi)
+
+)
+            )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSendListe")
+                //.Handler("validNew(App.FormFournisseur.id)")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListDeliveries", "SpotPrice");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListDeliveriesSP.getRowsValues({selectedOnly : true})" });
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Value = "#{TxtExecMode}.getValue()" });
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.ListDeliveriesDetails.doClose()").Cls("btncancel")
+
+                )
+
+            //)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+

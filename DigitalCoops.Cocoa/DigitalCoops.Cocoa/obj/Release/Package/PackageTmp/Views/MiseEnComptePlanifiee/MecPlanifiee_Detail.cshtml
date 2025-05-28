@@ -1,0 +1,337 @@
+﻿
+
+@model Tms.Classes.Business.MiseEnComptePlanifieeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 120px !important;
+    }
+</style>
+
+@(X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+                    .Items(
+                        X.Window()
+                            .ID("MecPlanifiee_Detail")
+                            .Width(780)
+                            .Resizable(false)
+                            .Height(280)
+                            .CloseAction(Ext.Net.CloseAction.Destroy)
+                            .Listeners
+                            (
+                              l =>
+                              {
+                                  l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                                  l.Close.Handler = "App.TmsViewPort.unmask();";
+                              }
+                            )
+                            //.X(400)
+                            .Y(20)
+                            .Title("Mise en Compte planifiée")
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+                            .Items
+                            (
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(3)
+                                        .Items
+                                        (
+                                            X.Hidden()
+                                              .ID("hiddenExecMode")
+                                              .Value(Model._ExecMode),
+                                            X.Hidden()
+                                              .ID("hiddenRowversion")
+                                              .Value(Model._MiseEnComptePlanifiee.RowVersionKey),
+                                            X.Hidden()
+                                             .ID("hiddenNumero")
+                                             .Value(Model._MiseEnComptePlanifiee.Numero),
+                                            X.Hidden()
+                                             .ID("txtMecID")
+                                             .Value(Model._MiseEnComptePlanifiee.ID),
+                                            X.FieldContainer().Layout(LayoutType.HBox)
+                                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                            .FieldLabel("Campagne")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Items(
+                                                        X.ComboBox()
+                                                         .ID("_cmbCampagne")
+                                                         .EmptyText("")
+                                                         .Width(130)
+                                                         .ForceSelection(true)
+                                                         .AllowBlank(false)
+                                                         .IndicatorCls("IndicatorRedStar")
+                                                         .IndicatorText("*")
+                                                         //.FieldLabel("Campagne")
+                                                         .DisplayField("Designation")
+                                                         .ValueField("Designation")
+                                                         .LabelAlign(LabelAlign.Right)
+                                                         .Value(Model._MiseEnComptePlanifiee.Campagne)
+                                                         .Store
+                                                         (
+                                                            X.Store()
+                                                           .AutoLoad(false)
+                                                           .Model
+                                                           (
+                                                               Html.X().Model()
+                                                              .IDProperty("Designation")
+                                                              .Fields
+                                                              (
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                              )
+                                                           )
+                                                           .Proxy
+                                                           (
+                                                             Html.X().AjaxProxy()
+                                                             .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                             .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                           )
+                                                           ),
+                                                        X.TextField().FieldStyle("background-color:#F5F5F5 !important;").Width(210).ReadOnly(true)
+                                            ),
+
+                                            X.ComboBox()
+                                             .ID("_cmbFournisseur")
+                                             .EmptyText("")
+                                             .ForceSelection(true)
+                                             .TypeAhead(true)
+                                             .QueryMode(DataLoadMode.Local)
+                                             .TriggerAction(TriggerAction.All)
+                                             .AllowBlank(false)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .FieldLabel("Fournisseur")
+                                             .DisplayField("Nom")
+                                             //.MatchFieldWidth(false)
+                                             //.ListConfig(new BoundList { MinWidth = 300 })
+                                             .ValueField("ID")
+                                             .LabelAlign(LabelAlign.Right)
+                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.Fournisseur.ID : (int?)null)
+                                             .Store
+                                             (
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model
+                                                (
+                                                     Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                      new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                      new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                    )
+                                                 )
+                                                .Proxy
+                                                (
+                                                   Html.X().AjaxProxy()
+                                                   .Url(Url.Action("LoadCocoaBeansSuppliers", "Fournisseur"))
+                                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                            ),
+                                            X.FieldContainer().Layout(LayoutType.HBox)
+                                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                            .FieldLabel("Date Debut")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Items(
+                                                    X.DateField()
+                                                     .ID("txtDate")
+                                                     //.FieldLabel("Date Debut")
+                                                     .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.DateMiseEnCompte.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                     .AllowBlank(false)
+                                                     .Width(130)
+                                                     .IndicatorCls("IndicatorRedStar")
+                                                     .IndicatorText("*")
+                                                     ,
+                                                    X.TextField().FieldStyle("background-color:#F5F5F5 !important;").Width(210).ReadOnly(true)
+                                                     ),
+
+                                            X.ComboBox()
+                                             .ID("_cmbType")
+                                             .EmptyText("")
+                                             .ForceSelection(true)
+                                             .AllowBlank(false)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .FieldLabel("Type of saving")
+                                             .DisplayField("Designation")
+                                             .ValueField("ID")
+                                             .LabelAlign(LabelAlign.Right)
+                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.MiseEnCompteType.ID : (int?)null)
+                                             .Store
+                                             (
+                                                 X.Store()
+                                                .AutoLoad(true)
+                                                .Model
+                                                (
+                                                    Html.X().Model()
+                                                   .IDProperty("ID")
+                                                   .Fields
+                                                   (
+                                                     new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                     new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                   )
+                                                )
+                                                .Proxy
+                                                (
+                                                  Html.X().AjaxProxy()
+                                                 .Url(Url.Action("LoadMiseEnCompteType", "MiseEnCompteType"))
+                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                             )
+
+
+                                        ),
+
+                                        X.Panel()
+                                         .Layout(LayoutType.Form)
+                                         .Flex(2)
+                                         .Items
+                                         (
+
+                                           X.DateField()
+                                            .ID("txtDueDate")
+                                            .ReadOnly(true)
+                                            .FieldLabel("Date Fin")
+                                            .ReadOnly(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.DateEcheance.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right),
+
+                                            X.ComboBox()
+                                             .ID("cmbPrelevementType")
+                                             .ForceSelection(true)
+                                             .AllowBlank(false)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .FieldLabel("Deduction Mode")
+                                             .DisplayField("Designation")
+                                             .ValueField("ID")
+                                             .LabelAlign(LabelAlign.Right)
+                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.PrelevementMode.ID : (int?)null)
+                                             .Store
+                                             (
+                                                X.Store()
+                                                 .AutoLoad(true)
+                                                 .Model
+                                                 (
+                                                    Html.X().Model()
+                                                   .IDProperty("ID")
+                                                   .Fields
+                                                   (
+                                                     new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                     new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                   )
+                                                 )
+                                                 .Proxy
+                                                 (
+                                                   Html.X().AjaxProxy()
+                                                   .Url(Url.Action("LoadMiseEnComptePlanifieeMode", "MiseEnComptePlanifieeMode"))
+                                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                 )
+                                              ),
+
+
+                                            X.TextField()
+                                             .ID("txtTauxRemboursement")
+                                             .HideTrigger(true)
+                                             .FieldLabel("Taux de remboursement")
+                                             .LabelAlign(LabelAlign.Right)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.PrelevementTauxAsString : string.Empty)
+                                             .Listeners
+                                             (
+                                               ls =>
+                                               {
+                                                   ls.Blur.Handler = "if (App.txtTauxRemboursement.value && !App.txtTauxRemboursement.readOnly) {#{txtTauxRemboursement}.setValue(formatNumber(#{txtTauxRemboursement}.getValue()));}";
+                                                   ls.Focus.Handler = "if (App.txtTauxRemboursement.value && !App.txtTauxRemboursement.readOnly) { #{txtTauxRemboursement}.setRawValue(unformatNumber(#{txtTauxRemboursement}.getValue()));}";
+                                               }
+
+                                             ),
+
+                                             X.TextArea()
+                                              .ID("txtComment")
+                                              .FieldLabel("Commentaire")
+                                              .AllowBlank(false)
+                                    .IndicatorCls("IndicatorRedStar")
+                                    .IndicatorText("*")
+                                              .LabelAlign(LabelAlign.Right)
+                                              .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MiseEnComptePlanifiee.Commentaire : string.Empty)
+
+                                            )
+
+                             )
+                             .Buttons
+                             (
+                                X.Button()
+                                .Text("OK")
+                                .ID("BtnOk")
+                                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("UpdateFormMethod");
+                                        de.Click.Before = "return validNew(App.MecPlanifiee_Detail.id);";
+                                    }
+                               ),
+
+                                X.Button()
+                                 .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                                 .Handler("App.MecPlanifiee_Detail.doClose()")
+                                .Cls("btncancel")
+
+                             )
+
+                    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var Advance_Type = 2;
+    var PerKg = 1;
+    var Complete_Refund = 2;
+    var Fixed_Amount = 3;
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Mise en Compte planifiée : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+</script>

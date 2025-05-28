@@ -1,0 +1,112 @@
+﻿
+@model Tms.Classes.Security.ModuleItemViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+    .Items(
+            X.Window()
+            .ID("FormModuleItem")
+            .Width(500)
+            .Resizable(false)
+            .Height(300)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+            })
+            .X(400)
+            .Y(20)
+            .Title("ModuleItem")
+            .Layout(LayoutType.Form)
+                .Items(
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._ModuleItem.RowVersionKey),
+                        X.Hidden().ID("TxtModuleItemID").Value(Model._ModuleItem.ID),
+
+                        X.ComboBox().ID("ComboModule").FieldLabel("Module").DisplayField("Nom").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ModuleItem.Module.ID : (Guid?)null)
+                                .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model(Html.X().Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                            )
+                                        .Proxy(Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadModule", "Module"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        )
+                            ,
+                        X.TextField().ID("TxtNomModuleItem").FieldLabel("Nom")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ModuleItem.Nom.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                          ,
+                        X.TextField().ID("TxtDescriptionModuleItem").FieldLabel("Description")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ModuleItem.Description.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right)
+                          ,
+                        X.TextField().ID("TxtUrlModuleItem").FieldLabel("Url")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ModuleItem.Url.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                          ,
+                        X.TextField().ID("TxtIconModuleItem").FieldLabel("Icon")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ModuleItem.IconModuleItem.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right)
+                          ,
+                        X.TextField().ID("TxtOrdreModuleItem").FieldLabel("Order")
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ModuleItem.Order.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitModuleItem")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormModuleItem.id);";
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormModuleItem.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {            
+            Ext.Msg.show({ title: 'ModuleItem : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+

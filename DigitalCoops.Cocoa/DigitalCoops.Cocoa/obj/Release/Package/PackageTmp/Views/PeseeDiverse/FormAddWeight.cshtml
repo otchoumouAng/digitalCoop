@@ -1,0 +1,152 @@
+﻿@model Tms.Classes.Business.stock.PeseeDiverse
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtTare-inputEl {
+            font-size: 30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align: center !important;
+            line-height: 30px !important;
+        }
+        /*grossWeight_style {
+            font-size: large;
+            text-align: center;
+            line-height: 10px;
+        }*/
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 90px !important;
+        }
+    </style>
+    <script type="text/javascript">
+
+    </script>
+</head>
+@(
+    X.Window()
+        .ID("FormAddWeight")
+        .Width(330)
+        .Resizable(false)
+        .Height(220)
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        //.X(250)
+        .Y(20)
+        .Title("Poids des Palettes")
+        .Items
+        (
+                X.FormPanel()
+                    .Layout(LayoutType.VBox)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .PaddingSpec("10 10 0 0")
+                    .Items
+                    (
+                        //X.NumberField()
+                        //    .FieldLabel("Pallets N°")
+                        //    .LabelAlign(LabelAlign.Right)
+                        //    .FieldCls("weighingCapture")
+                        //    .ID("txtnumb")
+                        //    .MinValue(0)
+                        //    .HideTrigger(true),
+                        X.NumberField()
+                            .FieldLabel("Nbr de sacs")
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("txtNombreSacsPesees")
+                            .MinValue(0)
+                            .HideTrigger(true),
+                        X.FieldContainer()
+                            .Layout(LayoutType.HBox)
+                            .FieldLabel("Poids (Kg)")
+                            .LabelAlign(LabelAlign.Right)
+                            //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                            .Items(
+                                    X.NumberField()
+                                        .FieldCls("weighingCapture")
+                                        .ID("txtTare")
+                                        .AllowBlank(false)
+                                        .Flex(2)
+                                        .MinValue(0)
+                                        .ReadOnly(!Model.IsManual)
+                                        //.Width(80)
+                                        .HideTrigger(true)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*"),
+                                    X.Button()
+                                        .Text("Lire")
+                                        .Flex(1)
+                                        .Hidden(Model.IsManual)
+                                        .ID("")
+                                        .Height(40)
+                                        .DirectEvents
+                                        (
+                                            de =>
+                                            {
+                                                de.Click.Url = Url.Action("OnCaptureWeight");
+                                            }
+                                        )
+                            )
+
+                        )
+                    )
+                .Buttons
+                (
+                    X.Button()
+                        .Text("OK")
+                        .ID("BtnOkFW")
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitWeight");
+                            de.Click.Before = "return validNew(App.FormAddWeight.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListePoidsDivers.getRowsValues({selectedOnly : false})" });
+
+                        })
+                            ,
+                        X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormAddWeight.doClose()").Cls("btncancel")
+                )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+</script>
+
+
+
+
+
+
+
+

@@ -1,0 +1,116 @@
+﻿
+@model Tms.Classes.Shared.ExportateurViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormExportateur")
+    .Width(700)
+    .Resizable(false)
+    .Height(240)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Y(20)
+    .Title("Exportateur : Detail")
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle | HBoxAlign.Stretch })
+                .Items(
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Items(
+                                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._Exportateur.RowVersionKey),
+                                        X.Hidden().ID("TxtExportateurID").Value(Model._Exportateur.ID),
+                                        X.TextField().ID("TxtNomExportateur")
+                                            .FieldLabel("Nom")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.Nom.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*"),
+                                        X.TextField().ID("TxtAdresseExportateur").FieldLabel("Adresse")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.Adresse.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtTelephoneFixeExportateur").FieldLabel("N° Telephone Fixe")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.TelephoneFixe.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                ),
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Items(                                
+                                        X.TextField().ID("TxtTelephoneMobileExportateur").FieldLabel("N° Telephone Mobile").LabelWidth(100)
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.TelephoneMobile.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtFaxExportateur").FieldLabel("Fax N°")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.Fax.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtPrefixe").FieldLabel("Prefix").MaxLength(1).EnforceMaxLength(true)
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.Prefixe.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtPrefixeFacture").FieldLabel("Facture Prefix").MaxLength(3).EnforceMaxLength(true)
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Exportateur.PrefixeFacture.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                )
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSubmitExportateur")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormExportateur.id);";
+                    }),                    
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormExportateur.doClose()").Cls("btncancel")
+
+            )         
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Exportateur : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

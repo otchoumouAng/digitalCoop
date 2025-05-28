@@ -1,0 +1,722 @@
+﻿@model Tms.Classes.Business.stock.PeseeAvantUsinageViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+        .x-form-text-default.x-form-textarea 
+    {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtSecondGrossWeight-inputEl, #txtFirstGrossWeight-inputEl {
+            font-size: 30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align: center !important;
+            line-height: 34px !important;
+        }
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+    <script type="text/javascript">
+        var GetNbrOfPallets = function () {
+            var nbrOfrows = App.grpListeWeightPAU.getStore().getCount();
+            App.txtNombrePalette.setValue(nbrOfrows);
+
+             /* set Fields to ReadOnly*/
+            if (nbrOfrows > 0 ) {
+                App.cmbProduction.setReadOnly(true);
+                App.txtDeliveryNumero.setReadOnly(true);
+                App.btnSelectDelivery.disable();
+                App.PanelBtnSave.hide();
+                /*App.BtnAddWeight.enable();*/
+            } else {
+                App.cmbProduction.setReadOnly(false);
+                App.txtDeliveryNumero.setReadOnly(false);
+                App.btnSelectDelivery.enable();
+                App.PanelBtnSave.show();
+                /*App.BtnAddWeight.disable();*/
+            }
+        };
+
+      var CalculateValues = function () {
+          var totalNbrSacs = App.storeListeWeightPAU.sum('NombreSacs') || 0;
+          var totalPoidsBrut = App.storeListeWeightPAU.sum('PoidsBrut') || 0;
+          var totaTare = App.storeListeWeightPAU.sum('TareSacs') || 0;
+
+          App.txtNombreSacs.setValue(formatNumber(totalNbrSacs));
+          App.txtPoidsBrut.setValue(formatNumber(totalPoidsBrut));
+          App.txtTareSacs.setValue(formatNumber(totaTare));
+      };
+
+      var CalculateNetWeight = function () {
+          var totalNbrSacs = App.storeListeWeightPAU.sum('NombreSacs') || 0;
+          var totalPoidsBrut = App.storeListeWeightPAU.sum('PoidsBrut') || 0;
+          var tareSacs = App.storeListeWeightPAU.sum('TareSacs') || 0;
+          /*var tareSacs = App.txtTareSacs.value;*/          
+          var tarePalettes = App.txtTarePalettes.value;          
+          if (App.txtTarePalettes.value != "0")
+              tarePalettes = parseFloat(unformatNumber(App.txtTarePalettes.value)) || 0;
+
+          
+          var netWeight = parseFloat(totalPoidsBrut) - parseFloat(tareSacs) - parseFloat(tarePalettes);
+          
+          console.log(totalPoidsBrut);
+          App.txtNetWeight.setValue(formatNumber(netWeight));
+      };
+    </script>
+
+</head>
+@(
+X.Window()
+    .ID("FormPeseeAvantUsinage")
+    .Width(800)
+    .Resizable(false)
+    .Height(500)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Weighing Before Cleaning : Nouveau")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .BodyPadding(5)
+    .Items
+    (
+        //        X.Hidden().ID("baseUrlVal").Value(new Tms.Classes.Shared.Parametres(0).Base_url),
+        //X.Hidden().ID("")
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items
+            (
+                //X.Hidden().ID("txtLivraisonID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.Livraison.ID : (Guid?)null),
+                //X.Hidden().ID("txtLivraisonImmatriculation").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.Livraison.Immatriculation : string.Empty),
+                X.Hidden().ID("TxtPeseePauID").Value(Model._PeseeAvantUsinage.ID),
+                X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                X.Hidden().ID("txtEstManuel").Value(Model._PeseeAvantUsinage.IsManual),
+                X.Hidden().ID("txtOrdreProductionID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.OrdreProduction.ID : (Guid?)null),
+
+                X.Hidden().ID("txtImmatriculation").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.BonDeLivraison.Immatriculation : string.Empty),
+                X.Hidden().ID("txtBonDeLivraisonID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.BonDeLivraison.ID : (Guid?)null),
+                X.Hidden().ID("txtTareUnitaire").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.BonDeLivraison.Livraison.TareSacs : (decimal?)null),
+                 X.NumberField()
+                    .LabelAlign(LabelAlign.Right)
+                    .ID("txtPoidsBrutComposition")
+                    .MinValue(0)
+                    .Hidden(true)
+                    .ReadOnly(true)
+                    .HideTrigger(true),
+                X.Hidden()
+                    .ID("hidNombreSacsLivraison")
+                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.BonDeLivraison.Livraison.SacsAcceptes : (int?)null),
+    #region firstLineScnW
+
+                X.Panel()
+                    .Layout(LayoutType.HBox)
+                    .Flex(1)
+                    .Frame(true)
+                    .Padding(5)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                    .Items
+                    (
+    #region Zone A
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                        .Flex(3)
+                                        .Items
+                                        (
+                                            X.ComboBox()
+                                                .ID("cmbCampagne")
+                                                .FieldLabel("Campagne")
+                                                .MarginSpec("0 8 5 0")
+                                                .DisplayField("Designation")
+                                                .ValueField("Designation")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.Campagne.Designation : Model._DefaultCampagne)
+                                                .Store
+                                                (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                            .IDProperty("Designation")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            X.AjaxProxy().Url(Url.Action("LoadCampagne", "Campagne"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                    ),
+                                            X.DateField()
+                                                .ID("txtDatePesee")
+                                                .FieldLabel("Date")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.DatePeseeProduction.ToShortDateString() : DateTime.Now.ToShortDateString())
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*"),
+                                            X.ComboBox()
+                                                .ID("cmbProduction")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("N° Production")
+                                                .DisplayField("NumeroProduction")
+                                                .ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ForceSelection(true)
+                                                .TypeAhead(true)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.OrdreProduction.ID : (Guid?)null)
+                                                .Store
+                                                (
+                                                    X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                            Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                                new ModelField("NumeroProduction", ModelFieldType.String) { Mapping = "NumeroProduction" }
+                                                            )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            X.AjaxProxy()
+                                                                .Url(Url.Action("LoadProduction", "OrdreProduction"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                        .Listeners(
+                                                    ls => ls.Load.Handler = "if (App.cmbProduction.value && App.hiddenExecMode.value == 'AddNew') { App.btnSelectDelivery.enable();};"
+                                                )
+                                                )
+                                                .Listeners(
+                                                    ls => ls.Select.Handler = "CheckFieldsToFill();"
+                                                )
+
+                                            ),
+    #endregion
+    #region Zone B
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                        .Flex(3)
+                                        .Items
+                                        (
+                                            X.FieldContainer()
+                                                .FieldLabel("Livraison N°")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                .Items(
+                                                        X.TextField()
+                                                            .ID("txtDeliveryNumero")
+                                                            .AllowBlank(false)
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.BonDeLivraison.LivraisonID : string.Empty)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*")
+                                                            .Listeners
+                                                            (
+                                                                ls =>
+                                                                {
+                                                                    ls.SpecialKey.Fn = "onSearchByDeliveryID";
+                                                                }
+                                                            )
+                                                            .Flex(3),
+                                                        X.Button()
+                                                            .Text("...")
+                                                            .Height(18)
+                                                            .Flex(1)
+                                                            .Disabled(true)
+                                                            .ID("btnSelectDelivery")
+                                                            .MarginSpec("0 2 0 2")
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnSelectDelivery");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "productionID", Mode = ParameterMode.Raw, Encode = false, Value = "App.cmbProduction.getValue()" });
+                                                                    //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Value, Encode = true, Value = "#{grpListeWeightPAU}.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            ),
+                                                        X.TextField()
+                                                            .HideLabel(true)
+                                                            .ID("txtNombreSacsDelivery")
+                                                            //.MinValue(0)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.BonDeLivraison.Livraison.SacsAcceptes :(int?)null)
+                                                            .Flex(1)
+                                                            .Width(75)
+                                                            .ReadOnly(true)
+                                                            .IndicatorText("Bags")
+                                                            .HideTrigger(true)
+
+                                                        ),
+                                            //    X.FieldContainer()
+                                            //.Layout(LayoutType.HBox)
+                                            //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                            //.FieldLabel("Production N°")
+                                            //.Flex(2)
+                                            //.PaddingSpec("0 8 0 0")
+                                            //.LabelAlign(LabelAlign.Right)
+                                            //.Items
+                                            //(
+                                            //    X.TextField()
+                                            //        .ID("txtOrdreProduction")
+                                            //        .TabIndex(4)
+                                            //        .AllowBlank(false)
+                                            //        .IndicatorCls("IndicatorRedStar")
+                                            //        .IndicatorText("*")
+                                            //        .LabelAlign(LabelAlign.Right)
+                                            //        .Flex(3)
+                                            //        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.OrdreProduction.NumeroProduction : string.Empty)
+                                            //        .Listeners
+                                            //      (
+                                            //        ls =>
+                                            //        {
+                                            //            ls.SpecialKey.Fn = "enterKeyPressHandler";
+                                            //        }
+                                            //      ),
+                                            //    X.Button()
+                                            //        .Text("...")
+                                            //        .Height(18)
+                                            //        .Flex(1)
+                                            //        .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                            //        .ID("btnSelectProduction")
+                                            //        .DirectEvents
+                                            //        (
+                                            //            de =>
+                                            //            {
+                                            //                de.Click.Url = Url.Action("OnSelectProduction");
+                                            //                de.Click.EventMask.ShowMask = true;
+                                            //            }
+                                            //        )
+                                            //    ),
+                                            X.TextArea()
+                                                .FieldLabel("Description")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ID("txtComment")                                                
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.Commentaire : string.Empty)
+                                        ),
+    #endregion
+    #region Zone C
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .ID("PanelBtnSave")
+                                        //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                        .Flex(1)
+                                        .Items
+                                        (
+                                        X.Panel().Layout(LayoutType.Center).Items(
+                                            X.Button()
+                                                .Text("OK")
+                                                .Width(60)
+                                                .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                .DirectEvents
+                                                (
+                                                    de =>
+                                                    {
+                                                        de.Click.Url = Url.Action("SubmitFormWeighingBeforePallets");
+                                                        de.Click.Before = "return validNew(App.FormPeseeAvantUsinage.id);";
+                                                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                                                        de.Click.EventMask.ShowMask = true;
+
+                                                    }
+                                                )
+                                             ))
+    #endregion
+
+                    ),
+
+    #endregion                                                        
+                    X.Container()
+                        .ID("zonePalettes")
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("5 0 0 0")
+                        .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                        .Items
+                        (
+    #region full pallets    
+                            X.Button()
+                                .Hidden(true)
+                                .ID("btnAddPalletWeight")
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("SubmitWeighingPallet");
+                                        de.Click.Before = "return validNew(App.FormPeseeAvantUsinage.id);";
+                                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "peseeID", Mode = ParameterMode.Raw, Encode = false, Value = "App.TxtPeseePauID.value" });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+                                    }
+                                ),
+                            X.Panel()
+                                .ID("UnloadedColScndw")
+                                .Flex(3)
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Frame(true)
+                                .MarginSpec("0 5 0 0")
+                                .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .Items
+                                (
+                                    X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListeWeightPAU")
+                                       .Region(Region.Center)
+                                       .ForceFit(true)
+                                       .Height(280)
+                                       //.Disabled(true)
+                                       .AllowDeselect(true)
+                                       .Store(
+                                                X.StoreFor<Tms.Classes.Business.stock.PeseeProductionPalette>()
+                                                    .ID("storeListeWeightPAU")
+                                                    .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .Proxy(
+                                                            X.AjaxProxy()
+                                                                .Url(
+                                                                        Url.Action("SelectPalletsWeight")
+                                                                )
+                                                                .Reader(
+                                                                        X.JsonReader().RootProperty("data")
+                                                                )
+                                                      )
+                                                      .Parameters(
+                                                        ps => ps.Add(new StoreParameter("PeseeId", "#{TxtPeseePauID}.getValue()", ParameterMode.Raw))
+                                                        )
+                                                      .Listeners(
+                                                            ls =>
+                                                            {
+                                                                ls.Load.Handler = "GetNbrOfPallets();";
+                                                                ls.Add.Handler = "CalculateValues(); CalculateNetWeight(); GetNbrOfPallets(); App.btnAddPalletWeight.fireEvent('click', App.btnAddPalletWeight);";
+                                                                ls.Remove.Handler = "CalculateValues(); CalculateNetWeight(); GetNbrOfPallets(); App.btnAddPalletWeight.fireEvent('click', App.btnAddPalletWeight);";
+                                                            }
+                                                        )
+                                        )
+                                        .ColumnModel
+                                        (
+                                            //X.RowNumbererColumn(),
+                                            X.Column().Text("Date").Flex(2).DataIndex("DatePeseeLongAsString").Hideable(false),
+                                            X.Column().Text("Livraison N°").Flex(1).DataIndex("NumeroLivraison").Hideable(false),
+                                            X.Column().Text("Nbr. Sacs").Flex(1).DataIndex("NombreSacs").Hideable(false),
+                                            X.Column().Text("Poids").Flex(1).DataIndex("PoidsBrutAsString").Hideable(false)
+                                        )
+                                        .DockedItems(
+                                                X.Toolbar()
+                                                    .Dock(Dock.Top)
+                                                    .Items(
+                                                            X.Label().Text("Palettes (Pesées)"),
+                                                            X.ToolbarSpacer(15),
+                                                            X.Button()
+                                                                .ID("BtnAddWeight")
+                                                                .IconCls("action_new_02")
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Ajouter")
+                                                                //.Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("onAddWeight");
+                                                                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                                                                    de.Click.ExtraParams.Add( new Parameter { Name = "IsManual", Mode = ParameterMode.Value, Value = string.Format("{0}", Model._PeseeAvantUsinage.IsManual) });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }),
+                                                            X.Button()
+                                                                .ID("BtnRemoveWeight")
+                                                                //.IconCls("action_filter_02")
+                                                                .Icon(Icon.Delete)
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Retirer")
+                                                                .Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("RemoveWeighing");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeWeightPAU}.getSelectionModel().getSelection()[0].data" });
+                                                                    //de.Click.ExtraParams.Add(new Parameter { Name = "storeListeDelivery", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeCodeOverview.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Weighing : Retirer'; config.confirmation.message = 'Voulez-vous retirer ce poids ? ';";
+                                                                })
+                                                            )
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowWeightPAU")
+                                                            .Mode(SelectionMode.Single)
+                                                            .AllowDeselect(true)
+                                        )
+                                        .Listeners(l =>
+                                        {
+                                            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                            {
+                                                l.Select.Handler = "App.BtnRemoveWeight.enable();";
+                                                l.Deselect.Handler = "App.BtnRemoveWeight.disable();";
+                                            }
+                                        }
+                                    )
+                            ),
+    #endregion
+
+    #region Empty Pallets
+                                    X.Panel()
+                                        .ID("firstWeighingColScndw")
+                                        .Flex(2)
+                                        .Layout(LayoutType.VBox)
+                                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                                        .Frame(true)
+                                        .Items
+                                        (
+                                            X.Container()
+                                                .Layout(LayoutType.Center)
+                                                .Items(
+                                                       X.Container()
+                                                            .ID("zone3")
+                                                            .Layout(LayoutType.Form)
+                                                            .Flex(2)
+                                                            .PaddingSpec("0 15 0 0")
+                                                            .Items
+                                                            (
+                                                                X.TextField()
+                                                                    .FieldLabel("Nbr Of Pallets")
+                                                                    .LabelWidth(180)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ReadOnly(true)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .ID("txtNombrePalette")
+                                                                    .Text(""),
+                                                                X.TextField()
+                                                                    .FieldLabel("Total Nbr de sacs")
+                                                                    .LabelWidth(180)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ReadOnly(true)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .ID("txtNombreSacs")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.NombreSacs.ToString() : string.Empty),
+                                                                X.TextField()
+                                                                    .FieldLabel("Total Poids Brut")
+                                                                    .ReadOnly(true)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .LabelWidth(180)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ID("txtPoidsBrut")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.PoidsBrut.ToString("#,#") : string.Empty),
+                                                                X.TextField()
+                                                                    .FieldLabel("Tare Des Sacs")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .LabelWidth(180)
+                                                                    .MaskRe("[0123456789]")
+                                                                    .ReadOnly(true)
+                                                                    .ID("txtTareSacs")
+                                                                    .AllowBlank(false)
+                                                                    .Text("0")
+                                                                    .EmptyText("0")
+                                                                    .RawText("0")
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.TareSacs.ToString("#") : string.Empty),
+                                                                X.FieldContainer()
+                                                                      .Layout(LayoutType.HBox)
+                                                                      //.LabelWidth(180)
+                                                                      .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                                      .FieldLabel("Tare Des Palettes")
+                                                                      .Flex(1)
+                                                                      .LabelAlign(LabelAlign.Right)
+                                                                      .Items
+                                                                       (
+                                                                        X.TextField()
+                                                                            .FieldLabel("")
+                                                                            //.Value(0)
+                                                                            .LabelAlign(LabelAlign.Right)
+                                                                            //.HideTrigger(true)
+                                                                            .AllowBlank(false)
+                                                                            .MaskRe("[0123456789]")
+                                                                            //.ReadOnly(!Model._PeseeAvantUsinage.IsManual)
+                                                                            .Flex(2)
+                                                                            .IndicatorCls("IndicatorRedStar")
+                                                                            .IndicatorText("*")
+                                                                            .ID("txtTarePalettes")
+                                                                            .EmptyText("0")
+                                                                            .Text("0")
+                                                                            .RawText("0")
+                                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.TarePalette.ToString("#,#") : "0")
+                                                                            .Listeners(
+                                                                                ls => {
+                                                                                    ls.Change.Handler = "CalculateNetWeight();";
+                                                                                    ls.Blur.Handler = "#{txtTarePalettes}.setValue(formatNumber(#{txtTarePalettes}.getValue()));";
+                                                                                    ls.Focus.Handler = "if (App.txtTarePalettes.value) { #{txtTarePalettes}.setRawValue(unformatNumber(#{txtTarePalettes}.getValue()));}";
+                                                                                }
+                                                                            ),
+                                                                        X.Button()
+                                                                            .Text("Lire")
+                                                                            .ID("btnTare")
+                                                                            .Flex(1)
+                                                                            .Hidden(Model._PeseeAvantUsinage.IsManual)
+                                                                            .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                                           //.Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                                           .DirectEvents
+                                                                           (
+                                                                               de =>
+                                                                               {
+                                                                                   //de.Click.Url = Url.Action("OnSelectDelivery", "Livraison");
+                                                                                   de.Click.Url = Url.Action("OnCaptureTare");
+                                                                                   de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+                                                                                   //de.Click.EventMask.ShowMask = true;
+                                                                               }
+                                                                            )
+                                                                        ),
+
+                                                                    X.TextField()
+                                                                        .FieldLabel("Poids Net")
+                                                                        .LabelWidth(180)
+                                                                        .EmptyText("0")
+                                                                        .Text("0")
+                                                                        .RawText("0")
+                                                                        .MaskRe("[0123456789]")
+                                                                        .ReadOnly(true)
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .ID("txtNetWeight")
+                                                                        .AllowBlank(false)
+                                                                            .IndicatorCls("IndicatorRedStar")
+                                                                            .IndicatorText("*")
+                                                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PeseeAvantUsinage.PoidsNet.ToString("#,#") : string.Empty)
+                                                                    )
+                                                        )
+                                    )
+    #endregion
+                        )
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("Finaliser")
+            .ID("BtnFinalizeWeight")
+            .Disabled(!(bool)ViewData["CanFinalize"])
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("Finalize");
+                de.Click.Before = "return validNew(App.FormPeseeAvantUsinage.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+            }),
+        X.Button()
+            .Text("Ok Et Continuer")
+            .ID("BtnOkSecondWeight")
+            .Hidden(true)
+            //.Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("SubmitFormMethod");
+                de.Click.Before = "return validNew(App.FormPeseeAvantUsinage.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+            }),
+        X.Button()
+            .Text("Fermer")
+            .Handler("App.FormPeseeAvantUsinage.doClose();")
+            .Cls("btncancel")
+    )
+)
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+        
+    };
+
+    var enterKeyPressHandler = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            var param = App.txtOrdreProduction.value;
+            var baseurl = App.baseUrlVal.value;
+            Ext.net.DirectMethod.request({ url: baseurl + "/PeseeAvantUsinage/SubmitOrdreProduction?ItemNumero=" + param });            
+            e.stopEvent();
+
+        }
+    };
+    
+    var onSearchByDeliveryID = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            var param = App.txtOrdreProduction.value;
+            var baseurl = App.baseUrlVal.value;
+            Ext.net.DirectMethod.request({ url: baseurl + "/PeseeAvantUsinage/GetDelivery?ItemNumero=" + param });
+            e.stopEvent();
+        }
+    };
+
+    var CheckFieldsToFill = function () {
+        if (App.cmbProduction.value && App.hiddenExecMode.value == 'AddNew')
+        {
+            App.btnSelectDelivery.enable();
+        };
+
+        if (App.cmbProduction.value && App.txtDeliveryNumero.value) {
+            App.txtDeliveryNumero.setValue("");
+            App.txtNombreSacsDelivery.setValue("");
+            App.txtBonDeLivraisonID.setValue("");
+        };
+    }
+</script>
+
+
+
+
+
+
