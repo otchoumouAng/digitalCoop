@@ -28,7 +28,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .Y(20)
     .BodyPadding(5)
-    .Title("Bon De Livraison : Reclassification")
+    .Title("Bon De Reception : Reclassification")
     .Items
     (
         X.FormPanel()
@@ -230,7 +230,7 @@ X.Window()
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Bon De Livraison - Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Bon De Reception - Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
             return false;
         }        
 

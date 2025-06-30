@@ -14,7 +14,8 @@
     }
 </style>
 <script src="~/Scripts/FormatAmount.js"></script>
-<script type="text/javascript">    
+<script type="text/javascript">
+
     var SummaryOfItems = function () {
         var NetAccepte = App.storeListeItemInStock.sum('PoidsNetAccepte') || 0;
         var NetLivre = App.storeListeItemInStock.sum('PoidsNetLivre') || 0;
@@ -33,7 +34,7 @@
         App.txtRetention.setValue(FormatAmount(Refaction));
     };
 
-    var OnChnageValueField = function () {     
+    var OnChnageValueField = function () {
         if (App.grpListeItemInStock.getStore().isLoaded() == true) {
         App.txtPoidsNetAccepte.setValue('');
         App.txtPoidsNetLivre.setValue('');
@@ -42,9 +43,9 @@
         App.txtTareSacs.setValue('');
         App.txtTarePalettes.setValue('');
         App.txtRetention.setValue('');
-        
+
         App.grpListeItemInStock.getStore().removeAll();
-        }        
+        }
     };
 </script>
 @(
@@ -268,8 +269,8 @@
                                                             {
                                                                 de.Click.Url = Url.Action("OnRefreshMouvementsInStock");
                                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemSite", Encode = true, Value = "#{txtSiteID}.getValue()", Mode = ParameterMode.Raw });
-                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemMagasin", Encode=true, Value= "#{cmbMagasinIV}.getValue()", Mode=ParameterMode.Raw});
-                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemDateInventaire", Encode=false, Value= "#{TxtDateInventaire}.getRawValue()", Mode=ParameterMode.Raw});
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemMagasin", Encode = true, Value = "#{cmbMagasinIV}.getValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemDateInventaire", Encode = false, Value = "#{TxtDateInventaire}.getRawValue()", Mode = ParameterMode.Raw });
                                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Encode = false, Value = "#{cmbCampagne}.getRawValue()", Mode = ParameterMode.Raw });
                                                                 de.Click.EventMask.ShowMask = true;
                                                             }
@@ -412,7 +413,7 @@
         }
 
     }
-       
+
 </script>
 
 

@@ -1077,7 +1077,7 @@ namespace Tms2017.MVC.Controllers
         public ActionResult OnDisplayDailyPriceAgenceList()
         {
 
-            ViewData["Titre"] = "Print List of Daily Prices";
+            ViewData["Titre"] = "Liste des Prix journaliers";
             ViewData["actionToDo"] = "OnPrintDailyPriceAgenceList";
             ViewData["ControllerName"] = "DailyPriceAgence";
             ViewData["SiteParDefaut"] = 1;

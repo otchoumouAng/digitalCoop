@@ -29,6 +29,10 @@ namespace Tms.Classes.Business
         private string _Statut;
         private bool _Desactive;
         private Campagne _Campagne;
+
+        private decimal _Commission;
+        private decimal _PrixJour;        
+        private bool _FactureAuPrixJour;
         #endregion
 
         #region "Properties"
@@ -68,6 +72,21 @@ namespace Tms.Classes.Business
         {
             get { return _Prix; }
             set { _Prix = value; }
+        }
+
+        public string PrixAsString
+        {
+            get { return String.Format("{0:#,#}", _Prix).TrimStart(); }
+        }
+
+        public decimal ValPrixNegocie
+        {
+            get { return _PrixJour + Commission; }
+        }
+
+        public string ValPrixNegocieAsString
+        {
+            get { return String.Format("{0:#,#}", ValPrixNegocie).TrimStart(); }
         }
 
         public PrixNegocieModeApplication ModeApplication
@@ -138,6 +157,50 @@ namespace Tms.Classes.Business
             {
                 _Campagne = value;
             }
+        }
+
+        public decimal Commission
+        {
+            get
+            {
+                return _Commission;
+            }
+
+            set
+            {
+                _Commission = value;
+            }
+        }
+
+        public bool FactureAuPrixJour
+        {
+            get
+            {
+                return _FactureAuPrixJour;
+            }
+
+            set
+            {
+                _FactureAuPrixJour = value;
+            }
+        }
+
+        public decimal PrixJour
+        {
+            get
+            {
+                return _PrixJour;
+            }
+
+            set
+            {
+                _PrixJour = value;
+            }
+        }
+
+        public string PrixJourAsString
+        {
+            get { return String.Format("{0:#,#}", _PrixJour).TrimStart(); }
         }
         #endregion
 
@@ -241,6 +304,9 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@fournisseurID", SqlDbType.Int, _Fournisseur.ID);
                 db().AddInParameter(mCommande, "@dateprix", SqlDbType.DateTime, _DatePrix);
                 db().AddInParameter(mCommande, "@prix", SqlDbType.Money, _Prix);
+                db().AddInParameter(mCommande, "@prixjour", SqlDbType.Money, _PrixJour);
+                db().AddInParameter(mCommande, "@commission", SqlDbType.Money, _Commission);
+                db().AddInParameter(mCommande, "@factureprixjour", SqlDbType.Bit, _FactureAuPrixJour);
                 db().AddInParameter(mCommande, "@modeID", SqlDbType.Int, _ModeApplication.ID);
                 db().AddInParameter(mCommande, "@datedebut", SqlDbType.DateTime, _DateDebut);                                                              
                 db().AddInParameter(mCommande, "@dateecheance", SqlDbType.DateTime, _DateEcheance);                
@@ -320,6 +386,9 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@fournisseurID", SqlDbType.Int, _Fournisseur.ID);
                 db().AddInParameter(mCommande, "@dateprix", SqlDbType.DateTime, _DatePrix);
                 db().AddInParameter(mCommande, "@prix", SqlDbType.Money, _Prix);
+                db().AddInParameter(mCommande, "@prixjour", SqlDbType.Money, _PrixJour);
+                db().AddInParameter(mCommande, "@commission", SqlDbType.Money, _Commission);
+                db().AddInParameter(mCommande, "@factureprixjour", SqlDbType.Bit, _FactureAuPrixJour);
                 db().AddInParameter(mCommande, "@modeID", SqlDbType.Int, _ModeApplication.ID);
                 db().AddInParameter(mCommande, "@datedebut", SqlDbType.DateTime, _DateDebut);
                 db().AddInParameter(mCommande, "@dateecheance", SqlDbType.DateTime, _DateEcheance);
@@ -509,6 +578,9 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["Numero"])) mClass._Numero = (string)mDataReader["Numero"];                    
                     if (!DBNull.Value.Equals(mDataReader["datePrix"])) mClass._DatePrix = (DateTime)mDataReader["datePrix"];
                     if (!DBNull.Value.Equals(mDataReader["prix"])) mClass._Prix = (decimal)mDataReader["prix"];
+                    if (!DBNull.Value.Equals(mDataReader["Commission"])) mClass._Commission = (decimal)mDataReader["Commission"];
+                    if (!DBNull.Value.Equals(mDataReader["PrixJour"])) mClass.PrixJour = (decimal)mDataReader["PrixJour"];
+                    if (!DBNull.Value.Equals(mDataReader["FacturePrixJour"])) mClass._FactureAuPrixJour = (bool)mDataReader["FacturePrixJour"];
 
                     mClass._ModeApplication = new PrixNegocieModeApplication();
                     if (!DBNull.Value.Equals(mDataReader["modeID"])) mClass._ModeApplication.ID = (int)mDataReader["modeID"];

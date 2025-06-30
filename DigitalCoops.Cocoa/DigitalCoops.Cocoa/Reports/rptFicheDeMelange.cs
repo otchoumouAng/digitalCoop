@@ -471,7 +471,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             // xrPageInfo3
             // 
             this.xrPageInfo3.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrPageInfo3.Format = "Date Of Document : {0:dd/MM/yyyy HH:mm}";
+            this.xrPageInfo3.Format = "Date du Document : {0:dd/MM/yyyy HH:mm}";
             this.xrPageInfo3.LocationFloat = new DevExpress.Utils.PointFloat(428.6103F, 111.6203F);
             this.xrPageInfo3.Name = "xrPageInfo3";
             this.xrPageInfo3.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -543,7 +543,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             // 
             // xrPageInfo1
             // 
-            this.xrPageInfo1.Format = "Page {0} of {1}";
+            this.xrPageInfo1.Format = "Page {0} / {1}";
             this.xrPageInfo1.LocationFloat = new DevExpress.Utils.PointFloat(345.9794F, 66.99997F);
             this.xrPageInfo1.Name = "xrPageInfo1";
             this.xrPageInfo1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -976,7 +976,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell2.Name = "xrTableCell2";
             this.xrTableCell2.StylePriority.UseFont = false;
             this.xrTableCell2.StylePriority.UseTextAlignment = false;
-            this.xrTableCell2.Text = "Del. ID";
+            this.xrTableCell2.Text = "Liv N°";
             this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell2.Weight = 0.82338173034031126D;
             this.xrTableCell2.WordWrap = false;
@@ -987,7 +987,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell63.Name = "xrTableCell63";
             this.xrTableCell63.StylePriority.UseFont = false;
             this.xrTableCell63.StylePriority.UseTextAlignment = false;
-            this.xrTableCell63.Text = "Truck ID";
+            this.xrTableCell63.Text = "Immat";
             this.xrTableCell63.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell63.Weight = 0.81504007594745409D;
             // 
@@ -1008,7 +1008,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell7.Name = "xrTableCell7";
             this.xrTableCell7.StylePriority.UseFont = false;
             this.xrTableCell7.StylePriority.UseTextAlignment = false;
-            this.xrTableCell7.Text = "Bags";
+            this.xrTableCell7.Text = "Sacs";
             this.xrTableCell7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell7.Weight = 0.54351378624256608D;
             this.xrTableCell7.WordWrap = false;
@@ -1020,7 +1020,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell8.Name = "xrTableCell8";
             this.xrTableCell8.StylePriority.UseFont = false;
             this.xrTableCell8.StylePriority.UseTextAlignment = false;
-            this.xrTableCell8.Text = "Moist.\r\n (%)";
+            this.xrTableCell8.Text = "Hum.\r\n (%)";
             this.xrTableCell8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell8.Weight = 0.516812311695017D;
             // 
@@ -1031,7 +1031,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell9.Name = "xrTableCell9";
             this.xrTableCell9.StylePriority.UseFont = false;
             this.xrTableCell9.StylePriority.UseTextAlignment = false;
-            this.xrTableCell9.Text = "Mdly. \r\n(%)";
+            this.xrTableCell9.Text = "Moisi. \r\n(%)";
             this.xrTableCell9.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell9.Weight = 0.49921682523791033D;
             // 
@@ -1042,7 +1042,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell10.Name = "xrTableCell10";
             this.xrTableCell10.StylePriority.UseFont = false;
             this.xrTableCell10.StylePriority.UseTextAlignment = false;
-            this.xrTableCell10.Text = "Beans\r\n Ct.";
+            this.xrTableCell10.Text = "Nb Feves";
             this.xrTableCell10.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell10.Weight = 0.58933485699342769D;
             // 
@@ -1053,7 +1053,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell11.Name = "xrTableCell11";
             this.xrTableCell11.StylePriority.UseFont = false;
             this.xrTableCell11.StylePriority.UseTextAlignment = false;
-            this.xrTableCell11.Text = "Weevil \r\n(%)";
+            this.xrTableCell11.Text = "Mite\r\n(%)";
             this.xrTableCell11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell11.Weight = 0.63133795512668556D;
             // 
@@ -1064,7 +1064,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell12.Name = "xrTableCell12";
             this.xrTableCell12.StylePriority.UseFont = false;
             this.xrTableCell12.StylePriority.UseTextAlignment = false;
-            this.xrTableCell12.Text = "Slaty \r\n(%)";
+            this.xrTableCell12.Text = "Ardoisee\r\n(%)";
             this.xrTableCell12.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell12.Weight = 0.561436436529503D;
             // 
@@ -1087,7 +1087,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell3.NullValueText = "0";
             this.xrTableCell3.StylePriority.UseFont = false;
             this.xrTableCell3.StylePriority.UseTextAlignment = false;
-            this.xrTableCell3.Text = "Frgn.\r\n Matt.";
+            this.xrTableCell3.Text = "Mat. Etra";
             this.xrTableCell3.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell3.Weight = 0.63812970082134535D;
             // 
@@ -1098,7 +1098,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell22.Name = "xrTableCell22";
             this.xrTableCell22.StylePriority.UseFont = false;
             this.xrTableCell22.StylePriority.UseTextAlignment = false;
-            this.xrTableCell22.Text = "Siev. \r\n(%)";
+            this.xrTableCell22.Text = "Tamis. \r\n(%)";
             this.xrTableCell22.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell22.Weight = 0.56071939449463115D;
             // 
@@ -1108,7 +1108,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell45.Name = "xrTableCell45";
             this.xrTableCell45.StylePriority.UseFont = false;
             this.xrTableCell45.StylePriority.UseTextAlignment = false;
-            this.xrTableCell45.Text = "Gr Wgt(Kg)";
+            this.xrTableCell45.Text = "Poids Brut(Kg)";
             this.xrTableCell45.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell45.Weight = 0.60927661263674149D;
             // 
@@ -1438,7 +1438,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel7.SizeF = new System.Drawing.SizeF(100F, 23F);
             this.xrLabel7.StylePriority.UseFont = false;
             this.xrLabel7.StylePriority.UseTextAlignment = false;
-            this.xrLabel7.Text = "Supervisor";
+            this.xrLabel7.Text = "Superviseur";
             this.xrLabel7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // xrLabel8
@@ -1450,7 +1450,7 @@ public class rptFicheDeMelange : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel8.SizeF = new System.Drawing.SizeF(100F, 23F);
             this.xrLabel8.StylePriority.UseFont = false;
             this.xrLabel8.StylePriority.UseTextAlignment = false;
-            this.xrLabel8.Text = "Director";
+            this.xrLabel8.Text = "Direction";
             this.xrLabel8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // ReportFooter

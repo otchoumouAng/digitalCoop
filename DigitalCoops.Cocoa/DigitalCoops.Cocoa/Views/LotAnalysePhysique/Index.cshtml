@@ -9,7 +9,7 @@
 <script type="text/javascript">
     var GetNbrStoreRows = function () {
         var nbr = App.grpListeAnalysePhysiqueExport.getRowsValues().length;
-        App.LblResumeAnalysePhysique.setText(nbr + ' Analysis');
+        App.LblResumeAnalysePhysique.setText(nbr + ' Analyses');
     };
 
     var SetExcelList = function () {
@@ -258,7 +258,7 @@
 
                                             X.MenuItem()
                                                 .ID("mnuPrintAnalysePhysiqueList")
-                                                .Text("Analyse Physique Average")
+                                                .Text(" Moyenne Analyse Physique")
                                                 .DirectEvents
                                                 (
                                                     de=>
@@ -269,7 +269,7 @@
                                                 ),
                                             X.MenuItem()
                                                 .ID("mnuPrintAnalysePhysiqueProduction")
-                                                .Text("Analyse Physique Average - Production")
+                                                .Text("Moyenne analyse - Production")
                                                 .DirectEvents
                                                 (
                                                     de=>
@@ -280,7 +280,7 @@
                                                 ),
                                             X.MenuItem()
                                                 .ID("mnuPrintAnalysePhysiqueShipment")
-                                                .Text("Analyse Physique Average - Shipment")
+                                                .Text("Moyenne Analyse - Shipping")
                                                 .DirectEvents
                                                 (
                                                     de=>
@@ -442,14 +442,14 @@
                     Html.X().Column().Text("Light Crop").DataIndex("LightCrop").Flex(1),
                     Html.X().Column().Text("Moisie (%)").DataIndex("Moisie").Flex(1),
                     Html.X().Column().Text("Plate (%)").DataIndex("Plate").Flex(1),
-                    Html.X().Column().Text("Weevil (%)").DataIndex("Weevil").Flex(1),
+                    Html.X().Column().Text("Insecte (%)").DataIndex("Weevil").Flex(1),
                     Html.X().Column().Text("Germee (%)").DataIndex("Germee").Flex(1),
                     Html.X().Column().Text("Ardoisee (%)").DataIndex("Ardoisee").Flex(1),
                     Html.X().Column().Text("Violette (%)").DataIndex("Violette").Flex(1),
                     Html.X().Column().Text("Tamis (%)").DataIndex("Tamis").Flex(1).Hidden(true),
                     Html.X().Column().Text("Matiere Etrangere (%)").DataIndex("MatiereEtrangere").Flex(1).Hidden(true),
                     Html.X().Column().Text("Fragment (%)").DataIndex("Fragment").Flex(1).Hidden(true),
-                    Html.X().Column().Text("Broken Beans").DataIndex("Brisure").Flex(1).Hidden(true),
+                    Html.X().Column().Text("Brisure").DataIndex("Brisure").Flex(1).Hidden(true),
                     Html.X().Column().Text("Bean Cluster").DataIndex("BeansCluster").Flex(1).Hidden(true),
                     Html.X().Column().Text("CRM").DataIndex("CRM").Flex(1).Hidden(true),
                     X.Column().Text("User Approval").DataIndex("Approbateur").Flex(1).Hidden(true),

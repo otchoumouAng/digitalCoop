@@ -117,6 +117,21 @@ namespace Tms.Classes.Business
         {
             get { return _PrixNegocie != null && _PrixNegocie.Site != null ? _PrixNegocie.Site.Nom : string.Empty; }
         }
+
+        public string Commission
+        {
+            get { return _PrixNegocie == null ? string.Empty : String.Format("{0:#,#}", _PrixNegocie.Commission).TrimStart(); }
+        }
+
+        public string PrixJourAsString
+        {
+            get { return _PrixNegocie == null ? string.Empty : String.Format("{0:#,#}", _PrixNegocie.PrixJour).TrimStart(); }
+        }
+
+        public string ValPrixNegocieAsString
+        {
+            get { return _PrixNegocie == null ? string.Empty : String.Format("{0:#,#}", _PrixNegocie.ValPrixNegocie).TrimStart(); }
+        }
         #endregion
 
         #region "Constructor"
@@ -505,6 +520,10 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["statut"])) mClass._PrixNegocie.Statut = (string)mDataReader["statut"];
                     if (!DBNull.Value.Equals(mDataReader["commentaire"])) mClass._PrixNegocie.Commentaire = (string)mDataReader["commentaire"];
                     if (!DBNull.Value.Equals(mDataReader["Numero"])) mClass._PrixNegocie.Numero = (string)mDataReader["Numero"];
+
+                    if (!DBNull.Value.Equals(mDataReader["Commission"])) mClass._PrixNegocie.Commission = (decimal)mDataReader["Commission"];
+                    if (!DBNull.Value.Equals(mDataReader["PrixJour"])) mClass._PrixNegocie.PrixJour = (decimal)mDataReader["PrixJour"];
+                    if (!DBNull.Value.Equals(mDataReader["FacturePrixJour"])) mClass._PrixNegocie.FactureAuPrixJour = (bool)mDataReader["FacturePrixJour"];
 
                     mClass._PrixNegocie.Fournisseur = new Fournisseur();
                     if (!DBNull.Value.Equals(mDataReader["fournisseurID"])) mClass._PrixNegocie.Fournisseur.ID = (int)mDataReader["fournisseurID"];

@@ -277,7 +277,7 @@ namespace Tms2017.MVC.Controllers
                 bool result = mClass.fnGet(mID);
 
                 if (!result)
-                    throw new Exception("OnCancel : Bon De Livraison loading failed.");
+                    throw new Exception("OnCancel : Bon De Reception loading failed.");
 
                 string UserName = (string)Session["userName"];
                 Site mSiteParDefaut = new Site();
@@ -310,7 +310,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Cancel",
+                    Title = "Bon De Reception : Cancel",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -363,7 +363,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : OnRefresh",
+                    Title = "Bon De Reception : OnRefresh",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -416,7 +416,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : OnRefresh",
+                    Title = "Bon De Reception : OnRefresh",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -466,7 +466,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : OnRefresh",
+                    Title = "Bon De Reception : OnRefresh",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -545,7 +545,7 @@ namespace Tms2017.MVC.Controllers
 
             string BaseUrl = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"));
 
-            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'DeliveryNote{0}', '{1}/BonDeLivraisonSite/ViewReport?id={0}&IsCopy={2}&AfficheResultatAnalyse={3}', this, 'Bon De Livraison Report','')", IdBon, BaseUrl, ReportIscopy, afficheAnalyse));
+            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'DeliveryNote{0}', '{1}/BonDeLivraisonSite/ViewReport?id={0}&IsCopy={2}&AfficheResultatAnalyse={3}', this, 'Bon De Reception Report','')", IdBon, BaseUrl, ReportIscopy, afficheAnalyse));
         }
 
         public ActionResult ViewReport(string id, bool IsCopy, bool AfficheResultatAnalyse)

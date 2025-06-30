@@ -9,10 +9,10 @@
 </head>
 <style>
     .x-form-layout-auto-label > * > .x-form-item-label {
-    width: 140px !important;
-}
-    .x-form-text-default.x-form-textarea 
-    {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
         line-height: 17px;
         min-height: 50px !important;
     }
@@ -28,7 +28,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     //.X(400)
     .Y(20)
-    .Title("Financing")
+    .Title("Financement")
     .Items(
             X.FormPanel()
                 .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
@@ -88,7 +88,7 @@ X.Window()
                                         .QueryMode(DataLoadMode.Local)
                                         .TriggerAction(TriggerAction.All)
                                         .ForceSelection(true)
-                                        .ReadOnly(true)
+                                        //.ReadOnly(true)
                                         //.ReadOnly(!bool.Parse(@ViewData["HasAccessAllSite"].ToString()))
                                         .Value(Model._Financement.Sites.ID)
                                         .Store(
@@ -200,14 +200,14 @@ X.Window()
                                                     (
                                                         ps => { ps.Add(new StoreParameter("siteID", "App._cmbSite.getValue()", ParameterMode.Raw)); }
                                                     )
-                                                )
-                                                .Listeners(
-                                                    ls =>
-                                                    {
-                                                        ls.Select.Handler = "if (App._cmbType.value) { App.cmbEngagement.clearValue(); DefinirEngagement(App._cmbType.getSelectedRecord().data); };";
-                                                    }
-                                                )
-                                                ,
+                                                ),
+                                                //.Listeners(
+                                                //    ls =>
+                                                //    {
+                                                //        ls.Select.Handler = "if (App._cmbType.value) { App.cmbEngagement.clearValue(); DefinirEngagement(App._cmbType.getSelectedRecord().data); };";
+                                                //    }
+                                                //)
+                                                //,
 
                                             X.ComboBox()
                                                  .ID("_cmbType")
@@ -223,13 +223,13 @@ X.Window()
                                                  .ValueField("ID")
                                                  //.LabelWidth(102)
                                                  //.Width(260)
-                                                 .Listeners(
-                                                    li =>
-                                                    {
-                                                        li.Select.Handler = "if (App._cmbType.value && App._cmbFournisseur.value){ App.cmbEngagement.clearValue(); DefinirEngagement(App._cmbType.getSelectedRecord().data);}";
-                                                        li.Change.Handler = "if (App._cmbType.value && App._cmbFournisseur.value){ App.cmbEngagement.clearValue(); DefinirEngagement(App._cmbType.getSelectedRecord().data);}";
-                                                    }
-                                                )
+                                                 // .Listeners(
+                                                 //    li =>
+                                                 //    {
+                                                 //        li.Select.Handler = "if (App._cmbType.value && App._cmbFournisseur.value){ App.cmbEngagement.clearValue(); DefinirEngagement(App._cmbType.getSelectedRecord().data);}";
+                                                 //        li.Change.Handler = "if (App._cmbType.value && App._cmbFournisseur.value){ App.cmbEngagement.clearValue(); DefinirEngagement(App._cmbType.getSelectedRecord().data);}";
+                                                 //    }
+                                                 //)
                                                  .LabelAlign(LabelAlign.Right)
                                                  .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Financement.FinancementType.ID : (int?)null)
                                                  .Store
@@ -243,7 +243,9 @@ X.Window()
                                                        .Fields
                                                        (
                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
-                                                         new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                         new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                         new ModelField("ReqTonnage", ModelFieldType.Boolean) { Mapping = "ReqTonnage" },
+                                                         new ModelField("DefModeRemb", ModelFieldType.Int) { Mapping = "DefModeRemb" }
                                                        )
                                                     )
                                                     .Proxy
@@ -256,7 +258,10 @@ X.Window()
                                                  .Listeners
                                                  (
                                                    ls =>
-                                                   { ls.AfterRender.Handler = "TypeIndexChanged(App._cmbType.value)"; ls.Select.Handler = "TypeIndexChanged(App._cmbType.value)"; }
+                                                   {
+                                                       //ls.AfterRender.Handler = "TypeIndexChanged(App._cmbType.value)";
+                                                       ls.Select.Handler = "TypeIndexChanged(App._cmbType.value)";
+                                                   }
                                                  ),
                                         X.ComboBox()
                                             .ID("cmbEngagement")
@@ -269,6 +274,7 @@ X.Window()
                                             .FieldLabel("Ref. Contrat")
                                             .DisplayField("NumeroTonnage")
                                             .ValueField("ID")
+                                            .Hidden(true)
                                             .LabelAlign(LabelAlign.Right)
                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._Financement.Engagement != null ? Model._Financement.Engagement.ID : (Guid?)null)
                                             .Store
@@ -325,7 +331,7 @@ X.Window()
                                                         X.DateField()
                                                              .ID("txtDate")
                                                              .TabIndex(6)
-                                                             //.FieldLabel("Date Debut")
+                                                             //.FieldLabel("Start Date")
                                                              .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Financement.DateFinancement.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
                                                              .AllowBlank(false)
                                                              //.LabelWidth(102)
@@ -361,7 +367,7 @@ X.Window()
 
                                                 //X.FieldContainer().Layout(LayoutType.HBox)
                                                 //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
-                                                //.FieldLabel("Date Fin")
+                                                //.FieldLabel("Due Date")
                                                 ////.Flex(1)
                                                 //.LabelAlign(LabelAlign.Right)
                                                 //.Items(
@@ -411,7 +417,7 @@ X.Window()
 
                                             ),
     #endregion
-    #region Right                    
+    #region Right
                         X.Container()
                                              .Layout(LayoutType.Form)
                                              //.Height(350)
@@ -468,7 +474,7 @@ X.Window()
                                                  .ID("txtTauxPaiement")
                                                  .HideTrigger(true)
                                                  .TabIndex(12)
-                                                 .FieldLabel("Taux Paiement (%)")
+                                                 .FieldLabel("Taux de Paiement (%)")
                                                  .LabelAlign(LabelAlign.Right)
                                                  .MinValue(0)
                                                  .MaxValue(100)
@@ -512,12 +518,14 @@ X.Window()
                                              .TabIndex(14)
                                              .IndicatorCls("IndicatorRedStar")
                                              .IndicatorText("*")
-                                             .FieldLabel("Mode de remboursement")
+                                             .FieldLabel("Mode de Remboursement")
                                              .DisplayField("Designation")
                                              .ValueField("ID")
                                              .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
                                              //.LabelWidth(146)
                                              //.Width(310)
+                                             .MatchFieldWidth(false)
+                                             .ListConfig(new BoundList { MinWidth = 200 })
                                              .LabelAlign(LabelAlign.Right)
                                              .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Financement.PrelevementMode.ID : (int?)null)
                                              .Store
@@ -553,7 +561,7 @@ X.Window()
                                              .ID("txtTauxRemboursement")
                                              .HideTrigger(true)
                                              .TabIndex(15)
-                                             .FieldLabel("Taux de remboursement")
+                                             .FieldLabel("Taux de Remboursement")
                                              .LabelAlign(LabelAlign.Right)
                                              .ReadOnly(true)
                                              .IndicatorCls("IndicatorRedStar")
@@ -577,9 +585,6 @@ X.Window()
                                               .ID("txtComment")
                                               .FieldLabel("Commentaire")
                                               .TabIndex(16)
-                                              .AllowBlank(false)
-                                              .IndicatorCls("IndicatorRedStar")
-                                              .IndicatorText("*")
                                               .LabelAlign(LabelAlign.Right)
                                               //.LabelWidth(146)
                                               .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Financement.Commentaire : string.Empty)
@@ -608,7 +613,7 @@ X.Window()
                 }
             ),
         X.Button()
-            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+            .Text("Approuver")
             .ID("BtnApproveOk")
             .TabIndex(18)
             .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
@@ -647,13 +652,13 @@ X.Window()
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Financement : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Financement : Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez renseigner les champs réquis', buttons: Ext.Msg.OK });
             return false;
         }
         var rate = parseInt(App.txtTauxPaiement.value) || '';
         if ((rate < 0) || (rate > 100)) {
 
-            Ext.Msg.show({ title: 'Financement : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Le taux doit être entre 0 et 100 %.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Financement : Validation ', icon: Ext.MessageBox.WARNING, msg: 'Le Taux de Paiement doit etre entre 0 et 100 %.', buttons: Ext.Msg.OK });
             return false;
         }
     };
@@ -673,10 +678,10 @@ X.Window()
         }
     };
 
-    var DefinirEngagement = function (record) {                
+    var DefinirEngagement = function (record) {
         setCtrlIsRequired(App.cmbEngagement, false);
         App.cmbEngagement.setReadOnly(true);
-        var Engagement_Type = App.hiddenTypeEngagement.value;        
+        var Engagement_Type = App.hiddenTypeEngagement.value;
 
         if (record.ID == Engagement_Type) {
             App.cmbEngagement.getStore().load();
@@ -689,30 +694,46 @@ X.Window()
     var TypeIndexChanged = function (item) {
         var Advance_Type = App.hiddenTypeAvance.value;
         var Engagement_Type = App.hiddenTypeEngagement.value;
+
+        if (App._cmbType.value) {
+            var _reqTonnage = App._cmbType.getSelectedRecord().data.ReqTonnage || false;
+            var _modePrelv = App._cmbType.getSelectedRecord().data.DefModeRemb || 0;
+
+            App.cmbPrelevementType.setValue(_modePrelv);
+            console.log(_modePrelv);
+        }
+
         App.txtTonnage.setReadOnly(true);
         App.txtStartDate.setHidden(true);
+
         if (App.hiddenExecMode.value.toString() != "Consult" && App.hiddenExecMode.value.toString() != "Approve")
         {
             App.txtGrossAmount.setValue("");
             App.txtPrice.setValue("");
             App.txtTonnageInitial.setValue("");
 
-            if (item == Advance_Type || item == Engagement_Type) {
-                
-                App.txtTonnage.allowBlank = (false);
-                App.txtTonnage.setIndicator("*");                
+            if (App._cmbType.value && _reqTonnage === true) {
+            /*if (item == Advance_Type || item == Engagement_Type) {*/
 
+                App.txtTonnage.allowBlank = (false);
+                App.txtTonnage.setIndicator("*");
+
+                App.txtPrice.setReadOnly(false);
+                App.txtDueDate.setReadOnly(false);
+                App.txtTonnage.setReadOnly(false);
+                /*
                 if (item == Advance_Type) {
                     App.txtPrice.setReadOnly(false);
                     App.txtDueDate.setReadOnly(false);
                     App.txtTonnage.setReadOnly(false);
-                    
+
                 }
                 else {
                     App.txtPrice.setReadOnly(true);
                     App.txtDueDate.setReadOnly(true);
                     App.txtTonnage.setReadOnly(true);
                 }
+                /*
 
                 /*if (App.hiddenExecMode.value.toString() == "Update")
                     App.cmbEngagement.setReadOnly(false);*/
@@ -724,8 +745,8 @@ X.Window()
                 App.txtGrossAmount.allowBlank = (false);
                 App.txtGrossAmount.setIndicator("*");
 
-             }             
-            else if (Ext.isNumeric(item)) {
+             }
+            else  {
 
                 App.txtTonnage.setReadOnly(true);
                 App.txtTonnage.allowBlank = (true);
@@ -760,25 +781,24 @@ X.Window()
             App.txtDueDate.setReadOnly(true);
             App.txtGrossAmount.setReadOnly(true);
         }
-        
     };
 
     var EngagementIndexChanged = function (item) {
-        
+
         App.txtStartDate.setHidden(true);
         App.txtTonnage.setReadOnly(true);
         var Engagement_Type = App.hiddenTypeEngagement.value;
-        if (App.hiddenExecMode.value.toString() != "Consult") {            
-            if (item == Engagement_Type) {               
-                
+        if (App.hiddenExecMode.value.toString() != "Consult") {
+            if (item == Engagement_Type) {
+
                 var prix = parseFloat(App.cmbEngagement.getSelectedRecord().data.Prix) || (unformatNumber(App.txtPrice.value) || 0);
                 App.txtPrice.setValue(formatNumber(prix));
 
                 App.txtStartDate.setHidden(false);
                 App.txtStartDate.setValue(App.cmbEngagement.getSelectedRecord().data.DateDebut);
-                App.txtDueDate.setValue(App.cmbEngagement.getSelectedRecord().data.DateEcheance);                
+                App.txtDueDate.setValue(App.cmbEngagement.getSelectedRecord().data.DateEcheance);
                 var ton = App.cmbEngagement.getSelectedRecord().data.Tonnage;
-                
+
                 App.txtTonnageInitial.setValue(formatNumber(ton));
                 App.txtTonnage.setValue(formatNumber(ton));
                 App.txtTonnage.setReadOnly(true);
@@ -787,7 +807,7 @@ X.Window()
                 var montbrut = prix * ton;
                 var tauxRestant = parseFloat(App.cmbEngagement.getSelectedRecord().data.TauxFinancement) || 0;
                 var tauxPaiment = parseFloat(App.txtTauxPaiement.rawValue.replace(',', '.')) || 0;
-                
+
                 if (tauxRestant < 100 && tauxRestant > 0) {
                     tauxPaiment = tauxRestant;
                     App.txtTauxPaiement.setValue(tauxPaiment);
@@ -807,7 +827,7 @@ X.Window()
             /*App.txtTonnage.setReadOnly(true);*/
             App.txtGrossAmount.setReadOnly(true);
             App.txtStartDate.setHidden(true);
-            App.txtTonnage.setReadOnly(false);            
+            App.txtTonnage.setReadOnly(false);
         }
 
     };
@@ -840,8 +860,8 @@ X.Window()
         else
         {
             App.txtTauxRemboursement.setReadOnly(true);
-        }        
-        
+        }
+
 
     };
 
@@ -863,11 +883,11 @@ X.Window()
               if (Ext.isNumeric(Price) && Ext.isNumeric(Tonnage))
               {
                   App.txtGrossAmount.setValue('0');
-                Amount = RoundInt(Price * Tonnage);                  
+                Amount = RoundInt(Price * Tonnage);
                 App.txtGrossAmount.setValue(formatNumber(Amount));
 
                 ReimbModeIndexChanged(App.cmbPrelevementType.value);
-                
+
               }
             }
 
@@ -890,7 +910,7 @@ X.Window()
 
         }
         catch (err) {
-            Ext.Msg.show({ title: 'Financement : Amount Calculation ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating amount.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Financement : Calcul Du Montant ', icon: Ext.MessageBox.WARNING, msg: 'Erreur lors du calcul du montant.', buttons: Ext.Msg.OK });
 
         }
 
@@ -915,7 +935,7 @@ X.Window()
         try {
             App.txtAmount.setValue('0');
 
-            var tauxPaiment = parseFloat(App.txtTauxPaiement.rawValue.replace(',', '.')) || 0;         
+            var tauxPaiment = parseFloat(App.txtTauxPaiement.rawValue.replace(',', '.')) || 0;
 
             if (tauxPaiment != '') {
                 var grossAmount = parseFloat(unformatNumber(App.txtGrossAmount.value)) || 0;
@@ -932,19 +952,19 @@ X.Window()
 
         }
         catch (err) {
-            Ext.Msg.show({ title: 'Financement : Amount Calculation ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating Final amount.'+ err, buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Financement : Calcul Du Montant ', icon: Ext.MessageBox.WARNING, msg: 'Erreur lors du calcul du montant.'+ err, buttons: Ext.Msg.OK });
 
         }
 
     };
 
     var CalculateTonnageEquiv = function (item) {
-        
+
         var Engagement_Type = App.hiddenTypeEngagement.value;
         if (App.hiddenExecMode.value.toString() != "Consult") {
             if (item == Engagement_Type) {
 
-                var prix = parseFloat(App.cmbEngagement.getSelectedRecord().data.Prix) || (unformatNumber(App.txtPrice.value) || 0);                             
+                var prix = parseFloat(App.cmbEngagement.getSelectedRecord().data.Prix) || (unformatNumber(App.txtPrice.value) || 0);
                 var ton = App.cmbEngagement.getSelectedRecord().data.Tonnage;
 
                 /* Calculer Tonnage Equivalent */
@@ -958,8 +978,8 @@ X.Window()
                 var engTon = (montFin * ton) / montbrut;
                 App.txtTonnage.setValue(formatNumber(engTon));
                 /* Fin */
-            }            
-        }       
+            }
+        }
 
     };
 

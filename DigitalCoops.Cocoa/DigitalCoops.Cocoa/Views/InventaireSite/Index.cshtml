@@ -655,7 +655,7 @@
                        .Listeners(l => { l.Select.Fn = "Overview.resetButtons"; l.Deselect.Fn = "Overview.resetButtons"; })
                        .DirectEvents(de =>
                        {
-                           de.RowDblClick.Url = Url.Action("OnConsult","InventaireStock");
+                           de.RowDblClick.Url = Url.Action("OnConsult", "InventaireStock");
                            de.RowDblClick.CleanRequest = true;
                            de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowInventaire}.getSelected().items[0].data" });
                            de.RowDblClick.EventMask.ShowMask = true;

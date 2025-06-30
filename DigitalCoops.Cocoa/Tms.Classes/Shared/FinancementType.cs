@@ -19,8 +19,9 @@ namespace Tms.Classes.Shared
         private int _ID;
         private string _Designation;
         private bool _Desactive;
+        private bool _ReqTonnage;
+        private int _DefModeRemb;
         private decimal? _OrdreStatus;
-
         #endregion
 
         #region "Properties"
@@ -56,6 +57,32 @@ namespace Tms.Classes.Shared
                     return 0; // BulletCross                
                 else
                     return 2; //                     
+            }
+        }
+
+        public bool ReqTonnage
+        {
+            get
+            {
+                return _ReqTonnage;
+            }
+
+            set
+            {
+                _ReqTonnage = value;
+            }
+        }
+
+        public int DefModeRemb
+        {
+            get
+            {
+                return _DefModeRemb;
+            }
+
+            set
+            {
+                _DefModeRemb = value;
             }
         }
 
@@ -166,7 +193,6 @@ namespace Tms.Classes.Shared
                 }
 
                 db().AddInParameter(mCommande, "@Designation", SqlDbType.VarChar, _Designation);
-                db().AddInParameter(mCommande, "@Ordre", SqlDbType.Float, _OrdreStatus);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
 
@@ -308,13 +334,13 @@ namespace Tms.Classes.Shared
                     if (!DBNull.Value.Equals(mDataReader["ID"])) mClass._ID = (int)mDataReader["ID"];
                     if (!DBNull.Value.Equals(mDataReader["Designation"])) mClass._Designation = (string)mDataReader["Designation"];
                     if (!DBNull.Value.Equals(mDataReader["Desactive"])) mClass._Desactive = (bool)mDataReader["Desactive"];
+                    if (!DBNull.Value.Equals(mDataReader["ReqTonnage"])) mClass._ReqTonnage = (bool)mDataReader["ReqTonnage"];
+                    if (!DBNull.Value.Equals(mDataReader["ModePrelevement"])) mClass._DefModeRemb = (int)mDataReader["ModePrelevement"];
                     if (!DBNull.Value.Equals(mDataReader["CreationUtilisateur"])) mClass.UtilisateurCreation = (string)mDataReader["CreationUtilisateur"];
                     if (!DBNull.Value.Equals(mDataReader["CreationDate"])) mClass.DateCreation = (DateTime)mDataReader["CreationDate"];
                     if (!DBNull.Value.Equals(mDataReader["ModificationUtilisateur"])) mClass.UtilisateurModification = (string)mDataReader["ModificationUtilisateur"];
                     if (!DBNull.Value.Equals(mDataReader["ModificationDate"])) mClass.DateModification = (DateTime)mDataReader["ModificationDate"];
                     if (!DBNull.Value.Equals(mDataReader["RowVersionKey"])) mClass.RowVersionKey = (object)mDataReader["RowVersionKey"];
-                    if (!DBNull.Value.Equals(mDataReader["OrdreStatus"])) mClass._OrdreStatus = (decimal)mDataReader["OrdreStatus"];
-
                 }
             }
             catch (Exception ex)

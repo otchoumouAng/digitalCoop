@@ -1083,7 +1083,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Shipment : Print List of Lot",
+                    Title = "Embarquement : Liste des Lots",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

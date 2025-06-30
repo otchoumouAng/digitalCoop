@@ -292,7 +292,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : OnRefresh",
+                    Title = "Bon De Reception : OnRefresh",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -414,7 +414,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Submit Delivery",
+                    Title = "Bon De Reception : Submit Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -490,7 +490,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : MapDeliveryToForm",
+                    Title = "Bon De Reception : MapDeliveryToForm",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -531,7 +531,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : MapAnalysisToForm",
+                    Title = "Bon De Reception : MapAnalysisToForm",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -602,7 +602,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : MapRetentionToForm",
+                    Title = "Bon De Reception : MapRetentionToForm",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -704,7 +704,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : MapFormToObject",
+                    Title = "Bon De Reception : MapFormToObject",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -738,7 +738,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : MapFormToObject",
+                    Title = "Bon De Reception : MapFormToObject",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -761,7 +761,7 @@ namespace Tms2017.MVC.Controllers
                 bool result = mClass.fnGet(mID);
 
                 if (!result)
-                    throw new Exception("OnCancel : Bon De Livraison loading failed.");
+                    throw new Exception("OnCancel : Bon De Reception loading failed.");
 
                 mClass.UtilisateurModification = (string)Session["userName"];
 
@@ -779,7 +779,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Cancel",
+                    Title = "Bon De Reception : Cancel",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -846,7 +846,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : UpdateFormMethod",
+                    Title = "Bon De Reception : UpdateFormMethod",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -930,7 +930,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : OnRefresh",
+                    Title = "Bon De Reception : OnRefresh",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -982,7 +982,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : OnRefresh",
+                    Title = "Bon De Reception : OnRefresh",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1061,7 +1061,7 @@ namespace Tms2017.MVC.Controllers
 
             string BaseUrl = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"));            
 
-            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'DeliveryNote{0}', '{1}/BonDeLivraison/ViewReport?id={0}&IsCopy={2}&AfficheResultatAnalyse={3}', this, 'Bon De Livraison Report','')", IdBon, BaseUrl, ReportIscopy, afficheAnalyse));
+            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'DeliveryNote{0}', '{1}/BonDeLivraison/ViewReport?id={0}&IsCopy={2}&AfficheResultatAnalyse={3}', this, 'Bon De Reception Report','')", IdBon, BaseUrl, ReportIscopy, afficheAnalyse));
         }
 
         public ActionResult ViewReport(string id, bool IsCopy, bool AfficheResultatAnalyse)
@@ -1105,7 +1105,7 @@ namespace Tms2017.MVC.Controllers
                 if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
                 else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-                ViewData["Titre"] = "Print Liste des bons de livraisons";
+                ViewData["Titre"] = "Liste des bons de livraisons";
                 ViewData["actionToDo"] = "OnPrintDeliveryNoteList";
                 ViewData["ControllerName"] = "BonDeLivraison";
             }
@@ -1146,7 +1146,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Data Validation",
+                    Title = "Bon De Reception : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1267,7 +1267,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : UpdateCertification",
+                    Title = "Bon De Reception : UpdateCertification",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

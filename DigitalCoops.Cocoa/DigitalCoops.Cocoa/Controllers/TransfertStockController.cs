@@ -58,7 +58,7 @@ namespace Tms2017.MVC.Controllers
             bool result = mSiteParDefaut.fnGetBySiteByUserName(UserName);
             ViewBag.SiteParDefaut = mSiteParDefaut.ID;
             ViewBag.MagasinReception = mSiteParDefaut.MagasinID;
-            
+
 
             Fonction HasAccessFunction = new Fonction();
             bool HasAccessAllSite = HasAccessFunction.fnGetUserAccessStatus("{5cc0d4cd-53b5-4910-af30-face52c5f12d}", UserName);
@@ -363,7 +363,7 @@ namespace Tms2017.MVC.Controllers
                 //mclass._VenteLot.Sites.Nom = msite.Nom;
                 //mclass._VenteLot.Magasin = new Magasin();
                 //mclass._VenteLot.Magasin.ID = msite.MagasinID;
-                mclass._VenteLot.Destination = new Destination();                
+                mclass._VenteLot.Destination = new Destination();
                 mclass._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Update;
             }
             catch (Exception ex)
@@ -398,11 +398,11 @@ namespace Tms2017.MVC.Controllers
             }
 
             if (mclass._VenteLot.Statut == "NA")
-                return new Ext.Net.MVC.PartialViewResult { ViewName = "FormVenteLot", Model = mclass };
+                return new Ext.Net.MVC.PartialViewResult { ViewName = "FormExpeditionDetail", Model = mclass };
             else if (mclass._VenteLot.Statut == "AP")
                 return new Ext.Net.MVC.PartialViewResult { ViewName = "FormVenteLotApprouve", Model = mclass };
             else if (mclass._VenteLot.Statut == "RE")
-                return new Ext.Net.MVC.PartialViewResult { ViewName = "FormVenteLotRecept", Model = mclass };
+                return new Ext.Net.MVC.PartialViewResult { ViewName = "FormReceptionDetail", Model = mclass };
             else if (mclass._VenteLot.Statut == "VE")
                 return new Ext.Net.MVC.PartialViewResult { ViewName = "FormVenteLot_ApprouveVente", Model = mclass };
             else
@@ -613,7 +613,7 @@ namespace Tms2017.MVC.Controllers
                     mouvement.SetDataSource(_db);
                     mouvement.mCampagne.Designation = mVente.Campagne.Designation;
                     mouvement.Exportateur.ID = mVente.Exportateur.ID;
-                    mouvement.DateMouvement = DateTime.Now;
+                    mouvement.DateMouvement = mVente.DateExpedition;
                     mouvement.SacType.ID = mParam.SacExportType;
                     mouvement.ObjetEnStock = mVente.ID;
                     mouvement.ObjetEnStockType = mParam.LotTypeElementEnStock;
@@ -658,7 +658,7 @@ namespace Tms2017.MVC.Controllers
                 if (result && resultMouvement)
                 {
                     _db.CommitTransaction(mtran);
-                    
+
                     Store mstore = X.GetCmp<Store>("storeVenteList");
                     mVente.MagasinReception = null;
 
@@ -753,9 +753,10 @@ namespace Tms2017.MVC.Controllers
             //mClass.MagasinDestination.ID = int.Parse(GetFormValue("cmbMagasinDestination"));
             //mClass.MagasinDestination.Designation = X.GetCmp<ComboBox>("cmbMagasinDestination").SelectedItem.Text.ToString();
 
-            mClass.Immatriculation = X.GetCmp<TextField>("txtImmTracteur").Text;
-            mClass.ImmRemorque = X.GetCmp<TextField>("txtImmRemorque").Text;
+            mClass.ImmTracteurExpedition1 = X.GetCmp<TextField>("txtImmTracteur").Text;
+            mClass.ImmRemorqueExpedition1 = X.GetCmp<TextField>("txtImmRemorque").Text;
             mClass.NumBordereauSortie = X.GetCmp<TextField>("txtBordereauSortie").Text;
+            mClass.NumeroExpedition = X.GetCmp<TextField>("txtBordereauSortie").Text;
 
             mClass.Campagne = new Tms.Classes.Shared.Campagne();
             mClass.Campagne.Designation = X.GetCmp<ComboBox>("cmbDetCrop").SelectedItem.Text.ToString();
@@ -833,7 +834,7 @@ namespace Tms2017.MVC.Controllers
                     mouvement.SetDataSource(_db);
                     mouvement.mCampagne.Designation = mClass.Campagne.Designation;
                     mouvement.Exportateur.ID = mClass.Exportateur.ID;
-                    mouvement.DateMouvement = DateTime.Now;
+                    mouvement.DateMouvement = mClass.DateReception;
                     mouvement.SacType.ID = mParam.SacExportType;
                     mouvement.ObjetEnStock = mClass.ID;
                     mouvement.ObjetEnStockType = mParam.LotTypeElementEnStock;
@@ -1043,7 +1044,7 @@ namespace Tms2017.MVC.Controllers
                         mProxy.Commit();
                         mProxy.EndEdit();
                     }
-                     
+
                     X.GetCmp<Window>("FormVenteLot_ApprouveVente").Close();
                 }
             }
@@ -1092,7 +1093,7 @@ namespace Tms2017.MVC.Controllers
             if (!String.IsNullOrEmpty(ItemEndDate) && !ItemEndDate.Contains("1/1/0001"))
                 EndDate = DateTime.Parse(ItemEndDate);
 
-            var mListe = (new VenteLot()).fnSelectListTransfer(Crop, StartDate, EndDate, status, siteID,MagasinExpeditionID, MagasinReceptionID, ExportateurID, _IndTransit);
+            var mListe = (new VenteLot()).fnSelectListTransfer(Crop, StartDate, EndDate, status, siteID, MagasinExpeditionID, MagasinReceptionID, ExportateurID, _IndTransit);
 
             string filterHeaders = this.Request.Params["filterheader"];
             return this.Store(mListe);
@@ -1130,7 +1131,7 @@ namespace Tms2017.MVC.Controllers
             return this.Direct();
         }
 
-        public ActionResult OnRefresh(string ItemCampagne, string ItemStatus, string ItemStartDate, string ItemEndDate, string ItemExportateur, string ItemSite,string ItemMagasinExpedition, string ItemMagasinReception, string ItemTransit)
+        public ActionResult OnRefresh(string ItemCampagne, string ItemStatus, string ItemStartDate, string ItemEndDate, string ItemExportateur, string ItemSite, string ItemMagasinExpedition, string ItemMagasinReception, string ItemTransit)
         {
             try
             {
@@ -1517,7 +1518,9 @@ namespace Tms2017.MVC.Controllers
             if (X.GetCmp<TextField>("txtNetWeight").Text != string.Empty) mClass.PoidsNetRecetpion = decimal.Parse(X.GetCmp<TextField>("txtNetWeight").Text);
             if (X.GetCmp<TextField>("txtTarePalette").Text != string.Empty) mClass.TarePaletteArrive = decimal.Parse(X.GetCmp<TextField>("txtTarePalette").Text);
 
-            //if (X.GetCmp<TextField>("txtNumBordereauEntree").Text != string.Empty) mClass.nu = int.Parse(X.GetCmp<TextField>("txtSacExportateur").Text);
+            if (X.GetCmp<TextField>("txtNumBordereauEntree").Text != string.Empty) mClass.NumBordereauReception = X.GetCmp<TextField>("txtNumBordereauEntree").Text;
+            mClass.ImmTracteurReception = X.GetCmp<TextField>("txtImmTracteur").Text;
+            mClass.ImmRemorqueReception = X.GetCmp<TextField>("txtImmRemorque").Text;
 
             mClass.DateReception = DateTime.Parse(X.GetCmp<DateField>("txtDateReception").RawText.ToString()).AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute).AddSeconds(DateTime.Now.Second).AddMilliseconds(DateTime.Now.Millisecond);
             //if (X.GetCmp<TextField>("txtPoidsBrutExportateur").Text != string.Empty) mClass.PoidsBrutExportateur = decimal.Parse(X.GetCmp<TextField>("txtPoidsBrutExportateur").Text);

@@ -23,7 +23,7 @@
 
         totalNet = FormatAmount(totalNet);
         totalNbrOfBags = FormatAmount(totalNbrOfBags);*/
-        App.lblSummarySelectOP.setHtml("Nbr Of Production Order : " + nbrOfrows);
+        App.lblSummarySelectOP.setHtml("Nbr : " + nbrOfrows);
     };
 
     var SetValidBtnOK = function () {
@@ -43,7 +43,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .X(200)
     .Y(20)
-    .Title("Available Production Orders")
+    .Title("Ordre de Production Disponibles")
     .Layout(LayoutType.VBox)
     .BodyPadding(5)
     .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })

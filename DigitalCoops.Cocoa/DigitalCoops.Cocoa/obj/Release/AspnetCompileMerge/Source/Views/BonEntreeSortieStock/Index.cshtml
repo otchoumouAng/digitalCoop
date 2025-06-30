@@ -305,7 +305,7 @@
                                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeBordereauxES}.getSelectionModel().getSelection()[0].data" });
                                                         de.Click.EventMask.ShowMask = true;
                                                         de.Click.Confirmation.ConfirmRequest = true;
-                                                        de.Click.Confirmation.Title = "'Bon De Livraison";
+                                                        de.Click.Confirmation.Title = "'Bon De Reception";
                                                         de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,!#{grpListeBordereauxES}.getSelectionModel().getSelection()[0].data.IsActive)";
                                                         de.Click.Success = "Overview.resetButtons();";
                                                         }
@@ -679,7 +679,7 @@
                            de.RowDblClick.CleanRequest = true;
                            de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowBordereauES}.getSelected().items[0].data" });
                            de.RowDblClick.EventMask.ShowMask = true;
-                           de.RowDblClick.Success = "App.FormEntreeSortieNote.setTitle('Bon De Livraison : Detail')";
+                           de.RowDblClick.Success = "App.FormEntreeSortieNote.setTitle('Bon De Reception : Detail')";
                        }
                        )
         )

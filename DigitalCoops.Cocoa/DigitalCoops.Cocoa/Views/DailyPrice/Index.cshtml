@@ -252,7 +252,7 @@
                             .Disable(false)
                             .DirectEvents( de =>{
                                 de.Click.Url  = Url.Action("OnAdd");
-                                de.Click.Success = "App.FormDailyPrice.setTitle('Prix Journalier : Nouveau')";
+                                de.Click.Success = "App.FormDailyPriceDetail.setTitle('Prix Journalier : Nouveau')";
                                 de.Click.EventMask.ShowMask = true;
                             } ),
 
@@ -376,7 +376,7 @@
                                                         de.Click.Url = Url.Action("OnExtend");
                                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeDailyPrice}.getSelectionModel().getSelection()[0].data" });
                                                         de.Click.EventMask.ShowMask = true;
-                                                        de.Click.Success = "App.FormDailyPrice.setTitle('Prix Journalier : Etendre')";
+                                                        de.Click.Success = "App.FormDailyPriceDetail.setTitle('Prix Journalier : Etendre')";
                                                     }),
                                                 X.MenuItem()
                                                     .ID("btnReduiceDailyPrice")
@@ -416,8 +416,8 @@
                         //.Frame(true)
                         .Flex(1)
                         .Layout(LayoutType.Form)
-                        .Items(                                  
-                                     
+                        .Items(
+
                                 X.ComboBox()
                                     .ID("cmbSite")
                                     .FieldLabel("Site")
@@ -517,8 +517,8 @@
                                     X.Column().Text("Date").DataIndex("DatePrixAsString").Flex(1),
                                     X.Column().Text("Numero").DataIndex("Numero").Flex(1),
                                     X.Column().Text("Site").DataIndex("SiteAsString").Flex(1),
-                                    X.Column().Text("Date Debut").DataIndex("DateDebutAsString").Flex(1),
-                                    X.Column().Text("Date Fin").DataIndex("DateEcheanceAsString").Flex(1),
+                                    //X.Column().Text("Date Debut").DataIndex("DateDebutAsString").Flex(1),
+                                    //X.Column().Text("Date Fin").DataIndex("DateEcheanceAsString").Flex(1),
                                     X.Column().Text("Prix").DataIndex("PrixAsString").Flex(1),
                                     //X.Column().Text("Commentaire").DataIndex("Commentaire").Flex(1).Hidden(true),
                                     X.Column().Text("Utilisation Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),

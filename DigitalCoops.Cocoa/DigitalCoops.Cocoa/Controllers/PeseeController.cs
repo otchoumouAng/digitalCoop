@@ -743,7 +743,7 @@ namespace Tms2017.MVC.Controllers
 
             try
             {
-                Pesee mClass = JSON.Deserialize<Pesee>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
+                Pesee mClass = JSON.Deserialize<Pesee>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
 
                 Guid mId = mClass.ID;
 
@@ -2178,7 +2178,8 @@ namespace Tms2017.MVC.Controllers
                 string ReportToPrint = string.Empty;
                 if (IsAchat)
                 {
-                    report = new TicketPeseeCaisse() as XtraReport;
+                    //report = new TicketPeseeCaisse() as XtraReport;
+                    report = new TicketPeseeNormal() as XtraReport;
                     ReportToPrint = EnumReportDefinition.TICKETPESEECAISSE;
                 }
                 else

@@ -319,6 +319,39 @@ namespace Tms.Classes.Shared
             }
         }
 
+        public List<DataPersist> fnSelectCommissionToPay(int fournisseurID, int SiteID = -1)
+        {
+            List<DataPersist> mList = new List<DataPersist>();
+            IDataReader mDataReader = null;
+
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("Payement_SelectCommissionToPay");
+                //db().AddInParameter(mCommande, "@campagneID", SqlDbType.VarChar, campagneID);
+                db().AddInParameter(mCommande, "@fournisseurID", SqlDbType.Int, fournisseurID);
+                db().AddInParameter(mCommande, "@SiteID", SqlDbType.Int, SiteID);
+                mDataReader = db().ExecuteReader(mCommande);
+
+                while (mDataReader.Read())
+                {
+                    PayementItem mClass = new PayementItem();
+
+                    MapFromDataReader(mClass, mDataReader);
+                    mList.Add(mClass);
+                }
+                return mList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnSelectBonusToPay");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
+
         public override bool fnUpdate()
         {
             throw new NotImplementedException();

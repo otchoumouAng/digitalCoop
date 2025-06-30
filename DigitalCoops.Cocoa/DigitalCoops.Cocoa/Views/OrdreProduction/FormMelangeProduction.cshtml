@@ -126,19 +126,19 @@ X.Window()
                                         .Items(
                                                 X.TextField()
                                                     .ID("cmbQuart")
-                                                    .FieldLabel("Shift")
+                                                    .FieldLabel("Quart")
                                                     .LabelAlign(LabelAlign.Right)
                                                     .ReadOnly(true)
                                                     .Text(Model._CompositionUsinage.OrdreProduction.Quart.Nom),
                                                 X.TextField()
                                                     .ID("cmbMelangeur")
-                                                    .FieldLabel("Blending Agent")
+                                                    .FieldLabel("Agent Production")
                                                     .LabelAlign(LabelAlign.Right)
                                                     .ReadOnly(true)
                                                     .Text(Model._CompositionUsinage.OrdreProduction.Melangeur.Nom),
                                                 X.TextField()
                                                     .ID("cmbChefQuart")
-                                                    .FieldLabel("Chief Of Shift")
+                                                    .FieldLabel("Chef de Quart")
                                                     .LabelAlign(LabelAlign.Right)
                                                     .ReadOnly(true)
                                                     .Text(Model._CompositionUsinage.OrdreProduction.ChefQuart.Nom)
@@ -157,13 +157,13 @@ X.Window()
                                                         .Text(Model._CompositionUsinage.OrdreProduction.NumeroProduction),
                                                     X.DateField()
                                                         .ID("txtDateProduction")
-                                                        .FieldLabel("Production Date")
+                                                        .FieldLabel("Date Production")
                                                         .ReadOnly(true)
                                                         .LabelAlign(LabelAlign.Right)
                                                         .Text(Model._CompositionUsinage.OrdreProduction.DateProduction.ToShortDateString()),
                                                     X.DateField()
                                                         .ID("txtDateComposition")
-                                                        .FieldLabel("Blending Date")
+                                                        .FieldLabel("Date Melange")
                                                         .LabelAlign(LabelAlign.Right)
                                                         .AllowBlank(false)
                                                         .IndicatorCls("IndicatorRedStar")
@@ -248,15 +248,15 @@ X.Window()
                                         )
                                         .ColumnModel
                                         (
-                                            Html.X().Column().Text("Blending").DataIndex("MelangeAsString").Hideable(false),
-                                            Html.X().Column().Text("Nbr Of Beans").DataIndex("NombreSacs").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Melange").DataIndex("MelangeAsString").Hideable(false),
+                                            Html.X().Column().Text("Nbr de Feves").DataIndex("NombreSacs").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Humidite").DataIndex("Humidite").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Moisie").DataIndex("Moisi").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("Beans Count").DataIndex("Grainage").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("Weevil").DataIndex("Mite").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("Slaty").DataIndex("Ardoisee").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Grainage").DataIndex("Grainage").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Mite").DataIndex("Mite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Ardoisee").DataIndex("Ardoisee").Flex(1).Hideable(false),
                                             Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("Foreign Matter").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Mat Etr").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Tamis").DataIndex("Sievings").Flex(1).Hideable(false)
                                         //Html.X().Column().Text("Heure").DataIndex("DateCodeAsString").Hideable(false)
                                         )
@@ -332,18 +332,18 @@ X.Window()
                                         (
                                             Html.X().Column().Text("Blend").DataIndex("MelangeAsString").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Date Liv").DataIndex("DateLivraisonAstring").Flex(2).Hideable(false),
-                                            Html.X().Column().Text("Del ID").DataIndex("LivraisonID").Flex(2).Hideable(false),
+                                            Html.X().Column().Text("Liv N°").DataIndex("LivraisonID").Flex(2).Hideable(false),
                                             Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(true).Hidden(true),
                                             Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Type Liv").DataIndex("LibelleTypeDeLivraison").Flex(2).Hideable(false),
                                             Html.X().Column().Text("Certif.").DataIndex("LibelleCertification").Flex(2).Hideable(true),
                                             Html.X().Column().Text("Mois").DataIndex("Humidite").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Moisie").DataIndex("Moisi").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("B.C").DataIndex("Grainage").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("W.v").DataIndex("Mite").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("Slaty").DataIndex("Ardoisee").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Grain").DataIndex("Grainage").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Mite").DataIndex("Mite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Ard.").DataIndex("Ardoisee").Flex(1).Hideable(false),
                                             Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false),
-                                            Html.X().Column().Text("F.M").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Mat. Et").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
                                             Html.X().Column().Text("Siev.").DataIndex("Sievings").Flex(1).Hideable(false)
                                         )
                                         .SelectionModel(
@@ -364,7 +364,7 @@ X.Window()
                                             X.Toolbar()
                                                 .Dock(Dock.Top)
                                                 .Items(
-                                                        X.Label().Text("Delivery (ies)"),
+                                                        X.Label().Text("Livraison (s)"),
                                                         X.ToolbarSeparator(),
                                                         X.Button()
                                                             .ID("BtnGenerateCbode")
@@ -415,14 +415,14 @@ X.Window()
                                                                     de.Click.Url = Url.Action("RemoveDeliveryToBlending");
                                                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Value = "#{grpListeLivraisons}.getSelectionModel().getSelection()[0].data" });
                                                                     de.Click.Confirmation.ConfirmRequest = true;
-                                                                    de.Click.Confirmation.Title = "'Production - Blending";
-                                                                    de.Click.Confirmation.Message = "Do you want to Remove this Delivery ?";
+                                                                    de.Click.Confirmation.Title = "'Production - Melange";
+                                                                    de.Click.Confirmation.Message = "Voulez-vous retirer cette livraison ?";
                                                                     de.Click.EventMask.ShowMask = true;
                                                                 }
                                                             ),
                                                         X.ComboBox()
                                                             .ID("cmbMelange")
-                                                            .FieldLabel("Blending")
+                                                            .FieldLabel("Melange")
                                                             .DisplayField("Designation")
                                                             .ValueField("ID")
                                                             .QueryMode(DataLoadMode.Local)

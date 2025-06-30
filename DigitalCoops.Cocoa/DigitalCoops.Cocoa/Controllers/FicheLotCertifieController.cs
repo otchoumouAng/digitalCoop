@@ -303,8 +303,8 @@ namespace Tms2017.MVC.Controllers
                     {
                         X.MessageBox.Show(new MessageBoxConfig
                         {
-                            Title = "Weighing Before Cleanig  : Bon De Livraison",
-                            Message = "Bon De Livraison not Found, Please Retry !",
+                            Title = "Weighing Before Cleanig  : Bon De Reception",
+                            Message = "Bon De Reception not Found, Please Retry !",
                             Buttons = MessageBox.Button.OK,
                             Icon = MessageBox.Icon.WARNING
                         });
@@ -316,7 +316,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Submit Delivery",
+                    Title = "Bon De Reception : Submit Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -423,7 +423,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

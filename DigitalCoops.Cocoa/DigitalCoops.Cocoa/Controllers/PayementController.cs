@@ -438,6 +438,9 @@ namespace Tms2017.MVC.Controllers
                     case 4:
                         mList = new PayementItem().fnSelectBonusToPay(fournisseurID, siteID);
                         break;
+                    case 5:
+                        mList = new PayementItem().fnSelectCommissionToPay(fournisseurID, siteID);
+                        break;
                     case -1:
                         mList = new PayementItem().fnSelectDeliveryToPay(fournisseurID, siteID);
                         foreach (DataPersist mv in new PayementItem().fnSelectFinancingToPay((int)fournisseurID, siteID))
@@ -854,7 +857,7 @@ namespace Tms2017.MVC.Controllers
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            ViewData["Titre"] = "Print List of Payments";
+            ViewData["Titre"] = "Liste des Paiements";
             ViewData["actionToDo"] = "OnPrintPaymentList";
             ViewData["ControllerName"] = "Payement";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmCriteriaForPayment", ViewData = ViewData };

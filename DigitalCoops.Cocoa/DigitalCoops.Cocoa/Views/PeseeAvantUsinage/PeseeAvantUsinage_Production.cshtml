@@ -23,7 +23,7 @@
         
         totalNet = FormatAmount(totalNet);
         totalNbrOfBags = FormatAmount(totalNbrOfBags);*/
-        App.lblSummarySelectOP.setHtml("Nbr Of Production Order : " + nbrOfrows);
+        App.lblSummarySelectOP.setHtml("Nbr : " + nbrOfrows);
     };
 
     var SetValidBtnOK = function () {
@@ -43,7 +43,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .X(200)
     .Y(20)
-    .Title("Available Production Orders")
+    .Title("Ordre de Production disponible")
     .Layout(LayoutType.VBox)
     .BodyPadding(5)
     .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
@@ -82,7 +82,7 @@ X.Window()
                                         de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
                                         de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
                                         de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatut", Encode=false, Value= "#{cmbFiltreStatut}.getValue()", Mode=ParameterMode.Raw});
-                                        de.Click.Success = "App.SelectProductionCP.setTitle('Shift = '+ App.cmbFiltreQuart.rawValue + ' , Blending Agent = ' + App.cmbFiltreMelangeur.rawValue +  ', Certification = '+ App.cmbFiltreCertification.rawValue + ', Statut : '+ App.cmbFiltreStatut.rawValue + ' , du  '+ App.txtStartDate.rawValue  + ' au  '+ App.txtEndDate.rawValue )";
+                                        de.Click.Success = "App.SelectProductionCP.setTitle('Quart = '+ App.cmbFiltreQuart.rawValue + ' , Agent Production = ' + App.cmbFiltreMelangeur.rawValue +  ', Certification = '+ App.cmbFiltreCertification.rawValue + ', Statut : '+ App.cmbFiltreStatut.rawValue + ' , du  '+ App.txtStartDate.rawValue  + ' au  '+ App.txtEndDate.rawValue )";
                                         de.Click.EventMask.ShowMask = true;
                                     }
                                 )
@@ -102,7 +102,7 @@ X.Window()
                     (
                         X.ComboBox()
                             .ID("cmbFiltreQuart")
-                            .FieldLabel("Shift")
+                            .FieldLabel("Quart")
                             .DisplayField("Nom")
                             .ValueField("ID")
                             .LabelAlign(LabelAlign.Right)
@@ -140,7 +140,7 @@ X.Window()
                             ),
                         X.ComboBox()
                             .ID("cmbFiltreMelangeur")
-                            .FieldLabel("Blending Agent")
+                            .FieldLabel("Agent Production")
                             .DisplayField("Nom")
                             .ValueField("ID")
                             .LabelAlign(LabelAlign.Right)
@@ -318,9 +318,9 @@ X.Window()
                     Html.X().Column().Text("Prod N°").DataIndex("NumeroProduction").Flex(1),
                     Html.X().BooleanColumn().Text("Is re-Cleaned").DataIndex("EstReusine").Flex(1).FalseText("No").TrueText("Yes"),
                     Html.X().Column().Text("Certification").DataIndex("CertificationAsString").Flex(1),
-                    Html.X().Column().Text("Shift").DataIndex("QuartAsString").Flex(1),
-                    Html.X().Column().Text("Chief of Shift").DataIndex("ChefQuartAsString").Flex(1),
-                    Html.X().Column().Text("Blending Agent").DataIndex("MelangeurAsString").Flex(1),
+                    Html.X().Column().Text("Quart").DataIndex("QuartAsString").Flex(1),
+                    Html.X().Column().Text("Chef de Quart").DataIndex("ChefQuartAsString").Flex(1),
+                    Html.X().Column().Text("Agent Production").DataIndex("MelangeurAsString").Flex(1),
                     Html.X().Column().Text("Nbr de sacs").DataIndex("").Flex(1),
                     Html.X().Column().Text("Net Livré").DataIndex("MelangeurAsString").Flex(1)
 

@@ -1400,6 +1400,7 @@ namespace Tms.Classes.Business
                     //db().AddOutParameter(mCommande, "@NumeroOrdreArrivee", SqlDbType.Int, 0);
                     //db().AddOutParameter(mCommande, "@NumeroOrdreDechargement", SqlDbType.Int, 0);
                     //db().AddOutParameter(mCommande, "@NumeroInterne", SqlDbType.VarChar, 10);
+                    db().AddOutParameter(mCommande, "@LivraisonNumero", SqlDbType.VarChar, 12);
                     db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, _UtilisateurCreation);
                 }
                 else
@@ -1414,7 +1415,7 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@CampagneID", SqlDbType.VarChar, _Campagne.Designation);
                 db().AddInParameter(mCommande, "@RecolteID", SqlDbType.Int, _Recolte.ID);
                 db().AddInParameter(mCommande, "@LivraisonDate", SqlDbType.DateTime, _DateLivraison);
-                db().AddInParameter(mCommande, "@LivraisonNumero", SqlDbType.VarChar, _Numero);
+                //db().AddInParameter(mCommande, "@LivraisonNumero", SqlDbType.VarChar, _Numero);
                 db().AddInParameter(mCommande, "@LivraisonTypeID", SqlDbType.Int, _LivraisonType.ID);
                 db().AddInParameter(mCommande, "@FournisseurID", SqlDbType.Int, _Fournisseur.ID);
                 db().AddInParameter(mCommande, "@Immatriculation", SqlDbType.VarChar, _Immatriculation);
@@ -1476,12 +1477,12 @@ namespace Tms.Classes.Business
                         //base.UpdateAuditFields();
                         Result = true;
 
-                        //if(_isnew)
-                        //{
-                        //   _NumeroArrivee = (int)db().Parameters(mCommande, "@NumeroOrdreArrivee");
-                        //   _NumeroDechargement = (int)db().Parameters(mCommande, "@NumeroOrdreDechargement");
-                        //   _NumeroInterne = (string)db().Parameters(mCommande, "@NumeroInterne");                            
-                        //}
+                        if (_isnew)
+                        {
+                            _Numero = (string)db().Parameters(mCommande, "@LivraisonNumero");
+                            //_NumeroDechargement = (int)db().Parameters(mCommande, "@NumeroOrdreDechargement");
+                            //_NumeroInterne = (string)db().Parameters(mCommande, "@NumeroInterne");
+                        }
 
                         _isnew = false;
                         _RowVersionKey = db().Parameters(mCommande, "@RowVersion");

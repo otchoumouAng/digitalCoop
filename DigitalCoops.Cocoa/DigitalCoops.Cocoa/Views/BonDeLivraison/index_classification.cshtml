@@ -217,7 +217,7 @@
                                                  de =>
                                                  {
                                                     de.Click.Url  = Url.Action("OnEdit");
-                                                    de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Livraison : Modifier')";
+                                                    de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Reception : Modifier')";
                                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeDeliveryNote}.getSelectionModel().getSelection()[0].data"});
                                                     de.Click.EventMask.ShowMask = true;
                                                  }
@@ -253,7 +253,7 @@
 
                            X.FormPanel()
                             .ID("CriteriaPanelBL")
-                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Bon De Livraison - overview" })
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Bon De Reception - overview" })
                             .Region(Region.North)
                             .Floatable(false)
                             .Border(false)
@@ -552,7 +552,7 @@
                            de.RowDblClick.CleanRequest = true;
                            de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeBL}.getSelected().items[0].data" });
                            de.RowDblClick.EventMask.ShowMask = true;
-                           de.RowDblClick.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Livraison : Detail')";
+                           de.RowDblClick.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Reception : Detail')";
                        }
                        )
         )

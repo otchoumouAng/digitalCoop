@@ -865,6 +865,8 @@ namespace Tms2017.MVC.Controllers
             try
             {
                 bool resultLot = false;
+                bool resultMouvement = false;
+                Parametres mParam = new Parametres(0);
                 PeseeApresUsinage mPesee = new PeseeApresUsinage();
                 PeseeProductionPalette mPalette;
                 DateTime datePesee = new DateTime();
@@ -892,7 +894,6 @@ namespace Tms2017.MVC.Controllers
                 LotType mLotType = new LotType();
                 mLotType.fnGet(mPesee.LotType.ID);
                 Lot mLot = new Lot();
-
                 
                 #region Creation Du Lot                    
 
@@ -945,7 +946,6 @@ namespace Tms2017.MVC.Controllers
                     return this.Direct();
                 }
                 #endregion
-
 
                 if (mLot.ID != Guid.Empty)
                 {
@@ -1004,6 +1004,64 @@ namespace Tms2017.MVC.Controllers
                             }
                         }
                     }
+
+                    //Generer Mvt
+                    #region Mvt Stock
+                    MouvementStock mouvement = new MouvementStock();
+                    
+                    mouvement = new MouvementStock();
+                    mouvement.mCampagne = new Campagne();
+                    mouvement.Exportateur = new Exportateur();
+                    mouvement.SacType = new SacType();
+                    mouvement.TypeElementStock = new TypeElementStock();
+                    mouvement.Certification = new Certification();
+                    mouvement.Magasin = new Magasin();
+                    mouvement.Emplacement = new Emplacement();
+                    mouvement.MouvementStockType = new MouvementStockType();
+                    mouvement.Sites = new Site();
+                    InventaireElementStock Items = new InventaireElementStock();
+
+                    mouvement.SetDataSource(_db);
+                    mouvement.mCampagne.Designation = mLot.Campagne.Designation;
+                    mouvement.Exportateur.ID = mLot.Exportateur.ID;
+                    mouvement.DateMouvement = DateTime.Now;
+                    mouvement.SacType.ID = mParam.SacExportType;
+                    mouvement.ObjetEnStock = mLot.ID;
+                    mouvement.ObjetEnStockType = mParam.LotTypeElementEnStock;
+                    mouvement.MouvementStockType.ID = mParam.LotUsineTypeMvtID;
+                    mouvement.Sites.ID = mParam.Site;
+                    mouvement.Sites.Nom = mParam.Site.ToString();
+                    mouvement.Certification = null;
+
+                    //if (mLot.Certification != null)
+                    //{
+                    //    mouvement.Certification = new Certification();
+                    //    mouvement.Certification.ID = mLot.Certification.ID;
+                    //}
+                    mouvement.Sens = 1;
+                    mouvement.Quantite = mPesee.NombreSacs;
+                    mouvement.PoidsBrut = mPesee.PoidsBrut;
+                    mouvement.TarePalettes = mPesee.TarePalette;
+                    mouvement.TareSacs = mPesee.TareSacs;
+                    mouvement.PoidsNetLivre = mLot.PoidsNet;
+                    mouvement.PoidsNetAccepte = mLot.PoidsNet;
+                    mouvement.Retention = 0;
+                    mouvement.Magasin.ID = mParam.MagasinExport;
+                    //mouvement.Magasin.ID = mClass.MagasinDefID;
+                    mouvement.Emplacement.ID = mParam.EmplacementParDefaut;
+                    mouvement.Reference1 = mLot.NumeroLot;
+                    mouvement.Reference2 = mPesee.OrdreProduction.NumeroProduction;
+                    mouvement.Commentaire = "generé automatiquement";
+                    mouvement.Statut = "AP";
+                    mouvement.UtilisateurCreation = (string)Session["userName"];
+                    mouvement.UtilisateurModification = (string)Session["userName"];
+
+                    result = mouvement.fnUpdate(mtran);
+
+                    if (!result)
+                        _db.RollBackTransaction(mtran);
+                    #endregion
+
                     if (result)
                     {
                         _db.CommitTransaction(mtran);
@@ -1026,6 +1084,9 @@ namespace Tms2017.MVC.Controllers
             }
             catch (Exception ex)
             {
+                if (_db != null)
+                    _db.RollBackTransaction(mtran);
+
                 X.MessageBox.Show(new MessageBoxConfig
                 {
                     Title = "Post Cleanig Weighing : Data Validation",
@@ -1181,8 +1242,8 @@ namespace Tms2017.MVC.Controllers
                             X.GetCmp<Hidden>("txtOrdreProductionID").SetValue(Guid.Empty);
                             X.MessageBox.Show(new MessageBoxConfig
                             {
-                                Title = "Production : Production Order",
-                                Message = "Production Order Not Found, Please Retry !",
+                                Title = "Production : Ordre De Production",
+                                Message = "Ordre De Production Not Found, Please Retry !",
                                 Buttons = MessageBox.Button.OK,
                                 Icon = MessageBox.Icon.WARNING
                             });
@@ -1205,7 +1266,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Data Validation",
+                    Title = "Ordre De Production - Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1261,7 +1322,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

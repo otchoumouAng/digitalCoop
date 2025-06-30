@@ -127,11 +127,12 @@
             App.btnAddExterWaybill.disable();
             App.txtExternalWayBill.setReadOnly(false);
             setCtrlIsRequired(App.txtExternalWayBill, false);
-            if (record.SaisieNumTransfert == true) {
+
+            /*if (record.SaisieNumTransfert == true) {
                 App.btnAddExterWaybill.enable();
                 App.txtExternalWayBill.setReadOnly(true);
                 setCtrlIsRequired(App.txtExternalWayBill, true);
-            }
+            }/*
 
             /*Numero Lot*/
             setCtrlIsRequired(App.txtLotNumber, false);
@@ -172,10 +173,10 @@
             }
 
             /*Connaiss Externe */
-            /*setCtrlIsRequired(App.txtExternalWayBill, false);
+            setCtrlIsRequired(App.txtExternalWayBill, false);
             if (record.SaisieNumExterne == true) {
                 setCtrlIsRequired(App.txtExternalWayBill, true);
-            }*/
+            }
 
             /*Centre d'achats */
             setCtrlIsRequired(App.cmbDetSite, false);
@@ -378,7 +379,7 @@
                                                                     .Layout(LayoutType.HBox)
                                                                     .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
                                                                     .IndicatorCls("IndicatorRedStar").IndicatorText("*")
-                                                                    .Width(370)
+                                                                    .Width(355)
                                                                     .Items
                                                                     (
 
@@ -463,7 +464,7 @@
                                                                     .FieldLabel("Date/Heure").LabelAlign(LabelAlign.Right)
                                                                     .Layout(LayoutType.HBox)
                                                                     .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
-                                                                    .Width(370)
+                                                                    .Width(355)
                                                                     .IndicatorText("*")
                                                                     .IndicatorCls("IndicatorRedStar")
                                                                     .Items
@@ -491,10 +492,11 @@
                                                                     X.NumberField().FieldLabel("Numero")
                                                                     //.Width(335)
                                                                     .HideTrigger(true).MinValue(0)
-                                                                    .AllowBlank(false).IndicatorText("*").IndicatorCls("IndicatorRedStar")
+                                                                    //.AllowBlank(false).IndicatorText("*").IndicatorCls("IndicatorRedStar")
                                                                     .LabelAlign(LabelAlign.Right).LabelWidth(90)
+                                                                    .ReadOnly(true)
                                                                     .ID("txtDeliveryNumber")
-                                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] != (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? true : false)
+                                                                    //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] != (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? true : false)
                                                                     .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Numero : string.Empty),
 
 
@@ -880,23 +882,28 @@
                                                             .Reader(Html.X().JsonReader().RootProperty("data"))
                                                         ))
                                                         ,
+                                                 X.TextField()
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ID("txtExternalWayBill")
+                                                    //.Width(160)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .FieldLabel("Num Externe CCC")
+                                                    .MarginSpec("0 10 0 0")
+                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumeroExterne : string.Empty),
 
                                             X.FieldContainer()
-                                                .FieldLabel("Num Externe")
+                                                .FieldLabel("Num Externe CCC")
                                                 .LabelAlign(LabelAlign.Right)
                                                 .Layout(LayoutType.HBox)
+                                                .Hidden(true)
                                                 .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
                                                 .IndicatorCls("IndicatorRedStar")
                                                 //.IndicatorText("*")
                                                 .Items(
 
-                                                    X.TextField()
-                                                    .LabelAlign(LabelAlign.Right)
-                                                    .ID("txtExternalWayBill")
-                                                    .Width(160)
-                                                    .MarginSpec("0 10 0 0")
-                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
-                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumeroExterne : string.Empty),
 
                                                     X.Button()
                                                         .ID("btnAddExterWaybill")
@@ -904,6 +911,7 @@
                                                         .Disabled(true)
                                                         .Height(20)
                                                         .Width(40)
+                                                        .Hidden(true)
                                                         .DirectEvents
                                                         (
                                                             de =>
@@ -937,8 +945,6 @@
                                                         )
 
                                                     ),
-
-
 
                                             X.ComboBox().ID("cmbDetTransitaire")
                                             .FieldLabel("Transitaire").DisplayField("Nom")

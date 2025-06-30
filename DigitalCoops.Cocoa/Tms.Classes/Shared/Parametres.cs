@@ -130,6 +130,7 @@ namespace Tms.Classes.Shared
         private int _idTaxeRtc;
         private int _IdProduitExport;
         private int _PaiementOptionId;
+        private int _LotUsineTypeMvtID;
         #endregion
 
         #region Properties
@@ -1342,6 +1343,19 @@ namespace Tms.Classes.Shared
                 _IsInDevelopment = value;
             }
         }
+
+        public int LotUsineTypeMvtID
+        {
+            get
+            {
+                return _LotUsineTypeMvtID;
+            }
+
+            set
+            {
+                _LotUsineTypeMvtID = value;
+            }
+        }
         #endregion
 
         #region Methods
@@ -1691,6 +1705,7 @@ namespace Tms.Classes.Shared
                     if (!DBNull.Value.Equals(mDataReader["IdTaxeRtc"])) mClass.IdTaxeRtc = (int)mDataReader["IdTaxeRtc"];
                     if (!DBNull.Value.Equals(mDataReader["ProduitExportId"])) mClass.IdProduitExport = (int)mDataReader["ProduitExportId"];
                     if (!DBNull.Value.Equals(mDataReader["PaiementOptionId"])) mClass.PaiementOptionId = (int)mDataReader["PaiementOptionId"];
+                    if (!DBNull.Value.Equals(mDataReader["LotUsineTypeMvtID"])) mClass.LotUsineTypeMvtID = (int)mDataReader["LotUsineTypeMvtID"];
                 }
             }
             catch (Exception ex)

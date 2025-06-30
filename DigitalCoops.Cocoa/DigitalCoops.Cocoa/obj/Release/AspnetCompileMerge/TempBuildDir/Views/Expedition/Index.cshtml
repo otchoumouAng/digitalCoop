@@ -13,14 +13,14 @@
         }
 
         .x-form-text-default {
-            padding: 2px 10px 2px !important;            
+            padding: 2px 10px 2px !important;
             min-height: 32px !important;
         }
 
-        .x-form-text-default.x-form-textarea {
-            line-height: 17px;
-            min-height: 50px !important;
-        }
+            .x-form-text-default.x-form-textarea {
+                line-height: 17px;
+                min-height: 50px !important;
+            }
 
         .title_style {
             color: black;
@@ -46,7 +46,7 @@
 
         .x-form-layout-auto-label > * > .x-form-item-label {
             width: 100px !important;
-            font-weight : bold !important;
+            font-weight: bold !important;
         }
 
         .x-panel .x-panel-header-default-framed-top {
@@ -69,18 +69,18 @@
 
           App.txtNombreSacs.setValue(formatNumber(totalNbrSacs));
           App.txtPoidsBrut.setValue(formatNumber(totalPoidsBrut));
-         
+
       };
 
       var CalculateNetWeight = function () {
           var totalNbrSacs = App.storeListeLotVt.sum('NombreSacs') || 0;
           var totalPoidsBrut = App.storeListeLotVt.sum('PoidsBrut') || 0;
-         
+
           App.txtNetWeight.setValue(formatNumber(totalPoidsNet));
       };
 
       var CheckChangedData = function () {
-       
+
        App.btnResumeTransfert.fireEvent('click', App.btnResumeTransfert);
 
       };
@@ -104,7 +104,7 @@
 @(Html.X().ResourceManager().AjaxTimeout(36000000)))
 
 <form id="tms_form">
-@(
+    @(
     X.Viewport()
         .Layout(LayoutType.Border)
         .ID("TmsViewPort")
@@ -320,7 +320,8 @@
                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
                                                         )
                                                     ).Listeners(
-                                                        ls => {
+                                                        ls =>
+                                                        {
                                                             ls.Change.Handler = "SetFieldsToFill();";
                                                             ls.Select.Handler = "SetFieldsToFill();";
                                                         }
@@ -329,7 +330,7 @@
 
 
 
-    
+
                                              //X.DateField()
                                              // .ID("txtDateExpedition")
                                              // .FieldLabel("Date Expedition")
@@ -416,6 +417,9 @@
                                             ),
                                              X.TextField()
                                                 .ID("txtBordereauSortie")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
                                                 .FieldLabel("N° Bordereau de Sortie")
                                                 .Hidden(false)
                                                 .LabelAlign(LabelAlign.Right),
@@ -472,6 +476,9 @@
                                             X.TextField()
                                                 .ID("txtImmTracteur")
                                                 .FieldLabel("N° Tracteur")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
                                                 .LabelAlign(LabelAlign.Right),
 
                                            X.TextField()
@@ -837,15 +844,17 @@
                     //de.Click.Url = Url.Action("UpdateFormExpedition");
                     //de.Click.Url = Url.Action("UpdateFormExpeditionFromApprobation");
                     de.Click.Url = Url.Action("UpdateFormExpeditionFromApprobation1");
-                    de.Click.Success = "window.parent.Ext.getCmp('tabCenter').getActiveTab('E5A2B4D4-6296-47D8-91B5-4B198C390942').doClose()";
                     //de.Click.Before = "return validNew(App.FormLotCoop.id);";
                     //de.Click.FormID = "#(return this.up('FormPanel').down('form');)";
+                    de.Click.Success = "ShowSuccessMessage();";
+                    //de.Click.Success = "window.parent.Ext.getCmp('tabCenter').getActiveTab('E5A2B4D4-6296-47D8-91B5-4B198C390942').doClose()";
+                    de.Click.Failure = "ShowErrorMessage(response, result);";
                     de.Click.FormID = "FormExpedition";
                     de.Click.EventMask.ShowMask = true;
                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
                 })
 
-                //            X.Button()
+                    //            X.Button()
 
                     //.Text("close")
                     //.ID("BtnFinaleWeight")
@@ -962,5 +971,23 @@
             App.txtTarePalette.setReadOnly(true);
             App.txtNetWeight.setReadOnly(true);
         }
+    };
+
+    var ShowErrorMessage = function (response, result) {
+        Ext.Msg.show({ title: 'Erreur : Expedition ', msg: result.errorMessage, buttons: Ext.Msg.OK, icon: Ext.Msg.ERROR, });
+    };
+
+    var ShowSuccessMessage = function (err) {
+        Ext.Msg.show({
+            title: 'Expedition',
+            msg: 'Données saisies avec succès',
+            buttons: Ext.Msg.OK,
+            icon: Ext.Msg.INFO,
+            fn: function (btnId) {
+                if (btnId === 'ok') {
+                    window.parent.Ext.getCmp('tabCenter').getActiveTab('E5A2B4D4-6296-47D8-91B5-4B198C390942').doClose();
+                }
+            }
+        });
     };
 </script>

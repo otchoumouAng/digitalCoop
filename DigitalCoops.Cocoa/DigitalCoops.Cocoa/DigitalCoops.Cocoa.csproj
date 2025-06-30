@@ -2519,7 +2519,7 @@
     <Content Include="Views\SpotPriceAgence\Index.cshtml" />
     <Content Include="Views\LivraisonAgence\Index.cshtml" />
     <Content Include="Views\LivraisonAgence\FormLivraison.cshtml" />
-    <Content Include="Views\DailyPrice\FormDailyPriceDetail.cshtml" />
+    <Content Include="Views\DailyPrice\FormDailyPriceDetail_Old.cshtml" />
     <Content Include="Views\AnalysePhysiqueAgence\AnalysePhysique_Deliveries.cshtml" />
     <Content Include="Views\BonDeLivraisonSite\Index.cshtml" />
     <Content Include="Views\DailyPrice\FormDailyPriceShrink.cshtml" />
@@ -2587,6 +2587,7 @@
     <Content Include="Views\Lot_GestionStock\testview.cshtml" />
     <Content Include="Views\LotSituationStock\Index.cshtml" />
     <Content Include="Views\LotSituationStock\FormDetailLot.cshtml" />
+    <Content Include="Views\DailyPrice\FormDailyPriceDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

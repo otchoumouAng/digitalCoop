@@ -1289,6 +1289,10 @@ namespace Tms2017.MVC.Controllers
             mClass.Sites.ID = int.Parse(GetFormValue("cmbSites"));
             mClass.Sites.Nom = X.GetCmp<ComboBox>("cmbSites").SelectedItem.Text;
 
+            if (string.IsNullOrEmpty(GetFormValue("cmbLot")))
+            {
+                throw new Exception("Prière selectionner un lot");
+            }
             mClass.Lot = new LotCoop();
             mClass.Lot.ID = Guid.Parse(GetFormValue("cmbLot"));
             mClass.Lot.Numero = X.GetCmp<ComboBox>("cmbLot").SelectedItem.Text.ToString();
@@ -1303,17 +1307,39 @@ namespace Tms2017.MVC.Controllers
             //mClass.Exportateur.ID = int.Parse(GetFormValue("cmbDetExportateur"));
             mClass.Exportateur.Nom = mLot.Exportateur.Nom;
 
+            mClass.MagasinReception = new Magasin();
+            if (string.IsNullOrEmpty(GetFormValue("cmbMagasin")))
+            {
+                throw new Exception("Prière selectionner un magasin d expedition");
+            }
+
             mClass.Magasin = new Magasin();
             mClass.Magasin.ID = int.Parse(GetFormValue("cmbMagasin"));
             mClass.Magasin.Designation = X.GetCmp<ComboBox>("cmbMagasin").SelectedItem.Text.ToString();
 
+            if (string.IsNullOrEmpty(GetFormValue("cmbMagasinDestination")))
+            {
+                throw new Exception("Prière selectionner un magasin de destination");
+            }
             mClass.MagasinReception = new Magasin();
             mClass.MagasinReception.ID = int.Parse(GetFormValue("cmbMagasinDestination"));
             //mClass.MagasinDestination.Designation = X.GetCmp<ComboBox>("cmbMagasinDestination").SelectedItem.Text.ToString();
 
+            if (string.IsNullOrEmpty(GetFormValue("txtImmTracteur")))
+            {
+                throw new Exception("Prière entrer une Immatriculation");
+            }
             mClass.Immatriculation = X.GetCmp<TextField>("txtImmTracteur").Text;
             mClass.ImmRemorque = X.GetCmp<TextField>("txtImmRemorque").Text;
+            mClass.ImmTracteurExpedition1 = X.GetCmp<TextField>("txtImmTracteur").Text;
+            mClass.ImmRemorqueExpedition1 = X.GetCmp<TextField>("txtImmRemorque").Text;
+
+            if (string.IsNullOrEmpty(GetFormValue("txtBordereauSortie")))
+            {
+                throw new Exception("Prière entrer un numéro de bordereau");
+            }
             mClass.NumBordereauSortie = X.GetCmp<TextField>("txtBordereauSortie").Text;
+            mClass.NumeroExpedition = X.GetCmp<TextField>("txtBordereauSortie").Text;
 
             mClass.Campagne = new Tms.Classes.Shared.Campagne();
             mClass.Campagne.Designation = X.GetCmp<ComboBox>("cmbDetCrop").SelectedItem.Text.ToString();
@@ -1323,6 +1349,15 @@ namespace Tms2017.MVC.Controllers
 
             mClass.Commentaire = X.GetCmp<TextField>("TxtAreaCommentaire").Text;
 
+            if (string.IsNullOrEmpty(GetFormValue("txtNombreSacs"))
+                || string.IsNullOrEmpty(GetFormValue("txtPoidsBrut"))
+                || string.IsNullOrEmpty(GetFormValue("txtNetWeight"))
+                || string.IsNullOrEmpty(GetFormValue("txtNombrePalette"))
+                || string.IsNullOrEmpty(GetFormValue("txtTarePalette"))
+                || string.IsNullOrEmpty(GetFormValue("txtTareSac")))
+            {
+                throw new Exception("Prière verifier les valeurs du lot");
+            }
             if (X.GetCmp<TextField>("txtNombreSacs").Text != string.Empty) mClass.NombreSacs = int.Parse(X.GetCmp<TextField>("txtNombreSacs").Text);
             if (X.GetCmp<TextField>("txtPoidsBrut").Text != string.Empty) mClass.PoidsBrut = decimal.Parse(X.GetCmp<TextField>("txtPoidsBrut").Text);
             if (X.GetCmp<TextField>("txtNetWeight").Text != string.Empty) mClass.PoidsNet = decimal.Parse(X.GetCmp<TextField>("txtNetWeight").Text);
@@ -1413,8 +1448,6 @@ namespace Tms2017.MVC.Controllers
                 });
                 return this.Direct();
             }
-
-
         }
 
         public ActionResult ViewDeliveriesList()
@@ -2209,10 +2242,13 @@ namespace Tms2017.MVC.Controllers
 
             return this.Direct();
         }
-        public ActionResult UpdateFormExpeditionFromApprobation1 (string ItemSelected)
+        public ActionResult UpdateFormExpeditionFromApprobation1(string ItemSelected)
         {
             DataSource _db = new DataSource();
             DataTransaction mtran = new DataTransaction();
+
+            bool _isOk = false;
+            string errorMsg = string.Empty;
 
             try
             {
@@ -2222,7 +2258,7 @@ namespace Tms2017.MVC.Controllers
                 bool result = false;
 
                 bool resultDetail = true;
-                bool resultMouvement= false;
+                bool resultMouvement = false;
                 mVente = MapFormToObjectExpedition(mVente);
 
                 _db = mVente.db();
@@ -2232,78 +2268,80 @@ namespace Tms2017.MVC.Controllers
                 if (result)
                 {
 
-                
-                #region Mvt
-                MouvementStockAgence mouvement = new MouvementStockAgence();
+                    #region Mvt
+                    MouvementStockAgence mouvement = new MouvementStockAgence();
 
-                mVente.Statut = "VE";
-                mouvement = new MouvementStockAgence();
-                mouvement.mCampagne = new Campagne();
-                mouvement.Exportateur = new Exportateur();
-                mouvement.SacType = new SacType();
-                mouvement.TypeElementStock = new TypeElementStock();
-                mouvement.Certification = new Certification();
-                mouvement.Magasin = new Magasin();
-                mouvement.Emplacement = new Emplacement();
-                mouvement.MouvementStockType = new MouvementStockType();
-                mouvement.Sites = new Site();
-                InventaireElementStock Items = new InventaireElementStock();
-                Parametres mParam = new Parametres(0);
-                mouvement.SetDataSource(_db);
-                mouvement.mCampagne.Designation = mVente.Campagne.Designation;
-                mouvement.Exportateur.ID = mVente.Exportateur.ID;
-                mouvement.DateMouvement = DateTime.Now;
-                mouvement.SacType.ID = mParam.SacExportType;
-                mouvement.ObjetEnStock = mVente.ID;
-                mouvement.ObjetEnStockType = mParam.LotTypeElementEnStock;
-                //mouvement.MouvementStockType.ID = mParam.MvtTypeVenteLot;
-                mouvement.MouvementStockType.ID = 30;
-                mouvement.Sites.ID = mVente.Sites.ID;
-                mouvement.Sites.Nom = mVente.Sites.Nom;
-                mouvement.Certification = null;
-                //if (mClass.Livraison.Certification.ID != 0)
-                //{
-                //    mouvement.Certification = new Certification();
-                //    mouvement.Certification.ID = mClass.Certification.ID;
-                //}
-                mouvement.Sens = -1;
-                mouvement.Quantite = mVente.NombreSacs;
-                mouvement.PoidsBrut = mVente.PoidsBrut;
-                mouvement.TarePalettes = mVente.TarePalette;
-                mouvement.TareSacs = mVente.TareSacs;
-                //mouvement.TareSacs = mClass.TareSacs;
-                mouvement.PoidsNetLivre = mVente.PoidsBrut;
-                mouvement.PoidsNetAccepte = mVente.PoidsNet;
-                //mouvement.Retention = mClass.PoidsBrut - mClass.PoidsNet;
-                mouvement.Retention = 0;
-                //mouvement.Magasin.ID = mParam.MagasinTV;
-                mouvement.Magasin.ID = mVente.Magasin.ID;
-                mouvement.Emplacement.ID = mParam.EmplacementParDefaut;
-                mouvement.Reference1 = mVente.Numero;
-                mouvement.Reference2 = mVente.Lot.Numero;
-                mouvement.Commentaire = "generé automatiquement";
-                mouvement.Statut = "AP";
-                mouvement.UtilisateurCreation = (string)Session["userName"];
-                mouvement.UtilisateurModification = (string)Session["userName"];
+                    mVente.Statut = "VE";
+                    mouvement = new MouvementStockAgence();
+                    mouvement.mCampagne = new Campagne();
+                    mouvement.Exportateur = new Exportateur();
+                    mouvement.SacType = new SacType();
+                    mouvement.TypeElementStock = new TypeElementStock();
+                    mouvement.Certification = new Certification();
+                    mouvement.Magasin = new Magasin();
+                    mouvement.Emplacement = new Emplacement();
+                    mouvement.MouvementStockType = new MouvementStockType();
+                    mouvement.Sites = new Site();
+                    InventaireElementStock Items = new InventaireElementStock();
+                    Parametres mParam = new Parametres(0);
+                    mouvement.SetDataSource(_db);
+                    mouvement.mCampagne.Designation = mVente.Campagne.Designation;
+                    mouvement.Exportateur.ID = mVente.Exportateur.ID;
+                    mouvement.DateMouvement = mVente.DateExpedition;
+                    mouvement.SacType.ID = mParam.SacExportType;
+                    mouvement.ObjetEnStock = mVente.ID;
+                    mouvement.ObjetEnStockType = mParam.LotTypeElementEnStock;
+                    //mouvement.MouvementStockType.ID = mParam.MvtTypeVenteLot;
+                    mouvement.MouvementStockType.ID = 30;
+                    mouvement.Sites.ID = mVente.Sites.ID;
+                    mouvement.Sites.Nom = mVente.Sites.Nom;
+                    mouvement.Certification = null;
+                    //if (mClass.Livraison.Certification.ID != 0)
+                    //{
+                    //    mouvement.Certification = new Certification();
+                    //    mouvement.Certification.ID = mClass.Certification.ID;
+                    //}
+                    mouvement.Sens = -1;
+                    mouvement.Quantite = mVente.NombreSacs;
+                    mouvement.PoidsBrut = mVente.PoidsBrut;
+                    mouvement.TarePalettes = mVente.TarePalette;
+                    mouvement.TareSacs = mVente.TareSacs;
+                    //mouvement.TareSacs = mClass.TareSacs;
+                    mouvement.PoidsNetLivre = mVente.PoidsBrut;
+                    mouvement.PoidsNetAccepte = mVente.PoidsNet;
+                    //mouvement.Retention = mClass.PoidsBrut - mClass.PoidsNet;
+                    mouvement.Retention = 0;
+                    //mouvement.Magasin.ID = mParam.MagasinTV;
+                    mouvement.Magasin.ID = mVente.Magasin.ID;
+                    mouvement.Emplacement.ID = mParam.EmplacementParDefaut;
+                    mouvement.Reference1 = mVente.Numero;
+                    mouvement.Reference2 = mVente.Lot.Numero;
+                    mouvement.Commentaire = "generé automatiquement";
+                    mouvement.Statut = "AP";
+                    mouvement.UtilisateurCreation = (string)Session["userName"];
+                    mouvement.UtilisateurModification = (string)Session["userName"];
 
-                resultMouvement = mouvement.fnUpdate(mtran);
-            }
+                    resultMouvement = mouvement.fnUpdate(mtran);
+                    #endregion
+                }
                 else
                 {
                     _db.RollBackTransaction(mtran);
                 }
+
                 if (!resultMouvement)
                     _db.RollBackTransaction(mtran);
-                #endregion
+
                 if (result && resultMouvement)
                 {
                     _db.CommitTransaction(mtran);
-                    
+                    _isOk = true;
+                    //X.Toast("Success ! Parameters Updated!", "Parameters : Modifier", ToastAlign.Bottom);
                     //X.MessageBox.Show(
                     //    new MessageBoxConfig
                     //    {
-                    //        Title = "Transfert : Validation",
-                    //        Message = "Opération enregistrée",
+                    //        Title = "Transfert : Expedition",
+                    //        Message = "Expedition saisie avec succès",
                     //        Buttons = MessageBox.Button.OK,
                     //        Icon = MessageBox.Icon.INFO
                     //    });
@@ -2312,31 +2350,27 @@ namespace Tms2017.MVC.Controllers
                 {
                     // Handle the case where ApproveVente fails
                     _db.RollBackTransaction(mtran);
-                    X.MessageBox.Show(new MessageBoxConfig
-                    {
-                        Title = "Transfert : Validation",
-                        Message = "Erreur lors de l'approbation de la vente.",
-                        Buttons = MessageBox.Button.OK,
-                        Icon = MessageBox.Icon.WARNING
-                    });
+                    _isOk = false;
+                    errorMsg = "Erreur Inconnue, Prière réessayer";
+                    //X.MessageBox.Show(new MessageBoxConfig
+                    //{
+                    //    Title = "Transfert : Validation",
+                    //    Message = "Erreur lors de l'approbation de la vente.",
+                    //    Buttons = MessageBox.Button.OK,
+                    //    Icon = MessageBox.Icon.WARNING
+                    //});
                 }
             }
             catch (Exception ex)
             {
-                if (_db!= null)
-                 _db.RollBackTransaction(mtran);
+                _isOk = false;
+                errorMsg = ex.Message;
 
-                X.MessageBox.Show(new MessageBoxConfig
-                {
-                    Title = "Transfert : Validation",
-                    Message = ex.Message,
-                    Buttons = MessageBox.Button.OK,
-                    Icon = MessageBox.Icon.WARNING
-                });
+                if (_db != null)
+                    _db.RollBackTransaction(mtran);
             }
-            
             //X.GetCmp<FormPanel>("FormExpedition").Reset();
-            return this.Direct();
+            return this.Direct(success: _isOk, errorMessage: errorMsg);
         }
 
         public ActionResult CloseTab()
@@ -2443,7 +2477,7 @@ namespace Tms2017.MVC.Controllers
 
             X.GetCmp<FormPanel>("FormExpedition").Reset();
             return this.Direct();
-        }  
+        }
 
         public ActionResult SetAvailableNbrSacs(string ItemListeAdded, string ItemListeToAdd)
         {

@@ -491,7 +491,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -547,8 +547,8 @@ namespace Tms2017.MVC.Controllers
                             X.GetCmp<Hidden>("txtOrdreProductionID").SetValue(Guid.Empty);
                             X.MessageBox.Show(new MessageBoxConfig
                             {
-                                Title = "Production : Production Order",
-                                Message = "Production Order Not Found, Please Retry !",
+                                Title = "Production : Ordre De Production",
+                                Message = "Ordre De Production Not Found, Please Retry !",
                                 Buttons = MessageBox.Button.OK,
                                 Icon = MessageBox.Icon.WARNING
                             });
@@ -577,7 +577,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Data Validation",
+                    Title = "Ordre De Production - Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -726,7 +726,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Blending : Retirer Delivery",
+                    Title = "Ordre De Production - Blending : Retirer Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -912,7 +912,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Print Production Sheet",
+                    Title = "Ordre De Production : Print Production Sheet",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

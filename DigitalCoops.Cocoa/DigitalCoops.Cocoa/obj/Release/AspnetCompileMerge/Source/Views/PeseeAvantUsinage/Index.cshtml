@@ -214,7 +214,7 @@
                                 de =>
                                     {
                                         de.Click.Url  = Url.Action("OnAdd");
-                                        de.Click.Success = "App.FormPeseeAvantUsinage.setTitle('Weighing Before Cleaning : Nouveau')";
+                                        de.Click.Success = "App.FormPeseeAvantUsinage.setTitle('Pesée Avant Usinage : Nouveau')";
                                         de.Click.EventMask.ShowMask = true;
                                     }
                             ),
@@ -231,7 +231,7 @@
                                 de =>
                                 {
                                 de.Click.Url  = Url.Action("OnEdit");
-                                de.Click.Success = "App.FormPeseeAvantUsinage.setTitle('Weighing Before Cleaning : Edit')";
+                                de.Click.Success = "App.FormPeseeAvantUsinage.setTitle('Pesée Avant Usinage : Modifier')";
                                 de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListePeseeAvtUsinage}.getSelectionModel().getSelection()[0].data"});
                                 de.Click.EventMask.ShowMask = true;
                                 }
@@ -249,7 +249,7 @@
                                 de =>
                                 {
                                     de.Click.Url  = Url.Action("OnEdit");
-                                    de.Click.Success = "App.FormPeseeAvantUsinage.setTitle('Weighing Before Cleaning : Finalize')";
+                                    de.Click.Success = "App.FormPeseeAvantUsinage.setTitle('Pesée Avant Usinage : Finaliser')";
                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListePeseeAvtUsinage}.getSelectionModel().getSelection()[0].data"});
                                     de.Click.EventMask.ShowMask = true;
                                 }
@@ -270,7 +270,7 @@
 
                                             X.MenuItem()
                                                 .ID("mnuPrintTicket")
-                                                .Text("Weigh Sheet")
+                                                .Text("Ticket de Pesée")
                                                 .Disabled(true)
                                                 .DirectEvents
                                                 (
@@ -282,7 +282,7 @@
                                                 ),
                                             X.MenuItem()
                                                 .ID("mnuPrintWeihingList")
-                                                .Text("Weight report")
+                                                .Text("Etat des pesées")
                                                 .DirectEvents
                                                 (
                                                     de=>
@@ -348,7 +348,7 @@
                                                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListePeseeAvtUsinage}.getSelectionModel().getSelection()[0].data" });
                                                                     de.Click.EventMask.ShowMask = true;
                                                                     de.Click.Confirmation.ConfirmRequest = true;
-                                                                    de.Click.Confirmation.Title = "Weighing Before Cleaning";
+                                                                    de.Click.Confirmation.Title = "Pesée Avant Usinage";
                                                                     de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListePeseeAvtUsinage}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                                     de.Click.Success = "Overview.resetButtons();";
                                                                   }
@@ -363,7 +363,7 @@
     #region Criteres
             X.FormPanel()
                 .ID("PeseeAvantUsinageCP")
-                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Weighing Before Cleaning - overview" })
+                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Pesée Avant Usinage - overview" })
                 .Region(Region.North)
                 .Floatable(false)
                 .Border(false)
@@ -521,7 +521,7 @@
                     Html.X().Column().Text("Tare Des Sacs").DataIndex("TareSacsAsString").Flex(1),
                     Html.X().Column().Text("Poids Net").DataIndex("PoidsNetAsString").Flex(1),
                     Html.X().Column().Text("(8%) Poids Net").DataIndex("PoidsNetEvalAsString").Flex(1),
-                    Html.X().BooleanColumn().Text("Is Manual").DataIndex("IsManual").FalseText("No").TrueText("Yes").Flex(1),
+                    Html.X().BooleanColumn().Text("Est Manuel").DataIndex("IsManual").FalseText("No").TrueText("Yes").Flex(1),
                     Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
                     Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
                     Html.X().Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
@@ -554,7 +554,7 @@
                     de.RowDblClick.CleanRequest = true;
                     de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowPeseeAvantUsinage}.getSelected().items[0].data" });
                     de.RowDblClick.EventMask.ShowMask = true;
-                    de.RowDblClick.Success = "App.FormPeseeAvantUsinage.setTitle('Weighing Before Cleaning : Detail')";
+                    de.RowDblClick.Success = "App.FormPeseeAvantUsinage.setTitle('Pesée Avant Usinage : Detail')";
                 }
                 )
     #endregion

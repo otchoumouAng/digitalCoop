@@ -894,7 +894,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult OnDisplayDirectRepaymentList(int ItemSite = -1)
         {
-            ViewData["Titre"] = "Print Liste des Remboursements directes";
+            ViewData["Titre"] = "Liste des Remboursements directes";
             ViewData["actionToDo"] = "OnPrintDirectRepaymentList";
             ViewData["ControllerName"] = "RemboursementDirect";
             ViewData["SiteParDefaut"] = ItemSite;

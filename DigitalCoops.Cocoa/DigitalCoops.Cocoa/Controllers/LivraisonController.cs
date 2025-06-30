@@ -1115,7 +1115,7 @@ namespace Tms2017.MVC.Controllers
             mClass.Tracteur = GetFormValue("txtTractorID");
             mClass.NumOT = GetFormValue("txtShipmentNumber");
             mClass.Chauffeur = GetFormValue("txtDriverName");
-            mClass.Numero = GetFormValue("txtDeliveryNumber");
+            //mClass.Numero = GetFormValue("txtDeliveryNumber");
             mClass.NumeroExterne = GetFormValue("txtExternalWayBill");
             
             mClass.Certification = null;
@@ -1176,7 +1176,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : MapFormToObject",
+                    Title = "Bon De Reception : MapFormToObject",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

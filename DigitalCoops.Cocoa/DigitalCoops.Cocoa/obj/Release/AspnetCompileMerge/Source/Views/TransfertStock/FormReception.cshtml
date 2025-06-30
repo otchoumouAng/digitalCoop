@@ -307,10 +307,10 @@ X.Window()
                                                             )
                                                 ).Listeners(
                                                     ls =>
-                                                        {
-                                                            ls.Change.Handler = "SetFieldsToFill();";
-                                                            ls.Select.Handler = "SetFieldsToFill();";
-                                                        }
+                                                    {
+                                                        ls.Change.Handler = "SetFieldsToFill();";
+                                                        ls.Select.Handler = "SetFieldsToFill();";
+                                                    }
                                                 ),
 
                                             X.ComboBox()
@@ -329,7 +329,7 @@ X.Window()
                                                 .FieldLabel("Numero de Lot")
                                                 .ListConfig(new BoundList { MinWidth = 300 })
                                                 .LabelAlign(LabelAlign.Right)
-                                                .Value(Model._VenteLot.Lot.ID)                                                
+                                                .Value(Model._VenteLot.Lot.ID)
                                                 .Store
                                                 (
                                                     X.Store()
@@ -473,7 +473,7 @@ X.Window()
                                                 .FieldLabel("Date/Time").LabelAlign(LabelAlign.Right)
                                                 .Layout(LayoutType.HBox)
                                                 .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
-                                                .Width(370)
+                                                .Width(340)
                                                 .IndicatorText("*")
                                                 .IndicatorCls("IndicatorRedStar")
                                                 .Items
@@ -854,16 +854,12 @@ X.Window()
                                     )
     #endregion
 
-                        ),
-                     X.Panel()
-                        .Layout(LayoutType.VBox)
-                        //.Flex(1)
-                        .Frame(true)
-                        .Padding(5)
-                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
-                        .Items
-                        (
-                           X.Button()
+                        )
+
+
+            )
+        ).Buttons(
+                        X.Button()
                                 .Text("OK")
                                 .ID("BtnFinalizeWeight")
                                  .MaxWidth(120)
@@ -878,12 +874,7 @@ X.Window()
                                     de.Click.EventMask.ShowMask = true;
                                     //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
                                 })
-                    )
-
-
-
             )
-        )
 )
 </form>
 

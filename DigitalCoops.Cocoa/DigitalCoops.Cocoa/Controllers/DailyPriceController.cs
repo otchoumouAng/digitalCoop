@@ -111,7 +111,7 @@ namespace Tms2017.MVC.Controllers
             mclass._SiteParDefautNom = mSiteParDefaut.Nom;
             //FormPanel mForm = X.GetCmp<FormPanel>("FormDailyPrice");           
 
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormDailyPrice", Model = mclass, };
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormDailyPriceDetail", Model = mclass, };
         }
 
         public ActionResult onAddForSite()
@@ -710,14 +710,16 @@ namespace Tms2017.MVC.Controllers
             //if (X.GetCmp<TextField>("TxtPrice").Text.Contains(" "))
             //    prix = X.GetCmp<TextField>("TxtPrice").Text.Replace(" ", "");
             
-            mClass.Prix = decimal.Parse(X.GetCmp<TextField>("TxtPrice").Text);
+            mClass.Prix = decimal.Parse(X.GetCmp<TextField>("TxtPrice").RawText);
             
             mClass.Numero = X.GetCmp<Hidden>("hiddenNumeroPrice").Text;
 
             mClass.Site = new Site();
-            mClass.Site.ID = int.Parse(X.GetCmp<Hidden>("txtSiteID").Text);
-            mClass.Site.Nom = X.GetCmp<TextField>("txtSiteNom").Text;
-            
+            mClass.Site.ID = int.Parse(GetFormValue("cmbSites"));
+            mClass.Site.Nom = X.GetCmp<ComboBox>("cmbSites").SelectedItem.Text.ToString();
+            //mClass.Site.ID = int.Parse(X.GetCmp<Hidden>("txtSiteID").Text);
+            //mClass.Site.Nom = X.GetCmp<TextField>("txtSiteNom").Text;
+
             mClass.UtilisateurCreation = (string)Session["userName"];
             mClass.UtilisateurModification = (string)Session["userName"];
 
@@ -862,7 +864,7 @@ namespace Tms2017.MVC.Controllers
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            ViewData["Titre"] = "Print List of Reference Prices";
+            ViewData["Titre"] = "Liste Des Prix Journaliers";
             ViewData["actionToDo"] = "OnPrintDailyPriceList";
             ViewData["ControllerName"] = "DailyPrice";
             ViewData["SiteParDefaut"] = 1;
@@ -920,6 +922,70 @@ namespace Tms2017.MVC.Controllers
             ViewData["Report"] = report;
 
             return View("ViewReportResult");
+        }
+
+        [HttpPost]
+        public ActionResult UpdateFormNewMethod()
+        {
+
+            try
+            {
+                PrixJournalier mClass = new PrixJournalier();
+
+                Tms.Components.Settings.EnumsDefinition.eExecMode formExecMode = GetFormExecMode(X.GetCmp<Hidden>("hiddenExecMode").Value);
+
+                if (formExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
+                    mClass.IsNew = true;
+                else
+                {
+                    mClass.IsNew = false;
+
+                    mClass.fnGet(Guid.Parse(GetFormValue("TxtDailyPriceID")));
+
+                    if (mClass == null || mClass.ID == Guid.Empty)
+                        throw new Exception("SubmitFormMethod : Prix Introuvable. Veuillez Réessayer SVP !");
+                }
+
+                mClass = MapFormToObject(mClass);
+
+                bool result = mClass.fnUpdate();
+
+                if (result)
+                {
+                    Store mstore = X.GetCmp<Store>("storeListeDailyPrice");
+                    if (formExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
+                    {
+                        mstore.Insert(0, mClass);
+                        X.GetCmp<RowSelectionModel>("rowSelectionDailyPrice").Select(0);
+                    }
+                    else
+                    {
+                        ModelProxy mProxy = mstore.GetById(mClass.ID);
+
+                        mProxy.BeginEdit();
+
+                        mProxy.Set(mClass);
+
+                        mProxy.Commit();
+
+                        mProxy.EndEdit();
+                    }
+
+                    X.GetCmp<Window>("FormDailyPriceDetail").Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Prix Journalier : Validation",
+                    Message = ex.Message,
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+            }
+
+            return this.Direct();
         }
 
 
