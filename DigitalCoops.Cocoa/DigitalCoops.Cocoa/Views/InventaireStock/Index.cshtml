@@ -60,7 +60,7 @@
 
 
     var Overview =
-    {        
+    {
         getBootStrapIcons: function (value) {
             if (value === 0) {
                 return 'glyphicon-remove red';
@@ -81,27 +81,27 @@
 
         SummaryIV: function () {
             var nbrOfrows = App.grpListeInventaire.getStore().getCount();
-            var totalNet = App.storeListeInventaire.sum('PoidsNetAccepte') || 0;            
-            
-            totalNet = FormatAmount(totalNet);            
+            var totalNet = App.storeListeInventaire.sum('PoidsNetAccepte') || 0;
+
+            totalNet = FormatAmount(totalNet);
             App.lblSummaryInventaire.setHtml("Nbre Inventaire : "+ nbrOfrows);
         },
 
         resetButtons: function () {
-            
+
             App.btnCancel.disable();
             App.btnApprove.disable();
             App.btnAjust.disable();
             App.mnuPrintStockInventory.disable();
             if (App.rowInventaire.hasSelection()) {
-                
+
                 var isDesactive = App.rowInventaire.selected.items[0].data.Desactive;
                 var isFinalized = App.rowInventaire.selected.items[0].data.EstFinalise;
 
-                if (isDesactive === false) {                   
+                if (isDesactive === false) {
 
                     if (App.ivhiddenPermPrintInventory.value == 'true')
-                        App.mnuPrintStockInventory.enable();                    
+                        App.mnuPrintStockInventory.enable();
 
                     if (App.ivhiddenPermDesactiver.value == 'true' && isFinalized === false)
                         App.btnCancel.enable();
@@ -112,7 +112,7 @@
                     if (App.ivhiddenPermAjust.value == 'true' && isFinalized === false)
                         App.btnAjust.enable();
                 }
-                else {                    
+                else {
                     App.btnCancel.disable();
                     App.btnApprove.disable();
                     App.btnAjust.disable();

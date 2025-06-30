@@ -121,34 +121,34 @@ X.Window()
                                                 )
                                     ),
                         X.Label().Text("Physical Stock").MarginSpec("0 0 0 5"),
-                        //X.Panel()
-                        //    .Layout(LayoutType.HBox)
-                        //    .Margin(5)
-                        //    .Frame(true)
-                        //    .BodyPadding(15)
-                        //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
-                        //    .Items(
-                        //            X.TextField().ID("txtQuantitePhysique").LabelAlign(LabelAlign.Right).MaskRe("[0123456789]").FieldLabel("Nbr de sacs").Text("")
-                        //                .Listeners
-                        //                (
-                        //                    ls =>
-                        //                    {
-                        //                        ls.Change.Handler = "CalculateQtyAjusted(); CalculatePhysicalWeight();";
-                        //                        ls.Blur.Handler = "#{txtQuantitePhysique}.setValue(formatNumber(#{txtQuantitePhysique}.getValue()));";
-                        //                        ls.Focus.Handler = "if (App.txtQuantitePhysique.value) { #{txtQuantitePhysique}.setRawValue(unformatNumber(#{txtQuantitePhysique}.getValue()));}";
-                        //                    }
-                        //                ),
-                        //            X.TextField().ID("txtPoidsPhysique").ReadOnly(true).LabelAlign(LabelAlign.Right).MaskRe("[0123456789]").FieldLabel("Poids Brut").Text("")
-                        //                .Listeners
-                        //                (
-                        //                    ls =>
-                        //                    {
-                        //                        ls.Change.Handler = "CalculateWgtAjusted();";
-                        //                        ls.Blur.Handler = "#{txtPoidsPhysique}.setValue(formatNumber(#{txtPoidsPhysique}.getValue())); CalculateWgtAjusted();";
-                        //                        ls.Focus.Handler = "if (App.txtPoidsPhysique.value) { #{txtPoidsPhysique}.setRawValue(unformatNumber(#{txtPoidsPhysique}.getValue()));}";
-                        //                    }
-                        //                )
-                        //            ),
+                //X.Panel()
+                //    .Layout(LayoutType.HBox)
+                //    .Margin(5)
+                //    .Frame(true)
+                //    .BodyPadding(15)
+                //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                //    .Items(
+                //            X.TextField().ID("txtQuantitePhysique").LabelAlign(LabelAlign.Right).MaskRe("[0123456789]").FieldLabel("Nbr de sacs").Text("")
+                //                .Listeners
+                //                (
+                //                    ls =>
+                //                    {
+                //                        ls.Change.Handler = "CalculateQtyAjusted(); CalculatePhysicalWeight();";
+                //                        ls.Blur.Handler = "#{txtQuantitePhysique}.setValue(formatNumber(#{txtQuantitePhysique}.getValue()));";
+                //                        ls.Focus.Handler = "if (App.txtQuantitePhysique.value) { #{txtQuantitePhysique}.setRawValue(unformatNumber(#{txtQuantitePhysique}.getValue()));}";
+                //                    }
+                //                ),
+                //            X.TextField().ID("txtPoidsPhysique").ReadOnly(true).LabelAlign(LabelAlign.Right).MaskRe("[0123456789]").FieldLabel("Poids Brut").Text("")
+                //                .Listeners
+                //                (
+                //                    ls =>
+                //                    {
+                //                        ls.Change.Handler = "CalculateWgtAjusted();";
+                //                        ls.Blur.Handler = "#{txtPoidsPhysique}.setValue(formatNumber(#{txtPoidsPhysique}.getValue())); CalculateWgtAjusted();";
+                //                        ls.Focus.Handler = "if (App.txtPoidsPhysique.value) { #{txtPoidsPhysique}.setRawValue(unformatNumber(#{txtPoidsPhysique}.getValue()));}";
+                //                    }
+                //                )
+                //            ),
     #region Grid
                 X.GridPanel()
                    .Layout(LayoutType.Fit)
@@ -191,7 +191,7 @@ X.Window()
                         Html.X().Column().Text("Item Type").Flex(1).DataIndex("ObjetEnStock").Hideable(false),
                         Html.X().Column().Text("Item N°").Flex(1).DataIndex("Reference").Hideable(false),
                         Html.X().Column().Text("Nbr de sacs").Flex(1).DataIndex("QuantiteAsString").Hideable(false),
-                        Html.X().Column().Text("Poids Brut").Flex(1).DataIndex("PoidsBrutAsString").Hideable(false),                                                                        
+                        Html.X().Column().Text("Poids Brut").Flex(1).DataIndex("PoidsBrutAsString").Hideable(false),
                         Html.X().Column().Text("Sacs Physique").Flex(1).DataIndex("QuantitePhysiqueAsString").Hideable(false),
                         Html.X().Column().Text("Poids Physique").Flex(1).DataIndex("PoidsBrutPhysiqueAsString").Hideable(false)
                     ),
@@ -267,7 +267,7 @@ X.Window()
 
         if (result >= 0)
             result = formatNumber(result);
-        
+
         App.txtQuantiteAjustee.setValue(result);
 
     };

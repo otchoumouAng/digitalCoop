@@ -31,7 +31,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     //.X(400)
     .Y(20)
-    .Title("Production Order - New")
+    .Title("Ordre De Production - Nouveau")
     .Items
     (
         X.FormPanel()
@@ -173,7 +173,7 @@ X.Window()
                                             ),
                                     X.Checkbox()
                                         .ID("ChkEstReusine")
-                                        .FieldLabel("Is re-Cleaned")
+                                        .FieldLabel("Reusiné")
                                         .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.EstReusine : false)
                                         .LabelAlign(LabelAlign.Right)
 
@@ -225,7 +225,7 @@ X.Window()
                                                     ),
                                             X.ComboBox()
                                                 .ID("cmbQuart")
-                                                .FieldLabel("Shift")
+                                                .FieldLabel("Quart")
                                                 .DisplayField("Nom")
                                                 .ValueField("ID")
                                                 .QueryMode(DataLoadMode.Local)
@@ -259,7 +259,7 @@ X.Window()
                                                           ),
                                              X.ComboBox()
                                                         .ID("cmbChiefQuart")
-                                                        .FieldLabel("Shift Chief")
+                                                        .FieldLabel("Chef de Quart")
                                                         .DisplayField("Nom")
                                                         .ValueField("ID")
                                                         .AllowBlank(false)
@@ -295,7 +295,7 @@ X.Window()
                                                           ),
                                             X.ComboBox()
                                                         .ID("cmbMelangeur")
-                                                        .FieldLabel("Quality Controller")
+                                                        .FieldLabel("Qualité")
                                                         .DisplayField("Nom")
                                                         .ValueField("ID")
                                                         .AllowBlank(false)
@@ -404,7 +404,7 @@ X.Window()
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Production Order : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Ordre De Production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
             return false;
         }
         

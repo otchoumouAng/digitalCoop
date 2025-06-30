@@ -228,7 +228,7 @@
                                                 de =>
                                                     {
                                                         de.Click.Url  = Url.Action("OnAdd", "BonDelivraison");
-                                                        de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Livraison : Nouveau')";
+                                                        de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Reception : Nouveau')";
                                                         de.Click.EventMask.ShowMask = true;
                                                     }
                                              ),
@@ -246,7 +246,7 @@
                                                  de =>
                                                  {
                                                     de.Click.Url  = Url.Action("OnEdit", "BonDelivraison");
-                                                    de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Livraison : Modifier')";
+                                                    de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Reception : Modifier')";
                                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeDeliveryNote}.getSelectionModel().getSelection()[0].data"});
                                                     de.Click.EventMask.ShowMask = true;
                                                  }
@@ -265,7 +265,7 @@
                                                     {
 
                                                         de.Click.Url = Url.Action("OnViewPendingDeliveries", "BonDelivraison");
-                                                        de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Livraison : Nouveau')";
+                                                        de.Click.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Reception : Nouveau')";
                                                         de.Click.EventMask.ShowMask = true;
                                                     }
                                              ),
@@ -286,7 +286,7 @@
 
                                                         X.MenuItem()
                                                             .ID("mnuPrintDeliveryNote")
-                                                            .Text("Bon De Livraison")
+                                                            .Text("Bon De Reception")
                                                             .Disabled(true)
                                                             .DirectEvents
                                                             (
@@ -348,7 +348,7 @@
                                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeDeliveryNote}.getSelectionModel().getSelection()[0].data" });
                                                                 de.Click.EventMask.ShowMask = true;
                                                                 de.Click.Confirmation.ConfirmRequest = true;
-                                                                de.Click.Confirmation.Title = "'Bon De Livraison";
+                                                                de.Click.Confirmation.Title = "'Bon De Reception";
                                                                 de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,!#{grpListeDeliveryNote}.getSelectionModel().getSelection()[0].data.IsActive)";
                                                                 de.Click.Success = "Overview.resetButtons();";
                                                               }
@@ -385,7 +385,7 @@
 
                            X.FormPanel()
                             .ID("CriteriaPanelBL")
-                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Bon De Livraison - overview" })
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Bon De Reception - overview" })
                             .Region(Region.North)
                             .Floatable(false)
                             .Border(false)
@@ -738,7 +738,7 @@
                            de.RowDblClick.CleanRequest = true;
                            de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeBL}.getSelected().items[0].data" });
                            de.RowDblClick.EventMask.ShowMask = true;
-                           de.RowDblClick.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Livraison : Detail')";
+                           de.RowDblClick.Success = "App.BonDeLivraison_Detail.setTitle('Bon De Reception : Detail')";
                        }
                        )
         )

@@ -537,8 +537,8 @@ namespace Tms2017.MVC.Controllers
                     {
                         X.MessageBox.Show(new MessageBoxConfig
                         {
-                            Title = "Weighing Before Cleanig  : Bon De Livraison",
-                            Message = "Bon De Livraison not Found, Please Retry !",
+                            Title = "Weighing Before Cleanig  : Bon De Reception",
+                            Message = "Bon De Reception not Found, Please Retry !",
                             Buttons = MessageBox.Button.OK,
                             Icon = MessageBox.Icon.WARNING
                         });
@@ -550,7 +550,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Submit Delivery",
+                    Title = "Bon De Reception : Submit Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -635,7 +635,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1343,8 +1343,8 @@ namespace Tms2017.MVC.Controllers
                             X.GetCmp<Hidden>("txtOrdreProductionID").SetValue(Guid.Empty);
                             X.MessageBox.Show(new MessageBoxConfig
                             {
-                                Title = "Production : Production Order",
-                                Message = "Production Order Not Found, Please Retry !",
+                                Title = "Production : Ordre De Production",
+                                Message = "Ordre De Production Not Found, Please Retry !",
                                 Buttons = MessageBox.Button.OK,
                                 Icon = MessageBox.Icon.WARNING
                             });
@@ -1367,7 +1367,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Data Validation",
+                    Title = "Ordre De Production - Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

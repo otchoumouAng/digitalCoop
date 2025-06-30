@@ -1054,7 +1054,6 @@ namespace Tms.Classes.Business.Sites
         }
         #endregion
 
-
         #region Constructor
         public VenteLot()
         {
@@ -1503,8 +1502,8 @@ namespace Tms.Classes.Business.Sites
                 db().AddInParameter(mCommande, "@TareSac", SqlDbType.Decimal, _TareSacs);
                 db().AddInParameter(mCommande, "@TarePalette", SqlDbType.Decimal, _TarePalette);
                 //db().AddInParameter(mCommande, "@PrixMoyen", SqlDbType.Decimal, _PrixMoyen);
-                db().AddInParameter(mCommande, "@ImmTracteur", SqlDbType.VarChar, 50, _Immatriculation);
-                db().AddInParameter(mCommande, "@ImmRemorque", SqlDbType.VarChar, 50, _ImmRemorque);
+                db().AddInParameter(mCommande, "@ImmTracteur", SqlDbType.VarChar, 50, _ImmTracteurExpedition);
+                db().AddInParameter(mCommande, "@ImmRemorque", SqlDbType.VarChar, 50, _ImmRemorqueExpedition);
                 db().AddInParameter(mCommande, "@NumBordereauExpedition", SqlDbType.VarChar, 50, _NumBordereauSortie);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
@@ -1519,7 +1518,7 @@ namespace Tms.Classes.Business.Sites
                 }
 
                 db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);
-                db().ExecuteNonQuery(ref mCommande,mTran);
+                db().ExecuteNonQuery(ref mCommande, mTran);
                 switch ((int)db().Parameters(mCommande, "ReturnValue"))
                 {
                     case 0:
@@ -1713,6 +1712,11 @@ namespace Tms.Classes.Business.Sites
                 db().AddInParameter(mCommande, "@poidsbrut", SqlDbType.Decimal, PoidsBrutReception);
                 db().AddInParameter(mCommande, "@TarePaletteArrive", SqlDbType.Decimal, _TarePaletteArrive);
                 db().AddInParameter(mCommande, "@statut", SqlDbType.VarChar, _Statut);
+
+                db().AddInParameter(mCommande, "@ImmTracteurRec", SqlDbType.VarChar, _ImmTracteurReception);
+                db().AddInParameter(mCommande, "@ImmRemorqueRec", SqlDbType.VarChar, _ImmRemorqueReception);
+                db().AddInParameter(mCommande, "@numBordereauRec", SqlDbType.VarChar, _NumBordereauReception);
+                db().AddInParameter(mCommande, "@CommentaireRec", SqlDbType.VarChar, _CommentaireReception);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
 
@@ -1983,13 +1987,15 @@ namespace Tms.Classes.Business.Sites
                     //    mClass._MagasinDestination.Designation = (string)mDataReader["MagasinDestiantionNom"];
                     //}
                     if (!DBNull.Value.Equals(mDataReader["NumeroExpedition"])) mClass._Numero = (string)mDataReader["NumeroExpedition"];
+
                     //if (!DBNull.Value.Equals(mDataReader["DateVente"])) mClass._DateVente = (DateTime)mDataReader["DateVente"];
                     if (!DBNull.Value.Equals(mDataReader["DateExpedition"])) mClass._DateExpedition = (DateTime)mDataReader["DateExpedition"];
                     if (!DBNull.Value.Equals(mDataReader["DateReception"])) mClass._DateReception = (DateTime)mDataReader["DateReception"];
 
                     if (!DBNull.Value.Equals(mDataReader["CommentaireExpedition"])) mClass._Commentaire = (string)mDataReader["CommentaireExpedition"];
                     if (!DBNull.Value.Equals(mDataReader["CommentaireReception"])) mClass._CommentaireReception = (string)mDataReader["CommentaireReception"];
-                    if (!DBNull.Value.Equals(mDataReader["NumBordereauExpedition"])) mClass._NumeroExpedition= (string)mDataReader["NumBordereauExpedition"];
+                    if (!DBNull.Value.Equals(mDataReader["NumBordereauExpedition"])) mClass._NumeroExpedition = (string)mDataReader["NumBordereauExpedition"];
+                    if (!DBNull.Value.Equals(mDataReader["NumBordereauReception"])) mClass._NumBordereauReception = (string)mDataReader["NumBordereauReception"];
 
                     if (!DBNull.Value.Equals(mDataReader["NombreSacsExpedition"])) mClass._NombreSacs = (int)mDataReader["NombreSacsExpedition"];
                     if (!DBNull.Value.Equals(mDataReader["NombreSacsReception"])) mClass._NombreSacsReception = (int)mDataReader["NombreSacsReception"];
@@ -2083,7 +2089,7 @@ namespace Tms.Classes.Business.Sites
                         mClass._Magasin.ID = (int)mDataReader["MagasinExpeditionID"];
                         mClass._Magasin.Designation = (string)mDataReader["MagasinExpeditionNom"];
                     }
-                   
+
 
                     if (!DBNull.Value.Equals(mDataReader["NombreSacsExpedition"])) mClass._NombreSacs = (int)mDataReader["NombreSacsExpedition"];
                     if (!DBNull.Value.Equals(mDataReader["NombrePaletteExpedition"])) mClass._NombrePalette = (int)mDataReader["NombrePaletteExpedition"];

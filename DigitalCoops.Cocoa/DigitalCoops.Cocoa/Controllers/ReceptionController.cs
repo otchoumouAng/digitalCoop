@@ -584,7 +584,9 @@ namespace Tms2017.MVC.Controllers
             DataSource _db = new DataSource();
             DataTransaction mtran = new DataTransaction();
 
-            
+            bool _isOk = false;
+            string errorMsg = string.Empty;
+
             try
             {
                 VenteLot mClass = new VenteLot();
@@ -599,7 +601,11 @@ namespace Tms2017.MVC.Controllers
                 mClass.fnGetReception(Guid.Parse(GetFormValue("txtTransfertID")));
 
                 if (mClass == null || mClass.ID == Guid.Empty)
-                    throw new Exception("SubmitFormMethod : Ligne introuvable, Veuillez réessauer svp !");
+                {
+                    _isOk = false;
+                    errorMsg = "Erreur Inconnu, Prière verifier les champs";
+                    throw new Exception(errorMsg);
+                }
 
                 mClass = MapFormToObjectRecept(mClass);
                 mClass.Statut = "RE";
@@ -631,7 +637,7 @@ namespace Tms2017.MVC.Controllers
                     mouvement.SetDataSource(_db);
                     mouvement.mCampagne.Designation = mClass.Campagne.Designation;
                     mouvement.Exportateur.ID = mClass.Exportateur.ID;
-                    mouvement.DateMouvement = DateTime.Now;
+                    mouvement.DateMouvement = mClass.DateReception;
                     mouvement.SacType.ID = mParam.SacExportType;
                     mouvement.ObjetEnStock = mClass.ID;
                     mouvement.ObjetEnStockType = mParam.LotTypeElementEnStock;
@@ -677,12 +683,13 @@ namespace Tms2017.MVC.Controllers
                 if (result && resultMouvement)
                 {
                     _db.CommitTransaction(mtran);
+                    _isOk = true;
                     //X.GetCmp<FormPanel>("FormReception").Reset();
                     //X.MessageBox.Show(
                     //    new MessageBoxConfig
                     //    {
-                    //        Title = "Transfert : Validation",
-                    //        Message = "Operation Réussie",
+                    //        Title = "Transfert : Reception",
+                    //        Message = "Réception saisie avec succès",
                     //        Buttons = MessageBox.Button.OK,
                     //        Icon = MessageBox.Icon.INFO
                     //    });
@@ -691,25 +698,29 @@ namespace Tms2017.MVC.Controllers
                 {
                     // Handle the case where ApproveVente fails
                     _db.RollBackTransaction(mtran);
+                    _isOk = false;
+                    errorMsg = "Erreur Inconnue, Prière réessayer";
                     X.MessageBox.Show(new MessageBoxConfig
                     {
                         Title = "Transfert : Validation",
-                        Message = "Erreur lors de l'approbation de la vente.",
+                        Message = errorMsg,
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
                     });
                 }
-                
+
             }
             catch (Exception ex)
             {
+                _isOk = false;
+                errorMsg = ex.Message;
+
                 if (_db != null)
                     _db.RollBackTransaction(mtran);
-                X.MessageBox.Alert("Erreur : SubmitFormMethod", ex.Message).Show();
+                //X.MessageBox.Alert("Erreur : SubmitFormMethod", ex.Message).Show();
             }
-            
-            return this.Direct();
 
+            return this.Direct(success: _isOk, errorMessage: errorMsg);
         }
 
         [HttpPost]
@@ -1418,6 +1429,10 @@ namespace Tms2017.MVC.Controllers
             mClass.Magasin.ID = int.Parse(GetFormValue("cmbMagasin"));
             mClass.Magasin.Designation = X.GetCmp<ComboBox>("cmbMagasin").SelectedItem.Text.ToString();
             mClass.Lot = new LotCoop();
+            if (string.IsNullOrEmpty(GetFormValue("cmbLot")))
+            {
+                throw new Exception("Prière selectionner un lot");
+            }
             mClass.Lot.ID = Guid.Parse(GetFormValue("cmbLot"));
             mClass.Lot.Numero = X.GetCmp<ComboBox>("cmbLot").SelectedItem.Text.ToString();
 
@@ -1427,15 +1442,44 @@ namespace Tms2017.MVC.Controllers
             mClass.Exportateur.ID = mLot.Exportateur.ID;
             mClass.Exportateur.Nom = mLot.Exportateur.Nom;
 
+            mClass.MagasinReception = new Magasin();
+            if (string.IsNullOrEmpty(GetFormValue("cmbMagasin")))
+            {
+                throw new Exception("Prière selectionner un magasin de réception");
+            }
+            mClass.MagasinReception.ID = int.Parse(GetFormValue("cmbMagasin"));
+            mClass.MagasinReception.Designation = X.GetCmp<ComboBox>("cmbMagasin").SelectedItem.Text;
+
+            if (string.IsNullOrEmpty(GetFormValue("txtNombrePalette"))
+                || string.IsNullOrEmpty(GetFormValue("txtNombreSacs"))
+                || string.IsNullOrEmpty(GetFormValue("txtTareSac"))
+                || string.IsNullOrEmpty(GetFormValue("txtPoidsBrut"))
+                || string.IsNullOrEmpty(GetFormValue("txtNetWeight"))
+                || string.IsNullOrEmpty(GetFormValue("txtTarePalette")))
+            {
+                throw new Exception("Prière verifier les valeurs du lot");
+            }
+
             if (X.GetCmp<TextField>("txtNombrePalette").Text != string.Empty) mClass.NombrePaletteReception = int.Parse(X.GetCmp<TextField>("txtNombrePalette").Text);
             if (X.GetCmp<TextField>("txtNombreSacs").Text != string.Empty) mClass.NombreSacs = int.Parse(X.GetCmp<TextField>("txtNombreSacs").Text);
             if (X.GetCmp<TextField>("txtTareSac").Text != string.Empty) mClass.TareSacsArrive = decimal.Parse(X.GetCmp<TextField>("txtTareSac").Text);
             if (X.GetCmp<TextField>("txtPoidsBrut").Text != string.Empty) mClass.PoidsBrutRecetpion = decimal.Parse(X.GetCmp<TextField>("txtPoidsBrut").Text);
             if (X.GetCmp<TextField>("txtNetWeight").Text != string.Empty) mClass.PoidsNetRecetpion = decimal.Parse(X.GetCmp<TextField>("txtNetWeight").Text);
             if (X.GetCmp<TextField>("txtTarePalette").Text != string.Empty) mClass.TarePaletteArrive = decimal.Parse(X.GetCmp<TextField>("txtTarePalette").Text);
-
+            if (string.IsNullOrEmpty(GetFormValue("txtNumBordereauEntree")))
+            {
+                throw new Exception("Prière entrer un Numero BE");
+            }
             //if (X.GetCmp<TextField>("txtNumBordereauEntree").Text != string.Empty) mClass.nu = int.Parse(X.GetCmp<TextField>("txtSacExportateur").Text);
+            if (X.GetCmp<TextField>("txtNumBordereauEntree").Text != string.Empty) mClass.NumBordereauReception = X.GetCmp<TextField>("txtNumBordereauEntree").Text;
 
+            if (string.IsNullOrEmpty(GetFormValue("txtImmTracteur")))
+            {
+                throw new Exception("Prière entrer un Numero Tracteur");
+            }
+
+            mClass.ImmTracteurReception = X.GetCmp<TextField>("txtImmTracteur").Text;
+            mClass.ImmRemorqueReception = X.GetCmp<TextField>("txtImmRemorque").Text;
 
             mClass.DateReception = DateTime.Parse(X.GetCmp<DateField>("txtDateReception").RawText.ToString()).AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute).AddSeconds(DateTime.Now.Second).AddMilliseconds(DateTime.Now.Millisecond);
             //if (X.GetCmp<TextField>("txtPoidsBrutExportateur").Text != string.Empty) mClass.PoidsBrutExportateur = decimal.Parse(X.GetCmp<TextField>("txtPoidsBrutExportateur").Text);

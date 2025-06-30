@@ -39,3 +39,16 @@ C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NE
 C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.dll
 C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.pdb
 C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.csprojResolveAssemblyReference.cache
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Tms.Components.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Tms.Components.pdb
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.Utilities.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Newtonsoft.Json.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NET.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.xml
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.Utilities.xml
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Newtonsoft.Json.xml
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NET.xml
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.pdb
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.csprojResolveAssemblyReference.cache

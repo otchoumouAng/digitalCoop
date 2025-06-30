@@ -854,7 +854,7 @@ X.Window()
        *   Vérification de la saisie des champs obligatoires
        */
         if (!areAllrequiredFieldsFilled) {
-            Ext.Msg.show({ title: 'Bon De Livraison : Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Bon De Reception : Data Validation', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
             return false;
         }
     };
@@ -978,7 +978,7 @@ X.Window()
 
         }
         catch (err) {
-            Ext.Msg.show({ title: 'Bon De Livraison : Retention Calculation ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating retention.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Bon De Reception : Retention Calculation ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating retention.', buttons: Ext.Msg.OK });
 
         }
 
@@ -998,7 +998,7 @@ X.Window()
               }
         }
         catch (err) {
-            Ext.Msg.show({ title: 'Bon De Livraison : Update Poids Net ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating net weight.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Bon De Reception : Update Poids Net ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating net weight.', buttons: Ext.Msg.OK });
 
         }
 

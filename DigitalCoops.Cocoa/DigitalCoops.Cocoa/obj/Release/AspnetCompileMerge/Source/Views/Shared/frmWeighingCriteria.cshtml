@@ -10,12 +10,12 @@
 @(                        
 X.Window()
     .ID("frmWeighingList")
-    .Width(500)
+    .Width(550)
     .Resizable(false)
-    .Height(280)
+    .Height(320)
     .Modal(true)
     .Y(100)
-    .Title(ViewData["Titre"] + " : Criteria")
+    .Title(ViewData["Titre"] + " : Critères")
     //.Title("Report")
     .Layout(LayoutType.Form)
     .Items
@@ -68,7 +68,7 @@ X.Window()
                                                 }
                                             ),
                             X.FieldContainer()
-                                                            .FieldLabel("Campagne/Bascule N°").LabelAlign(LabelAlign.Right)
+                                                            .FieldLabel("Camp./Basc N°").LabelAlign(LabelAlign.Right)
                                                             .Width(495)
                                                             .Layout(LayoutType.HBox)
                                                             .Items

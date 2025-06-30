@@ -23,7 +23,7 @@
         var TotalNbrSacs = App.storeListDeliveriesProd.sum('NombreSacs') || 0;
         var nbrOfrows = App.grpListDeliveriesProd.getStore().getCount();
 
-        App.summaryLivProd.setHtml("Delivery (ies): " + nbrOfrows + "<br/>Nbr de sacs : " + formatNumber(TotalNbrSacs));
+        App.summaryLivProd.setHtml("Livraison (s): " + nbrOfrows + "<br/>Nbr de sacs : " + formatNumber(TotalNbrSacs));
 
     };
 
@@ -129,7 +129,7 @@ X.Window()
                     (
                         X.ComboBox()
                             .ID("cmbMelangeProduction")
-                            .FieldLabel("Blending")
+                            .FieldLabel("Melange")
                             .DisplayField("Designation")
                             .ValueField("ID")
                             .AllowBlank(false)
@@ -358,11 +358,11 @@ X.Window()
                 Html.X().Column().Text("Certification").DataIndex("LibelleCertification").Flex(1).Hideable(false),
                 Html.X().Column().Text("Humidite").DataIndex("Humidite").Flex(1).Hideable(false).Editor(Html.X().NumberField().ID("HumditeBeans").HideTrigger(true)),
                 Html.X().Column().Text("Moisie)").DataIndex("Moisi").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
-                Html.X().Column().Text("Beans Count").DataIndex("Grainage").Flex(1).Hideable(false),
-                Html.X().Column().Text("Weevil").DataIndex("Mite").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
-                Html.X().Column().Text("Slaty").DataIndex("Ardoisee").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Grainage").DataIndex("Grainage").Flex(1).Hideable(false),
+                Html.X().Column().Text("Lite").DataIndex("Mite").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Ardoisee").DataIndex("Ardoisee").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
                 Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
-                Html.X().Column().Text("Foreign Matter").DataIndex("MatiereEtrangere").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
+                Html.X().Column().Text("Matiere Et").DataIndex("MatiereEtrangere").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true)),
                 Html.X().Column().Text("Tamis").DataIndex("Sievings").Flex(1).Hideable(false).Editor(Html.X().NumberField().HideTrigger(true))
             )
             .Plugins
@@ -422,7 +422,7 @@ X.Window()
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Erreur : Blending ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Erreur : Melange ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
             return false;
         }
     };

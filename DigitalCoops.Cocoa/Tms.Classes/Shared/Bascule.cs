@@ -293,7 +293,9 @@ namespace Tms.Classes.Shared
                     return ReadUsingEsclave();
                 case 6:
                     //Precia Molen i200
-                    return ReadUsinBilanciai();               
+                    return ReadUsinBilanciai();
+                case 7:
+                    return ReadUsingMaitre_HKF();
                 default:
                     return -6;
             }
@@ -704,6 +706,144 @@ namespace Tms.Classes.Shared
                 myComObj.Close();
                 //throw new Exception("Erreur lors de la capture du poids : " + ex.Message + (Char)13 + (Char)10 + "Reessayer SVP");
                 return -1;
+            }
+        }
+
+        private int ReadUsingEsclave_HKF()
+        {
+            try
+            {
+                char[] mBuffer = new char[10];
+                byte[] bytesToSend = { 0x01, 0x0D, 0x0A }; // SOH CR LF
+                string mData = string.Empty;
+                int mWeight = -10;
+
+                //Open port 
+                myComObj.Open();
+
+                //Send request to indicator 
+                myComObj.Write(bytesToSend, 0, bytesToSend.Length);
+
+                //wait 100 ms
+                System.Threading.Thread.Sleep(500);
+
+                //Reads eight caracters from com  
+                int mLength = myComObj.Read(mBuffer, 0, 49);
+
+                //Close port 
+                myComObj.Close();
+
+                //Data lenght > 49 ? 
+                if (mLength >= 49)
+                {
+                    //Get data from one-dimentional array 
+                    for (int i = 0; i <= mLength - 1; i++)
+                    {
+                        mData = mData + mBuffer[i];
+                    }
+                    mData = mData.Substring(11, 6);
+                    //Weight is stable ? 
+                    //if (mData.Substring(1, 1) == "I")
+                    //{
+                    //    mData = mData.Substring(2, 5);
+
+                    //}
+                    //else
+                    //    throw new Exception("Poids Instable");
+                }
+
+
+                mWeight = int.Parse(mData);
+
+                //if (mWeight < 0)
+                //    throw new Exception("Le poids capturé doit être supérieur à 0");
+
+                return mWeight;
+
+            }
+            catch (Exception ex)
+            {
+                myComObj.Close();
+                throw new Exception("Erreur lors de la capture du poids : " + ex.Message + (Char)13 + (Char)10 + "Reessayer SVP");
+                return -20;
+            }
+        }
+
+        private int ReadUsingMaitre_HKF()
+        {
+            string mData = string.Empty;
+            string mData2 = string.Empty;
+            char mChar;
+            string sWeight;
+            int mWeight;
+            int mComparedWeight;
+
+            try
+            {
+                //Open port 
+                myComObj.Open();
+
+                //Start Reading
+                mChar = (char)myComObj.ReadChar();
+                mData = mData + mChar.ToString();
+
+                //Read at least 150 characters
+                while (mData.Length < 200)
+                {
+                    mChar = (char)myComObj.ReadChar();
+                    mData = mData + mChar.ToString();
+                }
+
+                //Close port
+                myComObj.Close();
+
+                //display data
+                //MessageBox.Show(mData);
+
+                //Get Index of carriage return
+                char mCret = (char)01;
+                int mIndex = mData.IndexOf(mCret);
+
+                //Get data after Cr
+                mData = mData.Substring(mIndex + 1);
+
+                //Get Weight
+                sWeight = mData.Substring(3, 6).Replace(" ", "");
+
+                //Get first weight
+                mWeight = int.Parse(sWeight);
+
+                //Wait 500 ms
+                System.Threading.Thread.Sleep(300);
+
+                //Get second time index of Cr
+                mIndex = mData.IndexOf(mCret);
+
+                //Get data after Cr
+                mData = mData.Substring(mIndex + 1);
+
+                //Get Weight
+                sWeight = mData.Substring(3, 6).Replace(" ", "");
+
+                //Get first weight
+                mComparedWeight = int.Parse(sWeight);
+
+                if (mWeight != mComparedWeight)
+                {
+                    throw new Exception("Poids Instable");
+                }
+
+                if (mWeight < 0)
+                    throw new Exception("Le poids capturé doit être supérieur à 0");
+
+                return mWeight;
+
+            }
+            catch (Exception ex)
+            {
+                myComObj.Close();
+                throw new Exception("Erreur lors de la capture du poids : " + ex.Message + (Char)13 + (Char)10 + "Reessayer SVP");
+                return -30;
             }
         }
 

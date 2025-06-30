@@ -593,7 +593,7 @@ namespace Tms2017.MVC.Controllers
         public ActionResult OnDisplayInvoiceList()
         {
 
-            ViewData["Titre"] = "Print List Of Facture Transports";
+            ViewData["Titre"] = "Liste des Factures Transports";
             ViewData["actionToDo"] = "OnPrintTransportInvoiceList";
             ViewData["ControllerName"] = "FactureTransport";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmCriteriaForTransportInvoice", ViewData = ViewData };

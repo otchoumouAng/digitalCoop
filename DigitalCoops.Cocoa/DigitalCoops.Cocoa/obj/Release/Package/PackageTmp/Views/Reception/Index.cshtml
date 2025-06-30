@@ -14,14 +14,14 @@
         }
 
         .x-form-text-default {
-            padding: 2px 10px 2px !important;            
+            padding: 2px 10px 2px !important;
             min-height: 32px !important;
         }
 
-        .x-form-text-default.x-form-textarea {
-            line-height: 17px;
-            min-height: 50px !important;
-        }
+            .x-form-text-default.x-form-textarea {
+                line-height: 17px;
+                min-height: 50px !important;
+            }
 
         .title_style {
             color: black;
@@ -47,7 +47,7 @@
 
         .x-form-layout-auto-label > * > .x-form-item-label {
             width: 100px !important;
-            font-weight : bold !important;
+            font-weight: bold !important;
         }
 
         .x-panel .x-panel-header-default-framed-top {
@@ -447,6 +447,9 @@
                                             X.TextField()
                                                 .ID("txtNumBordereauEntree")
                                                 .FieldLabel("N° Bordereau d'entrée")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
                                                 .LabelAlign(LabelAlign.Right)
                                                 .ReadOnly(false),
 
@@ -536,6 +539,9 @@
                                             X.TextField()
                                                 .ID("txtImmTracteur")
                                                 .FieldLabel("N° Tracteur")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
                                                 .LabelAlign(LabelAlign.Right),
                                             //.Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._VenteLot.Immatriculation : string.Empty),
                                             X.TextField()
@@ -977,10 +983,16 @@
                                 .DirectEvents(de =>
                                 {
                                     de.Click.Url = Url.Action("UpdateReception");
-                                    //de.Click.Before = "return validNew(App.FormVenteLotRecept.id);";
+                                    //de.Click.Before = "return validNew(App.FormReception.id);";
                                     //de.Click.FormID = "#(return this.up('window').down('form');)";
                                     de.Click.FormID = "FormReception";
-                                    de.Click.Success = "window.parent.Ext.getCmp('tabCenter').getActiveTab('c5107ce0-291a-4cdf-a5fc-e92468a78e75').doClose()";
+                                    de.Click.Success = "ShowSuccessMessage();";
+                                    //de.Click.Success = "ShowSuccessMessage(); window.parent.Ext.getCmp('tabCenter').getActiveTab('c5107ce0-291a-4cdf-a5fc-e92468a78e75').doClose();";
+                                    de.Click.Failure = "ShowErrorMessage(response, result);";
+                                    //de.Click.Failure = "function(response, result) {
+                                    //    var errorMsg = result.errorMessage || "Une erreur inconnue est survenue.";
+                                    //    ShowErrorMessage(errorMsg);
+                                    //};""""
                                     //de.Click.EventMask.ShowMask = true;
                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
                                 })
@@ -1007,10 +1019,28 @@
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Erreur : Transfert ', msg: 'Veuillez saisir les champs réquis svp !', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Erreur : Réception ', msg: 'Veuillez saisir les champs réquis svp !', buttons: Ext.Msg.OK });
             return false;
         }
 
+    };
+
+    var ShowErrorMessage = function (response, result) {
+        Ext.Msg.show({ title: 'Erreur : Réception ', msg: result.errorMessage, buttons: Ext.Msg.OK, icon: Ext.Msg.ERROR, });
+    };
+
+    var ShowSuccessMessage = function (err) {
+        Ext.Msg.show({
+            title: 'Réception',
+            msg: 'Données saisies avec succès',
+            buttons: Ext.Msg.OK,
+            icon: Ext.Msg.INFO,
+            fn: function (btnId) {
+                if (btnId === 'ok') {
+                    window.parent.Ext.getCmp('tabCenter').getActiveTab('c5107ce0-291a-4cdf-a5fc-e92468a78e75').doClose();
+                }
+            }
+        });
     };
 
     var calculerNetLivre = function () {
@@ -1073,11 +1103,3 @@
         }
     };
 </script>
-
-
-
-
-
-
-
-

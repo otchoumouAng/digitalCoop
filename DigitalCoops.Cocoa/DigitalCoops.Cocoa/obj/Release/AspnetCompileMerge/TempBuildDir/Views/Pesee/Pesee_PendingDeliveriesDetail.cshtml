@@ -71,7 +71,7 @@
                                                         ,
                                                          X.ComboBox()
                                                         .ID("cmbCampagnePending")
-                                                        .FieldLabel("Campagne")
+                                                        .FieldLabel("Camp.")
                                                         .Flex(1)
                                                         .LabelWidth(50)
                                                         .DisplayField("Designation")
@@ -164,6 +164,7 @@
                                                 Html.X().Column().Text("Date").DataIndex("DateLivraisonLongAsString").Flex(1).Hideable(false),
                                                 //Html.X().Column().Text("Type de livraison").DataIndex("LivraisonType").Width(100).Renderer("renderObject").Flex(1),
                                                 Html.X().Column().Text("Livraison N°").DataIndex("Numero").Flex(1).Hideable(false),
+                                                Html.X().Column().Text("Type").DataIndex("LivraisonTypeAsString").Flex(1).Hideable(false),
                                                 //Html.X().Column().Text("Fournisseur").DataIndex("Fournisseur").Renderer("renderObject").Width(100).Flex(1),
                                                 Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(false),
                                                 Html.X().Column().Text("Nbr de sacs Est.").DataIndex("SacsDeclares").Flex(1).Hideable(false),
@@ -197,7 +198,7 @@
                                     )
                                     .Buttons
                                     (
-                                        X.Button().Text("OK").ID("BtnOk").Disabled(true)
+                                        X.Button().Text("Selectionner").ID("BtnOk").Disabled(true)
                                         .DirectEvents(de =>
                                         {
                                             de.Click.Url = Url.Action("OnSelectPendingDelivery");

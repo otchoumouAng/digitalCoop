@@ -689,8 +689,8 @@ namespace Cooperative.Controllers
                             X.GetCmp<Hidden>("txtOrdreProductionID").SetValue(Guid.Empty);
                             X.MessageBox.Show(new MessageBoxConfig
                             {
-                                Title = "Production : Production Order",
-                                Message = "Production Order Not Found, Please Retry !",
+                                Title = "Production : Ordre De Production",
+                                Message = "Ordre De Production Not Found, Please Retry !",
                                 Buttons = MessageBox.Button.OK,
                                 Icon = MessageBox.Icon.WARNING
                             });
@@ -713,7 +713,7 @@ namespace Cooperative.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Data Validation",
+                    Title = "Ordre De Production - Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

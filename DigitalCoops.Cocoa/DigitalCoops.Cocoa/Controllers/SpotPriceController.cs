@@ -349,11 +349,8 @@ namespace Tms2017.MVC.Controllers
             DateTime? enddate = string.IsNullOrEmpty(ItemPeriodEnd) ? (DateTime?)null : DateTime.Parse(ItemPeriodEnd.ToString());
 
             string Status = ItemStatus;            
-
-            var mListe = (new PrixNegocieLivraison()).fnSelect(Campagne, SiteID, FournisseurID, startdate, enddate, Status);
-            
+            var mListe = (new PrixNegocieLivraison()).fnSelect(Campagne, SiteID, FournisseurID, startdate, enddate, Status);            
             return this.Store(mListe);
-
         }
 
         public ActionResult OnFilter()
@@ -428,7 +425,8 @@ namespace Tms2017.MVC.Controllers
             if (IsvalidDate)
                 mClass.fnSelectByDate(ItemSite, DateTime.Parse(ItemDatePrix));
 
-            X.GetCmp<TextField>("LabelPrixJournalier").Text = mClass.Prix.ToString();
+            X.GetCmp<TextField>("LabelPrixJournalier").Text = mClass.PrixAsString;
+            X.GetCmp<TextField>("TxtPrice").Text = mClass.PrixAsString;
             X.GetCmp<TextField>("LabelPrixJournalier").Hidden = false;
             return this.Direct();
         }
@@ -562,13 +560,9 @@ namespace Tms2017.MVC.Controllers
 
             try
             {
-
                 Livraison mClass = JSON.Deserialize<Livraison>(ItemDelivery, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
 
                 Store mstore = X.GetCmp<Store>("storeDetailDeliveriesListe");
-
-
-
                 Guid prixnegocie = Guid.Parse(X.GetCmp<TextField>("TxtSpotPriceID").Text);
                 Guid prixnegocielivraison = Guid.Parse(X.GetCmp<TextField>("TxtSpotPriceDeliverieID").Text);
 
@@ -686,6 +680,9 @@ namespace Tms2017.MVC.Controllers
             //string testdatevalueraw = X.GetCmp<DateField>("TxtPriceDate").RawText.ToString();
             mClass.DatePrix = DateTime.Parse(X.GetCmp<DateField>("TxtPriceDate").RawText.ToString());
             mClass.Prix = decimal.Parse(X.GetCmp<TextField>("TxtPrice").Text);
+            mClass.Commission = decimal.Parse(X.GetCmp<TextField>("TxtCommission").Text);
+            mClass.PrixJour = decimal.Parse(X.GetCmp<TextField>("LabelPrixJournalier").Text);
+            mClass.FactureAuPrixJour = bool.Parse(X.GetCmp<Checkbox>("ChkAFacturer").Value.ToString());
 
             mClass.Fournisseur = new Fournisseur();
             mClass.Fournisseur.ID = int.Parse(GetFormValue("FournisseurID"));
@@ -829,7 +826,7 @@ namespace Tms2017.MVC.Controllers
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            ViewData["Titre"] = "Print List of Prix Negociés";
+            ViewData["Titre"] = "Liste des Prix Negociés";
             ViewData["actionToDo"] = "mnuPrintSpotPriceList";
             ViewData["ControllerName"] = "SpotPrice";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmPeriodWithSupplierForReport", ViewData = ViewData };

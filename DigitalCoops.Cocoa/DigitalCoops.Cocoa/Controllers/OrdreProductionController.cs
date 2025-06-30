@@ -109,7 +109,7 @@ namespace Tms2017.MVC.Controllers
                 bool result = mOrdre.fnGet(mOrdre.ID);
 
                 if (!result)
-                    throw new Exception("OnCancel : Production Order loading failed.");
+                    throw new Exception("OnCancel : Ordre De Production loading failed.");
 
                 mOrdre.UtilisateurModification = (string)Session["userName"];
 
@@ -119,7 +119,7 @@ namespace Tms2017.MVC.Controllers
                     result = mOrdre.fnDeActivate();
 
                 if (!result)
-                    throw new Exception("OnCancel : Production Order, Operation failed.");
+                    throw new Exception("OnCancel : Ordre De Production, Operation failed.");
 
                 if (result)
                 {
@@ -138,7 +138,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Cancel",
+                    Title = "Ordre De Production : Cancel",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -151,7 +151,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult LoadProduction()
         {
-            //Load Current Production Order
+            //Load Current Ordre De Production
             List<DataPersist> mList = new OrdreProduction().fnSelectOpenned();
             return this.Store(mList);
         }
@@ -198,7 +198,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -257,7 +257,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Close",
+                    Title = "Ordre De Production : Close",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -278,13 +278,13 @@ namespace Tms2017.MVC.Controllers
                 if (!composition.IsApproved)
                 {
                     mclass._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Update;
-                    ViewData["Title"] = "Production - Blending : Modifier";
+                    ViewData["Title"] = "Production - Melange : Modifier";
                 }
                 else
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Production Order - Blending : Modifier",
+                        Title = "Ordre De Production - Blending : Modifier",
                         Message = "Production blending already approved !",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -296,7 +296,7 @@ namespace Tms2017.MVC.Controllers
             {
                 mclass._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew;
                 composition = new CompositionUsinage();
-                ViewData["Title"] = "Production - Blending : Nouveau";
+                ViewData["Title"] = "Production - Melange : Nouveau";
             }
 
             mclass._CompositionUsinage = composition;
@@ -318,13 +318,13 @@ namespace Tms2017.MVC.Controllers
                 if (!composition.IsApproved)
                 {
                     mclass._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Approve;
-                    ViewData["Title"] = "Production - Blending : Approuver";
+                    ViewData["Title"] = "Production - Melange : Approuver";
                 }
                 else
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Production Order - Blending : Approuver",
+                        Title = "Ordre De Production - Blending : Approuver",
                         Message = "Production blending already approved !",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -336,7 +336,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Blending : Approuver",
+                    Title = "Ordre De Production - Blending : Approuver",
                     Message = "Production blending not available !",
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -561,10 +561,10 @@ namespace Tms2017.MVC.Controllers
                     if (IsGuid)
                         ordreproduction.fnGet(productionID);
                     else
-                        throw new Exception("SubmitFormMethod : Production Order load failed.");
+                        throw new Exception("SubmitFormMethod : Ordre De Production load failed.");
 
                     if (ordreproduction == null || ordreproduction.ID == Guid.Empty)
-                        throw new Exception("SubmitFormMethod : Production Order load failed.");
+                        throw new Exception("SubmitFormMethod : Ordre De Production load failed.");
                 }
 
                 ordreproduction = MapFormToObject(ordreproduction);
@@ -599,7 +599,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -827,7 +827,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Blending : Retirer Delivery",
+                    Title = "Ordre De Production - Blending : Retirer Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1114,7 +1114,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Delivery Blending - Production Order",
+                        Title = "Delivery Blending - Ordre De Production",
                         Message = "Delivery Blending not Approuvé",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -1154,7 +1154,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Print Production Sheet",
+                    Title = "Ordre De Production : Print Production Sheet",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1197,13 +1197,13 @@ namespace Tms2017.MVC.Controllers
 
                 Session["report"] = report;
 
-                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/OrdreProduction/ViewList', this, 'Production Order List',''),App.OrdreProduction_Print.doClose()", Guid.NewGuid(), BaseUrl));
+                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/OrdreProduction/ViewList', this, 'Ordre De Production List',''),App.OrdreProduction_Print.doClose()", Guid.NewGuid(), BaseUrl));
             }
             catch (Exception ex)
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

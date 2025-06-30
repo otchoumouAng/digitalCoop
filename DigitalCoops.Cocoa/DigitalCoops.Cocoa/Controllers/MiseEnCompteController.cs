@@ -176,7 +176,7 @@ namespace Tms2017.MVC.Controllers
         {
             string UserName = (string)Session["userName"];
 
-            ViewData["Titre"] = "Print List Of Savings";
+            ViewData["Titre"] = "Liste des Mises en compte";
             ViewData["actionToDo"] = "OnPrintSavingList";
             ViewData["ControllerName"] = "MiseEnCompte";
 

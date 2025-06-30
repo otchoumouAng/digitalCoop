@@ -188,7 +188,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing Before Cleaning : Capture Weight",
+                        Title = "Pesée Avant Usinage : Capture Weight",
                         Message = "Full Pallets Weight Is Empty",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -372,7 +372,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Data Validation",
+                    Title = "Pesée Avant Usinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -405,7 +405,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleanig  : Bon De Livraison",
+                    Title = "Weighing Before Cleanig  : Bon De Reception",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -424,7 +424,7 @@ namespace Tms2017.MVC.Controllers
                 bool result = pesee.fnGet(pesee.ID);
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Weighing Before Cleaning, loading failed.");
+                    throw new Exception("OnActivateDeactivate : Pesée Avant Usinage, loading failed.");
 
                 pesee.UtilisateurModification = (string)Session["userName"];
 
@@ -432,7 +432,7 @@ namespace Tms2017.MVC.Controllers
                 result = pesee.fnDeActivate();
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Weighing Before Cleaning, Operation failed.");
+                    throw new Exception("OnActivateDeactivate : Pesée Avant Usinage, Operation failed.");
 
 
                 if (result)
@@ -455,7 +455,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Cancel",
+                    Title = "Pesée Avant Usinage : Cancel",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -506,8 +506,8 @@ namespace Tms2017.MVC.Controllers
                     {
                         X.MessageBox.Show(new MessageBoxConfig
                         {
-                            Title = "Weighing Before Cleanig  : Bon De Livraison",
-                            Message = "Bon De Livraison not Found, Please Retry !",
+                            Title = "Weighing Before Cleanig  : Bon De Reception",
+                            Message = "Bon De Reception not Found, Please Retry !",
                             Buttons = MessageBox.Button.OK,
                             Icon = MessageBox.Icon.WARNING
                         });
@@ -519,7 +519,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Submit Delivery",
+                    Title = "Bon De Reception : Submit Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -602,7 +602,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order : Data Validation",
+                    Title = "Ordre De Production : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -672,7 +672,7 @@ namespace Tms2017.MVC.Controllers
                 //{
                 //    X.MessageBox.Show(new MessageBoxConfig
                 //    {
-                //        Title = "Weighing Before Cleaning : Data Validation",
+                //        Title = "Pesée Avant Usinage : Data Validation",
                 //        Message = "The number Of bags of the delivery is lower than selected bags !",
                 //        Buttons = MessageBox.Button.OK,
                 //        Icon = MessageBox.Icon.WARNING
@@ -684,7 +684,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing Before Cleaning : Data Validation",
+                        Title = "Pesée Avant Usinage : Data Validation",
                         Message = "Verify Number Of Bags Per Pallet",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -696,7 +696,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing Before Cleaning : Data Validation",
+                        Title = "Pesée Avant Usinage : Data Validation",
                         Message = "Can't Weight New Pallet",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -708,7 +708,7 @@ namespace Tms2017.MVC.Controllers
                 //{
                 //    X.MessageBox.Show(new MessageBoxConfig
                 //    {
-                //        Title = "Weighing Before Cleaning : Data Validation",
+                //        Title = "Pesée Avant Usinage : Data Validation",
                 //        Message = "Total Nbr Of Bag is higher than authorized Number Of bags",
                 //        Buttons = MessageBox.Button.OK,
                 //        Icon = MessageBox.Icon.WARNING
@@ -855,7 +855,7 @@ namespace Tms2017.MVC.Controllers
         //    {
         //        X.MessageBox.Show(new MessageBoxConfig
         //        {
-        //            Title = "Weighing Before Cleaning : Data Validation",
+        //            Title = "Pesée Avant Usinage : Data Validation",
         //            Message = ex.Message,
         //            Buttons = MessageBox.Button.OK,
         //            Icon = MessageBox.Icon.WARNING
@@ -938,7 +938,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Data Validation",
+                    Title = "Pesée Avant Usinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1054,7 +1054,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Data Validation",
+                    Title = "Pesée Avant Usinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1099,7 +1099,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing Before Cleaning : Data Validation",
+                        Title = "Pesée Avant Usinage : Data Validation",
                         Message = "Set Tare Des Palettes Before Finalize",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -1187,7 +1187,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Data Validation",
+                    Title = "Pesée Avant Usinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1259,7 +1259,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Data Validation",
+                    Title = "Pesée Avant Usinage : Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1308,7 +1308,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning - : Retirer Pallets Weight",
+                    Title = "Pesée Avant Usinage - : Retirer Pallets Weight",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1342,8 +1342,8 @@ namespace Tms2017.MVC.Controllers
                             X.GetCmp<Hidden>("txtOrdreProductionID").SetValue(Guid.Empty);
                             X.MessageBox.Show(new MessageBoxConfig
                             {
-                                Title = "Production : Production Order",
-                                Message = "Production Order Not Found, Please Retry !",
+                                Title = "Production : Ordre De Production",
+                                Message = "Ordre De Production Not Found, Please Retry !",
                                 Buttons = MessageBox.Button.OK,
                                 Icon = MessageBox.Icon.WARNING
                             });
@@ -1366,7 +1366,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Production Order - Data Validation",
+                    Title = "Ordre De Production - Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1475,7 +1475,7 @@ namespace Tms2017.MVC.Controllers
             Parametres mParam = new Parametres(0);
 
             ViewData["Campagne"] = mParam.Campagne;
-            ViewData["Titre"] = "Weighing Before Cleaning";
+            ViewData["Titre"] = "Pesée Avant Usinage";
             ViewData["actionToDo"] = "PrintList";
             ViewData["ControllerName"] = "PeseeAvantUsinage";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "ProductionWeighing_Print", ViewData = ViewData };
@@ -1503,13 +1503,13 @@ namespace Tms2017.MVC.Controllers
 
                 Session["report"] = report;
 
-                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/PeseeAvantUsinage/ViewList', this, 'Weighing Before Cleaning',''),App.ProductionWeighing_Print.doClose()", Guid.NewGuid(), BaseUrl));
+                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/PeseeAvantUsinage/ViewList', this, 'Pesée Avant Usinage',''),App.ProductionWeighing_Print.doClose()", Guid.NewGuid(), BaseUrl));
             }
             catch (Exception ex)
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing Before Cleaning : Data Validation",
+                    Title = "Pesée Avant Usinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

@@ -92,7 +92,7 @@
 
         SummaryComposition: function () {
             var nbrOfrows = App.grpListeCompositionUsinage.getStore().getCount();                        
-            App.lblSummaryComposition.setHtml("Nbr Of Blending : " + nbrOfrows);
+            App.lblSummaryComposition.setHtml("Nbr : " + nbrOfrows);
         },
 
         resetButtons: function () {
@@ -247,7 +247,7 @@
                                         de.Click.Url  = Url.Action("OnEdit");
                                         de.Click.EventMask.ShowMask = true;
                                         de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeCompositionUsinage}.getSelectionModel().getSelection()[0].data"});
-                                        de.Click.Success = "App.FormMelangeProduction.setTitle('Production - Blending : Modifier')";
+                                        de.Click.Success = "App.FormMelangeProduction.setTitle('Production - Melange : Modifier')";
                                     }
                                 ),
                             X.Button()
@@ -281,7 +281,7 @@
 
                                                 X.MenuItem()
                                                     .ID("mnuPrintListOfBlending")
-                                                    .Text("List of blending")
+                                                    .Text("Melanges")
                                                     .Disabled(true)
                                                     .DirectEvents
                                                     (
@@ -293,7 +293,7 @@
                                                     ),
                                                 X.MenuItem()
                                                     .ID("mnuPrintBlendingSheet")
-                                                    .Text("Blending Sheet")
+                                                    .Text("Fiche de Melange")
                                                     .Disabled(true)
                                                     .DirectEvents
                                                     (
@@ -341,7 +341,7 @@
                                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeCompositionUsinage}.getSelectionModel().getSelection()[0].data" });
                                                         de.Click.EventMask.ShowMask = true;
                                                         de.Click.Confirmation.ConfirmRequest = true;
-                                                        de.Click.Confirmation.Title = "'Delivery Blending";
+                                                        de.Click.Confirmation.Title = "Melange Livraison";
                                                         de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeCompositionUsinage}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                         de.Click.Success = "Overview.resetButtons();";
                                                     }
@@ -350,7 +350,7 @@
                                                 .ID("btnModifyComposition")
                                                 //.IconCls("action_modify_02")                         
                                                 .Icon(Icon.BulletEdit)
-                                                .Text("Change Production")
+                                                .Text("Changer Production")
                                                 .Cls("ButtonStyle")
                                                 .Border(false)
                                                 .Hidden(true)
@@ -375,7 +375,7 @@
     #region Criteres
                 X.FormPanel()
                     .ID("MelangeProductionCP")
-                    .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Production - Blending - overview" })
+                    .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Production - Melange - overview" })
                     .Region(Region.North)
                     .Floatable(false)
                     .Border(false)
@@ -410,7 +410,7 @@
                                                 it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
                                                 it.Add(new ListItem { Text = "Non Approuvé", Value = "NA" });
                                                 it.Add(new ListItem { Text = "Approuvé", Value = "AP" });
-                                                it.Add(new ListItem { Text = "Canceled", Value = "CA" });
+                                                it.Add(new ListItem { Text = "Annulé", Value = "CA" });
                                             }
                                     )
                                     .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
@@ -471,13 +471,13 @@
                             //Html.X().Column().Text("Campagne").DataIndex("DateBonDeLivraisonLongAsSrtring").Flex(1),
                             //Html.X().Column().Text("Belnding N°").DataIndex("LibelleTypeDeLivraison").Flex(1),
                             Html.X().Column().Text("Production N°").DataIndex("NumeroProduction").Flex(1),
-                            Html.X().Column().Text("Blending N°").DataIndex("Numero").Flex(1),
+                            Html.X().Column().Text("Melange N°").DataIndex("Numero").Flex(1),
                             Html.X().Column().Text("Laboratoire").DataIndex("LaboratoireAsString").Flex(1),
                             //Html.X().Column().Text("Exportateur").DataIndex("LivraisonID").Flex(1),
                             //Html.X().Column().Text("Quart").DataIndex("LivraisonNumeroExterne").Flex(1),
                             //Html.X().Column().Text("Blending agent").DataIndex("FournisseurNom").Flex(1),
                             //Html.X().Column().Text("Chief of Quart").DataIndex("Immatriculation").Flex(1),
-                            Html.X().Column().Text("Blending Date").DataIndex("DateCompositionAsString").Flex(1),
+                            Html.X().Column().Text("Date Melange").DataIndex("DateCompositionAsString").Flex(1),
                             Html.X().Column().Text("Commentaire").DataIndex("Commentaire").Flex(1).Hidden(true),
                             Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
                             Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),

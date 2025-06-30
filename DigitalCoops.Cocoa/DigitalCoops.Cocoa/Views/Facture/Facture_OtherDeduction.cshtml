@@ -109,7 +109,7 @@
                                                 }
                                              ),
 
-                                            X.TextField()
+                                            X.NumberField()
                                              .ID("txtTaux")
                                              .MaskRe("[0123456789]")
                                              .FieldLabel("Taux (FCFA)")
@@ -118,6 +118,7 @@
                                              .LabelWidth(102)
                                              .Width(283)
                                              .AllowBlank(false)
+                                             .AllowDecimals(true)
                                              .IndicatorCls("IndicatorRedStar")
                                              .IndicatorText("*")
                                              .Listeners
@@ -125,8 +126,8 @@
                                                 l =>
                                                 {
                                                     l.Change.Fn = "CalculateAmount";
-                                                    l.Blur.Handler = "if (App.txtTaux.value && !App.txtTaux.readOnly) {#{txtTaux}.setValue(formatNumber(#{txtTaux}.getValue()));}";
-                                                    l.Focus.Handler = "if (App.txtTaux.value && !App.txtTaux.readOnly) { #{txtTaux}.setRawValue(unformatNumber(#{txtTaux}.getValue()));}";
+                                                    //l.Blur.Handler = "if (App.txtTaux.value && !App.txtTaux.readOnly) {#{txtTaux}.setValue(formatNumber(#{txtTaux}.getValue()));}";
+                                                    //l.Focus.Handler = "if (App.txtTaux.value && !App.txtTaux.readOnly) { #{txtTaux}.setRawValue(unformatNumber(#{txtTaux}.getValue()));}";
                                                 }
                                              ),
 
@@ -179,7 +180,7 @@
                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemSavings", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenSavings}.getValue()" });
                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemType", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbType}.getValue()" });
                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemAmount", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtMontant}.getValue()" });
-                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemRate", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtTaux}.getValue()" });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemRate", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtTaux}.getRawValue()" });
                                     }
                                ),
 
@@ -225,9 +226,10 @@
     var CalculateAmount = function () {
 
         try {
-            
-            var Taux = unformatNumber(App.txtTaux.value) || '';
-            var PoidsNet = unformatNumber(App.txtPoidsNet.value) || '';
+
+            /*var Taux = unformatNumber(App.txtTaux.value) || '';*/
+            var Taux = parseFloat(App.txtTaux.value || 0);
+            var PoidsNet = parseFloat(unformatNumber(App.txtPoidsNet.value) || 0);
             var Amount = '';
 
             App.txtMontant.setValue('0');
@@ -235,12 +237,11 @@
             if (Ext.isNumeric(Taux) && Ext.isNumeric(PoidsNet)) {
                 Amount = RoundInt(Taux * PoidsNet);
                 App.txtMontant.setValue(formatNumber(Amount));
-            }           
-
+            }
 
         }
         catch (err) {
-            Ext.Msg.show({ title: 'Mise En Compte : Amount Calculation ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating amount.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Deduction : Calcul ', icon: Ext.MessageBox.WARNING, msg: 'Erreur lors du calcul du montant.', buttons: Ext.Msg.OK });
 
         }
 

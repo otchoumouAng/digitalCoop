@@ -14,7 +14,7 @@ X.Window()
     .Modal(true)
     .BodyPadding(5)
     .Y(100)
-    .Title(ViewData["Titre"] + " : Criteria")
+    .Title(ViewData["Titre"] + " : Critères")
     .Layout(LayoutType.Form)
     .Items
     (
@@ -176,12 +176,13 @@ X.Window()
                         X.ComboBox()
                             .ID("cmbDetStatus")
                             .FieldLabel("Statut")
-                            .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "%%" }); })
+                            .SelectedItems(se => { se.Add(new ListItem { Text = "Approuvé", Value = "AP" }); })
                             .DisplayField("Nom")
                             .ValueField("ID")
+                            .ReadOnly(true)
                             .LabelAlign(LabelAlign.Right)
-                            .TypeAhead(true)
-                            .ForceSelection(true)
+                            //.TypeAhead(true)                            
+                            //.ForceSelection(true)
                             .Items(
                                     new ListItem("{Tous}", "%%"),
                                     new ListItem("Approuvé", "AP"),

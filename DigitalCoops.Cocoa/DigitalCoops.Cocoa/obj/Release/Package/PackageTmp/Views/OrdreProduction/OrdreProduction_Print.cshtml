@@ -53,7 +53,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     //.X(20)
     .Y(20)
-    .Title("Production Order : Print")
+    .Title("Ordre De Production")
     .BodyPadding(5)
     .Items
     (
@@ -72,7 +72,7 @@ X.Window()
                     (
                         X.ComboBox()
                             .ID("cmbQuart")
-                            .FieldLabel("Shift")
+                            .FieldLabel("Quart")
                             .DisplayField("Nom")
                             .ValueField("ID")
                             .LabelAlign(LabelAlign.Right)
@@ -110,7 +110,7 @@ X.Window()
                             ),
                         X.ComboBox()
                             .ID("cmbMelangeur")
-                            .FieldLabel("Blending Agent")
+                            .FieldLabel("Agent Production")
                             .DisplayField("Nom")
                             .ValueField("ID")
                             .LabelAlign(LabelAlign.Right)
@@ -204,8 +204,8 @@ X.Window()
                             it =>
                             {
                                 it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
-                                it.Add(new ListItem { Text = "Openned", Value = "NA" });
-                                it.Add(new ListItem { Text = "Closed", Value = "CL" });
+                                it.Add(new ListItem { Text = "Ouvert", Value = "NA" });
+                                it.Add(new ListItem { Text = "Fermé", Value = "CL" });
                             }
                         )
                         .SelectedItems

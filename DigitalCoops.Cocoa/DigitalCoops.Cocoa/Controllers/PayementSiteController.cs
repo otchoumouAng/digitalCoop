@@ -418,7 +418,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult OnDisplayPayementList()
         {
-            ViewData["Titre"] = "Print List of Payments";
+            ViewData["Titre"] = "Liste Des Paiements";
             ViewData["actionToDo"] = "OnPrintPaymentList";
             ViewData["ControllerName"] = "Payement";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmCriteriaForPayment", ViewData = ViewData };

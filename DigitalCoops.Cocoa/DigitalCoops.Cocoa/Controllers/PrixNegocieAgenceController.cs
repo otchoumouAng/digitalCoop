@@ -1152,7 +1152,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult OnDisplaySpotPriceList()
         {
-            ViewData["Titre"] = "Print List of Prix Negociés";
+            ViewData["Titre"] = "Liste des Prix Negociés";
             ViewData["actionToDo"] = "mnuPrintPrixNegocieAgenceList";
             ViewData["ControllerName"] = "PrixNegocieAgence";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmPeriodWithSupplierForReport", ViewData = ViewData };

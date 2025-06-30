@@ -135,7 +135,7 @@ X.Window()
     .Y(25)
     .Modal(true)
     .BodyPadding(5)
-    .Title("List of available financings")
+    .Title("Liste des financements disponible")
     //.Layout(LayoutType.VBox)
     //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
     .Items
@@ -193,7 +193,7 @@ X.Window()
                                     .ID("btnUpdateFinancing")
                                     .MarginSpec("0 0 0 0")
                                     .IconCls("action_modify_02")
-                                    .Text("Update Deduction")
+                                    .Text("Ajuster le financement")
                                     .Border(true)
                                     .Flat(true)
                                     .Cls("ButtonStyle")
@@ -203,7 +203,7 @@ X.Window()
                                       de =>
                                       {
                                           de.Click.Url = Url.Action("OnUpdateDeductedFinancing");
-                                          de.Click.Success = "App.ListOfDeductedFinancing.setTitle('Financement : Available financings')";
+                                          de.Click.Success = "App.ListOfDeductedFinancing.setTitle('Financement(s) disponible(s)')";
                                           de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeductedFinancing}.getSelectionModel().getSelection()[0].data" });
                                           de.Click.EventMask.ShowMask = true;
                                       }

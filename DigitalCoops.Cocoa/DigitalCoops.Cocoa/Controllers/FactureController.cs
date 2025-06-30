@@ -673,8 +673,8 @@ namespace Tms2017.MVC.Controllers
                     {
                         X.MessageBox.Show(new MessageBoxConfig
                         {
-                            Title = "Facture : Bon De Livraison",
-                            Message = "Bon De Livraison not Found, Please Retry !",
+                            Title = "Facture : Bon De Reception",
+                            Message = "Bon De Reception not Found, Please Retry !",
                             Buttons = MessageBox.Button.OK,
                             Icon = MessageBox.Icon.WARNING
                         });
@@ -686,7 +686,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Bon De Livraison : Submit Delivery",
+                    Title = "Bon De Reception : Submit Delivery",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -829,13 +829,19 @@ namespace Tms2017.MVC.Controllers
             List<Facture_Prelevement> ListOfSavings = JSON.Deserialize<List<Facture_Prelevement>>(ItemSavings, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
 
             int mTypeID = int.Parse(ItemType);
+            decimal mtauc = 0;
+            double ftauc = 0;
+            bool res = decimal.TryParse(ItemRate, out mtauc);
+            res = double.TryParse(ItemRate, out ftauc);
+
             FactureDeductionType mMecType = new FactureDeductionType(mTypeID);
             string mTypeDesignation = mMecType.Designation;
             decimal mMontant = decimal.Parse(ItemAmount);
-            decimal mTaux = ItemRate != string.Empty ? decimal.Parse(ItemRate) : 0;
+            double mTauxf = ItemRate != string.Empty ? double.Parse(ItemRate) : 0;
+            decimal mTaux = ItemRate != string.Empty ? (decimal)double.Parse(ItemRate) : 0;
 
             X.GetCmp<Window>("SavingOthers").Close();
-                              
+
             Store mstore = X.GetCmp<Store>("storeListDeduction");
 
             //Update saving deducted in the list of deductions           
@@ -856,6 +862,39 @@ namespace Tms2017.MVC.Controllers
 
             return this.Direct();
         }
+
+        //public ActionResult SubmitDeductedOthers(string ItemSavings, string ItemType, string ItemAmount, string ItemRate)
+        //{
+        //    List<Facture_Prelevement> ListOfSavings = JSON.Deserialize<List<Facture_Prelevement>>(ItemSavings, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+
+        //    int mTypeID = int.Parse(ItemType);
+        //    FactureDeductionType mMecType = new FactureDeductionType(mTypeID);
+        //    string mTypeDesignation = mMecType.Designation;
+        //    decimal mMontant = decimal.Parse(ItemAmount);
+        //    decimal mTaux = ItemRate != string.Empty ? decimal.Parse(ItemRate) : 0;
+
+        //    X.GetCmp<Window>("SavingOthers").Close();
+
+        //    Store mstore = X.GetCmp<Store>("storeListDeduction");
+
+        //    //Update saving deducted in the list of deductions           
+        //    FactureDeduction mFactureDeduction = null;
+
+        //    mFactureDeduction = new FactureDeduction();
+        //    mFactureDeduction.ID = Guid.NewGuid();
+        //    mFactureDeduction.DeductionType = new FactureDeductionType();
+        //    mFactureDeduction.DeductionType.ID = mTypeID;
+        //    mFactureDeduction.DeductionType.IsOtherDeduction = true;
+        //    mFactureDeduction.Libelle = mTypeDesignation;
+        //    mFactureDeduction.ElementID = Guid.Empty;
+        //    mFactureDeduction.ElementRef = string.Empty;
+        //    mFactureDeduction.Taux = mTaux;
+        //    mFactureDeduction.Montant = mMontant;
+        //    mFactureDeduction.ElementTypeID = mTypeID;
+        //    mstore.Add(mFactureDeduction);
+
+        //    return this.Direct();
+        //}
 
 
         private void MapDeliveryNoteToForm(BonDeLivraison mClass)
@@ -1545,7 +1584,7 @@ namespace Tms2017.MVC.Controllers
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            ViewData["Titre"] = "Print Liste des factures";
+            ViewData["Titre"] = "Liste des factures";
             ViewData["actionToDo"] = "OnPrintInvoiceList";
             ViewData["ControllerName"] = "Facture";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmCriteriaForBonDeLivraison", ViewData = ViewData };
@@ -1572,7 +1611,7 @@ namespace Tms2017.MVC.Controllers
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            ViewData["Titre"] = "Print List Of Valuation";
+            ViewData["Titre"] = "Liste Des Valorisations";
             ViewData["actionToDo"] = "OnPrintValuationList";
             ViewData["ControllerName"] = "Facture";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmPeriodWithSupplierForReport", ViewData = ViewData };
@@ -1598,7 +1637,7 @@ namespace Tms2017.MVC.Controllers
             ViewData["SiteParDefaut"] = mSiteParDefaut.ID;
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
-            ViewData["Titre"] = "Print List of Livraisons disponibles";
+            ViewData["Titre"] = "Liste des Livraisons disponibles";
             ViewData["actionToDo"] = "OnPrintAvailableDeliveries";
             ViewData["ControllerName"] = "Facture";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmPeriodWithSupplierForReport", ViewData = ViewData };

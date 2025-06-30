@@ -1539,7 +1539,7 @@ namespace Tms2017.MVC.Controllers
 
         private Fournisseur MapFormToObject(Fournisseur mClass)
         {
-            mClass.Nom = GetFormValue("TxtFournisseurName");
+            mClass.Nom = GetFormValue("TxtFournisseurName").ToUpper();
 
             mClass.FournisseurGroupe = new Tms.Classes.Shared.FournisseurGroupe();
             mClass.FournisseurGroupe.ID = int.Parse(GetFormValue("GroupFournisseurID"));
@@ -1676,7 +1676,9 @@ namespace Tms2017.MVC.Controllers
                     case 4:
                         myList = new Fournisseur().fnSelectFromPrime((int)siteID);
                         break;
-
+                    case 5:
+                        myList = new Fournisseur().fnSelectFromCommission((int)siteID);
+                        break;
                 }
 
                 return this.Store(myList);

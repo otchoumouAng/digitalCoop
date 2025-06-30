@@ -95,7 +95,7 @@
             
             totalNet = FormatAmount(totalNet);
             totalNbrOfBags = FormatAmount(totalNbrOfBags);*/
-            App.lblSummaryOP.setHtml("Nbr Of Production Order : " + nbrOfrows);
+            App.lblSummaryOP.setHtml("Nbr : " + nbrOfrows);
         },
 
         resetButtons: function () {
@@ -200,7 +200,7 @@
                             de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
                             de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
                             de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatut", Encode=false, Value= "#{cmbFiltreStatut}.getValue()", Mode=ParameterMode.Raw});
-                            de.Click.Success = "App.OrdreProductionCP.setTitle('Shift : '+ App.cmbFiltreQuart.rawValue + ', Blending Agent : ' + App.cmbFiltreMelangeur.rawValue + ', Certification : '+ App.cmbFiltreCertification.rawValue + ', Statut : '+ App.cmbFiltreStatut.rawValue + ', du '+ App.txtStartDate.rawValue  + ' au '+ App.txtEndDate.rawValue )";
+                            de.Click.Success = "App.OrdreProductionCP.setTitle('Quart : '+ App.cmbFiltreQuart.rawValue + ', Agent : ' + App.cmbFiltreMelangeur.rawValue + ', Certification : '+ App.cmbFiltreCertification.rawValue + ', Statut : '+ App.cmbFiltreStatut.rawValue + ', du '+ App.txtStartDate.rawValue  + ' au '+ App.txtEndDate.rawValue )";
                             de.Click.EventMask.ShowMask = true;
                         }
                         ),
@@ -217,7 +217,7 @@
                         de =>
                             {
                                 de.Click.Url  = Url.Action("OnAdd");
-                                de.Click.Success = "App.FormOrdreProduction.setTitle('Production Order - Nouveau')";
+                                de.Click.Success = "App.FormOrdreProduction.setTitle('Ordre De Production - Nouveau')";
                                 de.Click.EventMask.ShowMask = true;
                             }
                         ),
@@ -234,7 +234,7 @@
                             de =>
                             {
                             de.Click.Url  = Url.Action("OnEdit");
-                            de.Click.Success = "App.FormOrdreProduction.setTitle('Production Order - Modify')";
+                            de.Click.Success = "App.FormOrdreProduction.setTitle('Ordre De Production - Modifier')";
                             de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeOrdreProduction}.getSelectionModel().getSelection()[0].data"});
                             de.Click.EventMask.ShowMask = true;
                             }
@@ -253,7 +253,7 @@
                             {
                                 de.Click.Url  = Url.Action("onCloseProduction");
                                 de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeOrdreProduction}.getSelectionModel().getSelection()[0].data"});
-                                de.Click.Success = "App.FormCloseOrdreProduction.setTitle('Production Order - Close')";
+                                de.Click.Success = "App.FormCloseOrdreProduction.setTitle('Ordre De Production - Fermer')";
                                 de.Click.EventMask.ShowMask = true;
                             }
                     ),
@@ -273,7 +273,7 @@
                                 {
                                     X.MenuItem()
                                         .ID("mnuPrintProductionList")
-                                        .Text("Production Order List")
+                                        .Text("Ordres De Production")
                                         .Disabled(false)
                                         .DirectEvents
                                         (
@@ -285,7 +285,7 @@
                                         ),
                                     X.MenuItem()
                                         .ID("mnuPrintProductionSheet")
-                                        .Text("Production Sheet")
+                                        .Text("Fiche de Production")
                                         .Disabled(true)
                                         .DirectEvents
                                         (
@@ -297,7 +297,7 @@
                                         ),
                                     X.MenuItem()
                                         .ID("mnuPrintProductionShrink")
-                                        .Text("Production shrink Report")
+                                        .Text("Ecart de Production")
                                         .Disabled(true)
                                         .DirectEvents
                                         (
@@ -345,7 +345,7 @@
                                 //            {
                                 //                de.Click.Url  = Url.Action("onCloseProduction");
                                 //                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeOrdreProduction}.getSelectionModel().getSelection()[0].data"});
-                                //                de.Click.Success = "App.FormCloseOrdreProduction.setTitle('Production Order - Close')";                                                
+                                //                de.Click.Success = "App.FormCloseOrdreProduction.setTitle('Ordre De Production - Close')";                                                
                                 //                de.Click.EventMask.ShowMask = true;
                                 //            }
                                 //        ),
@@ -364,7 +364,7 @@
                                             de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreProduction}.getSelectionModel().getSelection()[0].data" });
                                             de.Click.EventMask.ShowMask = true;
                                             de.Click.Confirmation.ConfirmRequest = true;
-                                            de.Click.Confirmation.Title = "Production Order - Cancel";
+                                            de.Click.Confirmation.Title = "Ordre De Production - Annuler";
                                             de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeOrdreProduction}.getSelectionModel().getSelection()[0].data.Desactive)";
                                             de.Click.Success = "Overview.resetButtons();";
                                         }
@@ -380,7 +380,7 @@
 
         X.FormPanel()
             .ID("OrdreProductionCP")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Production Order - overview" })
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Ordre De Production - overview" })
             .Region(Region.North)
             .Floatable(false)
             .Border(false)
@@ -401,7 +401,7 @@
                     (
                         X.ComboBox()
                             .ID("cmbFiltreQuart")
-                            .FieldLabel("Shift")
+                            .FieldLabel("Quart")
                             .DisplayField("Nom")
                             .ValueField("ID")
                             .LabelAlign(LabelAlign.Right)
@@ -439,7 +439,7 @@
                             ),
                         X.ComboBox()
                             .ID("cmbFiltreMelangeur")
-                            .FieldLabel("Blending Agent")
+                            .FieldLabel("Agent")
                             .DisplayField("Nom")
                             .ValueField("ID")
                             .LabelAlign(LabelAlign.Right)
@@ -534,8 +534,8 @@
                             it =>
                             {
                                 it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
-                                it.Add(new ListItem { Text = "Openned", Value = "NA" });
-                                it.Add(new ListItem { Text = "Closed", Value = "CL" });
+                                it.Add(new ListItem { Text = "Ouvert", Value = "NA" });
+                                it.Add(new ListItem { Text = "Fermé", Value = "CL" });
                             }
                         )
                         .SelectedItems
@@ -619,16 +619,16 @@
                 Html.X().Column().Text("Date").DataIndex("DateProductionAstring").Flex(1),
                 Html.X().Column().Text("Prod N°").DataIndex("NumeroProduction").Flex(1),
                 Html.X().Column().Text("Provenance").DataIndex("PoleProvenanceAsString").Flex(1),
-                Html.X().BooleanColumn().Text("Is re-Cleaned").DataIndex("EstReusine").Flex(1).FalseText("No").TrueText("Yes"),
+                Html.X().BooleanColumn().Text("Reusiné").DataIndex("EstReusine").Flex(1).FalseText("No").TrueText("Yes"),
                 Html.X().Column().Text("Certification").DataIndex("CertificationAsString").Flex(1),
-                Html.X().Column().Text("Shift").DataIndex("QuartAsString").Flex(1),
-                Html.X().Column().Text("Chief of Shift").DataIndex("ChefQuartAsString").Flex(1),
-                Html.X().Column().Text("Blending Agent").DataIndex("MelangeurAsString").Flex(1),
+                Html.X().Column().Text("Quart").DataIndex("QuartAsString").Flex(1),
+                Html.X().Column().Text("Chef De Quart").DataIndex("ChefQuartAsString").Flex(1),
+                Html.X().Column().Text("Agent Production").DataIndex("MelangeurAsString").Flex(1),
                 Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").EmptyCellText("0").Flex(1),
                 Html.X().Column().Text("Net Livré").DataIndex("PoidsNetAsString").Flex(1).EmptyCellText("0"),
                 //Html.X().Column().Text("Net Delivered").DataIndex("Immatriculation").Flex(1),
                 //Html.X().Column().Text("Date Debut").DataIndex("DateDebutProductionAsString").Flex(1),
-                Html.X().Column().Text("End Date").DataIndex("DateClotureAsString").Flex(1),
+                Html.X().Column().Text("Date Fin").DataIndex("DateClotureAsString").Flex(1),
                 Html.X().Column().Text("Commentaire").DataIndex("Commentaire").Flex(1).Hidden(true),
                 Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
                 Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
@@ -665,7 +665,7 @@
                         de.RowDblClick.CleanRequest = true;
                         de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowOrdreProduction}.getSelected().items[0].data" });
                         de.RowDblClick.EventMask.ShowMask = true;
-                        de.RowDblClick.Success = "App.FormOrdreProduction.setTitle('Production Order : Detail')";
+                        de.RowDblClick.Success = "App.FormOrdreProduction.setTitle('Ordre De Production : Detail')";
                     }
                 )
     #endregion

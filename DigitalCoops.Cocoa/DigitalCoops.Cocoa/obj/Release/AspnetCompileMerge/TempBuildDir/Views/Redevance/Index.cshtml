@@ -227,7 +227,7 @@
                                 .Disable(false)
                                 .DirectEvents( de =>{
                                     de.Click.Url  = Url.Action("OnCreate");
-                                    de.Click.Success = "App.Redevance_Detail.setTitle('Shipment Fees : Generate')";
+                                    de.Click.Success = "App.Redevance_Detail.setTitle('Redevance : Générer')";
                                     de.Click.EventMask.ShowMask = true;
                                 } )
                                 ,
@@ -241,7 +241,7 @@
                             .Disabled(true)
                             .DirectEvents( de =>{
                                 de.Click.Url = Url.Action("OnEdit");
-                                de.Click.Success = "App.Redevance_Detail.setTitle('Shipment Fees : Edit')";
+                                de.Click.Success = "App.Redevance_Detail.setTitle('Redevance : Edit')";
                                 de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw,Encode = true, Value="#{grpListeRedevance}.getSelectionModel().getSelection()[0].data"});
                                 de.Click.EventMask.ShowMask = true;
                             } )
@@ -286,7 +286,7 @@
                                                                 {
                                                                     de.Click.Url = Url.Action("OnPrintShipmentFees");
                                                                     de.Click.EventMask.ShowMask = true;
-                                                                    de.Click.Success = "App.FormPrintRedevanceReport.setTitle('Shipment Fees : History')";
+                                                                    de.Click.Success = "App.FormPrintRedevanceReport.setTitle('Redevance : History')";
                                                                     de.Click.ExtraParams.Add(new Parameter {  Name = "typeReport" , Mode= ParameterMode.Value, Value = "Hi" });
                                                                 }
                                                             )
@@ -326,7 +326,7 @@
                                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw,Encode = true, Value = "#{grpListeRedevance}.getSelectionModel().getSelection()[0].data" });
                                                     de.Click.EventMask.ShowMask = true;
                                                     de.Click.Confirmation.ConfirmRequest = true;
-                                                    de.Click.Confirmation.Title = "Shipment Fees";
+                                                    de.Click.Confirmation.Title = "Redevance";
                                                     de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeRedevance}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                     de.Click.Success = "Overview.resetButtons();";
                                                 })
@@ -340,7 +340,7 @@
                                                 ,
                                                 X.FormPanel()
                                                 .ID("RedevanceCriteriaPanel")
-                                                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Shipment Fees - overview" })
+                                                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Redevance - overview" })
                                                 .Region(Region.North)
                                                 .Floatable(false)
                                                 .Border(false)
@@ -555,7 +555,7 @@
     {
         de.RowDblClick.Url = Url.Action("OnConsult");
         de.RowDblClick.CleanRequest = true;
-        de.RowDblClick.Success = "App.Redevance_Detail.setTitle('Shipment Fees : Detail')";
+        de.RowDblClick.Success = "App.Redevance_Detail.setTitle('Redevance : Detail')";
         de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeRedevance}.getSelected().items[0].data" });
         de.RowDblClick.EventMask.ShowMask = true;
     }

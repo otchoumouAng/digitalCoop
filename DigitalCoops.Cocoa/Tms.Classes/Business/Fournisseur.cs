@@ -936,6 +936,36 @@ namespace Tms.Classes.Business
             }
         }
 
+        public List<DataPersist> fnSelectFromCommission(int siteID = -1)
+        {
+            List<DataPersist> mList = new List<DataPersist>();
+            IDataReader mDataReader = null;
+
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("Payement_SelectFournisseurFromCommission");
+                db().AddInParameter(mCommande, "@SiteID", SqlDbType.Int, siteID);
+                mDataReader = db().ExecuteReader(mCommande);
+
+                while (mDataReader.Read())
+                {
+                    Fournisseur mClass = new Fournisseur();
+
+                    MapFromDataReaderLite(mClass, mDataReader);
+                    mList.Add(mClass);
+                }
+                return mList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnSelectFromSaving");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
         #endregion
 
         #region "Private Members"
@@ -1159,7 +1189,7 @@ namespace Tms.Classes.Business
                 if (_ExecMode != Components.Settings.EnumsDefinition.eExecMode.AddNew)
                     return (this._Fournisseur != null && this._Fournisseur.FournisseurGroupe != null) ? _Fournisseur.FournisseurGroupe.ID.ToString() : String.Empty;
                 else
-                    return String.Empty;
+                    return (new Parametres(0)).GroupeFrsCacaoID.ToString();
             }
         }
 

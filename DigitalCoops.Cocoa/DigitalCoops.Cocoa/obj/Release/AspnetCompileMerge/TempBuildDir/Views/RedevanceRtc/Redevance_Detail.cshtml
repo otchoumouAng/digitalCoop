@@ -98,7 +98,7 @@
             .CloseAction(Ext.Net.CloseAction.Destroy)
             .Modal(true)
             .Y(5)
-            .Title("Shipment Fees")
+            .Title("Redevance")
             .Items
             (
                 X.FormPanel()
@@ -581,13 +581,13 @@
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Shipment Fees : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Redevance : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
             return false;
         }
 
         if (App.grpDetailShipFees.getRowsValues().lenght <= 0) {
 
-            Ext.Msg.show({ title: 'Shipment Fees : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'No fee added.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Redevance : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'No fee added.', buttons: Ext.Msg.OK });
             return false;
         }
     };

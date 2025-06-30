@@ -389,7 +389,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult OnDisplayProgSavingList()
         {
-            ViewData["Titre"] = "Print List Of Mise en Compte planifiées";
+            ViewData["Titre"] = "Liste des Mise en Compte planifiées";
             ViewData["actionToDo"] = "OnPrintProgSavingList";
             ViewData["ControllerName"] = "MiseEnComptePlanifiee";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmCriteriaForProgSaving", ViewData = ViewData };
