@@ -52,3 +52,17 @@ C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NET
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.pdb
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.csprojResolveAssemblyReference.cache
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Tms.Components.dll
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Tms.Components.pdb
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.dll
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.Utilities.dll
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NET.dll
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.xml
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Ext.Net.Utilities.xml
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Newtonsoft.Json.xml
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NET.xml
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.csprojResolveAssemblyReference.cache
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.dll
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.pdb
+C:\Users\HP\Documents\ODMTEC\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\QRCoder.dll

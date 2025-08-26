@@ -68,6 +68,11 @@
       <HintPath>..\Tms2017.MVC\bin\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QRCoder, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>..\packages\QRCoder.1.6.0\lib\net40\QRCoder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
@@ -84,6 +89,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Business\AnalyseCode.cs" />
@@ -98,6 +104,7 @@
     <Compile Include="Business\Financement.cs" />
     <Compile Include="Business\Financement_Approval.cs" />
     <Compile Include="Business\Fournisseur.cs" />
+    <Compile Include="Business\Palette.cs" />
     <Compile Include="Business\PrixJournalier.cs" />
     <Compile Include="Business\PrixJournalierAgence.cs" />
     <Compile Include="Business\PrixNegocieAgence.cs" />
@@ -343,6 +350,7 @@
     <Compile Include="Security\Utilisateur.cs" />
     <Compile Include="Shared\AnalysePhysiqueNorme.cs" />
     <Compile Include="Shared\Analyseur.cs" />
+    <Compile Include="Business\Article.cs" />
     <Compile Include="Shared\Banque.cs" />
     <Compile Include="Shared\Bascule.cs" />
     <Compile Include="Shared\Campagne.cs" />
@@ -350,6 +358,7 @@
     <Compile Include="Shared\ClassificationFeves.cs" />
     <Compile Include="Shared\ContratPeriodeType.cs" />
     <Compile Include="Shared\DashBoard.cs" />
+    <Compile Include="Business\DemandeEtiquette.cs" />
     <Compile Include="Shared\Destination.cs" />
     <Compile Include="Shared\DestinationType.cs" />
     <Compile Include="Shared\ElementEnStock.cs" />
@@ -361,15 +370,26 @@
     <Compile Include="Shared\FournisseurType.cs" />
     <Compile Include="Shared\IService.cs" />
     <Compile Include="Shared\Imprimante.cs" />
+    <Compile Include="Shared\LigneProduction.cs" />
+    <Compile Include="Shared\MarqueProduit.cs" />
     <Compile Include="Shared\MiseEnComptePlanifieeMode.cs" />
     <Compile Include="Shared\MoneySpeller.cs" />
     <Compile Include="Shared\MoneySpellerEn.cs" />
+    <Compile Include="Shared\OrdreFabrication.cs" />
     <Compile Include="Shared\PayementItem.cs" />
     <Compile Include="Shared\PayementOption.cs" />
+    <Compile Include="Shared\ProduitFini.cs" />
+    <Compile Include="Shared\ProduitGamme.cs" />
+    <Compile Include="Shared\ProduitType.cs" />
+    <Compile Include="Shared\QAStatus.cs" />
+    <Compile Include="Shared\QrCodeGenerator.cs" />
+    <Compile Include="Shared\Sales\ConditionnementProduit.cs" />
+    <Compile Include="Shared\Sales\ConditionnementReference.cs" />
     <Compile Include="Shared\Sales\ContratDeVentePoidsStandard.cs" />
     <Compile Include="Shared\Sales\ConteneurShip.cs" />
     <Compile Include="Shared\Sales\RedevanceNature.cs" />
     <Compile Include="Shared\Sites\AnalyseurSite.cs" />
+    <Compile Include="Shared\StatutsQualite.cs" />
     <Compile Include="Shared\stock\PoleProvenance.cs" />
     <Compile Include="Shared\PayementType.cs" />
     <Compile Include="Shared\PrefinancementType.cs" />
@@ -431,6 +451,7 @@
     <Compile Include="Shared\Transitaire.cs" />
     <Compile Include="Shared\Transporteur.cs" />
     <Compile Include="Shared\TypeChargement.cs" />
+    <Compile Include="Shared\Sales\UniteDePoids.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tms.Components\Tms.Components.csproj">
@@ -448,6 +469,7 @@
     <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

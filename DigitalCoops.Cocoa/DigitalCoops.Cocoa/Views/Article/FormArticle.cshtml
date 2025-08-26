@@ -1,0 +1,691 @@
+﻿@model Tms.Classes.Business.ArticleViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+            X.Window()
+                .ID("FormArticle")
+                .Width(750)
+                .Resizable(false)
+                .Height(380)
+                .Modal(true)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                 .Listeners(l =>
+                 {
+                     l.Close.Handler = "App.TmsViewPort.unmask();";
+                 })
+                //.X(400)
+                .Y(20)
+                .Title("Articles de production : Detail")
+                .Items
+                (
+                    X.FormPanel()
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                        .Items(
+    #region zone A
+                    X.Container()
+                                    .Layout(LayoutType.Form)
+                                    .Flex(1)
+                                    .Items
+                                    (
+                                        X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._Article.RowVersionKey),
+                                        X.Hidden().ID("TxtArticleId").ReadOnly(true).Value(Model._Article.ID),
+
+                                         X.ComboBox()
+                                            .ID("cmbProduit")
+                                            .TabIndex(1)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .FieldLabel("Produit")
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .QueryMode(DataLoadMode.Local)
+                                            .TriggerAction(TriggerAction.All)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.ProduitFini.ID : (int?)null)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                        .IDProperty("Designation")
+                                                        .Fields
+                                                        (
+                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                    )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadProduit", "Produit"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                            ),
+
+
+                                          X.ComboBox()
+                                            .ID("cmbProtuitType")
+                                            .TabIndex(2)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .TriggerAction(TriggerAction.All)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .FieldLabel("Type de produit")
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.ProduitType.ID : (int?)null)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        X.Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                    )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadProduitType", "ProduitType"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                            //.Listeners(
+                                            //    ls => ls.Load.Handler = "if (App.cmbProduit.value){ DefinirZonesObligatoires(App.cmbProduit.getSelectedRecord().data);};"
+                                            //)
+                                            ),
+
+                                           X.ComboBox()
+                                                    .ID("cmbMarqueProduit")
+                                                    .TabIndex(3)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .FieldLabel("Marque")
+                                                    .DisplayField("Designation")
+                                                    .ValueField("ID")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.MarqueProduit.ID : (int?)null)
+                                                    .Store
+                                                    (
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                                X.Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                            )
+                                                            .Proxy
+                                                            (
+                                                                Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadMarqueProduit", "MarqueProduit"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                    //.Listeners(
+                                                    //    ls => ls.Load.Handler = "if (App.cmbProduit.value){ DefinirZonesObligatoires(App.cmbProduit.getSelectedRecord().data);};"
+                                                    //)
+                                                    ),
+                                                X.ComboBox()
+                                                      .ID("cmbProduitGamme")
+                                                      .FieldLabel("Gamme")
+                                                      .DisplayField("Designation")
+                                                      .ValueField("ID")
+                                                      .TabIndex(4)
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .Value(Model._Article.ProduitGamme != null ? (int?)Model._Article.ProduitGamme.ID : (int?)null)
+                                                      .Store
+                                                      (
+                                                         X.Store()
+                                                              .AutoLoad(true)
+                                                              .Model
+                                                              (
+                                                                X.Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                      new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                      new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                               )
+                                                              .Proxy
+                                                               (
+                                                                 Html.X().AjaxProxy()
+                                                                     .Url(Url.Action("LoadProduitGamme", "ProduitGamme"))
+                                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                               )
+                                                        ),
+
+
+
+                                          X.TextField()
+                                                    .ID("TxtCode")
+                                                    .FieldLabel("Code Article")
+                                                    .TabIndex(5)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Text(Model._Article.Code),
+
+                                        
+                                         X.TextField()
+                    .ID("TxtCodeEtendu")
+                    .FieldLabel("Code Etendu")
+                    .TabIndex(6)
+                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                    .AllowBlank(false)
+                    .LabelAlign(LabelAlign.Right)
+                    .Text(Model._Article.CodeEtendu),
+
+                                         X.TextField()
+                    .ID("TxtNom")
+                    .FieldLabel("Designation")
+                    .TabIndex(7)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .LabelAlign(LabelAlign.Right)
+                    .Text(Model._Article.Description),
+
+
+
+
+                                                  X.ComboBox()
+                  .ID("cmbLigneProduction")
+                  .FieldLabel("Ligne de production")
+                  .DisplayField("Designation")
+                  .ValueField("ID")
+                  .TabIndex(8)
+                  .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                  .LabelAlign(LabelAlign.Right)
+                  .Value(Model._Article.LigneProduction != null ? (int?)Model._Article.LigneProduction.ID : (int?)null)
+                  .Store
+                  (
+                     X.Store()
+                          .AutoLoad(true)
+                          .Model
+                          (
+                            X.Model()
+                                .IDProperty("ID")
+                                .Fields
+                                (
+                                  new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                  new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                )
+                           )
+                          .Proxy
+                           (
+                             Html.X().AjaxProxy()
+                                 .Url(Url.Action("LoadLigneProduction", "LigneProduction"))
+                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                           )
+                    ),
+
+                                                   X.ComboBox()
+                                                      .ID("cmbConditionnement")
+                                                      .FieldLabel("Conditionnement")
+                                                      .AllowBlank(false)
+                                                      .IndicatorCls("IndicatorRedStar")
+                                                      .IndicatorText("*")
+                                                      .DisplayField("Designation")
+                                                      .ValueField("ID")
+                                                      .TabIndex(9)
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .Value(Model._Article.Conditionnement != null ? (int?)Model._Article.Conditionnement.ID : (int?)null)
+                                                      .Store
+                                                      (
+                                                         X.Store()
+                                                              .AutoLoad(true)
+                                                              .Model
+                                                              (
+                                                                X.Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                      new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                      new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                               )
+                                                              .Proxy
+                                                               (
+                                                                 Html.X().AjaxProxy()
+                                                                     .Url(Url.Action("Load", "ConditionnementProduit"))
+                                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                               )
+                                                        ).Listeners(l =>
+                                        {
+                                            l.Select.Handler = @"
+                                                                            App.cmbConditionnementReference.clearValue();
+                                                                App.sotreConditionnementReference.reload();";
+                                        }),
+
+
+
+                                         X.ComboBox()
+                .ID("cmbConditionnementReference")
+                .FieldLabel("Conditionnement Ref")
+                .AllowBlank(false)
+                .IndicatorCls("IndicatorRedStar")
+                .IndicatorText("*")
+                .DisplayField("Reference")
+                .ValueField("ID")
+                .TabIndex(10)
+                .LabelAlign(LabelAlign.Right)
+                .Value(Model._Article.ConditionnementReference != null ? (int?)Model._Article.ConditionnementReference.ID : (int?)null)
+                .Store
+                (
+                   X.Store()
+                   .ID("sotreConditionnementReference")
+                        .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                        .Model
+                        (
+                          X.Model()
+                              .IDProperty("ID")
+                              .Fields
+                              (
+                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                new ModelField("Reference", ModelFieldType.String) { Mapping = "Reference" }
+                              )
+                         )
+                        .Proxy
+                         (
+                           Html.X().AjaxProxy()
+                               .Url(Url.Action("LoadConditionnementReferenceByConditionnementProduit", "ConditionnementReference"))
+                               .Reader(Html.X().JsonReader().RootProperty("data"))
+                         ).Parameters(
+                                            ps =>
+                                            {
+                                                ps.Add(new StoreParameter("ItemConditionnementProduitID", "#{cmbConditionnement}.getValue()", ParameterMode.Raw));
+
+                                            })
+                  )
+
+
+                                        ),
+    #endregion
+                    X.Panel()
+                                    .Layout(LayoutType.Form)
+                                    .Flex(1)
+                                    .Items
+                                    (
+                                                            
+                                      X.TextField()
+                                                  .ID("txtNombreUnitePalette")
+                                                  .FieldLabel("Nbr d'unité palette")
+                                                  .HideTrigger(true)
+                                                  .TabIndex(11)
+                                                  .LabelAlign(LabelAlign.Right)
+                                                  .AllowBlank(false)
+                                                  .MaskRe("[0-9]")
+                                                  .IndicatorCls("IndicatorRedStar")
+                                                  .IndicatorText("*")
+                                                  .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.NbreUniteParPalette.ToString() : string.Empty)
+                                              .Listeners(ls =>
+                                              {
+                                                  ls.Blur.Handler = "#{txtNombreUnitePalette}.setValue(formatNumber(#{txtNombreUnitePalette}.getValue()));";
+                                                  ls.Focus.Handler = "if (App.txtNombreUnitePalette.value) { #{txtNombreUnitePalette}.setRawValue(unformatNumber(#{txtNombreUnitePalette}.getValue()));}";
+                                                  ls.Change.Handler = "calculerPoidsBrutTotal();";
+                                              }),
+
+
+
+
+
+
+
+                                         X.ComboBox()
+                                                .ID("cmbUniteDePoids")
+                                                .FieldLabel("Unité de poids")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .TabIndex(12)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._Article.UniteDePoids != null ? (int?)Model._Article.UniteDePoids.ID : (int?)null)
+                                                .Store
+                                                (
+                                                   X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                          X.Model()
+                                                              .IDProperty("ID")
+                                                              .Fields
+                                                              (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                              )
+                                                         )
+                                                        .Proxy
+                                                         (
+                                                           Html.X().AjaxProxy()
+                                                               .Url(Url.Action("Load", "UniteDePoids"))
+                                                               .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                         )
+                                                  ),
+
+                                         X.TextField()
+                                              .ID("txtPoidsBrut")
+                                              .HideTrigger(true)
+                                              .TabIndex(14)
+                                              .MaskRe("[0-9.]")
+                                              .FieldLabel("Poids brut unitaire")
+                                              .LabelAlign(LabelAlign.Right)
+                                              .AllowBlank(false)
+                                              .IndicatorCls("IndicatorRedStar")
+                                              .IndicatorText("*")
+                                              .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.PoidsBrutUnitaire.ToString() : string.Empty)
+                                              .Listeners(ls =>
+                                              {
+                                                  ls.Blur.Handler = "#{txtPoidsBrut}.setValue(formatNumber(#{txtPoidsBrut}.getValue()));";
+                                                  ls.Focus.Handler = "if (App.txtPoidsBrut.value) { #{txtPoidsBrut}.setRawValue(unformatNumber(#{txtPoidsBrut}.getValue()));}";
+                                                  ls.Change.Handler = "calculerPoidsBrutTotal()";
+                                              }),
+                                              X.TextField()
+                                .ID("txtPoidsBrutTotal")
+                                .HideTrigger(true)
+                                .TabIndex(15)
+                                .ReadOnly(true)
+                                .MaskRe("[0-9.]")
+                                .FieldLabel("Poids Brut Total")
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.PoidsBrutTotalAsString.ToString() : string.Empty)
+                                      .Listeners(ls =>
+                                      {
+                                          ls.Blur.Handler = "#{txtPoidsBrutTotal}.setValue(formatNumber(#{txtPoidsBrutTotal}.getValue()));";
+                                          ls.Focus.Handler = "if (App.txtPoidsBrutTotal.value) { #{txtPoidsBrutTotal}.setRawValue(unformatNumber(#{txtPoidsBrutTotal}.getValue()));}";
+                                      }),
+
+                                       X.TextField()
+                                      .ID("txtTareUnitaireEmbalage")
+                                      .HideTrigger(true)
+                                      .TabIndex(16)
+                                      .MaskRe("[0-9.]")
+                                      .FieldLabel("Tare unitaire embalage")
+                                      .LabelAlign(LabelAlign.Right)
+                                      .AllowBlank(false)
+                                      .IndicatorCls("IndicatorRedStar")
+                                      .IndicatorText("*")
+                                      .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.TareUnitaireEmballage.ToString() : string.Empty)
+
+                                      .Listeners(ls =>
+                                      {
+                                          ls.Blur.Handler = "#{txtTareUnitaireEmbalage}.setValue(formatNumber(#{txtTareUnitaireEmbalage}.getValue()));";
+                                          ls.Focus.Handler = "if (App.txtTareUnitaireEmbalage.value) { #{txtTareUnitaireEmbalage}.setRawValue(unformatNumber(#{txtTareUnitaireEmbalage}.getValue()));}";
+                                          ls.Change.Handler = "calculerPoidsBrutTotal()";
+                                      }),
+
+                                      X.TextField()
+                                      .ID("txtTareTotaleEmballage")
+                                      .ReadOnly(true)
+                                      .HideTrigger(true)
+                                      .TabIndex(17)
+                                      .MaskRe("[0-9.]")
+                                      .FieldLabel("Tare Totale Emballage ")
+                                      .LabelAlign(LabelAlign.Right)
+                                      .AllowBlank(false)
+                                      .IndicatorCls("IndicatorRedStar")
+                                      .IndicatorText("*")
+                                      .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.TareTotaleEmballage.ToString() : string.Empty)
+                                      .Listeners(ls =>
+                                      {
+                                          ls.Blur.Handler = "#{txtTareTotaleEmballage}.setValue(formatNumber(#{txtTareTotaleEmballage}.getValue()));";
+                                          ls.Focus.Handler = "if (App.txtTareTotaleEmballage.value) { #{txtTareTotaleEmballage}.setRawValue(unformatNumber(#{txtTareTotaleEmballage}.getValue()));}";
+                                          ls.Change.Handler = "calculerPoidsBrutTotal()";
+                                      }),
+
+
+        X.TextField()
+            .ID("txtTarePalette")
+            .HideTrigger(true)
+            .TabIndex(18)
+            .MaskRe("[0-9.]")
+            .FieldLabel("Tare Palette")
+            .LabelAlign(LabelAlign.Right)
+            .AllowBlank(false)
+            .IndicatorCls("IndicatorRedStar")
+            .IndicatorText("*")
+            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.TarePaletteVide.ToString() : string.Empty)
+            .Listeners(ls =>
+            {
+                ls.Blur.Handler = "#{txtTarePalette}.setValue(formatNumber(#{txtTarePalette}.getValue()));";
+                ls.Focus.Handler = "if (App.txtTarePalette.value) { #{txtTarePalette}.setRawValue(unformatNumber(#{txtTarePalette}.getValue()));}";
+                ls.Change.Handler = "calculerPoidsBrutTotal()";
+            }),
+
+
+        X.TextField()
+            .ID("txtPoidsNetTotalPalette")
+            .ReadOnly(true)
+            .HideTrigger(true)
+            .TabIndex(19)
+            .MaskRe("[0-9.]")
+            .FieldLabel("Poids net total palette")
+            .LabelAlign(LabelAlign.Right)
+            .AllowBlank(false)
+            .IndicatorCls("IndicatorRedStar")
+            .IndicatorText("*")
+            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.PoidsNetTotalPalette.ToString() : string.Empty)
+            .Listeners(ls =>
+            {
+                ls.Blur.Handler = "#{txtPoidsNetTotalPalette}.setValue(formatNumber(#{txtPoidsNetTotalPalette}.getValue()));";
+                ls.Focus.Handler = "if (App.txtPoidsNetTotalPalette.value) { #{txtPoidsNetTotalPalette}.setRawValue(unformatNumber(#{txtPoidsNetTotalPalette}.getValue()));}";
+            }),
+
+        X.TextField()
+            .ID("TxtCodeGS1")
+            .FieldLabel("Code GS1")
+            .TabIndex(20)
+            .AllowBlank(true)
+            .LabelAlign(LabelAlign.Right)
+            .Text(Model._Article.CodeGTIN),
+
+
+        X.TextField()
+            .ID("txtBestBeforeDate")
+            .ReadOnly(true)
+            .HideTrigger(true)
+            .TabIndex(13)
+            .MaskRe("[0-9]")
+            .FieldLabel("Best Before Date")
+            .TabIndex(13)
+            .LabelAlign(LabelAlign.Right)
+            .AllowBlank(false)
+            .IndicatorText("*")
+            .IndicatorCls("IndicatorRedStar")
+            .Flex(1)
+            .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult  ? true : false)
+                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Article.BestBeforeDate.ToString() : string.Empty )
+        .Listeners(ls =>
+        {
+            ls.Blur.Handler = "#{txtBestBeforeDate}.setValue(formatNumber(#{txtBestBeforeDate}.getValue()));";
+            ls.Focus.Handler = "if (App.txtBestBeforeDate.value) { #{txtBestBeforeDate}.setRawValue(unformatNumber(#{txtBestBeforeDate}.getValue()));}";
+        })
+
+                                                 )
+    )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(14)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("UpdateFormMethod");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.Before = "return validNew(App.FormArticle.id);";
+                }
+            ),
+        X.Button()
+            .TabIndex(15)
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormArticle.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Articles de production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+       /* if (App.cmbTypeArticle.value) {
+            var AutNombreSacs = App.cmbTypeArticle.getSelectedRecord().data.NombreSacs;
+            var NombreSacArticle = App.txtNombreSacs.value || 0;
+            if (NombreSacArticle > AutNombreSacs) {
+                Ext.Msg.show({ title: 'Production - Articles de production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Nbr de sacs added is higher than authorized Nbr de sacs for the Selected Type of Articles de production !', buttons: Ext.Msg.OK });
+                return false;
+            }
+        }*/
+
+
+    };
+
+
+    var calculerNetLivre = function () {
+        var tareBags = parseInt(unformatNumber(App.txtTareSacs.value), 10) || 0;
+        var tarePallets = parseInt(unformatNumber(App.txtTarePalette.value), 10) || 0;
+        var poidsbrut = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+        var poidsnet = poidsbrut - tareBags - tarePallets;
+
+        poidsnet = formatNumber(poidsnet);
+        App.txtPoidsNet.setValue(poidsnet);
+
+    };
+
+    var calculerPoidsBrutTotal = function () {
+        var NbreUniteParPalette = parseInt(unformatNumber(App.txtNombreUnitePalette.value), 10) || 0;
+        var PoidsBrutUnitaire = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+        var PoidsBrutTotal = NbreUniteParPalette * PoidsBrutUnitaire;
+        PoidsBrutTotal = formatNumber(PoidsBrutTotal);
+        App.txtPoidsBrutTotal.setValue(PoidsBrutTotal);
+
+        var TareUnitaire = parseInt(unformatNumber(App.txtTareUnitaireEmbalage.value), 10) || 0;
+        var TareTotaleEmballage = NbreUniteParPalette * TareUnitaire;
+
+        TareTotaleEmballage = formatNumber(TareTotaleEmballage);
+        App.txtTareTotaleEmballage.setValue(TareTotaleEmballage);
+
+    
+        var _TareTotaleEmballage = parseInt(unformatNumber(App.txtTareTotaleEmballage.value), 10) || 0;
+        var _PoidsBrutTotal = parseInt(unformatNumber(App.txtPoidsBrutTotal.value), 10) || 0;
+        var TarePalette = parseInt(unformatNumber(App.txtTarePalette.value), 10) || 0; 
+
+        var PoidsNetTotalPalette = _PoidsBrutTotal - _TareTotaleEmballage - TarePalette;
+        PoidsNetTotalPalette = formatNumber(PoidsNetTotalPalette);
+        App.txtPoidsNetTotalPalette.setValue(PoidsNetTotalPalette);
+
+
+    };
+
+   
+
+    var setCtrlIsRequired = function (field, value) {
+        field.allowBlank = !value;
+
+        field.setIndicator("");
+        field.setIndicatorCls('');
+        field.showIndicator();
+
+        if (value == true) {
+
+            field.setIndicator("*");
+            field.setIndicatorCls('IndicatorRedStar');
+            field.showIndicator();
+        }
+    };
+
+   /* var DefinirZonesObligatoires = function (record) {
+        setCtrlIsRequired(App.txtOrdreProduction, false);
+        if (record.ID == App.hiddenProduit.value) {
+            setCtrlIsRequired(App.txtOrdreProduction, true);
+        }
+
+        /*setCtrlIsRequired(App.TxtNumero, true);
+        App.TxtNumero.setReadOnly(false);
+        if (record.ID == App.hiddenProduit.value) {
+            setCtrlIsRequired(App.TxtNumero, false);
+            App.TxtNumero.setReadOnly(true);
+        }
+    };*/
+
+    var SetNumberArticleField = function () {
+        if (App.ChkEstReusine.checked)
+        {
+           /* App.TxtNumero.setReadOnly(false);
+            App.TxtNumero.allowBlank = (false);
+            App.TxtNumero.setIndicator("*");
+            App.TxtNumero.validate();*/
+        } else {
+            /*App.TxtNumero.setReadOnly(true);
+            App.TxtNumero.allowBlank = (true);
+            App.TxtNumero.setIndicator("");
+            App.TxtNumero.validate();*/
+        }
+    };
+
+</script>
+
+

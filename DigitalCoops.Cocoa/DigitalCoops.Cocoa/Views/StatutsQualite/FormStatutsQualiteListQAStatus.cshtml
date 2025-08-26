@@ -1,0 +1,156 @@
+﻿@model Tms.Classes.Shared.StatutsQualiteViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+    X.Window()
+        .ID("FormStatutsQualiteListQAStatus")
+        .Width(400)
+        .Resizable(false)
+        .Height(170)
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        .Listeners(l =>
+        {
+            l.Close.Handler = "App.TmsViewPort.unmask();";
+        })
+        .Title("Statuts Qualites : liste des statuts")
+        .Items(
+            X.FormPanel()
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                        .Padding(10)
+
+                .Items(
+                    X.Panel()
+                                .Width(350)
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                        .Items(
+                                    X.ComboBox()
+                                        .ID("cmbQAStatusID")
+                                        .FieldLabel("Liste des status")
+                                        .TabIndex(1)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Editable(true)
+                                        .ForceSelection(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (int?)Model._StatutsQualite.QAStatus.ID : null)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                         .Store(
+                                            X.Store()
+                                                .ID("StoreOrdreFabrication")
+                                                .AutoLoad(true)
+                                                .Model(
+                                                    Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                            new ModelField("ID", ModelFieldType.Object),
+                                                            new ModelField("NumeroProduction", ModelFieldType.String)
+                                                        )
+                                                )
+                                                .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                        .Url(Url.Action("Load", "QAStatus"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                        )
+                                        .DisplayField("Code")
+                                        .ValueField("ID"),
+
+                                        X.TextField()
+                                        .Hidden(true)
+                                        .ID("selectedIds")
+                                        .Value(ViewData["selectedIds"])
+
+                                )
+
+
+
+                )
+
+       )
+
+    .Buttons(
+    X.Button()
+    .Text("OK")
+    .ID("BtnOk")
+    .TabIndex(14)
+    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+    .DirectEvents(
+    de =>
+    {
+        de.Click.Url = Url.Action("UpdatePickedPaletteForm");
+        de.Click.FormID = "#(return this.up('window').down('form');)";
+        de.Click.Before = "return validNew(App.FormStatutsQualiteListQAStatus.id);";
+
+        de.Click.EventMask.ShowMask = true;
+        de.Click.EventMask.Msg = "Traitement en cours...";
+    }
+    ),
+    X.Button()
+    .TabIndex(15)
+    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+    .Handler("App.FormStatutsQualiteListQAStatus.doClose()")
+    .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+        var validNew = function (winId) {
+            var areAllrequiredFieldsFilled = isFormValid(winId);
+
+            if (!areAllrequiredFieldsFilled) {
+                Ext.Msg.show({ title: 'StatutsQualites de production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                return false;
+            }
+        };
+
+
+
+
+        var setCtrlIsRequired = function (field, value) {
+            field.allowBlank = !value;
+            field.setIndicator("");
+            field.setIndicatorCls('');
+            field.showIndicator();
+
+            if (value == true) {
+                field.setIndicator("*");
+                field.setIndicatorCls('IndicatorRedStar');
+                field.showIndicator();
+            }
+        };
+
+        var SetNumberStatutsQualiteField = function () {
+            if (App.ChkEstReusine.checked) {
+                /* Code existant */
+            } else {
+                /* Code existant */
+            }
+        };
+</script>

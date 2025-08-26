@@ -1,0 +1,356 @@
+﻿@model Tms.Classes.Shared.StatutsQualiteViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+.x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+    X.Window()
+        .ID("FormStatutsQualite")
+        .Width(700)
+        .Resizable(false)
+        .Height(420)
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        .Listeners(l =>
+        {
+            l.Close.Handler = "App.TmsViewPort.unmask();";
+        })
+        .Title("Statuts Qualites : Detail")
+        .Items(
+            X.FormPanel()
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                        .Padding(10)
+
+                .Items(
+                    X.Panel()
+                                .Width(350)
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                        .Items(
+                                    X.ComboBox()
+                                        .ID("cmbAnnee")
+                                        .FieldLabel("Année")
+                                        .TabIndex(1)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Editable(true)
+                                        .ForceSelection(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (int?)Model._StatutsQualite.Annee : DateTime.Now.Year)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Store(
+                                            X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                    X.Model().Fields(
+                                                        X.ModelField().Name("Annee").Type(ModelFieldType.Int)
+                                                    )
+                                                )
+                                                .DataSource(
+                                                    Enumerable.Range(DateTime.Now.Year - 4, 5)
+                                                        .Select(y => new { Annee = y })
+                                                        .OrderByDescending(a => a.Annee)
+                                                )
+                                        )
+                                        .DisplayField("Annee")
+                                        .ValueField("Annee")
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Select.Url = Url.Action("SelectOrdreFabricationInfo");
+                                            de.Select.ExtraParams.Add(new Parameter("ItemAnnee", "this.getRawValue()", ParameterMode.Raw));
+                                        })
+                                        .Listeners(l =>
+                                        {
+                                            l.Select.Handler = "App.storePaletteListe_QA.reload();";
+                                        }),
+                                    X.ComboBox()
+                                        .ID("cmbSemaine")
+                                        .FieldLabel("Semaine")
+                                        .TabIndex(2)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Editable(true)
+                                        .ForceSelection(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (int?)Model._StatutsQualite.Semaine : DateTime.Now.DayOfYear / 7 + 1)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Store(
+                                            X.Store()
+                                                .ID("StoreSemaine")
+                                                .Model(
+                                                    X.Model().Fields(
+                                                        X.ModelField().Name("Semaine").Type(ModelFieldType.Int)
+                                                    )
+                                                )
+                                                .DataSource(
+                                                    Enumerable.Range(1, 52)
+                                                        .Select(w => new { Semaine = w })
+                                                )
+                                        )
+                                        .DisplayField("Semaine")
+                                        .ValueField("Semaine")
+                                        .Listeners(l =>
+                                        {
+                                            l.Select.Handler = @"
+                                                App.cmbOrdreFabricationID.clearValue();
+                                                App.StoreOrdreFabrication.reload();
+                                                App.storePaletteListe_QA.reload();";
+                                        }),
+
+
+
+
+                                X.ComboBox()
+                                        .ID("cmbOrdreFabricationID")
+                                        .FieldLabel("Ordre de production")
+                                        .DisplayField("NumeroProduction")
+                                        .TabIndex(3)
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .ForceSelection(true)
+                                        .Editable(true)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Guid)Model._StatutsQualite.OrdreFabrication.ID : (Guid?)null)
+                                        .Store(
+                                            X.Store()
+                                                .ID("StoreOrdreFabrication")
+                                                .AutoLoad(true)
+                                                .Model(
+                                                    Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                            new ModelField("ID", ModelFieldType.Object),
+                                                            new ModelField("NumeroProduction", ModelFieldType.String)
+                                                        )
+                                                )
+                                                .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadOrdreFabricationByYearAndWeeks", "OrdreFabrication"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                .Parameters(ps =>
+                                                {
+                                                    ps.Add(new StoreParameter("ItemAnnee", "#{cmbAnnee}.getValue()", ParameterMode.Raw));
+                                                    ps.Add(new StoreParameter("ItemSemaine", "#{cmbSemaine}.getValue()", ParameterMode.Raw));
+                                                })
+                                        )
+                                        .Listeners(l =>
+                                        {
+                                            l.Select.Handler = "App.storePaletteListe_QA.reload();";
+                                            l.AfterRender.Handler = @"
+                                                if (this.getValue()) {
+                                                    App.storePaletteListe_QA.reload();
+                                                }";
+                                        }),
+
+
+                                    X.DateField()
+                                    .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Date de définition")
+                                        .SelectedDate(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._StatutsQualite.DateDeDefinition : DateTime.Now)
+                                        .ID("txtDateDeDefinition")
+                                )
+
+
+
+                ),
+
+            X.Panel()
+                .ID("PnPalette")
+
+                         .TopBar(
+    new Toolbar
+    {
+        Items =
+        {
+            X.Button()
+                .ID("BtnModifyStatus")
+                .Icon(Icon.ApplicationEdit)
+                .Border(false)
+                .Cls("ButtonStyle")
+                .Text("Modifier le statut")
+                .Disabled(true)
+                .Listeners(l => l.Render.Fn="OverviewForm.resetButtons")
+                .DirectEvents(de =>
+                                {
+                                    de.Click.Url = Url.Action("OnListQAStatus"); // ou .DirectMethod = "ValiderSelection"
+
+                                     de.Click.ExtraParams.Add(new Parameter
+                                                    {
+                                                        Name = "selectedIds",
+                                                        Value = @"App.grpPaletteListe.getSelectionModel().getSelection().map(function(r){ return r.data.ID; })",
+                                                        Mode = ParameterMode.Raw
+                                                    });
+
+
+
+
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.Message = "Voulez-vous modifier les statuts de ses palettes ?";
+                                                    de.Click.Confirmation.Title = "Confirmation - modification";
+
+                                                   
+
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.EventMask.Msg = "Traitement en cours...";
+                                })
+
+
+
+
+        }
+    }
+)
+
+
+
+                            .Items(
+                                X.Hidden().ID("PAhiddenPermModify").Value(ViewData["PAhiddenPermModify"]).ReadOnly(true),
+X.GridPanel()
+    .Layout(LayoutType.Fit)
+    .ID("grpPaletteListe")
+    .Region(Region.Center)
+    .ForceFit(true)
+    .Border(true)
+    .Height(150)
+    .AllowDeselect(true)
+
+    .Store(
+       X.StoreFor<Tms.Classes.Business.Palette>
+    ()
+    .ID("storePaletteListe_QA")
+    .AutoLoad(true)
+    .Proxy
+    (
+    X.AjaxProxy()
+    .Url(Url.Action("Select_ByOrdreDeProductionAndQAStatus", "Palette"))
+    .Reader(X.JsonReader().RootProperty("data"))
+    )
+    .Parameters(
+    ps =>
+    {
+        ps.Add(new StoreParameter("ItemOrdreDeFabricationID", "#{cmbOrdreFabricationID}.getValue()", ParameterMode.Raw));
+    }
+    ).Listeners(ls => ls.Load.Handler = "App.rowPalette.selectAll();")
+
+    )
+    .ColumnModel(
+        Html.X().Column().Text("Ordre de fabrication").DataIndex("OrdreFabricationNumeroAsString"),
+        Html.X().Column().Text("Palette n*").DataIndex("Numero"), 
+        Html.X().Column().Text("Statut").DataIndex("QAStatusCodeAsString")
+    )
+
+    .SelectionModel(
+    Html.X().CheckboxSelectionModel()
+    .ID("rowPalette")
+    .Mode(SelectionMode.Multi)
+    .ShowHeaderCheckbox(true) // ✅ Pour ajouter la case à cocher dans l'en-tête
+    .CheckOnly(true)          // ✅ Empêche la sélection par clic sur la ligne
+    .AllowDeselect(true)
+    ).
+    Listeners(l => { l.Select.Fn = "OverviewForm.resetButtons"; l.Deselect.Fn = "OverviewForm.resetButtons"; })
+    ))
+    .Buttons(
+    X.Button()
+    .Text("OK")
+    .ID("BtnOk")
+    .TabIndex(14)
+    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+    .DirectEvents(
+    de =>
+    {
+        de.Click.Url = Url.Action("UpdateFormMethod");
+        de.Click.FormID = "#(return this.up('window').down('form');)";
+        de.Click.Before = "return validNew(App.FormStatutsQualite.id);";
+    }
+    ),
+    X.Button()
+    .TabIndex(15)
+    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+    .Handler("App.FormStatutsQualite.doClose()")
+    .Cls("btncancel")
+    )
+    )
+
+    @Scripts.Render("~/bundles/validation")
+
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+    <script type="text/javascript">
+        var validNew = function (winId) {
+            var areAllrequiredFieldsFilled = isFormValid(winId);
+
+            if (!areAllrequiredFieldsFilled) {
+                Ext.Msg.show({ title: 'StatutsQualites de production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                return false;
+            }
+        };
+
+        var OverviewForm = {
+
+            resetButtons: function () {
+
+                App.BtnModifyStatus.disable();
+
+                console.log('TEST : ', App.rowPalette.hasSelection(), App.PAhiddenPermModify);
+
+                if (App.rowPalette.hasSelection()) {
+
+                    if (App.PAhiddenPermModify.value == 'true') {
+                        App.BtnModifyStatus.enable();
+                    }
+
+                }
+            }
+        };
+
+      
+
+        var setCtrlIsRequired = function (field, value) {
+            field.allowBlank = !value;
+            field.setIndicator("");
+            field.setIndicatorCls('');
+            field.showIndicator();
+
+            if (value == true) {
+                field.setIndicator("*");
+                field.setIndicatorCls('IndicatorRedStar');
+                field.showIndicator();
+            }
+        };
+
+        var SetNumberStatutsQualiteField = function () {
+            if (App.ChkEstReusine.checked) {
+                /* Code existant */
+            } else {
+                /* Code existant */
+            }
+        };
+    </script>

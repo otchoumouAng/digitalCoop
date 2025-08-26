@@ -105,6 +105,12 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QRCoder, Version=1.6.0.0, Culture=neutral, PublicKeyToken=c4ed5b9ae8358a28, processorArchitecture=MSIL">
+      <HintPath>..\packages\QRCoder.1.6.0\lib\net40\QRCoder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -175,6 +181,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.AspNet.Identity.Core">
@@ -230,6 +237,7 @@
     <Compile Include="Controllers\AnalysePhysiqueController.cs" />
     <Compile Include="Controllers\AnalyseurController.cs" />
     <Compile Include="Controllers\ApplicationController.cs" />
+    <Compile Include="Controllers\ArticleController.cs" />
     <Compile Include="Controllers\BanqueController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\BonDeLivraisonValideController.cs" />
@@ -237,6 +245,8 @@
     <Compile Include="Controllers\CertificatPoidsController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\CompteBancaireController.cs" />
+    <Compile Include="Controllers\ConditionnementProduitController.cs" />
+    <Compile Include="Controllers\ConditionnementReferenceController.cs" />
     <Compile Include="Controllers\ConnaissementMaritimeController.cs" />
     <Compile Include="Controllers\BonDeLivraisonController.cs" />
     <Compile Include="Controllers\BordereauEntreeSortieController.cs" />
@@ -250,6 +260,7 @@
     <Compile Include="Controllers\ConteneurTypeController.cs" />
     <Compile Include="Controllers\ContratDeVentesController.cs" />
     <Compile Include="Controllers\ConteneurShipController.cs" />
+    <Compile Include="Controllers\DemandeEtiquetteController.cs" />
     <Compile Include="Controllers\EngagementSiteController.cs" />
     <Compile Include="Controllers\ContratPeriodeController.cs" />
     <Compile Include="Controllers\ContratPeriodeTypeController.cs" />
@@ -267,6 +278,12 @@
     <Compile Include="Controllers\Lot_EnvoiController.cs" />
     <Compile Include="Controllers\LotSituationStockController.cs" />
     <Compile Include="Controllers\Lot_GestionStockController.cs" />
+    <Compile Include="Controllers\OrdreFabricationController.cs" />
+    <Compile Include="Controllers\PaletteController.cs" />
+    <Compile Include="Controllers\ProduitFiniController.cs" />
+    <Compile Include="Controllers\ProduitGammeController.cs" />
+    <Compile Include="Controllers\ProduitTypeController.cs" />
+    <Compile Include="Controllers\QAStatusController.cs" />
     <Compile Include="Controllers\RechercheLotController.cs" />
     <Compile Include="Controllers\PayementOptionController.cs" />
     <Compile Include="Controllers\ReceptionController.cs" />
@@ -274,6 +291,7 @@
     <Compile Include="Controllers\RedevanceNatureController.cs" />
     <Compile Include="Controllers\RemboursementDirectAgenceController.cs" />
     <Compile Include="Controllers\SituationStockItemAgenceController.cs" />
+    <Compile Include="Controllers\StatutsQualiteController.cs" />
     <Compile Include="Controllers\TransfertFevesController.cs" />
     <Compile Include="Controllers\PayementSiteController.cs" />
     <Compile Include="Controllers\PeseeAgenceController.cs" />
@@ -393,6 +411,7 @@
     <Compile Include="Controllers\SiteController.cs" />
     <Compile Include="Controllers\SpotPriceController.cs" />
     <Compile Include="Controllers\StatusStringController.cs" />
+    <Compile Include="Controllers\UniteDePoidsController.cs" />
     <Compile Include="Controllers\UsineController.cs" />
     <Compile Include="Controllers\UtilisateurController.cs" />
     <Compile Include="Controllers\VenteLotController.cs" />
@@ -495,6 +514,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reports\rptDailyStock.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\RptDemandeEtiquetteA4.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\RptDemandeEtiquetteA5.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reports\rptFicheLotTraca.cs">
@@ -2592,14 +2617,25 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\App_Start\" />
+    <Folder Include="Views\Article\" />
     <Folder Include="Views\Classification\" />
+    <Folder Include="Views\ConditionnementProduit\" />
+    <Folder Include="Views\ConditionnementReference\" />
+    <Folder Include="Views\DemandeEtiquette\" />
     <Folder Include="Views\hh\" />
     <Folder Include="Views\Imprimante\" />
     <Folder Include="Views\MiseEnComptePlanifieeMode\" />
+    <Folder Include="Views\OrdreFabrication\" />
     <Folder Include="Views\PeseeProductionType\" />
+    <Folder Include="Views\ProduitFini\" />
+    <Folder Include="Views\ProduitGamme\" />
+    <Folder Include="Views\ProduitType\" />
     <Folder Include="Views\ProvenanceFeves\" />
+    <Folder Include="Views\QAStatus\" />
     <Folder Include="Views\SilentPrint\" />
+    <Folder Include="Views\StatutsQualite\" />
     <Folder Include="Views\Statut\" />
+    <Folder Include="Views\UniteDePoids\" />
     <Folder Include="Views\Usine\" />
   </ItemGroup>
   <ItemGroup>
@@ -2691,6 +2727,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\rptDailyStock.resx">
       <DependentUpon>rptDailyStock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\RptDemandeEtiquetteA4.resx">
+      <DependentUpon>RptDemandeEtiquetteA4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\RptDemandeEtiquetteA5.resx">
+      <DependentUpon>RptDemandeEtiquetteA5.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\rptPrimeList.resx">
       <DependentUpon>rptPrimeList.cs</DependentUpon>

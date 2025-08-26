@@ -1590,14 +1590,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tms.Classes.dll" size="2181120">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="QRCoder.dll" size="154112">
+      <assemblyIdentity name="QRCoder" version="1.6.0.0" publicKeyToken="C4ED5B9AE8358A28" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>WuJ5LHYmKUOk40FAu9ZLKqfZ7VxYImgMANnqoyJBJoA=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tms.Classes.dll" size="2287616">
       <assemblyIdentity name="Tms.Classes" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>odrzf7m/5AMvSjaRGiyWF+cupkSPT3z94nhPCI/oyXs=</dsig:DigestValue>
+        <dsig:DigestValue>JkJ4uc/DpmLb4+htNN12tPtmrzqppf4CxjW8xG5fcvo=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -1609,7 +1621,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>ZFvrHojSfozEUYDpo7E/IEyKU+WF85UPI6sVAEqIgow=</dsig:DigestValue>
+        <dsig:DigestValue>jkTbATk31y5LxuE1SJAh5gZ4sirh4dRaWRJD1wJX7TA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -1621,7 +1633,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>adw41C8s8sUR/5o/aDh1e6g3bq/HJxO0vmvnFViteSw=</dsig:DigestValue>
+        <dsig:DigestValue>bkijyhIdhSSbKbA13u1G97vYLQNyAUj5SsiL1i4iILk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

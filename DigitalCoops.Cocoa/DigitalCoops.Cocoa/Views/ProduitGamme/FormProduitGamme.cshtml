@@ -1,0 +1,149 @@
+﻿
+
+@model Tms.Classes.Shared.ProduitGammeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(X.Window()
+    .ID("FormProduitGamme")
+    .Width(500).Height(300)
+    .Modal(true)
+    .Title("Détail Produit Fini")
+    .Layout(LayoutType.VBox)
+    .Items(
+        X.FormPanel()
+         .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+         .Padding(10)
+         .ID("FormProduitGammePanel")
+         .Layout(LayoutType.VBox)
+         .Items(
+
+            //–– Hidden fields
+            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+            X.Hidden().ID("hiddenRowVersion").Value(Model._ProduitGamme.RowVersionKey),
+            X.Hidden().ID("TxtProduitGammeID").Value(Model._ProduitGamme.ID),
+            X.Hidden().ID("TxtDateCreation").Value(Model._ProduitGamme.DateCreation),
+
+            //–– Designation (string)
+            X.TextField()
+             .ID("TxtDesignation")
+             .FieldLabel("Désignation")
+             .LabelAlign(LabelAlign.Right)
+             .Value(Model._ProduitGamme.Designation)
+             .AllowBlank(false)
+             .IndicatorCls("IndicatorRedStar")
+
+        //–– Produit de Base
+        //X.TextField()
+        // .ID("TxtProduitDeBase")
+        // .FieldLabel("Produit de base")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._ProduitGamme.ProduitDeBase)
+        // .AllowBlank(false),
+
+        //–– Produit Dérivé
+        //X.Checkbox()
+        // .ID("ChkProduitDerive")
+        // .BoxLabel("Produit dérivé")
+        // .Checked(Model._ProduitGamme.ProduitDerive)
+
+        //–– Date de création (lecture seule)
+        //X.DateField()
+        // .ID("DateCreation")
+        // .FieldLabel("Créé le")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._ProduitGamme.DateCreation)
+        // .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? true : false),
+
+        //–– Utilisateur création (lecture seule)
+        //X.TextField()
+        // .ID("TxtCreationUtilisateur")
+        // .FieldLabel("Par")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._ProduitGamme.UtilisateurCreation)
+        // .ReadOnly(true),
+
+        //–– Date de modification (lecture seule)
+        //X.DateField()
+        // .ID("DateModification")
+        // .FieldLabel("Modifié le")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._ProduitGamme.UtilisateurModification)
+        //.Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? true : false),
+
+        //–– Utilisateur modif (lecture seule)
+        //X.TextField()
+        // .ID("TxtModificationUtilisateur")
+        // .FieldLabel("Par")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._ProduitGamme.UtilisateurModification)
+        // .ReadOnly(true),
+
+        //–– Désactivé
+        //X.Checkbox()
+        // .ID("ChkDesactive")
+        // .BoxLabel("Désactivé")
+        // .Checked(Model._ProduitGamme.Desactive)
+        )
+    )
+    .Buttons(
+        // OK / Enregistrer
+        X.Button()
+         .ID("BtnSubmitProduitGamme")
+         .Text("OK")
+         .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+         .DirectEvents(de =>
+         {
+             de.Click.Url = Url.Action("SubmitFormMethod");
+             de.Click.FormID = "FormProduitGammePanel";
+             de.Click.Before = "return validNew(App.FormProduitGamme.getId());";
+         }),
+
+        // Annuler / Fermer
+        X.Button()
+         .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Fermer" : "Annuler")
+         .Handler("App.FormProduitGamme.close();")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Location : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
