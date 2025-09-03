@@ -1940,4 +1940,50 @@ namespace Tms.Classes.Business
         }
 
     }
+
+    public class PeseeAPI : Pesee
+    {
+        private DateTime _DatePesee;
+        private int _Id;
+        private decimal _Valeur;
+
+        public DateTime DatePesee
+        {
+            get
+            {
+                return _DatePesee;
+            }
+
+            set
+            {
+                _DatePesee = value;
+            }
+        }
+
+        public int Id
+        {
+            get
+            {
+                return _Id;
+            }
+
+            set
+            {
+                _Id = value;
+            }
+        }
+
+        public decimal Valeur
+        {
+            get
+            {
+                return _Valeur;
+            }
+
+            set
+            {
+                _Valeur = value;
+            }
+        }
+    }
 }

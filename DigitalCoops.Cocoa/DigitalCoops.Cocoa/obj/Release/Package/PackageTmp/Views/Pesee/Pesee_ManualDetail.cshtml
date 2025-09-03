@@ -401,7 +401,8 @@
                                 })
                                 //.X(20)
                                 .Y(20)
-                                .Title(Model.Title)
+                                //.Title(Model.Title)
+                                .Title("Pesée Manuelle : Créer")
                                 .Layout(LayoutType.VBox)
                                 .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
                                 .BodyPadding(5)
@@ -550,7 +551,7 @@
                                                     .Items(
 
                                                     X.NumberField()
-                                                                  .FieldLabel("Ton. est. (kg)")
+                                                                  .FieldLabel("Poids. est. (kg)")
                                                                   .LabelAlign(LabelAlign.Right)
                                                                   .HideTrigger(true)
                                                                   .ID("txtEstimatedTonnageFirstW")
@@ -651,7 +652,7 @@
                                                         .Flex(3)
                                                         .Items
                                                         (
-                                                            X.Label().Text("2nd Weighing").Margin(5),
+                                                            X.Label().Text("2eme Pesée").Margin(5),
                                                             X.Container()
                                                                 .Layout(LayoutType.Form)
                                                                 .Items(

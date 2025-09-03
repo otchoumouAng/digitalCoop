@@ -168,7 +168,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Re-Cleaning : Data Validation",
+                    Title = "Reusinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -187,14 +187,14 @@ namespace Tms2017.MVC.Controllers
                 bool result = mReusinage.fnGet(mReusinage.ID);
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Re-Cleaning, loading failed.");
+                    throw new Exception("OnActivateDeactivate : Reusinage, loading failed.");
 
                 mReusinage.UtilisateurModification = (string)Session["userName"];
 
                 result = mReusinage.fnDeActivate();
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Re-Cleaning, Operation failed.");
+                    throw new Exception("OnActivateDeactivate : Reusinage, Operation failed.");
 
                 if (result)
                 {
@@ -216,7 +216,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Re-Cleaning : Cancel",
+                    Title = "Reusinage : Cancel",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -278,7 +278,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Re-Cleaning : Data Validation",
+                    Title = "Reusinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -493,7 +493,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Re-Cleaning : Data Validation",
+                    Title = "Reusinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING

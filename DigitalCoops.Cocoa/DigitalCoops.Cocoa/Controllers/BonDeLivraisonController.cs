@@ -213,6 +213,13 @@ namespace Tms2017.MVC.Controllers
 
             BonDeLivraisonViewModel viewmodel = new BonDeLivraisonViewModel();
             viewmodel._BonDeLivraison = mclass;
+            Livraison mLivraison = new Livraison();
+            BonDeLivraison mBon = new BonDeLivraison();
+            bool res = mLivraison.fnGet(mclass.Livraison.ID);
+            res = mBon.fnGet(mclass.ID);
+            viewmodel._BonDeLivraison = mBon;
+            viewmodel._BonDeLivraison.Livraison = new Livraison();
+            viewmodel._BonDeLivraison.Livraison = mLivraison;            
             viewmodel._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Consult;
 
             return new Ext.Net.MVC.PartialViewResult { ViewName = "BonDeLivraison_Detail", Model = viewmodel, };
@@ -441,7 +448,8 @@ namespace Tms2017.MVC.Controllers
 
                 if(mClass.Numero != null)
                 {
-                    X.GetCmp<Hidden>("hiddenLivraisonID").Text = mClass.ID.ToString();
+                    X.GetCmp<Hidden>("hiddenLivraisonID").Text = mClass.ID.ToString(); 
+                    X.GetCmp<Hidden>("hiddenSiteID").Value = mClass.Site.ID.ToString();
                     if (mClass.Numero != null) X.GetCmp<TextField>("txtDeliveryID").Text = mClass.Numero;
                     X.GetCmp<DateField>("dtfDeliveryDate").SelectedDate = mClass.DateLivraison;
                     X.GetCmp<TimeField>("tmfDelivery").SelectedTime = TimeSpan.FromTicks(mClass.DateLivraison.Ticks);
@@ -458,15 +466,19 @@ namespace Tms2017.MVC.Controllers
 
                     //X.GetCmp<TextField>("txtDelivered").Text = mClass.Site.ID.ToString();
                     X.GetCmp<TextField>("txtNomSite").Text = mClass.Site.Nom;
+                    X.GetCmp<ComboBox>("cmbProvenance").SetValue(mClass.Provenance.ID);
+                    //X.GetCmp<ComboBox>("cmbProvenance").Select(mClass.Provenance.ID);
 
                     if (mClass.LivraisonType != null && mClass.LivraisonType.EstAchat == false)
                     {
+
                         X.GetCmp<ComboBox>("CertificationID").ReadOnly = true;
                         //X.GetCmp<GridPanel>("grpDetailAnalysis").Disable();
                         X.GetCmp<TextField>("txtTotalRetention").RawText = "0";
                         X.GetCmp<TextField>("txtRetBrisure").AllowBlank = true;
                         X.GetCmp<TextField>("txtRetME").AllowBlank = true;
                         X.GetCmp<TextField>("txtRetHumidite").AllowBlank = true;
+                        X.GetCmp<TextField>("txtRetDechet").AllowBlank = true;
 
                         X.GetCmp<TextField>("txtRetBrisure").IndicatorText = "";
                         X.GetCmp<TextField>("txtRetME").IndicatorText = "";
@@ -548,21 +560,27 @@ namespace Tms2017.MVC.Controllers
                 X.GetCmp<TextField>("txtRetHumidite").Text = string.Empty;
                 X.GetCmp<TextField>("txtRetME").Text = string.Empty;
                 X.GetCmp<TextField>("txtRetBrisure").Text = string.Empty;
+                X.GetCmp<TextField>("txtStdDechet").Text = string.Empty;
+                X.GetCmp<TextField>("txtRetDechet").Text = string.Empty;
                 X.GetCmp<TextField>("txtTotalRetention").Text = string.Empty;
                 X.GetCmp<TextField>("txtPoidsNet").Text = string.Empty;
                 //X.GetCmp<TextField>("txtTareSacsAdjust").Text = string.Empty;
                 //X.GetCmp<TextField>("txtTarePalettesAdjust").Text = string.Empty;
                 X.GetCmp<ComboBox>("CertificationID").SetValue(string.Empty);
-                
-                double mStdHumidite = new AnalysePhysiqueNorme().StandardHumidite;
-                double mStdME = new AnalysePhysiqueNorme().StandardMatiereEtrangere;
-                double mStdBrisure = new AnalysePhysiqueNorme().StandardBrisure;
 
-                if(mClass.Numero != null)
+                AnalysePhysiqueNorme mNorme = new AnalysePhysiqueNorme();
+
+                double mStdHumidite = mNorme.StandardHumidite;
+                double mStdME = mNorme.StandardMatiereEtrangere;
+                double mStdBrisure = mNorme.StandardBrisure;
+                double mStdDechet = mNorme.Dechet;
+
+                if (mClass.Numero != null)
                 {
                     X.GetCmp<TextField>("txtStdHumidite").Text = Math.Round(mStdHumidite, 2).ToString();
                     X.GetCmp<TextField>("txtStdME").Text = Math.Round(mStdME, 2).ToString();
                     X.GetCmp<TextField>("txtStdBrisure").Text = Math.Round(mStdBrisure, 2).ToString();
+                    X.GetCmp<TextField>("txtStdDechet").Text = Math.Round(mStdDechet, 2).ToString();
                 }              
 
                 decimal mPoidsLivre = mClass.PoidsLivre;
@@ -575,12 +593,14 @@ namespace Tms2017.MVC.Controllers
                     decimal mRetME = Math.Round((decimal)mAnalyse.MatiereEtrangere - (decimal)mStdME > 0 ? ((decimal)mAnalyse.MatiereEtrangere - (decimal)mStdME) * mPoidsLivre / 100 : 0, 0);
                     //decimal mRetBrisure = Math.Round((decimal)mAnalyse.Brisure - (decimal)mStdBrisure > 0 ? ((decimal)mAnalyse.Brisure - (decimal)mStdBrisure) * mPoidsLivre / 100 : 0, 0);
                     decimal mRetBrisure = Math.Round((decimal)mAnalyse.Tamis - (decimal)mStdBrisure > 0 ? ((decimal)mAnalyse.Tamis - (decimal)mStdBrisure) * mPoidsLivre / 100 : 0, 0);
+                    decimal mRetDechet = Math.Round((decimal)mAnalyse.Tamis - (decimal)mStdDechet > 0 ? ((decimal)mAnalyse.Tamis - (decimal)mStdDechet) * mPoidsLivre / 100 : 0, 0);
 
                     X.GetCmp<TextField>("txtRetHumidite").Text = mRetHumidite.ToString();
                     X.GetCmp<TextField>("txtRetME").Text = mRetME.ToString();
                     X.GetCmp<TextField>("txtRetBrisure").Text = mRetBrisure.ToString();
+                    X.GetCmp<TextField>("txtRetDechet").Text = mRetDechet.ToString();
 
-                    decimal mTotalRetention = mRetBrisure + mRetHumidite + mRetME;
+                    decimal mTotalRetention = mRetBrisure + mRetHumidite + mRetME + mRetDechet;
                     decimal mPoidsNet = mPoidsLivre - mTotalRetention;
 
                     X.GetCmp<TextField>("txtTotalRetention").Text = String.Format("{0:#,#}", mTotalRetention).TrimStart();
@@ -662,6 +682,7 @@ namespace Tms2017.MVC.Controllers
                 mClass.StdHumidite = Convert.ToDouble(GetFormValue("txtStdHumidite"));
                 mClass.StdMatieresEtrangeres = Convert.ToDouble(GetFormValue("txtStdME"));
                 mClass.StdBrisures = Convert.ToDouble(GetFormValue("txtStdBrisure"));
+                mClass.StdDechet = Convert.ToDouble(GetFormValue("txtStdDechet"));
 
                 mClass.NbreSacs = int.Parse(GetFormValue("txtAcceptedBags"));
                 mClass.Tare = decimal.Parse(GetFormValue("txtTareSacs")) + decimal.Parse(GetFormValue("txtTarePalettes"));
@@ -680,7 +701,12 @@ namespace Tms2017.MVC.Controllers
                     mClass.RefactionBrisures = 0;
                 else
                     mClass.RefactionBrisures = Convert.ToDecimal(GetFormValue("txtRetBrisure"));
-                
+
+                if (string.IsNullOrEmpty(GetFormValue("txtRetDechet")))
+                    mClass.RefactionDechet = 0;
+                else
+                    mClass.RefactionDechet = Convert.ToDecimal(GetFormValue("txtRetDechet"));
+
                 mClass.PoidsNetAccepte = Convert.ToDecimal(GetFormValue("txtPoidsNet"));
                 mClass.Commentaire = X.GetCmp<TextField>("txtCommentaire").Text;
 
@@ -696,6 +722,15 @@ namespace Tms2017.MVC.Controllers
                     mClass.CertificationID = int.Parse(GetFormValue("CertificationID"));
                 }
 
+                mClass.ProvenanceID = null;
+                
+                //bool result;
+                result = int.TryParse(GetFormValue("cmbProvenance"), out iConverted);
+                if (result)
+                {
+                    mClass.ProvenanceID = int.Parse(GetFormValue("cmbProvenance"));
+                }
+
                 mClass.Sites = new Site();
                 mClass.Sites.ID = mLivraison.Site.ID;
                 mClass.Sites.Nom = mLivraison.Site.Nom;
@@ -705,6 +740,8 @@ namespace Tms2017.MVC.Controllers
                 mClass.Livraison.Site.Nom = mLivraison.Site.Nom;
 
                 LivraisonType _mType = new LivraisonType(mLivraison.LivraisonType.ID);
+                mClass.Livraison.LivraisonType = new LivraisonType();
+                mClass.Livraison.LivraisonType = _mType;
                 if (resultParse && codeAnalyseID == Guid.Empty && mSiteParDefaut.ID == mParam.Site && _mType.AutoriseAnalyse == true)
                 {
                     throw new Exception("Analysis : Select one Analysis");
@@ -1237,7 +1274,7 @@ namespace Tms2017.MVC.Controllers
 
             string BaseUrl = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"));            
 
-            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'DeliveryNote{0}', '{1}/BonDeLivraison/ViewReport?id={0}&IsCopy={2}&AfficheResultatAnalyse={3}', this, 'Bon De Reception Report','')", IdBon, BaseUrl, ReportIscopy, afficheAnalyse));
+            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'DeliveryNote{0}', '{1}/BonDeLivraison/ViewReport?id={0}&IsCopy={2}&AfficheResultatAnalyse={3}', this, 'Bon De Reception','')", IdBon, BaseUrl, ReportIscopy, afficheAnalyse));
         }
 
         public ActionResult ViewReport(string id, bool IsCopy, bool AfficheResultatAnalyse)
@@ -1508,6 +1545,48 @@ namespace Tms2017.MVC.Controllers
 
             return this.Direct();
         }
+
+        public ActionResult GetInfoTKM(string siteID, string provenanceID, string poidsNet)
+        {            
+            try
+            {
+                if (string.IsNullOrEmpty(provenanceID) || string.IsNullOrEmpty(siteID))
+                    return this.Direct();
+
+                decimal _PoidsNet = 0;
+                int IdSite, IdProvenance = 0;
+                bool res = int.TryParse(siteID, out IdSite);
+                res = int.TryParse(provenanceID, out IdProvenance);
+                res = decimal.TryParse(poidsNet, out _PoidsNet);
+
+                Provenance mProv = new Provenance();
+                mProv.fnGet_InfoTKM(IdSite, IdProvenance, _PoidsNet);
+                
+                if (mProv != null)
+                {                    
+                    X.GetCmp<TextField>("txtDistance").Text = mProv.Distance.ToString();
+                    X.GetCmp<TextField>("txtCoutTkm").Text = mProv.CoutTransport.ToString("F2");
+                    X.GetCmp<TextField>("txtCoutTheorique").Text = mProv.PrimeCCC.ToString("#,#");
+                    //X.GetCmp<TextField>("txtNetWeight").Text = mProv.PrimeCCC.ToString("#,#");                                        
+                }
+            }
+            catch (Exception ex)
+            {                
+
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Expedition : Info Lot",
+                    Message = ex.Message,
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+            }
+
+            //OnRefresh(mClass.ID.ToString())
+            return this.Direct();
+
+        }
+
 
     }
 }

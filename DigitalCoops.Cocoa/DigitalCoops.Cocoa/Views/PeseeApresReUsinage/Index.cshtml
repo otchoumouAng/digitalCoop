@@ -218,7 +218,7 @@
                                 de =>
                                     {
                                         de.Click.Url  = Url.Action("OnAdd");
-                                        de.Click.Success = "App.FormPeseeApresReUsinage.setTitle('Weighing After Re-Cleaning : Nouveau')";
+                                        de.Click.Success = "App.FormPeseeApresReUsinage.setTitle('Pesée apres Reusinage : Nouveau')";
                                         de.Click.EventMask.ShowMask = true;
                                     }
                             ),
@@ -235,7 +235,7 @@
                                 de =>
                                 {
                                 de.Click.Url  = Url.Action("OnEdit");
-                                de.Click.Success = "App.FormPeseeApresReUsinage.setTitle('Weighing After Re-Cleaning : Nouveau')";
+                                de.Click.Success = "App.FormPeseeApresReUsinage.setTitle('Pesée apres Reusinage : Nouveau')";
                                 de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListePeseeApresReUsinage}.getSelectionModel().getSelection()[0].data"});
                                 de.Click.EventMask.ShowMask = true;
                                 }
@@ -253,7 +253,7 @@
                                     de =>
                                     {
                                     de.Click.Url  = Url.Action("OnEdit");
-                                    de.Click.Success = "App.FormPeseeApresReUsinage.setTitle('Weighing After Re-Cleaning : Nouveau')";
+                                    de.Click.Success = "App.FormPeseeApresReUsinage.setTitle('Pesée apres Reusinage : Nouveau')";
                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListePeseeApresReUsinage}.getSelectionModel().getSelection()[0].data"});
                                     de.Click.EventMask.ShowMask = true;
                                     }
@@ -344,7 +344,7 @@
                                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListePeseeApresReUsinage}.getSelectionModel().getSelection()[0].data" });
                                                     de.Click.EventMask.ShowMask = true;
                                                     de.Click.Confirmation.ConfirmRequest = true;
-                                                    de.Click.Confirmation.Title = "Weighing After Re-Cleaning";
+                                                    de.Click.Confirmation.Title = "Pesée apres Reusinage";
                                                     de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListePeseeApresReUsinage}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                     de.Click.Success = "Overview.resetButtons();";
                                                 }
@@ -359,7 +359,7 @@
     #region Criteres
             X.FormPanel()
                 .ID("PeseeApresReUsinageCP")
-                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Weighing After Re-Cleaning - overview" })
+                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Pesée apres Reusinage - overview" })
                 .Region(Region.North)
                 .Floatable(false)
                 .Border(false)
@@ -551,7 +551,7 @@
                             de.RowDblClick.CleanRequest = true;
                             de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowPeseeApresReUsinage}.getSelected().items[0].data" });
                             de.RowDblClick.EventMask.ShowMask = true;
-                            de.RowDblClick.Success = "App.FormPeseeApresReUsinage.setTitle('Weighing After Re-Cleaning : Detail')";
+                            de.RowDblClick.Success = "App.FormPeseeApresReUsinage.setTitle('Pesée apres Reusinage : Detail')";
                         }
                     )
     #endregion

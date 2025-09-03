@@ -21,6 +21,7 @@ namespace Tms.Classes.Business
         private DateTime _DateCode;
         private string _Code;
         private bool _Desactive;        
+        private bool _EstInterne;
 
         #endregion
 
@@ -104,6 +105,24 @@ namespace Tms.Classes.Business
                     return 2; // Tick                
             }  
                   
+        }
+
+        public bool EstInterne
+        {
+            get
+            {
+                return _EstInterne;
+            }
+
+            set
+            {
+                _EstInterne = value;
+            }
+        }
+
+        public string LibelleTypeCode
+        {
+            get { return _EstInterne ? "Int." : "Conces."; }
         }
         #endregion
 
@@ -235,7 +254,7 @@ namespace Tms.Classes.Business
             }
         }
 
-        public List<DataPersist> fnSelectCodeForAnalysePhysique(Guid? CodeAnalyseId)
+        public List<DataPersist> fnSelectCodeForAnalysePhysique(Guid? CodeAnalyseId, int mType = 0)
         {
             List<DataPersist> mList = new List<DataPersist>();
             IDataReader mDataReader = null;
@@ -244,6 +263,7 @@ namespace Tms.Classes.Business
             {
                 DataCommand mCommande = db().CreateStoredProcCommand("AnalysePhysique_ListeCodeAnalyse_Select");
                 db().AddInParameter(mCommande, "@CodeId", SqlDbType.UniqueIdentifier, CodeAnalyseId);
+                db().AddInParameter(mCommande, "@CodeInterne", SqlDbType.Int, mType);
                 mDataReader = db().ExecuteReader(mCommande);
 
                 while (mDataReader.Read())
@@ -289,7 +309,8 @@ namespace Tms.Classes.Business
 
                 db().AddInParameter(mCommande, "@LivraisonID", SqlDbType.UniqueIdentifier, _Livraison.ID);
                 db().AddInParameter(mCommande, "@DateCode", SqlDbType.DateTime, _DateCode);
-                db().AddInParameter(mCommande, "@Code", SqlDbType.Char, _Code);                              
+                db().AddInParameter(mCommande, "@Code", SqlDbType.VarChar, _Code);                              
+                db().AddInParameter(mCommande, "@EstInterne", SqlDbType.Bit, _EstInterne);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
 
@@ -355,7 +376,8 @@ namespace Tms.Classes.Business
 
                 db().AddInParameter(mCommande, "@LivraisonID", SqlDbType.UniqueIdentifier, _Livraison.ID);
                 db().AddInParameter(mCommande, "@DateCode", SqlDbType.DateTime, _DateCode);
-                db().AddInParameter(mCommande, "@Code", SqlDbType.Char, _Code);
+                db().AddInParameter(mCommande, "@Code", SqlDbType.VarChar, _Code);
+                db().AddInParameter(mCommande, "@EstInterne", SqlDbType.Bit, _EstInterne);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
 
@@ -565,10 +587,10 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["DateLivraison"])) mClass._Livraison.DateLivraison = (DateTime)mDataReader["DateLivraison"];
                     if (!DBNull.Value.Equals(mDataReader["NumeroLivraison"])) mClass._Livraison.Numero = (string)mDataReader["NumeroLivraison"];
 
-
                     if (!DBNull.Value.Equals(mDataReader["DateCode"])) mClass._DateCode = (DateTime)mDataReader["DateCode"];
                     if (!DBNull.Value.Equals(mDataReader["Code"])) mClass._Code = (string)mDataReader["Code"];                   
                     if (!DBNull.Value.Equals(mDataReader["Desactive"])) mClass._Desactive = (bool)mDataReader["Desactive"];
+                    if (!DBNull.Value.Equals(mDataReader["EstInterne"])) mClass._EstInterne = (bool)mDataReader["EstInterne"];
 
                     if (!DBNull.Value.Equals(mDataReader["CreationUtilisateur"])) mClass.UtilisateurCreation = (string)mDataReader["CreationUtilisateur"];
                     if (!DBNull.Value.Equals(mDataReader["CreationDate"])) mClass.DateCreation = (DateTime)mDataReader["CreationDate"];
@@ -605,6 +627,7 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["ID"])) mClass._ID = (Guid)mDataReader["ID"];                    
                     
                     if (!DBNull.Value.Equals(mDataReader["Code"])) mClass._Code = (string)mDataReader["Code"];
+                    if (!DBNull.Value.Equals(mDataReader["EstInterne"])) mClass._EstInterne = (bool)mDataReader["EstInterne"];
 
                 }
             }

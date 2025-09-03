@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="Tms.LocalService.exe" version="1.0.0.30" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="Tms.LocalService.exe" version="1.0.0.31" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
   <application />
   <entryPoint>
     <assemblyIdentity name="Tms.LocalService" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
@@ -1590,26 +1590,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="QRCoder.dll" size="154112">
-      <assemblyIdentity name="QRCoder" version="1.6.0.0" publicKeyToken="C4ED5B9AE8358A28" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>WuJ5LHYmKUOk40FAu9ZLKqfZ7VxYImgMANnqoyJBJoA=</dsig:DigestValue>
-      </hash>
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tms.Classes.dll" size="2287616">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Tms.Classes.dll" size="2199552">
       <assemblyIdentity name="Tms.Classes" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>hQm9EpEUcELPuwGhPM05CZYbxkgm2JIKxR3QBWeQyI0=</dsig:DigestValue>
+        <dsig:DigestValue>IAoUslXXCnUEdwIqszgIAsDS1z1jFEf4SybD9DUyeS8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -1621,7 +1609,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>QHS7YbLDwjSfLwF6i3JYM8F/0/Un74XTJcKdXN8QFMY=</dsig:DigestValue>
+        <dsig:DigestValue>8Pq1bjc1l3GMbAps/DQmeSH+zweiK6yUwPGVWjucTQ0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -1633,7 +1621,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>5NQLtTM2Dp+MVhjUBs5KN6QX6AiF6c/RJTmJUdmQw5c=</dsig:DigestValue>
+        <dsig:DigestValue>5gjr1rLRi9c9ujsIrmEmiTEvl93fGrTMLXWl8XtiDJk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -1646,13 +1634,13 @@
       <dsig:DigestValue>yiivtySjbQgEBUQok/yys3FIXRr5Uo6NJPVTmIwKE80=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Tms.LocalService.exe.config" size="3764">
+  <file name="Tms.LocalService.exe.config" size="4694">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>pnfi+zvLhou+TCgD208uqxmU9v3X1fW2LGsC3tJck2w=</dsig:DigestValue>
+      <dsig:DigestValue>Iw50c4e9aO7ApIWrG3+Yd89keD/8p5lKqG9LBwymfSs=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

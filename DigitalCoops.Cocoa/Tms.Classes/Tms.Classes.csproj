@@ -105,6 +105,8 @@
     <Compile Include="Business\Financement_Approval.cs" />
     <Compile Include="Business\Fournisseur.cs" />
     <Compile Include="Business\Palette.cs" />
+    <Compile Include="Business\ExonerationBIC.cs" />
+    <Compile Include="Business\GrilleTransport.cs" />
     <Compile Include="Business\PrixJournalier.cs" />
     <Compile Include="Business\PrixJournalierAgence.cs" />
     <Compile Include="Business\PrixNegocieAgence.cs" />

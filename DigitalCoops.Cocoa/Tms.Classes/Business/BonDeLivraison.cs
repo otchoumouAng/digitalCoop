@@ -68,6 +68,15 @@ namespace Tms.Classes.Business
         private decimal _PrixMoyen;
 
         private int _MagasinDefID;
+        private int? _ProvenanceID;
+        private double _StdDechet;
+        private decimal _RefactionDechet;
+        private decimal _BaremeTransport;
+        private int _PortReference;
+        private decimal _CoutTransport;
+        private decimal _CoutTransportExportateur;
+        private decimal _PrimeTransportCCC;
+        private decimal _Distance;
         #endregion
 
         #region "Properties"
@@ -88,6 +97,12 @@ namespace Tms.Classes.Business
         {
             get { return _CertificationID; }
             set { _CertificationID = value; }
+        }
+
+        public int? ProvenanceID
+        {
+            get { return _ProvenanceID; }
+            set { _ProvenanceID = value; }
         }
 
         public Livraison Livraison
@@ -275,6 +290,12 @@ namespace Tms.Classes.Business
         {
             get { return _StdBrisures; }
             set { _StdBrisures = value; }
+        }
+
+        public double StdDechet
+        {
+            get { return _StdDechet; }
+            set { _StdDechet = value; }
         }
 
         public decimal RefactionHumidite
@@ -571,6 +592,97 @@ namespace Tms.Classes.Business
             set
             {
                 _MagasinDefID = value;
+            }
+        }        
+
+        public decimal RefactionDechet
+        {
+            get
+            {
+                return _RefactionDechet;
+            }
+
+            set
+            {
+                _RefactionDechet = value;
+            }
+        }
+
+        public decimal BaremeTransport
+        {
+            get
+            {
+                return _BaremeTransport;
+            }
+
+            set
+            {
+                _BaremeTransport = value;
+            }
+        }
+
+        public int PortReference
+        {
+            get
+            {
+                return _PortReference;
+            }
+
+            set
+            {
+                _PortReference = value;
+            }
+        }
+
+        public decimal CoutTransport
+        {
+            get
+            {
+                return _CoutTransport;
+            }
+
+            set
+            {
+                _CoutTransport = value;
+            }
+        }
+
+        public decimal CoutTransportExportateur
+        {
+            get
+            {
+                return _CoutTransportExportateur;
+            }
+
+            set
+            {
+                _CoutTransportExportateur = value;
+            }
+        }
+
+        public decimal PrimeTransportCCC
+        {
+            get
+            {
+                return _PrimeTransportCCC;
+            }
+
+            set
+            {
+                _PrimeTransportCCC = value;
+            }
+        }
+
+        public decimal Distance
+        {
+            get
+            {
+                return _Distance;
+            }
+
+            set
+            {
+                _Distance = value;
             }
         }
         #endregion
@@ -872,9 +984,11 @@ namespace Tms.Classes.Business
                     db().AddInParameter(mCommande, "@StdHumidite", SqlDbType.Float, _StdHumidite);
                     db().AddInParameter(mCommande, "@StdME", SqlDbType.Float, _StdMatieresEtrangeres);
                     db().AddInParameter(mCommande, "@StdBrisure", SqlDbType.Float, _StdBrisures);
+                    db().AddInParameter(mCommande, "@StdDechet", SqlDbType.Float, _StdDechet);
                     db().AddInParameter(mCommande, "@RetHumidite", SqlDbType.Float, _RefactionHumidite);
                     db().AddInParameter(mCommande, "@RetME", SqlDbType.Float, _RefactionMatieresEtg);
                     db().AddInParameter(mCommande, "@RetBrisure", SqlDbType.Float, _RefactionBrisures);
+                    db().AddInParameter(mCommande, "@RetDechet", SqlDbType.Float, _RefactionDechet);
                     db().AddInParameter(mCommande, "@PoidsNet", SqlDbType.Decimal, _PoidsNetAccepte);
                 }
                 else
@@ -892,6 +1006,11 @@ namespace Tms.Classes.Business
                     db().AddInParameter(mCommande, "@CertificationID", SqlDbType.Int, _CertificationID);
                 else
                     db().AddInParameter(mCommande, "@CertificationID", SqlDbType.Int, DBNull.Value);
+
+                if (_ProvenanceID != null)
+                    db().AddInParameter(mCommande, "@ProvenanceID", SqlDbType.Int, _ProvenanceID);
+                else
+                    db().AddInParameter(mCommande, "@ProvenanceID", SqlDbType.Int, DBNull.Value);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
 
@@ -1312,6 +1431,7 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["RefactionHumidite"])) mClass._RefactionHumidite = (decimal)mDataReader["RefactionHumidite"];
                     if (!DBNull.Value.Equals(mDataReader["RefactionMatiereEtg"])) mClass._RefactionMatieresEtg = (decimal)mDataReader["RefactionMatiereEtg"];
                     if (!DBNull.Value.Equals(mDataReader["RefactionBrisure"])) mClass._RefactionBrisures = (decimal)mDataReader["RefactionBrisure"];
+                    if (!DBNull.Value.Equals(mDataReader["RefactionDechet"])) mClass._RefactionDechet = (decimal)mDataReader["RefactionDechet"];
                     if (!DBNull.Value.Equals(mDataReader["PoidsNet"])) mClass._PoidsNetAccepte = (decimal)mDataReader["PoidsNet"];
                     if (!DBNull.Value.Equals(mDataReader["Statut"])) mClass._Statut = (string)mDataReader["Statut"];
                     if (!DBNull.Value.Equals(mDataReader["TareSacs"])) mClass._TareSacs = (decimal)mDataReader["TareSacs"];
@@ -1320,6 +1440,7 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["StdHumidite"])) mClass._StdHumidite = (double)mDataReader["StdHumidite"];
                     if (!DBNull.Value.Equals(mDataReader["StdMatiereEtg"])) mClass._StdMatieresEtrangeres = (double)mDataReader["StdMatiereEtg"];
                     if (!DBNull.Value.Equals(mDataReader["StdBrisure"])) mClass._StdBrisures = (double)mDataReader["StdBrisure"];
+                    if (!DBNull.Value.Equals(mDataReader["StdDechet"])) mClass._StdDechet = (double)mDataReader["StdDechet"];
 
                     if (!DBNull.Value.Equals(mDataReader["CreationUtilisateur"])) mClass._UtilisateurCreation = (string)mDataReader["CreationUtilisateur"];
                     if (!DBNull.Value.Equals(mDataReader["CreationDate"])) mClass._DateCreation = (DateTime)mDataReader["CreationDate"];
@@ -1332,7 +1453,14 @@ namespace Tms.Classes.Business
 
                     if (!DBNull.Value.Equals(mDataReader["Defectueuse"])) mClass.Defectueuse = (double)mDataReader["Defectueuse"];
                     if (!DBNull.Value.Equals(mDataReader["Mouldy"])) mClass.Moisie = (double)mDataReader["Mouldy"];
-                    if (!DBNull.Value.Equals(mDataReader["Slaty"])) mClass.Slaty = (double)mDataReader["Slaty"];                    
+                    if (!DBNull.Value.Equals(mDataReader["Slaty"])) mClass.Slaty = (double)mDataReader["Slaty"];  
+                    
+                    if (!DBNull.Value.Equals(mDataReader["BaremeTransport"])) mClass._BaremeTransport = (decimal)mDataReader["BaremeTransport"];
+                    //if (!DBNull.Value.Equals(mDataReader["PortReference"])) mClass._PortReference = (int)mDataReader["PortReference"];
+                    if (!DBNull.Value.Equals(mDataReader["CoutTransport"])) mClass._CoutTransport = (decimal)mDataReader["CoutTransport"];
+                    if (!DBNull.Value.Equals(mDataReader["CoutTransportExportateur"])) mClass._CoutTransportExportateur = (decimal)mDataReader["CoutTransportExportateur"];
+                    if (!DBNull.Value.Equals(mDataReader["PrimeTransportCCC"])) mClass._PrimeTransportCCC = (decimal)mDataReader["PrimeTransportCCC"];
+                    if (!DBNull.Value.Equals(mDataReader["Distance"])) mClass._Distance = (decimal)mDataReader["Distance"];
 
                 }
             }

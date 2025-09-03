@@ -66,25 +66,23 @@ namespace Tms.Classes.Business
         }
         public string LibelleTypeDeLivraison
         {
-            get { return _BonDeLivraison.Livraison.LivraisonType != null ? _BonDeLivraison.Livraison.LivraisonType.Designation : string.Empty; }
+            get { return _BonDeLivraison != null && _BonDeLivraison.Livraison != null && _BonDeLivraison.Livraison.LivraisonType != null ? _BonDeLivraison.Livraison.LivraisonType.Designation : string.Empty; }
 
         }
         public string LivraisonID
         {
-            get { return _BonDeLivraison.Livraison.Numero; }
-
+            get { return _BonDeLivraison != null && _BonDeLivraison.Livraison != null ? _BonDeLivraison.Livraison.Numero : string.Empty; }
         }
        
         public string Immatriculation
         {
-            get { return _BonDeLivraison.Livraison.Immatriculation; }
+            get { return _BonDeLivraison != null && _BonDeLivraison.Livraison != null ? _BonDeLivraison.Livraison.Immatriculation : string.Empty; }
 
         }
 
         public string FournisseurNom
         {
-            get { return _BonDeLivraison.Livraison.Fournisseur.Nom + " - " + _BonDeLivraison.Livraison.Fournisseur.ID; }
-
+            get { return _BonDeLivraison != null && _BonDeLivraison.Livraison != null ? _BonDeLivraison.Livraison.Fournisseur.Nom + " - " + _BonDeLivraison.Livraison.Fournisseur.ID : string.Empty; }
         }
 
         public string Numero

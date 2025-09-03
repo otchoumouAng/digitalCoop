@@ -188,7 +188,7 @@ X.Window()
                                                                 .Fields
                                                                 (
                                                                     new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
-                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }                                                                   
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
                                                                 )
                                                             )
                                                             .Proxy
@@ -255,7 +255,7 @@ X.Window()
                                                     //    .ReadOnly(true)
                                                     //    .LabelAlign(LabelAlign.Right),
                                                     //.Text(Model._CompositionUsinage.OrdreProduction.NumeroProduction),
-                                                    
+
                                                     //.Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CompositionUsinage.OrdreProduction.DateProduction.ToShortDateString() : string.Empty),
                                                     X.DateField()
                                                         .ID("txtDateComposition")
@@ -486,6 +486,7 @@ X.Window()
                                                                 {
                                                                     de.Click.Url = Url.Action("onAddDelivery");
                                                                     de.Click.ExtraParams.Add(new Parameter { Name = "rowsDeliveriesInListe", Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "melangeID", Mode = ParameterMode.Raw, Value = "App.cmbMelange.getValue()" });
                                                                     de.Click.EventMask.ShowMask = true;
                                                                 }
                                                             ),
@@ -513,6 +514,49 @@ X.Window()
                                                         X.ComboBox()
                                                             .ID("cmbMelange")
                                                             .FieldLabel("Melange")
+                                                            .DisplayField("Designation")
+                                                            .ValueField("ID")
+                                                            .QueryMode(DataLoadMode.Local)
+                                                            .TriggerAction(TriggerAction.All)
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .Store
+                                                            (
+                                                                X.Store()
+                                                                    .AutoLoad(true)
+                                                                    .Model
+                                                                    (
+                                                                        X.Model()
+                                                                             .IDProperty("ID")
+                                                                             .Fields
+                                                                             (
+                                                                               new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                               new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                             )
+                                                                    )
+                                                                    .Proxy
+                                                                    (
+                                                                        Html.X().AjaxProxy()
+                                                                        .Url(Url.Action("LoadActiveMelange", "Melange"))
+                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                    )
+                                                            )
+                                                            //.Listeners(
+                                                            //    ls =>
+                                                            //    {
+                                                            //        ls.Select.Handler = "loadFilter(this.up('grid').filterHeader);";
+                                                            //        //ls.Change.Handler = "GetValueByMelange();";
+                                                            //    }
+                                                            //)
+                                                            .SelectedItems
+                                                            (
+                                                                it =>
+                                                                {
+                                                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                                }
+                                                            ),
+                                                        X.ComboBox()
+                                                            .ID("cmbMelangeFiltre")
+                                                            .FieldLabel("Filtrer Par")
                                                             .DisplayField("Designation")
                                                             .ValueField("ID")
                                                             .QueryMode(DataLoadMode.Local)
@@ -629,8 +673,8 @@ X.Window()
     };
 
     var loadFilter = function (plugin) {
-        var filterRawValue = App.cmbMelange.getRawValue();
-        var filtervalue = App.cmbMelange.getValue();
+        var filterRawValue = App.cmbMelangeFiltre.getRawValue();
+        var filtervalue = App.cmbMelangeFiltre.getValue();
         if (filtervalue != '-1') {
             plugin.setValue({
                 MelangeAsString: filterRawValue

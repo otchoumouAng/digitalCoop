@@ -979,14 +979,37 @@ namespace Tms2017.MVC.Controllers
 
                     var j = 0;
                     FactureValorisation mFactureValorisation = new FactureValorisation();
+                    FactureValorisation mFactureListe = new FactureValorisation();
                     for (j = 0; j < mListe.Count; j++)
                     {
                         mFactureValorisation = mListe[j] as FactureValorisation;
                         mTotalValorisation = mTotalValorisation + mFactureValorisation.Montant;
                     }
 
-                    MapDeductionToForm(mClass, mTotalValorisation);                    
+                    Parametres mParam = new Parametres(0);
+                    mFactureListe = mListe.Cast<FactureValorisation>().Where(x => x.ValorisationType.ID == 3).ToList().FirstOrDefault();
 
+                    FactureDeduction mDed = new FactureDeduction();
+                    mDed.ElementID = mClass.ID;
+                    bool EstValide = mDed.fnBicValide();
+
+                    if (!EstValide && mFactureListe != null)
+                    {                        
+                        FactureDeductionType mType = new FactureDeductionType(mParam.DefDeductionTypeBIC);
+                        mDed = new FactureDeduction();
+                        mDed.ID = Guid.NewGuid();
+                        mDed.Facture = new Facture();
+                        mDed.Facture.ID = Guid.Empty;
+                        mDed.DeductionType = new FactureDeductionType();
+                        mDed.DeductionType = mType;
+                        mDed.ElementID = mFactureListe.ID;
+                        mDed.ElementRef = mFactureListe.TarificationRef;
+                        mDed.Taux = (decimal)mType.Taux;
+                        mDed.Libelle = mType.Designation;
+                        mDed.Montant = Math.Round((mFactureListe.Montant * (decimal)mType.Taux) / 100,0);
+                    }
+
+                    MapDeductionToForm(mClass, mTotalValorisation, mDed);                    
                 }
                 else
                 {
@@ -1012,7 +1035,7 @@ namespace Tms2017.MVC.Controllers
 
         }
 
-        private void MapDeductionToForm(BonDeLivraison mClass, decimal mTotalValorisation )
+        private void MapDeductionToForm(BonDeLivraison mClass, decimal mTotalValorisation, FactureDeduction mDed = null )
         {
             try
             {
@@ -1028,8 +1051,9 @@ namespace Tms2017.MVC.Controllers
                     i += 1;
                     item.IsNew = true;                    
                     store.Insert(i, item);
-                }                              
-                
+                }
+                if ((mDed != null) && (mDed.ID != Guid.Empty))
+                    store.Add(mDed);
             }
             catch (Exception ex)
             {

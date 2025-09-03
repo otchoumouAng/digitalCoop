@@ -44,10 +44,10 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:06:51</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>06/29/2025 22:28:49</publishTime>
+      <publishTime>09/01/2025 08:04:18</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>06/29/2025 22:28:48</publishTime>
+      <publishTime>09/01/2025 08:04:18</publishTime>
     </File>
     <File Include="bin/CrystalDecisions.CrystalReports.Engine.dll">
       <publishTime>06/03/2025 16:05:47</publishTime>
@@ -293,10 +293,10 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>03/25/2022 20:30:57</publishTime>
     </File>
     <File Include="bin/DigitalCoops.Cocoa.dll">
-      <publishTime>06/29/2025 12:36:23</publishTime>
+      <publishTime>09/01/2025 08:02:48</publishTime>
     </File>
     <File Include="bin/en/DigitalCoops.Cocoa.resources.dll">
-      <publishTime>06/29/2025 12:36:36</publishTime>
+      <publishTime>09/01/2025 08:02:59</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>06/03/2025 16:06:57</publishTime>
@@ -398,7 +398,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:07:01</publishTime>
     </File>
     <File Include="bin/fr/DigitalCoops.Cocoa.resources.dll">
-      <publishTime>06/29/2025 12:36:36</publishTime>
+      <publishTime>09/01/2025 08:02:59</publishTime>
     </File>
     <File Include="bin/ja/DevExpress.Data.v17.1.resources.dll">
       <publishTime>06/03/2025 16:05:51</publishTime>
@@ -683,7 +683,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:07:01</publishTime>
     </File>
     <File Include="bin/Tms.Classes.dll">
-      <publishTime>06/29/2025 12:36:02</publishTime>
+      <publishTime>08/25/2025 11:57:03</publishTime>
     </File>
     <File Include="bin/Tms.Classes.pdb">
       <publishTime>07/03/2022 23:53:57</publishTime>
@@ -695,7 +695,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>04/04/2022 01:22:45</publishTime>
     </File>
     <File Include="bin/Tms.LocalService.exe">
-      <publishTime>06/29/2025 12:36:07</publishTime>
+      <publishTime>08/25/2025 11:57:08</publishTime>
     </File>
     <File Include="bin/Tms.LocalService.exe.config">
       <publishTime>03/25/2022 19:03:34</publishTime>
@@ -4085,7 +4085,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:06:43</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>06/29/2025 22:28:15</publishTime>
+      <publishTime>09/01/2025 08:03:32</publishTime>
     </File>
     <File Include="Reports/Style/TmsGroupFooterStyle.repss">
       <publishTime>06/03/2025 16:05:58</publishTime>
@@ -4211,25 +4211,31 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/AnalysePhysique/FormAnalysePhysique.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/19/2025 10:05:39</publishTime>
     </File>
     <File Include="Views/AnalysePhysique/FormApproveAnalysePhysique.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/13/2025 10:27:35</publishTime>
     </File>
     <File Include="Views/AnalysePhysique/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/13/2025 10:27:04</publishTime>
     </File>
     <File Include="Views/AnalysePhysiqueAgence/AnalysePhysique_Deliveries.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/AnalysePhysiqueAgence/FormAnalysePhysiqueAgence.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/23/2025 11:13:06</publishTime>
     </File>
     <File Include="Views/AnalysePhysiqueAgence/FormApproveAnalysePhysiqueAgence.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/AnalysePhysiqueAgence/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/23/2025 10:56:42</publishTime>
+    </File>
+    <File Include="Views/AnalysePhysiqueInterne/FormAnalysePhysique.cshtml">
+      <publishTime>08/19/2025 10:06:15</publishTime>
+    </File>
+    <File Include="Views/AnalysePhysiqueInterne/Index.cshtml">
+      <publishTime>07/24/2025 11:12:53</publishTime>
     </File>
     <File Include="Views/Analyseur/FormAnalyseur.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -4253,7 +4259,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/05/2025 14:52:03</publishTime>
     </File>
     <File Include="Views/BonDeLivraison/BonDeLivraison_Detail.cshtml">
-      <publishTime>06/05/2025 14:48:35</publishTime>
+      <publishTime>08/14/2025 11:14:32</publishTime>
     </File>
     <File Include="Views/BonDeLivraison/BonDeLivraison_Origine.cshtml">
       <publishTime>06/05/2025 14:48:35</publishTime>
@@ -4492,8 +4498,11 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
     <File Include="Views/DashBoard/_PoleChartsVolumeCropYearToDate.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
+    <File Include="Views/DeliveryCoding/FormCodeInterne.cshtml">
+      <publishTime>08/13/2025 11:19:26</publishTime>
+    </File>
     <File Include="Views/DeliveryCoding/FormDeliveryCoding.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/19/2025 10:35:56</publishTime>
     </File>
     <File Include="Views/DeliveryCoding/Index.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -4602,6 +4611,12 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
     </File>
     <File Include="Views/Enregistrement/ViewReport.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
+    </File>
+    <File Include="Views/ExonerationBIC/FormExonerationBIC.cshtml">
+      <publishTime>08/12/2025 11:43:01</publishTime>
+    </File>
+    <File Include="Views/ExonerationBIC/Index.cshtml">
+      <publishTime>08/12/2025 11:41:42</publishTime>
     </File>
     <File Include="Views/Expedition/FormVente_SelectLot.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -4837,6 +4852,12 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
     <File Include="Views/FournisseurType/Index.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
+    <File Include="Views/GrilleTransport/FormGrilleTransport.cshtml">
+      <publishTime>08/25/2025 11:44:44</publishTime>
+    </File>
+    <File Include="Views/GrilleTransport/Index.cshtml">
+      <publishTime>08/25/2025 11:44:54</publishTime>
+    </File>
     <File Include="Views/Home/About.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
@@ -4886,7 +4907,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/Livraison/Livraison_Detail.cshtml">
-      <publishTime>06/29/2025 08:49:04</publishTime>
+      <publishTime>07/23/2025 11:40:24</publishTime>
     </File>
     <File Include="Views/Livraison/Livraison_DetailSmall.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -4931,16 +4952,16 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/LotAnalysePhysique/AnalysePhysiqueExport_SelectLot.cshtml">
-      <publishTime>06/29/2025 10:06:01</publishTime>
+      <publishTime>07/02/2025 09:09:23</publishTime>
     </File>
     <File Include="Views/LotAnalysePhysique/FormApproveLotAnalysePhysique.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/23/2025 10:58:18</publishTime>
     </File>
     <File Include="Views/LotAnalysePhysique/FormLotAnalysePhysique.cshtml">
-      <publishTime>06/29/2025 10:05:23</publishTime>
+      <publishTime>08/19/2025 15:12:22</publishTime>
     </File>
     <File Include="Views/LotAnalysePhysique/Index.cshtml">
-      <publishTime>06/29/2025 10:04:40</publishTime>
+      <publishTime>08/19/2025 15:07:44</publishTime>
     </File>
     <File Include="Views/LotProduction/FormLot.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5012,10 +5033,10 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/29/2025 09:29:37</publishTime>
     </File>
     <File Include="Views/MelangeProduction/FormMelangeLivraison.cshtml">
-      <publishTime>06/29/2025 09:31:04</publishTime>
+      <publishTime>08/01/2025 11:05:07</publishTime>
     </File>
     <File Include="Views/MelangeProduction/FormMelangeProduction.cshtml">
-      <publishTime>06/29/2025 09:58:26</publishTime>
+      <publishTime>08/13/2025 16:47:25</publishTime>
     </File>
     <File Include="Views/MelangeProduction/Index.cshtml">
       <publishTime>06/29/2025 09:37:08</publishTime>
@@ -5069,7 +5090,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/MouvementStock/Index.cshtml">
-      <publishTime>06/29/2025 09:07:02</publishTime>
+      <publishTime>07/02/2025 09:15:56</publishTime>
     </File>
     <File Include="Views/MouvementStock/MouvementStock_Print.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5123,7 +5144,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/29/2025 09:25:51</publishTime>
     </File>
     <File Include="Views/OrdreProduction/FormOrdreProduction.cshtml">
-      <publishTime>06/29/2025 09:27:03</publishTime>
+      <publishTime>07/23/2025 11:43:04</publishTime>
     </File>
     <File Include="Views/OrdreProduction/Index.cshtml">
       <publishTime>06/29/2025 09:11:55</publishTime>
@@ -5222,16 +5243,16 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/Pesee/Pesee_ManualDetail.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/14/2025 11:49:29</publishTime>
     </File>
     <File Include="Views/Pesee/Pesee_PendingDeliveriesDetail.cshtml">
       <publishTime>06/29/2025 11:01:38</publishTime>
     </File>
     <File Include="Views/Pesee/Pesee_SecondWeighingDetail.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/19/2025 11:58:32</publishTime>
     </File>
     <File Include="Views/Pesee/Pesee_TestScale.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/18/2025 14:59:44</publishTime>
     </File>
     <File Include="Views/Pesee/ViewWeighingTicket.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5258,7 +5279,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/PeseeApresReUsinage/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/14/2025 14:36:02</publishTime>
     </File>
     <File Include="Views/PeseeApresReUsinage/PeseeApresReUsinage_SelectLot.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5267,7 +5288,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/PeseeApresUsinage/FormPeseeApresUsinage.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/14/2025 14:07:51</publishTime>
     </File>
     <File Include="Views/PeseeApresUsinage/FormPeseeManuelleApresUsinage.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5558,13 +5579,13 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/ResultAnalyseChimique/FormApproveAnalyseChimique.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/02/2025 09:38:43</publishTime>
     </File>
     <File Include="Views/ResultAnalyseChimique/FormResultAnalyseChimique.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/02/2025 09:38:30</publishTime>
     </File>
     <File Include="Views/ResultAnalyseChimique/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/02/2025 09:37:31</publishTime>
     </File>
     <File Include="Views/RetourEmpotage/FormRetourEmpotage.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5576,13 +5597,13 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/Reusinage/FormPreventReusinage.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/14/2025 13:59:36</publishTime>
     </File>
     <File Include="Views/Reusinage/FormReusinage.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/14/2025 14:25:41</publishTime>
     </File>
     <File Include="Views/Reusinage/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>08/14/2025 14:11:15</publishTime>
     </File>
     <File Include="Views/Role/FormListeRoleFonctions.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5600,16 +5621,16 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/SampleAnalyseChimique/FormSampleAnalysePhysique.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/02/2025 09:30:33</publishTime>
     </File>
     <File Include="Views/SampleAnalyseChimique/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/02/2025 09:32:11</publishTime>
     </File>
     <File Include="Views/SampleAnalyseChimique/SampleAnalyseChimique_Print.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/SampleAnalyseChimique/Sample_SelectLot.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>07/02/2025 09:31:49</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>06/03/2025 16:05:59</publishTime>
@@ -5711,7 +5732,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Views/SituationStockQty/Index.cshtml">
-      <publishTime>06/03/2025 16:05:59</publishTime>
+      <publishTime>06/30/2025 15:50:34</publishTime>
     </File>
     <File Include="Views/SpotPrice/FormSpotPrice.cshtml">
       <publishTime>06/29/2025 10:59:17</publishTime>
@@ -5852,7 +5873,7 @@ en modifiant ce fichier MSBuild. Pour en savoir plus à ce sujet, visitez https:
       <publishTime>06/03/2025 16:05:59</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>06/29/2025 12:37:03</publishTime>
+      <publishTime>09/01/2025 08:03:29</publishTime>
     </File>
   </ItemGroup>
 </Project>

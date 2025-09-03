@@ -415,16 +415,16 @@ C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\fr\Digital
 C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\DigitalCoops.Cocoa.dll
 C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\DigitalCoops.Cocoa.pdb
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\csc.exe
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.CodeAnalysis.dll
-C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\System.Reflection.Metadata.dll
-C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\VBCSCompiler.exe
-C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.CSharp.Core.targets
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\Microsoft.VisualBasic.Core.targets
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\System.Collections.Immutable.dll
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\System.Reflection.Metadata.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\vbc.exe
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\VBCSCompiler.exe
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\roslyn\VBCSCompiler.exe.config
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\AppControlsSettings.config
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\bin\DigitalCoops.Cocoa.dll.config
@@ -721,6 +721,7 @@ C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptContratD
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptDailyPriceList.resources
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptBordereauEntreeSortieList.resources
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptDailyStock.resources
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptPhysicalAnalysisList_int.resources
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptPrimeList.resources
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptRemboursementDirect.resources
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Debug\rptShipmentRecapHistory.resources

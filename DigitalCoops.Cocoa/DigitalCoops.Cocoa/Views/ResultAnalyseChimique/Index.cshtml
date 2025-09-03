@@ -9,7 +9,7 @@
 <script type="text/javascript">
     var GetNbrStoreRows = function () {
         var nbr = App.grpListeAnalyseChimique.getRowsValues().length;
-        App.LblResumeAnalyseChimique.setText(nbr + ' Analysis');
+        App.LblResumeAnalyseChimique.setText(nbr + ' Analyses');
     };
 
     var SetExcelList = function () {
@@ -219,7 +219,7 @@
                                 de =>
                                 {
                                     de.Click.Url  = Url.Action("OnAdd");
-                                    de.Click.Success = "App.FormResultAnalyseChimique.setTitle('Chemical Analysis - Result : Nouveau')";
+                                    de.Click.Success = "App.FormResultAnalyseChimique.setTitle('Resulat Analyse Chimique : Nouveau')";
                                     de.Click.EventMask.ShowMask = true;
                                 }
                             ),
@@ -234,7 +234,7 @@
                             (
                                 de =>{
                                     de.Click.Url  = Url.Action("OnEdit");
-                                    de.Click.Success = "App.FormResultAnalyseChimique.setTitle('Chemical Analysis - Result : Modifier')";
+                                    de.Click.Success = "App.FormResultAnalyseChimique.setTitle('Resulat Analyse Chimique : Modifier')";
                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeAnalyseChimique}.getSelectionModel().getSelection()[0].data"});
                                     de.Click.EventMask.ShowMask = true;
                                 }
@@ -250,7 +250,7 @@
                             (
                                 de =>{
                                             de.Click.Url  = Url.Action("onApprove");
-                                            de.Click.Success = "App.FormApproveAnalyseChimique.setTitle('Chemical Analysis - Result : Approuver')";
+                                            de.Click.Success = "App.FormApproveAnalyseChimique.setTitle('Resulat Analyse Chimique : Approuver')";
                                             de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true,Value="#{grpListeAnalyseChimique}.getSelectionModel().getSelection()[0].data"});
                                             de.Click.EventMask.ShowMask = true;
                                             //de.Click.Success = "Overview.resetButtons();";
@@ -320,7 +320,7 @@
                                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeAnalyseChimique}.getSelectionModel().getSelection()[0].data" });
                                                         de.Click.EventMask.ShowMask = true;
                                                         de.Click.Confirmation.ConfirmRequest = true;
-                                                        de.Click.Confirmation.Title = "Chemical Analysis";
+                                                        de.Click.Confirmation.Title = "Analyse Chimique";
                                                         de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeAnalyseChimique}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                         de.Click.Success = "Overview.resetButtons();";
                                                     })
@@ -333,7 +333,7 @@
     #region Critere
         X.FormPanel()
             .ID("AnalyseChimiqueCP")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Chemical Analysis - Result - overview" })
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Resulat Analyse Chimique - overview" })
             .Region(Region.North)
             .Floatable(false)
             .Border(false)
@@ -423,7 +423,7 @@
             (
                 Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Hideable(false).Width(40).Filterable(false),
                 Html.X().Column().Text("Analyse Date/Heure").DataIndex("DateAnalyseAsString").Flex(2),                
-                Html.X().Column().Text("Sample N°").DataIndex("NumeroEchantillon").Flex(1),
+                Html.X().Column().Text("Echantillon N°").DataIndex("NumeroEchantillon").Flex(1),
                 Html.X().Column().Text("%FC 4.5% shell").DataIndex("PrFc45").Flex(1),
                 Html.X().Column().Text("%FC 3% shell").DataIndex("PrFc35").Flex(1),
                 Html.X().Column().Text("%FC 1% shell").DataIndex("PrFc1").Flex(1),

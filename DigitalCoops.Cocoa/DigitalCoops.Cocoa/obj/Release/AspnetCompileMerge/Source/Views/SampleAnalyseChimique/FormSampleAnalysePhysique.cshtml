@@ -55,7 +55,7 @@ X.Window()
     .Modal(true)
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .Y(10)
-    .Title("Chemical Analysis - Sample : Detail")
+    .Title("Echantillon Analyse Chimique : Detail")
     //.Layout(LayoutType.Form)
     .Items(
             X.FormPanel()
@@ -73,7 +73,7 @@ X.Window()
                             .Items(
                                         X.TextField()
                                             .ID("txtNumeroEchantillon")
-                                            .FieldLabel("Sample N°")
+                                            .FieldLabel("Echantillon N°")
                                             .LabelAlign(LabelAlign.Right)
                                             .ReadOnly(true),
                                         //.AllowBlank(false)
@@ -154,7 +154,7 @@ X.Window()
                                                 ),
                                             X.DateField()
                                                 .ID("txtDateEchantillon")
-                                                .FieldLabel("Sample Date")
+                                                .FieldLabel("Date")
                                                 .AllowBlank(false)
                                                 .IndicatorIconCls("IndicatorRedStar")
                                                 .IndicatorText("*")
@@ -235,7 +235,7 @@ X.Window()
                                                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeSelectedLots.getSelectionModel().getSelection()[0].data" });                                                                    
                                                                     de.Click.EventMask.ShowMask = true;
                                                                     de.Click.Confirmation.ConfirmRequest = true;
-                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Sample Sheet : Retirer'; config.confirmation.message = 'Do you want to remove this Lot ? ';";
+                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Fiche Echantillon : Retirer'; config.confirmation.message = 'Voulez-vous retirer ce lot ? ';";
                                                                 })
                                                         )
                                         )

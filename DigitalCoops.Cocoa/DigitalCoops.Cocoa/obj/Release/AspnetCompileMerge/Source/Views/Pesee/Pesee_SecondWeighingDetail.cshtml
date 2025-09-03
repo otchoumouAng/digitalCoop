@@ -108,7 +108,9 @@
                 if (App.txtAcceptedBags.value != '')
                 {
                     var sacsAcceptes = parseInt(App.txtAcceptedBags.value, 10) || 0;
-                    var tareSacsUnitaire = parseInt(App.hiddenTareSacsLivraison.value, 10) || 0;
+                    /*var tareSacsUnitaire = parseInt(App.hiddenTareSacsLivraison.value, 10) || 0;*/
+                    var tareSacsUnitaire = parseFloat(App.hiddenTareSacsLivraison.value.replace(',', '.')) || 0;
+                                        
                     var tareSacsNylon = parseFloat(0);
 
                     if (App.hiddenTareSacsNylon.value != '') {
@@ -128,7 +130,7 @@
                     /*Added  by AA on 30th of Sept.*/
                     if (App.hiddenCalculateVgm.value == 'false') {
                         var totaltareSacsAccpetes = parseFloat(0);
-                        totaltareSacsAccpetes = sacsAcceptes * tareSacsUnitaire;
+                        totaltareSacsAccpetes = Math.ceil(parseFloat(sacsAcceptes * tareSacsUnitaire));                        
                         App.txtTareOfBags.setValue(totaltareSacsAccpetes + valTareNylon);
                         /*App.txtTareOfBags.setValue(sacsAcceptes * tareSacsUnitaire);*/
                     }
@@ -251,7 +253,7 @@
             if (checkBox.checked == false)
             {
 
-                var nbrBagsLivraison = parseInt(App.txtNbrOfBags.value, 10) || 0;
+                var nbrBagsLivraison = parseInt(App.txtAcceptedBags.value, 10) || 0;
                 var sacsDecharges = parseInt(App.txtUnloadledBags.value, 10) || 0;
                 var sacsBons = parseInt(App.txtGoodBags.value, 10) || 0;
                 var sacsMauvais = parseInt(App.txtBadBags.value, 10) || 0;
@@ -335,7 +337,7 @@
 
 
                 /* changer les libellés de nos controles de sacs déchargés et de sacs acceptés / rejetés*/
-                App.fldAcceptedRejected.setFieldLabel('Rejeté / Sacs acc.');
+                App.fldAcceptedRejected.setFieldLabel('Refoulé / Sacs acc.');
                 App.txtUnloadledBags.setFieldLabel('Sacs Chargés');
 
             }
@@ -636,7 +638,7 @@
                                                                         li =>
                                                                         {
                                                                             li.Change.Fn = "calculerNbrSacsAcceptes";
-                                                                            li.Blur.Fn = "verifierNbrSacs";
+                                                                            /*li.Blur.Fn = "verifierNbrSacs";*/
 
                                                                         }
                                                                     )
@@ -654,7 +656,7 @@
 
                                                                     X.FieldContainer()
                                                                     .ID("fldAcceptedRejected")
-                                                                    .FieldLabel("Sacs Acceptés / Rej")
+                                                                    .FieldLabel("Sacs Acceptés / Ref")
                                                                     .LabelAlign(LabelAlign.Right)
                                                                     .Layout(LayoutType.HBox)
                                                                     .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
@@ -1029,7 +1031,7 @@
                                                                 .Items(
                                                             X.Checkbox()
                                                             .ID("chkIsRejected")
-                                                            .FieldLabel("Est rejeté")
+                                                            .FieldLabel("Est refoulé")
                                                             .LabelAlign(LabelAlign.Right)
                                                             //.BoxLabel("")
                                                             //.BoxLabelAlign(BoxLabelAlign.Before)
@@ -1159,6 +1161,7 @@
                                                                                 //.ReadOnly(true)
                                                                                 .ID("txtDeliveryGrossWeight")
                                                                                 .FieldLabel("Poids Brut")
+                                                                                .ReadOnly(true)
                                                                                 .LabelAlign(LabelAlign.Right)
                                                                                 .Text
                                                                                 (
@@ -1178,6 +1181,14 @@
                                                                                 .FieldLabel("Tare Des Sacs")
                                                                                 .LabelAlign(LabelAlign.Right)
                                                                                 .ID("txtTareOfBags")
+                                                                                 .Listeners
+                                                                                (
+                                                                                    li =>
+                                                                                    {
+                                                                                        li.Change.Fn = "calculerPoidsBrut";
+                                                                                        //li.Blur.Handler = "verifierNbrSacsAcceptes();";
+                                                                                    }
+                                                                                )
                                                                                 .Text
                                                                                 (
                                                                                     Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?

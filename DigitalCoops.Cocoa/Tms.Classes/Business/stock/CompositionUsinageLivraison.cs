@@ -43,6 +43,14 @@ namespace Tms.Classes.Business.stock
         private decimal _PoidsLivre;
         private decimal _TarePalettes;
         private decimal _Retention;
+
+        private int _NombreSacsReel;
+        private decimal _PoidsBrutReel;        
+        private decimal _TareSacsReel;
+        private decimal _TarePalettesReel;
+        private decimal _PoidsLivreReel;
+        private decimal _PoidsNetReel;
+        
         #endregion
 
         #region Properties
@@ -460,6 +468,84 @@ namespace Tms.Classes.Business.stock
                 return _PoidsLivre != 0 ? string.Format("{0:#,#}", _PoidsLivre).TrimStart() : "0";
             }
         }
+
+        public int NombreSacsReel
+        {
+            get
+            {
+                return _NombreSacsReel;
+            }
+
+            set
+            {
+                _NombreSacsReel = value;
+            }
+        }
+
+        public decimal PoidsBrutReel
+        {
+            get
+            {
+                return _PoidsBrutReel;
+            }
+
+            set
+            {
+                _PoidsBrutReel = value;
+            }
+        }
+
+        public decimal TareSacsReel
+        {
+            get
+            {
+                return _TareSacsReel;
+            }
+
+            set
+            {
+                _TareSacsReel = value;
+            }
+        }
+
+        public decimal TarePalettesReel
+        {
+            get
+            {
+                return _TarePalettesReel;
+            }
+
+            set
+            {
+                _TarePalettesReel = value;
+            }
+        }
+
+        public decimal PoidsLivreReel
+        {
+            get
+            {
+                return _PoidsLivreReel;
+            }
+
+            set
+            {
+                _PoidsLivreReel = value;
+            }
+        }
+
+        public decimal PoidsNetReel
+        {
+            get
+            {
+                return _PoidsNetReel;
+            }
+
+            set
+            {
+                _PoidsNetReel = value;
+            }
+        }        
 
         #endregion
 
@@ -911,6 +997,14 @@ namespace Tms.Classes.Business.stock
                     if (!DBNull.Value.Equals(mDataReader["RetentionPoids"])) mClass.Retention = (decimal)mDataReader["RetentionPoids"];
                     if (!DBNull.Value.Equals(mDataReader["PoidsLivre"])) mClass.PoidsLivre = (decimal)mDataReader["PoidsLivre"];
                     if (!DBNull.Value.Equals(mDataReader["PoidsNet"])) mClass.PoidsNet = (decimal)mDataReader["PoidsNet"];
+
+                    if (!DBNull.Value.Equals(mDataReader["NbreSacsReel"])) mClass._NombreSacsReel = (int)mDataReader["NbreSacsReel"];
+                    if (!DBNull.Value.Equals(mDataReader["TareSacsReel"])) mClass.TareSacsReel = (decimal)mDataReader["TareSacsReel"];
+                    if (!DBNull.Value.Equals(mDataReader["TarePalettesReel"])) mClass.TarePalettesReel = (decimal)mDataReader["TarePalettesReel"];
+                    if (!DBNull.Value.Equals(mDataReader["PoidsBrutReel"])) mClass.PoidsBrutReel = (decimal)mDataReader["PoidsBrutReel"];
+                    //if (!DBNull.Value.Equals(mDataReader["RetentionPoidsReel"])) mClass.RetentionReel = (decimal)mDataReader["RetentionPoidsReel"];
+                    if (!DBNull.Value.Equals(mDataReader["PoidsLivreReel"])) mClass.PoidsLivreReel = (decimal)mDataReader["PoidsLivreReel"];
+                    if (!DBNull.Value.Equals(mDataReader["PoidsNetReel"])) mClass.PoidsNetReel = (decimal)mDataReader["PoidsNetReel"];
                     mClass._isnew = true;
                 }
             }

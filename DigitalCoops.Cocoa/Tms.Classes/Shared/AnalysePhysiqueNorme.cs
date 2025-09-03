@@ -16,11 +16,12 @@ namespace Tms.Classes.Shared
         private double _StandardHumidite;
         private double _StandardMatiereEtrangere;
         private double _StandardBrisure;
-       
+        private double _Dechet;
+
         #endregion
 
         #region Properties
-        
+
         public double StandardHumidite
         {
             get { return _StandardHumidite; }
@@ -37,7 +38,20 @@ namespace Tms.Classes.Shared
         {
             get { return _StandardMatiereEtrangere; }
             set { _StandardMatiereEtrangere = value; }
-        }       
+        }
+
+        public double Dechet
+        {
+            get
+            {
+                return _Dechet;
+            }
+
+            set
+            {
+                _Dechet = value;
+            }
+        }
 
         #endregion
 
@@ -142,6 +156,7 @@ namespace Tms.Classes.Shared
                     if (!DBNull.Value.Equals(mDataReader["StandardHumidite"])) mClass._StandardHumidite = (double)mDataReader["StandardHumidite"];
                     if (!DBNull.Value.Equals(mDataReader["StandardMatiereEtrangere"])) mClass._StandardMatiereEtrangere = (double)mDataReader["StandardMatiereEtrangere"];
                     if (!DBNull.Value.Equals(mDataReader["StandardBrisure"])) mClass._StandardBrisure = (double)mDataReader["StandardBrisure"];
+                    if (!DBNull.Value.Equals(mDataReader["Dechet"])) mClass._Dechet = (double)mDataReader["Dechet"];
                 }
             }
             catch (Exception ex)

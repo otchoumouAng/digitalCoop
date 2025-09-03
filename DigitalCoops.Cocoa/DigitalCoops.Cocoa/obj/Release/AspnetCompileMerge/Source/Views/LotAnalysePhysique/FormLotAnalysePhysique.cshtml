@@ -279,7 +279,7 @@ X.Window()
                                                     .Listeners(ls =>
                                                     {
                                                         ls.Blur.Fn = "CheckNbrOfBeans";
-                                                        ls.Change.Handler = "CalculatePourCent(App.TxtMouldy.id); CalculatePourCent(App.TxtFlat.id); CalculatePourCent(App.TxtWeevil.id); CalculatePourCent(App.TxtGerminated.id); CalculatePourCent(App.TxtSlaty.id); CalculatePourCent(App.TxtViolet.id);";
+                                                        ls.Change.Handler = "CalculatePourCent_V2(App.TxtMouldy.id); CalculatePourCent_V2_Poids(App.TxtFlat.id); CalculatePourCent_V2(App.TxtWeevil.id); CalculatePourCent_V2(App.TxtGerminated.id); CalculatePourCent_V2(App.TxtSlaty.id); CalculatePourCent_V2(App.TxtViolet.id);";
                                                     }),
                                                 X.NumberField()
                                                     .ID("TxtBeansCount")
@@ -329,7 +329,7 @@ X.Window()
                                                             .AllowDecimals(false).MinValue(0).TabIndex(10)
                                                             .Listeners(ls =>
                                                             {
-                                                                ls.Change.Handler = "CalculatePourCent(App.TxtMouldy.id);";
+                                                                ls.Change.Handler = "CalculatePourCent_V2(App.TxtMouldy.id);";
                                                             }),
                                                         X.NumberField()
                                                             .ID("TxtMouldyPr")
@@ -362,7 +362,7 @@ X.Window()
                                                                 .TabIndex(11)
                                                                 .Listeners(ls =>
                                                                 {
-                                                                    ls.Change.Handler = "CalculatePourCent(App.TxtFlat.id);";
+                                                                    ls.Change.Handler = "CalculatePourCent_V2_Poids(App.TxtFlat.id);";
                                                                 }),
                                                             X.NumberField()
                                                                 .ID("TxtFlatPr")
@@ -378,7 +378,7 @@ X.Window()
                                                             ),
                                                 X.FieldContainer()
                                                     .Layout(LayoutType.HBox)
-                                                    .FieldLabel("Insecte")
+                                                    .FieldLabel("Mité")
                                                     .LabelAlign(LabelAlign.Right)
                                                     .IndicatorText("%")
                                                     .Width(305)
@@ -399,7 +399,7 @@ X.Window()
                                                                 .TabIndex(12)
                                                                 .Listeners(ls =>
                                                                 {
-                                                                    ls.Change.Handler = "CalculatePourCent(App.TxtWeevil.id);";
+                                                                    ls.Change.Handler = "CalculatePourCent_V2(App.TxtWeevil.id);";
                                                                 }),
                                                             X.NumberField()
                                                                 .ID("TxtWeevilPr")
@@ -435,7 +435,7 @@ X.Window()
                                                                 .TabIndex(13)
                                                                 .Listeners(ls =>
                                                                 {
-                                                                    ls.Change.Handler = "CalculatePourCent(App.TxtGerminated.id);";
+                                                                    ls.Change.Handler = "CalculatePourCent_V2(App.TxtGerminated.id);";
                                                                 }),
                                                             X.NumberField()
                                                                 .ID("TxtGerminatedPr")
@@ -482,7 +482,7 @@ X.Window()
                                                                     .ReadOnly(true).AllowDecimals(false).MinValue(0).TabIndex(14)
                                                                     .Listeners(ls =>
                                                                     {
-                                                                        ls.Change.Handler = "CalculatePourCent(App.TxtSlaty.id); CalculateUnfermented();";
+                                                                        ls.Change.Handler = "CalculatePourCent_V2(App.TxtSlaty.id); CalculateUnfermented();";
                                                                     }),
                                                                 X.NumberField()
                                                                     .ID("TxtSlatyPr")
@@ -522,7 +522,7 @@ X.Window()
                                                                     .TabIndex(15)
                                                                     .Listeners(ls =>
                                                                     {
-                                                                        ls.Change.Handler = "CalculatePourCent(App.TxtViolet.id);";
+                                                                        ls.Change.Handler = "CalculatePourCent_V2(App.TxtViolet.id);";
                                                                     }),
                                                                 X.NumberField()
                                                                     .ID("TxtVioletPr")
@@ -535,7 +535,7 @@ X.Window()
                                                     X.NumberField()
                                                         .ID("TxtSieving")
                                                         .HideTrigger(true)
-                                                        .FieldLabel("Tamis (%)")
+                                                        .FieldLabel("Dechet (%)")
                                                         .LabelAlign(LabelAlign.Right)
                                                         .AllowBlank(false)
                                                         .IndicatorCls("IndicatorRedStar")
@@ -546,7 +546,8 @@ X.Window()
                                                     X.NumberField()
                                                         .ID("TxtFragment")
                                                         .HideTrigger(true)
-                                                        .FieldLabel("Fragment (%)")
+                                                        //.FieldLabel("Fragment (%)")
+                                                        .FieldLabel("Fèves brisées (%)")
                                                         .LabelAlign(LabelAlign.Right)
                                                         .AllowBlank(false)
                                                         .IndicatorCls("IndicatorRedStar")
@@ -555,9 +556,9 @@ X.Window()
                                                         .ReadOnly(true)
                                                         .TabIndex(17)
                                                         .Listeners(ls =>
-                                                                    {
-                                                                        ls.Change.Handler = "CalculateCrm();";
-                                                                    }),
+                                                        {
+                                                            ls.Change.Handler = "CalculateCrm();";
+                                                        }),
                                                     X.NumberField()
                                                         .ID("TxtBrokenBean")
                                                         .HideTrigger(true)
@@ -570,9 +571,9 @@ X.Window()
                                                         .ReadOnly(true)
                                                         .TabIndex(18)
                                                         .Listeners(ls =>
-                                                                    {
-                                                                        ls.Change.Handler = "CalculateCrm();";
-                                                                    }),
+                                                        {
+                                                            ls.Change.Handler = "CalculateCrm();";
+                                                        }),
                                                     X.NumberField()
                                                         .ID("TxtMoisture")
                                                         .HideTrigger(true)
@@ -589,9 +590,9 @@ X.Window()
                                                         .HideTrigger(true)
                                                         .FieldLabel("Light Crop (%)")
                                                         .LabelAlign(LabelAlign.Right)
-                                                        .AllowBlank(false)
-                                                        .IndicatorCls("IndicatorRedStar")
-                                                        .IndicatorText("*")
+                                                        //.AllowBlank(false)
+                                                        //.IndicatorCls("IndicatorRedStar")
+                                                        //.IndicatorText("*")
                                                         .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
                                                         .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysiqueExport.LightCrop : (double?)null)
                                                         //.ReadOnly(true)
@@ -606,7 +607,8 @@ X.Window()
                                                  X.NumberField()
                                                     .ID("txtBeanCluster")
                                                     .HideTrigger(true)
-                                                    .FieldLabel("Beans CLuster (%)")
+                                                    //.FieldLabel("Beans CLuster (%)")
+                                                    .FieldLabel("Crabot (%)")
                                                     .LabelAlign(LabelAlign.Right)
                                                     .AllowBlank(false)
                                                     .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
@@ -616,9 +618,9 @@ X.Window()
                                                     //.ReadOnly(true)
                                                     .TabIndex(19)
                                                     .Listeners(ls =>
-                                                                    {
-                                                                        ls.Change.Handler = "CalculateCrm();";
-                                                                    }
+                                                    {
+                                                        ls.Change.Handler = "CalculateCrm();";
+                                                    }
                                                     ),
                                                 X.NumberField()
                                                     .ID("txtCrm")
@@ -724,7 +726,7 @@ X.Window()
                         de.Click.Before = "return validNew(App.FormLotAnalysePhysique.id);";
                         de.Click.FormID = "#(return this.up('window').down('form');)";
                         de.Click.Confirmation.ConfirmRequest = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false;
-                        de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Physique - Lot - Approve'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
+                        de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Physique - Lot - Approuver'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
                     }),
                 X.Button()
                     .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
@@ -838,6 +840,36 @@ X.Window()
             var pourcentage = (num * 100) / App.TxtNbrOfBeans.value;
             pourcentage = RoundIntToPrecision(pourcentage);
            /* pourcentage = Math.round(pourcentage * 100) / 100;*/
+            Ext.getCmp(fieldResultId).setValue(pourcentage);
+
+        }
+    };
+
+    var CalculatePourCent_V2 = function (id) {
+        if (id) {
+
+            var fieldResultId = id + "Pr";
+
+            var num = Ext.getCmp(id).value;
+
+            var pourcentage = (num * 100 * 2) / App.TxtNbrOfBeans.value;
+            pourcentage = RoundIntToPrecision(pourcentage);
+            /* pourcentage = Math.round(pourcentage * 100) / 100;*/
+            Ext.getCmp(fieldResultId).setValue(pourcentage);
+
+        }
+    };
+
+    var CalculatePourCent_V2_Poids = function (id) {
+        if (id) {
+
+            var fieldResultId = id + "Pr";
+
+            var num = Ext.getCmp(id).value;
+
+            var pourcentage = (num * 100) / App.TxtBeansCountPc.value;
+            pourcentage = RoundIntToPrecision(pourcentage);
+            /* pourcentage = Math.round(pourcentage * 100) / 100;*/
             Ext.getCmp(fieldResultId).setValue(pourcentage);
 
         }

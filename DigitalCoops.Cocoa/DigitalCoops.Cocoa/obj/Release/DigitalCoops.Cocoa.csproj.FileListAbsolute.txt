@@ -830,3 +830,4 @@ C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Release\en\Digita
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Release\fr\DigitalCoops.Cocoa.resources.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Release\DigitalCoops.Cocoa.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Release\DigitalCoops.Cocoa.pdb
+C:\DATA\Sources\SITC\DigitalCoops.Cocoa\DigitalCoops.Cocoa\obj\Release\rptPhysicalAnalysisList_int.resources
