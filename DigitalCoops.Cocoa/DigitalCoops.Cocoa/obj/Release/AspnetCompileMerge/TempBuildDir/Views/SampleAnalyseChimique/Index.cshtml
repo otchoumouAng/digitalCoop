@@ -9,7 +9,7 @@
 <script type="text/javascript">
     var GetNbrStoreRows = function () {
         var nbr = App.grpListeEchantillon.getRowsValues().length;
-        App.LblSummaryListeSample.setText(nbr + ' Analysis');
+        App.LblSummaryListeSample.setText(nbr + ' Analyses');
     };
 
     var SetExcelList = function () {
@@ -197,7 +197,7 @@
                             (
                                 de =>{
                                     de.Click.Url  = Url.Action("OnAdd");
-                                    de.Click.Success = "App.FormSampleAnalysePhysique.setTitle('Chemical Analysis - Sample : Nouveau')";
+                                    de.Click.Success = "App.FormSampleAnalysePhysique.setTitle('Echantillon Analyse Chimique : Nouveau')";
                                     de.Click.EventMask.ShowMask = true;
                                 }
                             ),
@@ -212,7 +212,7 @@
                             (
                                 de =>{
                                     de.Click.Url  = Url.Action("OnEdit");
-                                    de.Click.Success = "App.FormSampleAnalysePhysique.setTitle('Chemical Analysis - Sample : Modifier')";
+                                    de.Click.Success = "App.FormSampleAnalysePhysique.setTitle('Echantillon Analyse Chimique : Modifier')";
                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeEchantillon}.getSelectionModel().getSelection()[0].data"});
                                     de.Click.EventMask.ShowMask = true;
                                 }
@@ -232,7 +232,7 @@
                                     {
                                         X.MenuItem()
                                             .ID("mnuPrintSample")
-                                            .Text("Sample Sheet")
+                                            .Text("Fiche Echantillon")
                                             .Disabled(true)
                                             .DirectEvents
                                             (
@@ -244,7 +244,7 @@
                                             ),
                                         X.MenuItem()
                                             .ID("mnuPrintSampleList")
-                                            .Text("Sample List")
+                                            .Text("Liste Des Echantillons")
                                             .Disabled(false)
                                             .DirectEvents
                                             (
@@ -286,7 +286,7 @@
                                                         de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeEchantillon}.getSelectionModel().getSelection()[0].data" });
                                                         de.Click.EventMask.ShowMask = true;
                                                         de.Click.Confirmation.ConfirmRequest = true;
-                                                        de.Click.Confirmation.Title = "Sample Analyse Physique";
+                                                        de.Click.Confirmation.Title = "Echantillon Analyse Chimique";
                                                         de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeEchantillon}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                         de.Click.Success = "Overview.resetButtons();";
                                                     })
@@ -299,7 +299,7 @@
     #region Criteres
         X.FormPanel()
             .ID("SampleAnalyseChimiqueCP")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Chemical Analysis - Sample - overview" })
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Echantillon Analyse Chimique - overview" })
             .Region(Region.North)
             .Floatable(false)
             .Border(false)
@@ -399,10 +399,10 @@
                                     .LabelAlign(LabelAlign.Right)
                                     .Items(
                                             new ListItem("{Tous}", "-1"),
-                                            new ListItem("Active", "0"),
-                                            new ListItem("Inactive", "1")
+                                            new ListItem("Actif", "0"),
+                                            new ListItem("Desactivé", "1")
                                         )
-                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Active", Value = "0" }); })
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Actif", Value = "0" }); })
 
                                 ),
                      X.Container()
@@ -456,7 +456,7 @@
                         Html.X().Column().Text("Date/Heure").DataIndex("DateEchantillonAsString").Flex(1),
                         Html.X().Column().Text("Campagne").DataIndex("CampagneAsString").Flex(1),
                         Html.X().Column().Text("Exportateur").DataIndex("ExportateurAsString").Flex(1),
-                        Html.X().Column().Text("Sample N°").DataIndex("NumeroEchantillon").Flex(1),
+                        Html.X().Column().Text("Echantillon N°").DataIndex("NumeroEchantillon").Flex(1),
                        Html.X().Column().Text("Lot").DataIndex("NumeroLots").Flex(4),
                         X.Column().Text("Utilisation Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
                         X.DateColumn().Text("Date Creation").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),

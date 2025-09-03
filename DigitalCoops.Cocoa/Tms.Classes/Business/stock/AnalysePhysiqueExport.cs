@@ -841,7 +841,7 @@ namespace Tms.Classes.Business.stock
                 db().AddInParameter(mCommande, "@NombreFeves", SqlDbType.Int, _NombreFeves);
                 db().AddInParameter(mCommande, "@BeanCount", SqlDbType.Int, _Grainage);
                 db().AddInParameter(mCommande, "@PoidsFeves", SqlDbType.Int, _PoidsFeves);
-                db().AddInParameter(mCommande, "@Moisie", SqlDbType.Int, _MoisieNbre);
+                db().AddInParameter(mCommande, "@Mouldy", SqlDbType.Int, _MoisieNbre);
                 db().AddInParameter(mCommande, "@MouldyPc", SqlDbType.Float, _Moisie);
                 db().AddInParameter(mCommande, "@Flat", SqlDbType.Int, _PlateNbre);
                 db().AddInParameter(mCommande, "@FlatPc", SqlDbType.Float, _Plate);
@@ -973,7 +973,7 @@ namespace Tms.Classes.Business.stock
                     if (!DBNull.Value.Equals(mDataReader["NombreFeves"])) mClass._NombreFeves = (int)mDataReader["NombreFeves"];
                     if (!DBNull.Value.Equals(mDataReader["BeanCount"])) mClass._Grainage = (int)mDataReader["BeanCount"];
                     if (!DBNull.Value.Equals(mDataReader["PoidsFeves"])) mClass._PoidsFeves = (int)mDataReader["PoidsFeves"];
-                    if (!DBNull.Value.Equals(mDataReader["Moisie"])) mClass._MoisieNbre = (int)mDataReader["Moisie"];
+                    if (!DBNull.Value.Equals(mDataReader["Mouldy"])) mClass._MoisieNbre = (int)mDataReader["Mouldy"];
                     if (!DBNull.Value.Equals(mDataReader["MouldyPc"])) mClass._Moisie = (double)mDataReader["MouldyPc"];
                     if (!DBNull.Value.Equals(mDataReader["Flat"])) mClass._PlateNbre = (int)mDataReader["Flat"];
                     if (!DBNull.Value.Equals(mDataReader["FlatPc"])) mClass._Plate = (double)mDataReader["FlatPc"];

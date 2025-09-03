@@ -229,7 +229,7 @@
                             X.Button()
                                     .ID("btnApproveAnalysePhysique")
                                     .IconCls("glyphicon glyphicon-ok green")
-                                    .Text("Confirm")
+                                    .Text("Confirmer")
                                     .Cls("ButtonStyle")
                                     .Border(false)
                                     .Disabled(true)
@@ -439,18 +439,18 @@
                     Html.X().Column().Text("Lot N°").DataIndex("NumeroLot").Flex(1),
                     Html.X().Column().Text("Hum (%)").DataIndex("Humidite").Flex(1),
                     Html.X().Column().Text("Grainage").DataIndex("Grainage").Flex(1),
-                    Html.X().Column().Text("Light Crop").DataIndex("LightCrop").Flex(1),
+                    Html.X().Column().Text("Light Crop").DataIndex("LightCrop").Flex(1).Hidden(true),
                     Html.X().Column().Text("Moisie (%)").DataIndex("Moisie").Flex(1),
                     Html.X().Column().Text("Plate (%)").DataIndex("Plate").Flex(1),
-                    Html.X().Column().Text("Insecte (%)").DataIndex("Weevil").Flex(1),
+                    Html.X().Column().Text("Mité (%)").DataIndex("Weevil").Flex(1),
                     Html.X().Column().Text("Germee (%)").DataIndex("Germee").Flex(1),
                     Html.X().Column().Text("Ardoisee (%)").DataIndex("Ardoisee").Flex(1),
                     Html.X().Column().Text("Violette (%)").DataIndex("Violette").Flex(1),
-                    Html.X().Column().Text("Tamis (%)").DataIndex("Tamis").Flex(1).Hidden(true),
+                    Html.X().Column().Text("Dechet (%)").DataIndex("Tamis").Flex(1).Hidden(true),
                     Html.X().Column().Text("Matiere Etrangere (%)").DataIndex("MatiereEtrangere").Flex(1).Hidden(true),
                     Html.X().Column().Text("Fragment (%)").DataIndex("Fragment").Flex(1).Hidden(true),
                     Html.X().Column().Text("Brisure").DataIndex("Brisure").Flex(1).Hidden(true),
-                    Html.X().Column().Text("Bean Cluster").DataIndex("BeansCluster").Flex(1).Hidden(true),
+                    Html.X().Column().Text("Crabot").DataIndex("BeansCluster").Flex(1).Hidden(true),
                     Html.X().Column().Text("CRM").DataIndex("CRM").Flex(1).Hidden(true),
                     X.Column().Text("User Approval").DataIndex("Approbateur").Flex(1).Hidden(true),
                     X.DateColumn().Text("Date Approval").DataIndex("DateApprobation").Flex(1).Hidden(true).Renderer("renderDateLong"),

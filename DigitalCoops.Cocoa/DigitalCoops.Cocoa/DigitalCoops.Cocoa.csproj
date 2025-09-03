@@ -218,6 +218,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\AnalysePhysiqueInterneController.cs" />
     <Compile Include="Controllers\App_Start\BundleConfig.cs" />
     <Compile Include="Controllers\App_Start\ExtNetConfig.cs" />
     <Compile Include="Controllers\App_Start\FilterConfig.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="Controllers\ExpeditionController.cs" />
     <Compile Include="Controllers\FactureSiteController.cs" />
     <Compile Include="Controllers\FinancementSiteController.cs" />
+    <Compile Include="Controllers\ExonerationBICController.cs" />
     <Compile Include="Controllers\LivraisonAgenceController.cs" />
     <Compile Include="Controllers\Lot_EnvoiController.cs" />
     <Compile Include="Controllers\LotSituationStockController.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="Controllers\RedevanceRtcController.cs" />
     <Compile Include="Controllers\RedevanceNatureController.cs" />
     <Compile Include="Controllers\RemboursementDirectAgenceController.cs" />
+    <Compile Include="Controllers\GrilleTransportController.cs" />
     <Compile Include="Controllers\SituationStockItemAgenceController.cs" />
     <Compile Include="Controllers\TransfertFevesController.cs" />
     <Compile Include="Controllers\PayementSiteController.cs" />
@@ -504,6 +507,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reports\rptFicheVenteLotTraca.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\rptPhysicalAnalysisList_int.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reports\rptPrimeList.cs">
@@ -2588,6 +2594,13 @@
     <Content Include="Views\LotSituationStock\Index.cshtml" />
     <Content Include="Views\LotSituationStock\FormDetailLot.cshtml" />
     <Content Include="Views\DailyPrice\FormDailyPriceDetail.cshtml" />
+    <Content Include="Views\DeliveryCoding\FormCodeInterne.cshtml" />
+    <Content Include="Views\AnalysePhysiqueInterne\Index.cshtml" />
+    <Content Include="Views\AnalysePhysiqueInterne\FormAnalysePhysique.cshtml" />
+    <Content Include="Views\GrilleTransport\Index.cshtml" />
+    <Content Include="Views\GrilleTransport\FormGrilleTransport.cshtml" />
+    <Content Include="Views\ExonerationBIC\Index.cshtml" />
+    <Content Include="Views\ExonerationBIC\FormExonerationBIC.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -2691,6 +2704,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\rptDailyStock.resx">
       <DependentUpon>rptDailyStock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\rptPhysicalAnalysisList_int.resx">
+      <DependentUpon>rptPhysicalAnalysisList_int.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\rptPrimeList.resx">
       <DependentUpon>rptPrimeList.cs</DependentUpon>

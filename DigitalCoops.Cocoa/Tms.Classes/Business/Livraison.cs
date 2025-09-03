@@ -2743,6 +2743,10 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["SiteID"])) mClass._Site.ID = (int)mDataReader["SiteID"];
                     if (!DBNull.Value.Equals(mDataReader["SiteNom"])) mClass._Site.Nom = (string)mDataReader["SiteNom"];
 
+                    mClass._Provenance = new  Provenance();
+                    if (!DBNull.Value.Equals(mDataReader["ProvenanceID"])) mClass._Provenance.ID = (int)mDataReader["ProvenanceID"];
+                    if (!DBNull.Value.Equals(mDataReader["ProvenanceNom"])) mClass._Provenance.Nom = (string)mDataReader["ProvenanceNom"];
+
 
                 }
             }

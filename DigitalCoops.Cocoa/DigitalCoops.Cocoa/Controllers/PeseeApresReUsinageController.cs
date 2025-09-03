@@ -252,7 +252,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing After Re-Cleaning : Data Validation",
+                    Title = "Pesée apres Reusinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -271,7 +271,7 @@ namespace Tms2017.MVC.Controllers
                 bool result = pesee.fnGet(pesee.ID);
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Weighing After Re-Cleaning, loading failed.");
+                    throw new Exception("OnActivateDeactivate : Pesée apres Reusinage, loading failed.");
 
                 pesee.UtilisateurModification = (string)Session["userName"];
 
@@ -279,7 +279,7 @@ namespace Tms2017.MVC.Controllers
                 result = pesee.fnDeActivate();
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Weighing After Re-Cleaning, Operation failed.");
+                    throw new Exception("OnActivateDeactivate : Pesée apres Reusinage, Operation failed.");
 
 
                 if (result)
@@ -302,7 +302,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing After Re-Cleaning : Cancel",
+                    Title = "Pesée apres Reusinage : Cancel",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -467,7 +467,7 @@ namespace Tms2017.MVC.Controllers
                 _db.RollBackTransaction(mtran);
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing After Re-Cleaning : Data Validation",
+                    Title = "Pesée apres Reusinage : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -559,7 +559,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing After Re-Cleaning : Data Validation",
+                    Title = "Pesée apres Reusinage : Data Validation",
                     Message = Ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -664,7 +664,7 @@ namespace Tms2017.MVC.Controllers
             //{
             //    X.MessageBox.Show(new MessageBoxConfig
             //    {
-            //        Title = "Weighing After Re-Cleaning : Data Validation",
+            //        Title = "Pesée apres Reusinage : Data Validation",
             //        Message = "*Nbr de sacs added is higher than Authorized Nbr de sacs",
             //        Buttons = MessageBox.Button.OK,
             //        Icon = MessageBox.Icon.WARNING
@@ -679,7 +679,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing After Re-Cleaning : Data Validation",
+                        Title = "Pesée apres Reusinage : Data Validation",
                         Message = "Verify Number Of Bags Per Pallets",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -691,7 +691,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing After Re-Cleaning : Data Validation",
+                        Title = "Pesée apres Reusinage : Data Validation",
                         Message = "Can't Weight New Pallets",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -703,7 +703,7 @@ namespace Tms2017.MVC.Controllers
                 {
                     X.MessageBox.Show(new MessageBoxConfig
                     {
-                        Title = "Weighing After Re-Cleaning : Data Validation",
+                        Title = "Pesée apres Reusinage : Data Validation",
                         Message = "Total Nbr Of Bag is higher than authorized Number Of bags",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
@@ -928,7 +928,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Weighing After Re-Cleaning - : Retirer Pallets Weight",
+                    Title = "Pesée apres Reusinage - : Retirer Pallets Weight",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -1300,7 +1300,7 @@ namespace Tms2017.MVC.Controllers
 
                 Session["report"] = report;
 
-                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/PeseeApresReUsinage/ViewList', this, 'Weighing After Re-Cleaning',''),App.ProductionWeighing_Print.doClose()", Guid.NewGuid(), BaseUrl));
+                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/PeseeApresReUsinage/ViewList', this, 'Pesée apres Reusinage',''),App.ProductionWeighing_Print.doClose()", Guid.NewGuid(), BaseUrl));
             }
             catch (Exception ex)
             {

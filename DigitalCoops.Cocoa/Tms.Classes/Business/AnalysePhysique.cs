@@ -54,6 +54,7 @@ namespace Tms.Classes.Business
         private bool _Desactive;
         private Site _Sites;
         private bool _IsPending;
+        private double? _BeansCluster;
         #endregion
 
         #region "Properties"
@@ -403,6 +404,19 @@ namespace Tms.Classes.Business
                 _IsPending = value;
             }
         }
+
+        public double? BeansCluster
+        {
+            get
+            {
+                return _BeansCluster;
+            }
+
+            set
+            {
+                _BeansCluster = value;
+            }
+        }
         #endregion
 
         #region "Constructor"
@@ -484,6 +498,43 @@ namespace Tms.Classes.Business
                 if (mDataReader != null) mDataReader.Close();
             }
         }
+
+        public List<DataPersist> fnSelect_Interne(string cropyear, int SiteID, int LivraisonTypeID, int Fournisseur, DateTime? startdate, DateTime? enddate, int statut)
+        {
+            List<DataPersist> mList = new List<DataPersist>();
+            IDataReader mDataReader = null;
+
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("AnalysePhysique_SelectInterne");
+                db().AddInParameter(mCommande, "@cropyear", SqlDbType.Char, cropyear);
+                db().AddInParameter(mCommande, "@SiteID", SqlDbType.Int, SiteID);
+                db().AddInParameter(mCommande, "@LivraisonTypeID", SqlDbType.Int, LivraisonTypeID);
+                db().AddInParameter(mCommande, "@Fournisseur", SqlDbType.Int, Fournisseur);
+                db().AddInParameter(mCommande, "@begindate", SqlDbType.DateTime, startdate);
+                db().AddInParameter(mCommande, "@enddate", SqlDbType.DateTime, enddate);
+                db().AddInParameter(mCommande, "@status", SqlDbType.SmallInt, statut);
+                mDataReader = db().ExecuteReader(mCommande);
+
+                while (mDataReader.Read())
+                {
+                    AnalysePhysique mClass = new AnalysePhysique();
+
+                    MapFromDataReader(mClass, mDataReader);
+                    mList.Add(mClass);
+                }
+                return mList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnSelect");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
 
         public List<DataPersist> fnSelectForSite(string cropyear, int SiteID, int LivraisonTypeID, int Fournisseur, DateTime? startdate, DateTime? enddate, int statut)
         {
@@ -603,6 +654,7 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@Moisture", SqlDbType.Decimal, _Humidite);
                 db().AddInParameter(mCommande, "@ForeignMatter", SqlDbType.Decimal, _MatiereEtrangere);
                 db().AddInParameter(mCommande, "@Ffa", SqlDbType.Decimal, _Ffa);
+                db().AddInParameter(mCommande, "@Crabot", SqlDbType.Decimal, _BeansCluster);
                 db().AddInParameter(mCommande, "@ClassificationFeve", SqlDbType.Int, _ClassificationFeves.ID);                
 
                 if (_Verificateur != null) db().AddInParameter(mCommande, "@Analyseur", SqlDbType.Int, _Analyseur.ID);
@@ -819,6 +871,7 @@ namespace Tms.Classes.Business
                     if (!DBNull.Value.Equals(mDataReader["Desactive"])) mClass._Desactive = (bool)mDataReader["Desactive"];
                     if (!DBNull.Value.Equals(mDataReader["Commentaire"])) mClass._Commentaire = (string)mDataReader["Commentaire"];
                     if (!DBNull.Value.Equals(mDataReader["FFA"])) mClass._Ffa = (double)mDataReader["FFA"];
+                    if (!DBNull.Value.Equals(mDataReader["Crabot"])) mClass._BeansCluster = (double)mDataReader["Crabot"];
                     if (!DBNull.Value.Equals(mDataReader["UnfermentedPc"])) mClass._Fermentation = (double)mDataReader["UnfermentedPc"];
 
                     mClass._AnalyseCode = new AnalyseCode();

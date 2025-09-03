@@ -19,7 +19,11 @@ namespace Tms.Classes.Shared
         private ProvenanceType _ProvenanceType;
         private PoleProvenance _PoleProvenance;
         private bool _Desactive;
-
+        private decimal _BaremeTransport;
+        private decimal _CoutTransport;
+        private decimal _CoutTransportExport;
+        private decimal _PrimeCCC;
+        private decimal _Distance;
         #endregion
 
         #region "Properties"
@@ -86,6 +90,71 @@ namespace Tms.Classes.Shared
                 _PoleProvenance = value;
             }
         }
+
+        public decimal BaremeTransport
+        {
+            get
+            {
+                return _BaremeTransport;
+            }
+
+            set
+            {
+                _BaremeTransport = value;
+            }
+        }
+
+        public decimal CoutTransport
+        {
+            get
+            {
+                return _CoutTransport;
+            }
+
+            set
+            {
+                _CoutTransport = value;
+            }
+        }
+
+        public decimal CoutTransportExport
+        {
+            get
+            {
+                return _CoutTransportExport;
+            }
+
+            set
+            {
+                _CoutTransportExport = value;
+            }
+        }
+
+        public decimal PrimeCCC
+        {
+            get
+            {
+                return _PrimeCCC;
+            }
+
+            set
+            {
+                _PrimeCCC = value;
+            }
+        }
+
+        public decimal Distance
+        {
+            get
+            {
+                return _Distance;
+            }
+
+            set
+            {
+                _Distance = value;
+            }
+        }
         #endregion
 
         #region Constructor
@@ -111,6 +180,33 @@ namespace Tms.Classes.Shared
                 if (mDataReader.Read())
                 {
                     MapFromDataReader(this, mDataReader);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().Name + ":fnGet");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
+        public bool fnGet_InfoTKM(int siteID, int provenanceId, decimal poidsNet = 0)
+        {
+            IDataReader mDataReader = null;
+            try
+            {
+                //mDataReader = db().ExecuteReader("Provenance_Get", (int)Id,(int)provenanceId, (decimal)poidsNet);
+                DataCommand mCommande = db().CreateStoredProcCommand("Provenance_GetInfoTKM");
+                db().AddInParameter(mCommande, "@siteID", SqlDbType.Int, siteID);
+                db().AddInParameter(mCommande, "@provenanceID", SqlDbType.Int, provenanceId);
+                db().AddInParameter(mCommande, "@PoidsNet", SqlDbType.Decimal, poidsNet);
+                mDataReader = db().ExecuteReader(mCommande);
+                if (mDataReader.Read())
+                {
+                    MapFromDataReader_TKM(this, mDataReader);
                 }
                 return true;
             }
@@ -372,10 +468,34 @@ namespace Tms.Classes.Shared
                 throw new Exception(ex.Message + "\n Provenance:MapFromDataReader");
             }
         }
-        #endregion
-              
 
-        
+        private static void MapFromDataReader_TKM(Provenance mClass, IDataReader mDataReader)
+        {
+            try
+            {
+                if (mDataReader != null)
+                {
+                    mClass.IsNew = false;
+
+                    mClass._ID = 1;
+
+                    if (!DBNull.Value.Equals(mDataReader["BaremeTransport"])) mClass._BaremeTransport = (decimal)mDataReader["BaremeTransport"];
+                    if (!DBNull.Value.Equals(mDataReader["PrimeTransportCCC"])) mClass._PrimeCCC = (decimal)mDataReader["PrimeTransportCCC"];
+                    if (!DBNull.Value.Equals(mDataReader["CoutTransport"])) mClass._CoutTransport = (decimal)mDataReader["CoutTransport"];
+                    if (!DBNull.Value.Equals(mDataReader["CoutTransportExportateur"])) mClass._CoutTransportExport = (decimal)mDataReader["CoutTransportExportateur"];
+                    if (!DBNull.Value.Equals(mDataReader["Distance"])) mClass._Distance = (decimal)mDataReader["Distance"];
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n Provenance:MapFromDataReader");
+            }
+        }
+
+        #endregion
+
+
+
     }
 
     public partial class ProvenanceViewModel

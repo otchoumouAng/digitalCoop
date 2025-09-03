@@ -1,0 +1,859 @@
+﻿
+@model Tms.Classes.Business.AnalysePhysiqueViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+
+<style type="text/css">
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 75px;
+    }
+</style>
+@(
+   X.Window()
+        .ID("FormAnalysePhysique")
+        .Width(990)
+        .Resizable(false)
+        .Height(430)
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        .Listeners(l =>
+        {
+            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+            {
+                l.Show.Handler = "CheckCodeAnalyse(); CheckNbrOfBeans();";
+            }
+
+        })
+        //.X(400)
+        .Y(20)
+        .Title("Analyse Physique : Detail")
+        .Layout(LayoutType.Form)
+        .Items(
+                    X.FormPanel()
+                        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                        .Items(
+
+                            X.Panel()
+                                .ID("pnlFlexEven")
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                                .Items(
+                                        X.Panel()
+                                            .Layout(LayoutType.HBox)
+                                            .Border(true)
+                                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Top, Pack = BoxPack.Center })
+                                            .Items(
+                                                    X.Panel()
+                                                        .Layout(LayoutType.Form)
+                                                        .Flex(1)
+                                                        .Items(
+                                                                X.Hidden()
+                                                                    .ID("HiddenCodeAnalyseID")
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.AnalyseCode.ID : (Guid?)null),
+                                                                X.TextField()
+                                                                    .ID("txtSiteID")
+                                                                    .Value(Model._AnalysePhysique.Sites.ID)
+                                                                    .Hidden(true)
+                                                                    .ReadOnly(true),
+                                                                X.TextField()
+                                                                    .ID("txtNomSite")
+                                                                    .ReadOnly(true)
+                                                                    .Hidden(true)
+                                                                    .Text(Model._AnalysePhysique.Sites.Nom),
+                                                                X.ComboBox()
+                                                                    .ID("CmbCodeAnalyse")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .FieldLabel("Code")
+                                                                    .DisplayField("Code")
+                                                                    .ValueField("ID")
+                                                                    .LabelWidth(110)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ForceSelection(true)
+                                                                    .TypeAhead(true)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .HideTrigger(true).TabIndex(1)
+                                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                                                    //.RawText(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.AnalyseCode.Code : string.Empty)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.AnalyseCode.ID : (Guid?)null)
+                                                                    .Store(
+                                                                            X.Store()
+                                                                                .AutoLoad(true)
+                                                                                .Model(Html.X().Model()
+                                                                                .IDProperty("ID")
+                                                                                        .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                                                            new ModelField("Code", ModelFieldType.String) { Mapping = "Code" }
+                                                                                        )
+                                                                                    )
+                                                                                .Proxy(Html.X().AjaxProxy()
+                                                                                    .Url(Url.Action("SelectCodeForAnalyse", "DeliveryCoding"))
+                                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                    )
+                                                                                .Parameters(ps => ps.Add(new StoreParameter("ItemCodeAnalyseID", "#{HiddenCodeAnalyseID}.getValue()", ParameterMode.Raw)))
+                                                                                .Parameters(ps => ps.Add(new StoreParameter("ItemType", "1", ParameterMode.Value)))
+                                                                                )
+
+                                                                    .Listeners(ls =>
+                                                                    {
+                                                                        ls.Select.Fn = "CheckCodeAnalyse";
+                                                                        //ls.AfterRender.Fn = "SetAnalyseCode";
+                                                                    }),
+                                                                X.ComboBox()
+                                                                    .ID("CmbLaboratoire")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .FieldLabel("Laboratoire")
+                                                                    .DisplayField("Designation")
+                                                                    .ValueField("ID")
+                                                                    .LabelWidth(110)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .Value(Model._AnalysePhysique.Laboratoire.ID).ReadOnly(true).TabIndex(2)
+                                                                    .ForceSelection(true)
+                                                                    .TypeAhead(true)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .MatchFieldWidth(false)
+                                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                                                    .Store(
+                                                                            X.Store()
+                                                                                .AutoLoad(true)
+                                                                                .Model(Html.X().Model()
+                                                                                .IDProperty("ID")
+                                                                                        .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                        )
+                                                                                    )
+                                                                                .Proxy(Html.X().AjaxProxy()
+                                                                                    .Url(Url.Action("LoadLaboratoire", "Laboratoire"))
+                                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                    ),
+                                                                X.DateField()
+                                                                    .ID("TxtDateAnalysePhysique")
+                                                                    .FieldLabel("Date Analyse")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    //.ReadOnly(true)
+                                                                    .TabIndex(3)
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.DateAnalyse.ToString() : DateTime.Now.ToString())
+                                                                    .LabelAlign(LabelAlign.Right)
+
+                                                        ),
+                                                X.Panel()
+                                                    .Layout(LayoutType.Form)
+                                                    .Flex(1)
+                                                    .Items(
+                                                            X.ComboBox()
+                                                                .ID("CmbAnalyseur")
+                                                                //.AllowBlank(false)
+                                                                //.IndicatorCls("IndicatorRedStar")
+                                                                //.IndicatorText("*")
+                                                                .FieldLabel("Analysé Par")
+                                                                .DisplayField("Nom")
+                                                                .ValueField("ID")
+                                                                .LabelWidth(110)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Analyseur.ID : (int?)null)
+                                                                .ReadOnly(true).TabIndex(4)
+                                                                .ForceSelection(true)
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .MatchFieldWidth(false)
+                                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                                .Store(
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadAnalyseurBySite", "Analyseur"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                                .Parameters
+                                                                            (
+                                                                                ps => { ps.Add(new StoreParameter("siteID", "App.txtSiteID.getValue()", ParameterMode.Raw)); }
+                                                                            )
+                                                                    ),
+                                                            X.ComboBox()
+                                                                .ID("CmbSuperviseur")
+                                                                .FieldLabel("Supervisé Par")
+                                                                .DisplayField("Nom")
+                                                                .ValueField("ID")
+                                                                .LabelWidth(110)
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .ReadOnly(true).TabIndex(5)
+                                                                .ForceSelection(true)
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .MatchFieldWidth(false)
+                                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Model._AnalysePhysique.Verificateur != null ? Model._AnalysePhysique.Verificateur.ID : (int?)null) : (int?)null)
+                                                                .Store(
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadAnalyseurBySite", "Analyseur"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                            .Parameters
+                                                                            (
+                                                                                ps => { ps.Add(new StoreParameter("siteID", "App.txtSiteID.getValue()", ParameterMode.Raw)); }
+                                                                            )
+                                                                            ),
+                                                            X.TextField()
+                                                                .ID("TxtSheetNumber")
+                                                                .FieldLabel("Fiche N°")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.FicheNumero.ToString() : string.Empty)
+                                                                .ReadOnly(true)
+                                                                .TabIndex(6)
+
+                                            )
+
+                                ),
+
+                    X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                            .Items(
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Width(350)
+                                        .Items(
+                                                X.Hidden()
+                                                    .ID("hiddenExecMode")
+                                                    .Value(Model._ExecMode),
+                                                X.Hidden()
+                                                    .ID("hiddenRowversion")
+                                                    .Value(Model._AnalysePhysique.RowVersionKey),
+                                                X.Hidden()
+                                                    .ID("hiddenAnalyseCodeForUpdate")
+                                                    .Value(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? Model._AnalysePhysique.AnalyseCode.Code : string.Empty),
+                                                X.Hidden()
+                                                    .ID("TxtAnalysePhysiqueID")
+                                                    .Value(Model._AnalysePhysique.ID),
+                                                X.NumberField()
+                                                    .ID("TxtNbrOfBeans")
+                                                    .HideTrigger(true).FieldLabel("Nbr Feves Pour Analyse")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFeves.ToString() : string.Empty)
+                                                    .ReadOnly(true)
+                                                    .AllowDecimals(false)
+                                                    .MinValue(0)
+                                                    .TabIndex(7)
+                                                    .Listeners(ls =>
+                                                    {
+                                                        ls.Blur.Fn = "CheckNbrOfBeans";
+                                                        ls.Change.Handler = "CalculatePourCent(App.TxtMouldy.id); CalculatePourCent(App.TxtFlat.id); CalculatePourCent(App.TxtWeevil.id); CalculatePourCent(App.TxtGerminated.id); CalculatePourCent(App.TxtSlaty.id); CalculatePourCent(App.TxtViolet.id);";
+                                                    }),
+                                                X.NumberField()
+                                                    .ID("TxtBeansCount")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Grainage")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Grainage.ToString() : string.Empty)
+                                                    .ReadOnly(true)
+                                                    .AllowDecimals(false)
+                                                    .MinValue(0)
+                                                    .TabIndex(8),
+                                                X.NumberField()
+                                                    .ID("TxtBeansCountPc")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Poids des feves")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(false)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFevesPc : (double?)null)
+                                                    .ReadOnly(true)
+                                                    .TabIndex(9),
+                                                X.FieldContainer()
+                                                    .Layout(LayoutType.HBox)
+                                                    .FieldLabel("Moisie")
+                                                    .Width(270)
+                                                    //.Flex(1)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .IndicatorText("%")
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .Items(
+                                                        X.NumberField()
+                                                            .ID("TxtMouldy")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .AllowBlank(true)
+                                                            .AllowDecimals(false)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*")
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.MoisieNbre.ToString() : string.Empty)
+                                                            .ReadOnly(true).AllowDecimals(false).MinValue(0).TabIndex(10)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculatePourCent(App.TxtMouldy.id);";
+                                                            }),
+                                                        X.NumberField()
+                                                            .ID("TxtMouldyPr")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .MarginSpec("0 0 0 5")
+                                                            .ReadOnly(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Moisie : (double?)null)
+                                                    ),
+                                            X.FieldContainer()
+                                                .Layout(LayoutType.HBox)
+                                                .Width(270)
+                                                .FieldLabel("Plate")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .IndicatorText("%")
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                .Items(
+                                                        X.NumberField()
+                                                            .ID("TxtFlat")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .AllowBlank(true)
+                                                            .AllowDecimals(false)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*")
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.PlateNbre.ToString() : string.Empty)
+                                                            .ReadOnly(true)
+                                                            .AllowDecimals(false)
+                                                            .MinValue(0)
+                                                            .TabIndex(11)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculatePourCent(App.TxtFlat.id);";
+                                                            }),
+                                                        X.NumberField()
+                                                            .ID("TxtFlatPr")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .MarginSpec("0 0 0 5")
+                                                            .ReadOnly(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Plate : (double?)null)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculateDefective();";
+                                                            })
+                                                        ),
+                                            X.FieldContainer()
+                                                .Layout(LayoutType.HBox)
+                                                .Width(270)
+                                                .FieldLabel("Mité")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .IndicatorText("%")
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                .Items(
+                                                        X.NumberField()
+                                                            .ID("TxtWeevil")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .AllowDecimals(false)
+                                                            .AllowBlank(true)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*")
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.WeevilNbre.ToString() : string.Empty)
+                                                            .ReadOnly(true)
+                                                            .AllowDecimals(false)
+                                                            .MinValue(0)
+                                                            .TabIndex(12)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculatePourCent(App.TxtWeevil.id);";
+                                                            }),
+                                                        X.NumberField()
+                                                            .ID("TxtWeevilPr")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .MarginSpec("0 0 0 5")
+                                                            .ReadOnly(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Weevil : (double?)null)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculateDefective();";
+                                                            })
+                                                        ),
+                                            X.FieldContainer()
+                                                .Layout(LayoutType.HBox)
+                                                .Width(270)
+                                                .FieldLabel("Germee").LabelAlign(LabelAlign.Right).IndicatorText("%")
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                .Items(
+                                                        X.NumberField()
+                                                            .ID("TxtGerminated")
+                                                            .HideTrigger(true)
+                                                            //.Height(25)
+                                                            .Flex(1)
+                                                            .AllowBlank(true)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*")
+                                                            .AllowDecimals(false)
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.GermeeNbre.ToString() : string.Empty)
+                                                            .ReadOnly(true)
+                                                            .AllowDecimals(false)
+                                                            .MinValue(0)
+                                                            .TabIndex(13)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculatePourCent(App.TxtGerminated.id);";
+                                                            }),
+                                                        X.NumberField()
+                                                            .ID("TxtGerminatedPr")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .MarginSpec("0 0 0 5")
+                                                            .ReadOnly(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Germee : (double?)null)
+                                                            .Listeners(ls =>
+                                                            {
+                                                                ls.Change.Handler = "CalculateDefective();";
+                                                            })
+                                                        )
+
+                                             ),
+                            X.Panel()
+                                .Layout(LayoutType.Form).Width(300)
+                                    .Items(
+                                            X.NumberField()
+                                                .ID("TxtDefectives")
+                                                .FieldLabel("Defectueuse")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .IndicatorText("%")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Defectueuse : (double?)null)
+                                                ,
+                                            X.FieldContainer()
+                                                .Layout(LayoutType.HBox)
+                                                .Width(270)
+                                                .FieldLabel("Ardoisé")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .IndicatorText("%")
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                .Items(
+                                                        X.NumberField()
+                                                            .ID("TxtSlaty")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .AllowBlank(false)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*")
+                                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.ArdoiseeNbre.ToString() : string.Empty)
+                                                                .ReadOnly(true).AllowDecimals(false).MinValue(0).TabIndex(14)
+                                                                .Listeners(ls =>
+                                                                {
+                                                                    ls.Change.Handler = "CalculatePourCent(App.TxtSlaty.id); CalculateUnfermented();";
+                                                                }),
+                                                        X.NumberField()
+                                                            .ID("TxtSlatyPr")
+                                                            .HideTrigger(true)
+                                                            .Flex(1)
+                                                            .MarginSpec("0 0 0 5")
+                                                            .ReadOnly(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Ardoisee : (double?)null)
+                                                        ),
+                                            X.NumberField()
+                                                .ID("TxtUnFermented")
+                                                .HideTrigger(true)
+                                                .FieldLabel("Non fermenté")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .IndicatorText("%")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Fermentation.ToString() : string.Empty),
+                                            X.FieldContainer()
+                                                    .Layout(LayoutType.HBox).Width(270).FieldLabel("Violet Compact").LabelAlign(LabelAlign.Right).IndicatorText("%")
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                    .Items(
+                                                            X.NumberField()
+                                                                .ID("TxtViolet")
+                                                                .HideTrigger(true)
+                                                                .Flex(1)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.VioletteNbre.ToString() : string.Empty)
+                                                                .ReadOnly(true)
+                                                                .AllowDecimals(false)
+                                                                .MinValue(0)
+                                                                .TabIndex(15)
+                                                                .Listeners(ls =>
+                                                                {
+                                                                    ls.Change.Handler = "CalculatePourCent(App.TxtViolet.id);";
+                                                                }),
+                                                            X.NumberField()
+                                                                .ID("TxtVioletPr")
+                                                                .HideTrigger(true)
+                                                                .Flex(1)
+                                                                .MarginSpec("0 0 0 5")
+                                                                .ReadOnly(true)
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Violette : (double?)null)
+                                                            ),
+                                            X.NumberField()
+                                                .ID("TxtSieving")
+                                                .HideTrigger(true)
+                                                //.FieldLabel("Tamis (%)")
+                                                .FieldLabel("Dechets (%)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Tamis : (double?)null)
+                                                .ReadOnly(true)
+                                                .TabIndex(16),
+                                            X.NumberField()
+                                                .ID("TxtFragment")
+                                                .HideTrigger(true)
+                                                .FieldLabel("Fèves brisées (%)")
+                                                //.FieldLabel("Fragment (%)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Fragment : (double?)null)
+                                                .ReadOnly(true)
+                                                .TabIndex(17),
+                                            X.NumberField()
+                                                .ID("TxtBrokenBean")
+                                                .HideTrigger(true)
+                                                .FieldLabel("Brisure (%)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Brisure : (double?)null)
+                                                .ReadOnly(true)
+                                                .TabIndex(18)
+                                        )
+                                            ,
+                                X.Panel().Layout(LayoutType.Form).Flex(1)
+                                .Items(
+                                        X.NumberField()
+                                            .ID("txtBeanCluster")
+                                            .HideTrigger(true)
+                                            //.FieldLabel("Beans CLuster (%)")
+                                            .FieldLabel("Crabot (%)")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .TabIndex(19)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.BeansCluster : (double?)null),
+                                        //.ReadOnly(true)
+                                        X.NumberField()
+                                            .ID("TxtMoisture")
+                                            .HideTrigger(true)
+                                            .FieldLabel("Humidite (%)")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Humidite : (double?)null)
+                                            .ReadOnly(true)
+                                            .TabIndex(20),
+                                        X.NumberField()
+                                            .ID("TxtForeignMatter")
+                                            .HideTrigger(true)
+                                            .FieldLabel("Matiere Etrangere (%)")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .DecimalPrecision(3)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.MatiereEtrangere : (double?)null)
+                                            .ReadOnly(true)
+                                            .TabIndex(21),
+                                        X.NumberField()
+                                            .ID("TxtFfa")
+                                            .HideTrigger(true)
+                                            .FieldLabel("FFA (%)")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Ffa : (double?)null)
+                                            .ReadOnly(true)
+                                            .TabIndex(22),
+                                        X.ComboBox()
+                                            .ID("CmbClassification")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .FieldLabel("Grade")
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .LabelWidth(110)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .TabIndex(23)
+                                            //.MatchFieldWidth(false)
+                                            .ListConfig(new BoundList { MinWidth = 100 })
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.ClassificationFeves.ID : (int?)null)
+                                            .ReadOnly(true)
+                                            .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(Html.X().Model()
+                                                            .IDProperty("ID")
+                                                                    .Fields(
+                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                                )
+                                                            .Proxy(Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadClassificationFeves", "ClassificationFeves"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                            ),
+                                            X.ComboBox()
+                                                .ID("CmbResultatAnalyse")
+                                                .FieldLabel("Resultat")
+                                                .ReadOnly(true)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .TabIndex(24)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Statut : "AC")
+                                                .Items(
+                                                        new ListItem("Accepté", "AC"),
+                                                        new ListItem("Rejeté", "RE")
+
+                                                    ),
+                                            //.SelectedItems(se => { se.Add(new ListItem { Text = "Approuvé", Value = "AP" }); }),
+                                            X.TextArea()
+                                                .ID("TxtCommentaireAnalysePhysique")
+                                                .FieldLabel("Commentaire")
+                                                .AllowBlank(false)
+                                    .IndicatorCls("IndicatorRedStar")
+                                    .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TabIndex(25)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Commentaire : string.Empty)
+                                    //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+                                    )
+                        )
+                    )
+
+                )
+            )
+            .Buttons(
+                        X.Button()
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? "OK" : "Approuver")
+                            .ID("BtnSubmitAnalyse")
+                            .TabIndex(26)
+                            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? Url.Action("SubmitFormMethod") : Url.Action("SubmitAnalyeApprove");
+                                de.Click.Before = "return validNew(App.FormAnalysePhysique.id);";
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                                de.Click.Confirmation.ConfirmRequest = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false;
+                                de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Physique : Approuver'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
+                            }),
+                        X.Button()
+                        .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                        .Handler("App.FormAnalysePhysique.doClose()")
+                        .Cls("btncancel")
+                        .TabIndex(27)
+            )
+)
+@Scripts.Render("~/bundles/validation")
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Analyse Physique : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if ((App.CmbAnalyseur.value && App.CmbSuperviseur.value) && (App.CmbAnalyseur.value == App.CmbSuperviseur.value)) {
+            Ext.Msg.show({ title: 'Analyse Physique : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please change Reviewer or Analyzeur', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+        /*Ext.onReady(function() {
+         #{BtnOk}.on(#{BtnOk}.clickEvent,validNew );
+        //})*/
+</script>
+<script type="text/javascript">
+    var CheckCodeAnalyse = function () {
+        var modeExec = App.hiddenExecMode.value;
+        if (App.CmbCodeAnalyse.value && modeExec != "Approve") {
+            App.CmbLaboratoire.setReadOnly(false);
+            App.TxtDateAnalysePhysique.setReadOnly(false);
+            App.CmbAnalyseur.setReadOnly(false);
+            App.CmbSuperviseur.setReadOnly(false);
+            App.TxtSheetNumber.setReadOnly(false);
+            App.TxtNbrOfBeans.setReadOnly(false);
+
+        } else {
+            App.CmbLaboratoire.setReadOnly(true);
+            App.TxtDateAnalysePhysique.setReadOnly(true);
+            App.CmbAnalyseur.setReadOnly(true);
+            App.CmbSuperviseur.setReadOnly(true);
+            App.TxtSheetNumber.setReadOnly(true);
+            App.TxtNbrOfBeans.setReadOnly(true);
+            App.TxtBeansCount.setReadOnly(true);
+            if (modeExec != "Approve") App.TxtCommentaireAnalysePhysique.setReadOnly(true);
+        }
+    };
+
+    var CheckNbrOfBeans = function () {
+        var modeExec = App.hiddenExecMode.value;
+        if (App.TxtNbrOfBeans.value && modeExec != "Approve") {
+            App.TxtBeansCount.setReadOnly(false);
+            App.TxtMouldy.setReadOnly(false);
+            App.TxtFlat.setReadOnly(false);
+            App.TxtWeevil.setReadOnly(false);
+            App.TxtGerminated.setReadOnly(false);
+            App.TxtSlaty.setReadOnly(false);
+            App.TxtViolet.setReadOnly(false);
+            App.TxtSieving.setReadOnly(false);
+            App.TxtBeansCountPc.setReadOnly(false);
+            App.TxtFragment.setReadOnly(false);
+            App.TxtBrokenBean.setReadOnly(false);
+            App.TxtMoisture.setReadOnly(false);
+            App.CmbClassification.setReadOnly(false);
+            App.CmbResultatAnalyse.setReadOnly(false);
+            App.TxtForeignMatter.setReadOnly(false);
+            App.TxtFfa.setReadOnly(false);
+            App.TxtCommentaireAnalysePhysique.setReadOnly(false);
+            App.txtBeanCluster.setReadOnly(false);
+        } else {
+            App.TxtBeansCount.setReadOnly(true);
+            App.TxtMouldy.setReadOnly(true);
+            App.TxtFlat.setReadOnly(true);
+            App.TxtWeevil.setReadOnly(true);
+            App.TxtGerminated.setReadOnly(true);
+            App.TxtSlaty.setReadOnly(true);
+            App.TxtViolet.setReadOnly(true);
+            App.TxtSieving.setReadOnly(true);
+            App.TxtBeansCountPc.setReadOnly(true);
+            App.TxtFragment.setReadOnly(true);
+            App.TxtBrokenBean.setReadOnly(true);
+            App.TxtMoisture.setReadOnly(true);
+            App.CmbClassification.setReadOnly(true);
+            App.CmbResultatAnalyse.setReadOnly(true);
+            App.TxtForeignMatter.setReadOnly(true);
+            App.TxtFfa.setReadOnly(true);
+            App.txtBeanCluster.setReadOnly(true);
+            if (modeExec != "Approve") App.TxtCommentaireAnalysePhysique.setReadOnly(true);
+        }
+    };
+
+</script>
+<script type="text/javascript">
+    var CalculatePourCent = function (id) {
+        if (id)
+        {
+
+            var fieldResultId = id + "Pr";
+
+            var num = Ext.getCmp(id).value;
+
+            var pourcentage = (num * 100) / App.TxtNbrOfBeans.value;
+            pourcentage = RoundIntToPrecision(pourcentage);
+           /* pourcentage = Math.round(pourcentage * 100) / 100;*/
+            Ext.getCmp(fieldResultId).setValue(pourcentage);
+
+        }
+    };
+
+    var CalculateDefective = function () {
+        var flat = parseFloat(App.TxtFlatPr.value ? App.TxtFlatPr.value : 0);
+        var weevil = parseFloat(App.TxtWeevilPr.value ? App.TxtWeevilPr.value : 0);
+        var germinated = parseFloat(App.TxtGerminatedPr.value ? App.TxtGerminatedPr.value : 0);
+
+        var defective = flat + weevil + germinated;
+        App.TxtDefectives.setValue(defective);
+    };
+
+    var CalculateUnfermented = function () {
+        var slaty = parseFloat(App.TxtSlaty.value) / 3;
+        slaty = RoundIntToPrecision(slaty);
+        App.TxtUnFermented.setValue(slaty);
+    };
+
+    var RoundIntToPrecision = function (v) {
+        try {
+            var partieEntiere = parseInt(v);
+            var partieDecimale = parseFloat(v) - parseInt(v);
+            partieDecimale = partieDecimale.toFixed(2);
+
+            if (partieDecimale == 0)
+                return partieEntiere;
+            else if (partieDecimale < 0.34)
+                return partieEntiere + 0.33;
+            else if (partieDecimale <= 0.67)
+                return partieEntiere + 0.66;
+            else
+                return partieEntiere + 1;
+
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var numInput;
+    window.onload = function () {
+        numInput = document.ge('input.number');
+        numInput.onkeypress = numInput.onkeydown = numInput.onblur = numInput.onkeyup = function () {
+            numInput.value = numInput.value.replace(/[^0-9]+/, "");
+        }
+    }
+</script>
+
+
+
+
+
+
+

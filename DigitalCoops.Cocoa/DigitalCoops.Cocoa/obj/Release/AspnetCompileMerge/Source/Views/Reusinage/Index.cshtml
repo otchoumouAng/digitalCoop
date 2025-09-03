@@ -209,7 +209,7 @@
                                 de =>
                                     {
                                         de.Click.Url  = Url.Action("OnAdd");
-                                        de.Click.Success = "App.FormReusinage.setTitle('Re-Cleaning : Nouveau')";
+                                        de.Click.Success = "App.FormReusinage.setTitle('Reusinage : Nouveau')";
                                         de.Click.EventMask.ShowMask = true;
                                     }
                             ),
@@ -226,7 +226,7 @@
                                 de =>
                                 {
                                 de.Click.Url  = Url.Action("OnEdit");
-                                de.Click.Success = "App.FormReusinage.setTitle('Re-Cleaning : Edit')";
+                                de.Click.Success = "App.FormReusinage.setTitle('Reusinage : Modifier')";
                                 de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeLotReusine}.getSelectionModel().getSelection()[0].data"});
                                 de.Click.EventMask.ShowMask = true;
                                 }
@@ -244,10 +244,10 @@
                                     {
                                         de.Click.Url  = Url.Action("onApprove");
                                         //de.Click.Url  = Url.Action("ApproveReusinage");
-                                        de.Click.Success = "App.FormReusinage.setTitle('Re-Cleaning : Approuver')";
+                                        de.Click.Success = "App.FormReusinage.setTitle('Reusinage : Approuver')";
                                         de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeLotReusine}.getSelectionModel().getSelection()[0].data"});
                                         //de.Click.Confirmation.ConfirmRequest = true;                                        
-                                        //de.Click.Confirmation.Title = "Re-Cleaning - Approve";
+                                        //de.Click.Confirmation.Title = "Reusinage - Approve";
                                         //de.Click.Confirmation.Message = "This Action will cancel Lot, movements and All Analysis done for this Lot ! Continue ?";
                                         de.Click.EventMask.ShowMask = true;
                                     }
@@ -315,7 +315,7 @@
                                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeLotReusine}.getSelectionModel().getSelection()[0].data" });
                                                     de.Click.EventMask.ShowMask = true;
                                                     de.Click.Confirmation.ConfirmRequest = true;
-                                                    de.Click.Confirmation.Title = "Re-Cleaning";
+                                                    de.Click.Confirmation.Title = "Reusinage";
                                                     de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeLotReusine}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                     de.Click.Success = "Overview.resetButtons();";
                                                 }
@@ -330,7 +330,7 @@
     #region Criteres
             X.FormPanel()
                 .ID("ReusinageCP")
-                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Re-Cleaning - overview" })
+                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Reusinage - overview" })
                 .Region(Region.North)
                 .Floatable(false)
                 .Border(false)
@@ -475,7 +475,7 @@
                             Html.X().Column().Text("").DataIndex("mIcon").Width(40).Hideable(false).Renderer("renderIcon").Filterable(false),
                             Html.X().Column().Text("Date/Heure").DataIndex("DateReusinageAsString").Flex(1),
                             Html.X().Column().Text("Lot N°").DataIndex("NumeroLot").Flex(1),
-                            Html.X().Column().Text("Reason").DataIndex("Raison").Flex(1),
+                            Html.X().Column().Text("Raison").DataIndex("Raison").Flex(1),
                             Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
                             Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
                             Html.X().Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
@@ -510,7 +510,7 @@
                             de.RowDblClick.CleanRequest = true;
                             de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowLotReusine}.getSelected().items[0].data" });
                             de.RowDblClick.EventMask.ShowMask = true;
-                            de.RowDblClick.Success = "App.FormReusinage.setTitle('Re-Cleaning : Detail')";
+                            de.RowDblClick.Success = "App.FormReusinage.setTitle('Reusinage : Detail')";
                         }
                     )
     #endregion

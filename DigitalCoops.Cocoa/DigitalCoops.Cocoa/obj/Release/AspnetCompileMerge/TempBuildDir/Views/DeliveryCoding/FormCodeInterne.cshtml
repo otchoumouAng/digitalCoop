@@ -1,0 +1,83 @@
+﻿@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormCodeInterne")
+    .Width(270)
+    .Resizable(false)
+    .Height(140)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Y(80)
+    .Title("Code Analyse Concessionaire")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+    .Items(
+            X.FormPanel()
+                .Layout(LayoutType.Form)
+                .Items(
+                    X.TextField()
+                        .ID("txtCodeInterne").FieldLabel("Code")
+                        .Text("")
+                        .LabelAlign(LabelAlign.Right)
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*")
+                        .MarginSpec("0 5 0 0")
+                )
+   )
+  .Buttons(
+             X.Button()
+                .Text("OK")
+                .ID("btnSubmitCode")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitCode");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.Before = "return validNew(App.FormCodeInterne.id);";
+                }),
+            X.Button()
+                .Text("Annuler")
+                .Handler("App.FormCodeInterne.doClose()").Cls("btncancel")
+
+                )
+    )
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Code : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

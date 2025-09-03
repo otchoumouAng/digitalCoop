@@ -58,9 +58,7 @@ namespace Tms2017.MVC.Controllers
         }
 
         public ActionResult OnAdd()
-        {
-            Viewport mViewport = X.GetCmp<Viewport>("TmsViewPort");
-            mViewport.Mask();
+        {            
             LivraisonViewModel mclass = new LivraisonViewModel();
 
             mclass._Livraison = new Livraison();
@@ -87,10 +85,7 @@ namespace Tms2017.MVC.Controllers
             bool HavPermissionPrint = HasAccess.fnGetUserAccessStatus("{933ECBC8-7E9F-4126-BD1D-3307A4CB4824}", UserName);
 
             ViewData["HavPermissionPrint"] = HavPermissionPrint;
-            ViewData["HavPermissionRemove"] = HavPermissionRemove;
-
-            Viewport mViewport = X.GetCmp<Viewport>("TmsViewPort");
-            mViewport.Mask();
+            ViewData["HavPermissionRemove"] = HavPermissionRemove;           
 
             Livraison mclass = JSON.Deserialize<Livraison>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });                   
 
@@ -105,9 +100,7 @@ namespace Tms2017.MVC.Controllers
         }
 
         public ActionResult OnConsult(string ItemSelected)
-        {
-            Viewport mViewport = X.GetCmp<Viewport>("TmsViewPort");
-            mViewport.Mask();
+        {           
 
             Livraison mclass = JSON.Deserialize<Livraison>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
 
@@ -119,6 +112,26 @@ namespace Tms2017.MVC.Controllers
             viewModel._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Consult;
 
             return new Ext.Net.MVC.PartialViewResult { ViewName = "FormDeliveryCoding", Model = viewModel };
+        }
+
+        public ActionResult OnGenererInterne(string ItemSelected)
+        {
+            List<AnalyseCode> mList = JSON.Deserialize<List<AnalyseCode>>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+            List<AnalyseCode> myList = mList.Cast<AnalyseCode>().ToList();
+
+            if (myList.Where(s => s.EstInterne == false).Count() > 0)
+            {
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Codification",
+                    Message = "Code Interne déja généré",
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+                return this.Direct();
+            }
+            
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormCodeInterne"};
         }
 
         public ActionResult OnActivateDeactivate(string ItemSelected)
@@ -237,14 +250,29 @@ namespace Tms2017.MVC.Controllers
             //OnRefresh(mClass.ID.ToString());
             return this.Direct();
         }
-        public ActionResult GenerateCode(string StoreNbrOfRows)
+        public ActionResult GenerateCode(string StoreNbrOfRows, string ItemSelected)
         {
-            int rowcount = int.Parse(StoreNbrOfRows);
+            List<AnalyseCode> mList = JSON.Deserialize<List<AnalyseCode>>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+            List<AnalyseCode> myList = mList.Cast<AnalyseCode>().ToList();
 
-            int Limit = int.Parse(X.GetCmp<TextField>("hiddenMaxCodeAnalyseGenerate").Text);
-
-            if (rowcount < Limit)
+            if (myList.Where(s => s.EstInterne == true).Count() > 0)
             {
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Codification",
+                    Message = "Code externe déjà généré",
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+                return this.Direct();
+            }
+
+            //int rowcount = int.Parse(StoreNbrOfRows);
+
+            //int Limit = int.Parse(X.GetCmp<TextField>("hiddenMaxCodeAnalyseGenerate").Text);
+
+            //if (rowcount < Limit)
+            //{
                 AnalyseCodeViewModel analyseCodeVm = new AnalyseCodeViewModel();
                 analyseCodeVm._AnalyseCode = new AnalyseCode();
                 string mNewCode = string.Empty;
@@ -285,6 +313,7 @@ namespace Tms2017.MVC.Controllers
                     analysecode.Code = mNewCode;
                     analysecode.ID = Guid.NewGuid();
                     analysecode.IsNew = true;
+                    analysecode.EstInterne = true;
                     analysecode.DateCode = DateTime.Now;
 
                     if (!string.IsNullOrEmpty(mNewCode))
@@ -292,18 +321,55 @@ namespace Tms2017.MVC.Controllers
 
                     X.GetCmp<RowSelectionModel>("rowCode").Select(0);
 
-                }
+                //}
             }
-            else
+            //else
+            //{
+            //    X.MessageBox.Show(new MessageBoxConfig
+            //    {
+            //        Title = "Codification : Code",
+            //        Message = "Codification can be generated Only " + Limit +  " times",
+            //        Buttons = MessageBox.Button.OK,
+            //        Icon = MessageBox.Icon.WARNING
+            //    });
+            //}
+            return this.Direct();
+        }
+
+        public ActionResult SubmitCode()
+        {
+
+            AnalyseCodeViewModel analyseCodeVm = new AnalyseCodeViewModel();
+            analyseCodeVm._AnalyseCode = new AnalyseCode();
+            string mNewCode = X.GetCmp<TextField>("txtCodeInterne").Text;
+
+            if (string.IsNullOrEmpty(mNewCode))
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
                     Title = "Codification : Code",
-                    Message = "Codification can be generated Only " + Limit +  " times",
+                    Message = "Veuillez entrer un code valide",
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
                 });
-            }
+                return this.Direct();
+            }                     
+
+            Store mStore = X.GetCmp<Store>("storeDeliveryCodeListe");
+            AnalyseCode analysecode = new AnalyseCode();
+
+            analysecode.Code = mNewCode;
+            analysecode.ID = Guid.NewGuid();
+            analysecode.IsNew = true;
+            analysecode.EstInterne = false;
+            analysecode.DateCode = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(mNewCode))
+                mStore.Insert(0, analysecode);
+
+            X.GetCmp<RowSelectionModel>("rowCode").Select(0);
+            X.GetCmp<Window>("FormCodeInterne").Close();
+
             return this.Direct();
         }
 
@@ -314,12 +380,14 @@ namespace Tms2017.MVC.Controllers
             return this.Direct();
         }
 
-        public ActionResult SelectCodeForAnalyse(string ItemCodeAnalyseID)
+        public ActionResult SelectCodeForAnalyse(string ItemCodeAnalyseID, string ItemType = "0")
         {
             Guid? id = Guid.Empty;
+            int mType = 0;
+            bool res = int.TryParse(ItemType, out mType);
             if (string.IsNullOrEmpty(ItemCodeAnalyseID)) id = (Guid?)null;
             else id = Guid.Parse(ItemCodeAnalyseID);
-            var mListe = (new AnalyseCode()).fnSelectCodeForAnalysePhysique(id);            
+            var mListe = (new AnalyseCode()).fnSelectCodeForAnalysePhysique(id, mType);            
             return this.Store(mListe);
         }
 
@@ -518,6 +586,7 @@ namespace Tms2017.MVC.Controllers
                         {
 
                             analysecode.Code = ListeAnalyse.ElementAt(i).Code;
+                            analysecode.EstInterne = ListeAnalyse.ElementAt(i).EstInterne;
                             analysecode.DateCode = DateTime.Now;
 
                             analysecode.Livraison = new Livraison();
@@ -578,14 +647,10 @@ namespace Tms2017.MVC.Controllers
                         else
                         {
                             onRefreshDelivery(null, null, null, livraisonID.ToString());
-                        }
-                                                                       
-
+                        }                                                                       
                     }                    
 
-                    X.GetCmp<Window>("FormDeliveryCoding").Close();
-                    Viewport mViewport = X.GetCmp<Viewport>("TmsViewPort");
-                    mViewport.Unmask();                    
+                    X.GetCmp<Window>("FormDeliveryCoding").Close();                                                           
                 }              
 
             }
