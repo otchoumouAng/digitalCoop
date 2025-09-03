@@ -27,7 +27,7 @@
 
     var GetNbrStoreRows = function () {
         var nbr = App.grpListeConditionnementProduit.getRowsValues().length;
-        App.LblResumeConditionnementProduit.setText(nbr + ' Packaging(s)');
+        App.LblResumeConditionnementProduit.setText(nbr + ' Conditionnement Produit(s)');
     };
 
     var SetCriteriaTitle = function (status) {
@@ -35,8 +35,8 @@
         App.ConditionnementProduitCriteriaPanel.title = "";
         var texttitle = "";
 
-        if (status) texttitle += "Show only active Packagings : YES ";
-        else texttitle += "Show only active Packagings : NO ";
+        if (status) texttitle += "Show only active Conditionnement Produits : YES ";
+        else texttitle += "Show only active Conditionnement Produits : NO ";
 
         App.ConditionnementProduitCriteriaPanel.setTitle(texttitle);
     };
@@ -128,7 +128,7 @@
 </script>
 
 
-@model Tms.Classes.Shared.Sales.ConditionnementProduit
+@model Tms.Classes.Shared.Sales.ConditionnementProduitViewModel
 @{
     Layout = null;
     var X = Html.X();
@@ -190,7 +190,7 @@
                 .Disable(false)
                 .DirectEvents( de =>{
                     de.Click.Url  = Url.Action("OnAdd");
-                    de.Click.Success = "App.FormConditionnementProduit.setTitle('Packaging : Nouveau')";
+                    de.Click.Success = "App.FormConditionnementProduit.setTitle('Conditionnement Produit : Nouveau')";
                     de.Click.EventMask.ShowMask = true;
                 } ),
             X.Button()
@@ -202,7 +202,7 @@
                 .Disabled(true)
                 .DirectEvents( de =>{
                     de.Click.Url  = Url.Action("OnEdit");
-                    de.Click.Success = "App.FormConditionnementProduit.setTitle('Packaging : Modifier')";
+                    de.Click.Success = "App.FormConditionnementProduit.setTitle('Conditionnement Produit : Modifier')";
                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeConditionnementProduit}.getSelectionModel().getSelection()[0].data"});
                     de.Click.EventMask.ShowMask = true;
                 } ),
@@ -250,7 +250,7 @@
                                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeConditionnementProduit}.getSelectionModel().getSelection()[0].data" });
                                     de.Click.EventMask.ShowMask = true;
                                     de.Click.Confirmation.ConfirmRequest = true;
-                                    de.Click.Confirmation.Title = "Packaging";
+                                    de.Click.Confirmation.Title = "Conditionnement Produit";
                                     de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeConditionnementProduit}.getSelectionModel().getSelection()[0].data.Desactive)";
                                     de.Click.Success = "Overview.resetButtons();";
                                 })
@@ -261,7 +261,7 @@
             }),
         X.FormPanel()
             .ID("ConditionnementProduitCriteriaPanel")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Packaging - overview" })
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Conditionnement Produit - overview" })
             .Region(Region.North)
             .Floatable(false)
             .Border(false)
@@ -282,7 +282,7 @@
                         .Layout(LayoutType.Form)
                         //.BodyPadding(6)
                         .Items(
-                                    X.Checkbox().ID("TxtStatus").FieldLabel("Show only active Packagings").LabelAlign(LabelAlign.Right)
+                                    X.Checkbox().ID("TxtStatus").FieldLabel("Show only active Conditionnement Produits").LabelAlign(LabelAlign.Right)
                                 ),
                     X.Container()
                             .ID("")

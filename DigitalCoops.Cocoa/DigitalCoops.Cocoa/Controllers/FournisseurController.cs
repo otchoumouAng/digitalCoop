@@ -1,15 +1,11 @@
-﻿using CrystalDecisions.CrystalReports.Engine;
-using DevExpress.XtraReports.UI;
+﻿using DevExpress.XtraReports.UI;
 using Ext.Net;
 using Ext.Net.MVC;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Web;
 using System.Web.Mvc;
 using Tms.Classes.Business;
 using Tms.Classes.Business.Sites;
@@ -17,10 +13,7 @@ using Tms.Classes.Security;
 using Tms.Classes.Shared;
 using Tms.Components.Data;
 using Tms.Components.Reports;
-using Tms.Components.Settings;
-using Tms2017.MVC.Models;
 using Tms2017.MVC.Reports;
-using Tms2017.Reports;
 
 namespace Tms2017.MVC.Controllers
 {

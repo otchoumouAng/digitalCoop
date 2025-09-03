@@ -273,13 +273,25 @@
 
                                             X.MenuItem()
                                                 .ID("mnuPrintArticle")
-                                                .Text("List of Articles")
+                                                .Text("List de Articles")
                                                 .Disabled(false)
                                                 .DirectEvents
                                                 (
                                                     de=>
                                                     {
-                                                        de.Click.Url = Url.Action("OnPrintList");
+                                                        de.Click.Url = Url.Action("OnDisplayArticleList");
+                                                        de.Click.EventMask.ShowMask = true;
+                                                    }
+                                                ),
+                                            X.MenuItem()
+                                                .ID("mnuPrintStatistiqueArticle")
+                                                .Text("Statistique de production")
+                                                .Disabled(false)
+                                                .DirectEvents
+                                                (
+                                                    de=>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnDisplayArticleStatistiqueList");
                                                         de.Click.EventMask.ShowMask = true;
                                                     }
                                                 )

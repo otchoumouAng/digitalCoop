@@ -1,22 +1,15 @@
 ﻿using DevExpress.XtraReports.UI;
-using DigitalCoops.Cocoa.Models;
 using Ext.Net;
 using Ext.Net.MVC;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using Tms.Classes;
 using Tms.Classes.Business;
-using Tms.Classes.Business.stock;
 using Tms.Classes.Security;
 using Tms.Classes.Shared;
-using Tms.Classes.Shared.stock;
 using Tms.Classes.Shared.Sales;
 using Tms.Components.Data;
 using Tms2017.MVC.Controllers;
@@ -306,92 +299,102 @@ namespace Cooperative.Controllers
 
             return this.Direct();
         }
-        public ActionResult OnPrintList()
+
+
+        public ActionResult OnDisplayArticleList()
         {
-            Article mclass = new Article();
+            string UserName = (string)Session["userName"];
+
+            Site mSiteParDefaut = new Site();
+            bool result = mSiteParDefaut.fnGetBySiteByUserName(UserName);
+            ViewBag.SiteParDefaut = mSiteParDefaut.ID;
+
             Parametres mParam = new Parametres(0);
 
-            ViewData["Campagne"] = mParam.Campagne;
-            //ViewData["Produit"] = mParam.Produit.ID;
+            ViewData["SiteParDefaut"] = mSiteParDefaut.ID;
+            if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
+            else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "Article_Print", ViewData = ViewData };
+            ViewData["Titre"] = "Liste Des Articles";
+            ViewData["actionToDo"] = "OnPrintArticleList";
+            ViewData["ControllerName"] = "Article";
+            ViewData["SiteParDefaut"] = 1;
+            ViewData["UrlSite"] = "LoadSiteByAccess";
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "frmArticleReport", ViewData = ViewData };
+
         }
 
-        //public ActionResult OnPrintArticleList()
-        //{
-        //    string BaseUrl = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"));
-        //    try
-        //    {
-        //        XtraReport report = null;
-
-        //        report = new rptArticlesList() as XtraReport;
-
-        //        report.DataSource = DevExpressReportDs.SetDataSource(report);
-        //        report.Parameters["campagneID"].Value = X.GetCmp<ComboBox>("cmbCampagne").SelectedItem.Text;
-        //        report.Parameters["paramCampagneText"].Value = X.GetCmp<ComboBox>("cmbCampagne").SelectedItem.Text;
-
-        //        report.Parameters["paramExportateur"].Value = int.Parse(X.GetCmp<ComboBox>("cmbExportateur").SelectedItem.Value);
-        //        report.Parameters["paramExportateurNom"].Value = X.GetCmp<ComboBox>("cmbExportateur").SelectedItem.Text;
-
-        //        report.Parameters["paramCertification"].Value = int.Parse(X.GetCmp<ComboBox>("cmbCertification").SelectedItem.Value);
-        //        report.Parameters["paramCertificationText"].Value = X.GetCmp<ComboBox>("cmbCertification").SelectedItem.Text;
-
-        //        report.Parameters["paramArticleType"].Value = int.Parse(X.GetCmp<ComboBox>("cmbTypeArticle").SelectedItem.Value);
-        //        report.Parameters["paramArticleTypeText"].Value = X.GetCmp<ComboBox>("cmbTypeArticle").SelectedItem.Text;
-
-        //        report.Parameters["paramDateDebut"].Value = DateTime.Parse(X.GetCmp<DateField>("txtDateDebut").RawText);
-        //        report.Parameters["paramDateFin"].Value = DateTime.Parse(X.GetCmp<DateField>("txtDateFin").RawText);
-
-        //        report.Parameters["paramStatut"].Value = int.Parse(X.GetCmp<ComboBox>("cmbStatut").SelectedItem.Value);
-        //        report.Parameters["paramStatutText"].Value = X.GetCmp<ComboBox>("cmbStatut").SelectedItem.Text;
-
-        //        Session["report"] = report;
-
-
-        //        return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/Article_GestionStock/ViewList', this, 'List Of Articles',''),App.Article_GestionStock_Print.doClose()", Guid.NewGuid(), BaseUrl));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        X.MessageBox.Show(new MessageBoxConfig
-        //        {
-        //            Title = "Livraison : Data Validation",
-        //            Message = ex.Message,
-        //            Buttons = MessageBox.Button.OK,
-        //            Icon = MessageBox.Icon.WARNING
-        //        });
-        //        return this.Direct();
-        //    }
-        //}
-
-
-        public ActionResult ViewList()
+        [HttpPost]
+        public ActionResult OnPrintArticleList()
         {
-            XtraReport report = null;
-            report = Session["report"] as XtraReport;
-            //report = new rptArticlesList() as XtraReport;
+            try
+            {
+                XtraReport report = null;
 
-            //report.DataSource = DevExpressReportDs.SetDataSource(report);
-            //report.Parameters["campagneID"].Value = Session["CampagneID"];
-            //report.Parameters["paramCampagneText"].Value = Session["paramCampagneText"];
+                report = new rptArticlesList() as XtraReport;
 
-            //report.Parameters["paramExportateur"].Value = int.Parse(Session["paramExportateur"].ToString());
-            //report.Parameters["paramExportateurNom"].Value = Session["paramExportateurNom"];
+                Session["paramTypeProduit"] = int.Parse(GetFormValue("RPcmbTypeProduit"));
+                Session["paramTypeProduitText"] = X.GetCmp<ComboBox>("RPcmbTypeProduit").SelectedItem.Text;
 
-            //report.Parameters["paramCertification"].Value = int.Parse(Session["paramCertification"].ToString());
-            //report.Parameters["paramCertificationText"].Value = Session["paramCertificationText"];
+                Session["paramProduit"] = int.Parse(GetFormValue("RPcmbProduit"));
+                Session["paramProduitText"] = X.GetCmp<ComboBox>("RPcmbProduit").SelectedItem.Text;
 
-            //report.Parameters["paramArticleType"].Value = int.Parse(Session["paramArticleType"].ToString());
-            //report.Parameters["paramArticleTypeText"].Value = Session["paramArticleTypeText"];
+                Session["paramMarqueProduit"] = int.Parse(GetFormValue("RPcmbMarqueProduit"));
+                Session["paramMarqueProduitText"] = X.GetCmp<ComboBox>("RPcmbMarqueProduit").SelectedItem.Text;
 
-            //report.Parameters["paramDateDebut"].Value = DateTime.Parse(Session["paramDateDebut"].ToString());
-            //report.Parameters["paramDateFin"].Value = DateTime.Parse(Session["paramDateFin"].ToString());
+                Session["paramStatut"] = int.Parse(GetFormValue("RPcmbStatut"));
+                Session["paramStatutText"] = X.GetCmp<ComboBox>("RPcmbStatut").SelectedItem.Text;
 
-            //report.Parameters["paramStatut"].Value = int.Parse(Session["paramStatut"].ToString());
-            //report.Parameters["paramStatutText"].Value = Session["paramStatutText"];            
+                Session["paramActif"] = int.Parse(GetFormValue("RPcmbActif"));
+                Session["paramActifText"] = X.GetCmp<ComboBox>("RPcmbActif").SelectedItem.Text;
 
+                ViewData["Report"] = report;
+
+                string BaseUrl = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"));
+
+                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/Article/ViewReportResult', this, 'Liste Des Articles',''),App.frmArticleForReport.doClose()", Guid.NewGuid(), BaseUrl));
+            }
+            catch (Exception ex)
+            {
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Prix Journalier : Data Validation",
+                    Message = ex.Message,
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+                return this.Direct();
+            }
+
+
+        }
+
+        public ActionResult ViewReportResult()
+        {
+            // Créez un rapport composite qui contiendra tous les sous-rapports
+            XtraReport compositeReport = new XtraReport();
+
+            rptArticlesList report = new rptArticlesList();
+
+            report.Parameters["paramTypeProduit"].Value = Session["paramTypeProduit"];
+            report.Parameters["paramTypeProduitText"].Value = Session["paramTypeProduitText"];
+
+            report.Parameters["paramProduit"].Value = Session["paramProduit"];
+            report.Parameters["paramProduitText"].Value = Session["paramProduitText"];
+
+            report.Parameters["paramMarqueProduit"].Value = Session["paramMarqueProduit"];
+            report.Parameters["paramMarqueProduitText"].Value = Session["paramMarqueProduitText"];
+
+            report.Parameters["paramStatut"].Value = Session["paramStatut"];
+            report.Parameters["paramStatutText"].Value = Session["paramStatutText"];
+
+            report.Parameters["paramActif"].Value = Session["paramActif"];
+            report.Parameters["paramActifText"].Value = Session["paramActifText"];
+
+            
             ViewData["Report"] = report;
 
-            return View("ViewReportResult");
+            return View();
         }
 
 
@@ -415,10 +418,18 @@ namespace Cooperative.Controllers
             marqueProduit.Designation = X.GetCmp<ComboBox>("cmbMarqueProduit").SelectedItem.Text;
             mClass.MarqueProduit = marqueProduit;
 
-            ProduitGamme produitGamme = new ProduitGamme();
-            produitGamme.ID = int.Parse(X.GetCmp<ComboBox>("cmbProduitGamme").SelectedItem.Value.ToString());
-            produitGamme.Designation = X.GetCmp<ComboBox>("cmbProduitGamme").SelectedItem.Text;
-            mClass.ProduitGamme = produitGamme;
+            var cmbProduitGamme = X.GetCmp<ComboBox>("cmbProduitGamme");
+
+            // Vérification plus robuste
+            if (cmbProduitGamme.SelectedItem != null &&
+                cmbProduitGamme.SelectedItem.Value != null &&
+                !string.IsNullOrEmpty(cmbProduitGamme.SelectedItem.Value.ToString()))
+            {
+                ProduitGamme produitGamme = new ProduitGamme();
+                produitGamme.ID = int.Parse(cmbProduitGamme.SelectedItem.Value.ToString());
+                produitGamme.Designation = cmbProduitGamme.SelectedItem.Text;
+                mClass.ProduitGamme = produitGamme;
+            }
 
             mClass.Code = X.GetCmp<TextField>("TxtCode").Text;
             mClass.Description = X.GetCmp<TextField>("TxtDescription").Text;

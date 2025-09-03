@@ -600,7 +600,14 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@ProduitID", SqlDbType.Int, _ProduitFini.ID);
                 db().AddInParameter(mCommande, "@TypeProduitID", SqlDbType.Int, _ProduitType.ID);
                 db().AddInParameter(mCommande, "@MarqueProduitID", SqlDbType.Int, _MarqueProduit.ID);
-                db().AddInParameter(mCommande, "@ProduitGammeID", SqlDbType.Int, _ProduitGamme.ID);
+                if (_ProduitGamme != null && _ProduitGamme.ID > 0) // Supposant que l'ID doit être positif
+                {
+                    db().AddInParameter(mCommande, "@ProduitGammeID", SqlDbType.Int, _ProduitGamme.ID);
+                }
+                else
+                {
+                    db().AddInParameter(mCommande, "@ProduitGammeID", SqlDbType.Int, DBNull.Value);
+                }
                 db().AddInParameter(mCommande, "@ConditionnementID", SqlDbType.Int, _Conditionnement.ID);
                 db().AddInParameter(mCommande, "@ConditionnementReferenceID", SqlDbType.Int, _ConditionnementReference.ID);
                 db().AddInParameter(mCommande, "@LigneProductionID", SqlDbType.Int, _LigneProduction.ID);

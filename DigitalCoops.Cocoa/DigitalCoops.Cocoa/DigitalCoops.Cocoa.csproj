@@ -274,10 +274,12 @@
     <Compile Include="Controllers\ExpeditionController.cs" />
     <Compile Include="Controllers\FactureSiteController.cs" />
     <Compile Include="Controllers\FinancementSiteController.cs" />
+    <Compile Include="Controllers\LigneProductionController.cs" />
     <Compile Include="Controllers\LivraisonAgenceController.cs" />
     <Compile Include="Controllers\Lot_EnvoiController.cs" />
     <Compile Include="Controllers\LotSituationStockController.cs" />
     <Compile Include="Controllers\Lot_GestionStockController.cs" />
+    <Compile Include="Controllers\MarqueProduitController.cs" />
     <Compile Include="Controllers\OrdreFabricationController.cs" />
     <Compile Include="Controllers\PaletteController.cs" />
     <Compile Include="Controllers\ProduitFiniController.cs" />
@@ -469,6 +471,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reports\rptAnalyseChimiqueList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\rptArticlesList.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Reports\rptBLHistory.cs">
@@ -2613,15 +2618,26 @@
     <Content Include="Views\LotSituationStock\Index.cshtml" />
     <Content Include="Views\LotSituationStock\FormDetailLot.cshtml" />
     <Content Include="Views\DailyPrice\FormDailyPriceDetail.cshtml" />
+    <Content Include="Views\Shared\frmArticleReport.cshtml" />
+    <Content Include="Views\Article\FormArticle.cshtml" />
+    <Content Include="Views\Article\Index.cshtml" />
+    <Content Include="Views\MarqueProduit\FormMarqueProduit.cshtml" />
+    <Content Include="Views\MarqueProduit\index.cshtml" />
+    <Content Include="Views\LigneProduction\FormLigneProduction.cshtml" />
+    <Content Include="Views\LigneProduction\index.cshtml" />
+    <Content Include="Views\ConditionnementProduit\FormConditionnementProduit.cshtml" />
+    <Content Include="Views\ConditionnementProduit\Index.cshtml" />
+    <Content Include="Views\Article\ViewReportResult.cshtml" />
+    <Content Include="Views\DemandeEtiquette\FormDemandeEtiquette.cshtml" />
+    <Content Include="Views\DemandeEtiquette\FormPrintDemandeEtiquette.cshtml" />
+    <Content Include="Views\DemandeEtiquette\Index.cshtml" />
+    <Content Include="Views\DemandeEtiquette\ViewDemandeEtiquette.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\App_Start\" />
-    <Folder Include="Views\Article\" />
     <Folder Include="Views\Classification\" />
-    <Folder Include="Views\ConditionnementProduit\" />
     <Folder Include="Views\ConditionnementReference\" />
-    <Folder Include="Views\DemandeEtiquette\" />
     <Folder Include="Views\hh\" />
     <Folder Include="Views\Imprimante\" />
     <Folder Include="Views\MiseEnComptePlanifieeMode\" />
@@ -2682,6 +2698,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\rptAnalyseChimiqueList.resx">
       <DependentUpon>rptAnalyseChimiqueList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\rptArticlesList.resx">
+      <DependentUpon>rptArticlesList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\rptBLHistory.resx">
       <DependentUpon>rptBLHistory.cs</DependentUpon>

@@ -25,7 +25,7 @@
             })
             //.X(400)
             .Y(20)
-            .Title("Packaging : Detail")
+            .Title("Conditionnement Produit : Detail")
             .Layout(LayoutType.Form)
             .Items(
                     X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
@@ -48,7 +48,7 @@
                 X.Button()
                 .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
                 .Handler("App.FormConditionnementProduit.doClose()").Cls("btncancel")
-
+                
                 )
 
             )
@@ -67,7 +67,7 @@
        */
         if (!areAllrequiredFieldsFilled) {
 
-            Ext.Msg.show({ title: 'Packaging : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            Ext.Msg.show({ title: 'Conditionnement Produit : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
             return false;
         }
 

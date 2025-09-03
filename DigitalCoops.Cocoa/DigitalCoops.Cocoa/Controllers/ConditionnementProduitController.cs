@@ -28,17 +28,17 @@ namespace Tms2017.MVC.Controllers
             string UserName = (string)Session["userName"];
 
             if (HasAccessFunction.fnGetUserAccessStatus("{DD2ADDF1-5C34-4E81-A6BA-C55A630AAAF4}", UserName) == false)
-                X.GetCmp<Button>("btnNewConditionnement").Disable();
+                X.GetCmp<Button>("btnNewConditionnementProduit").Disable();
             else
-                X.GetCmp<Button>("btnNewConditionnement").Enable();
+                X.GetCmp<Button>("btnNewConditionnementProduit").Enable();
 
             if (HasAccessFunction.fnGetUserAccessStatus("{05015259-CFDD-4CDB-9CF4-380063D3DDD1}", UserName) == false)
-                X.GetCmp<MenuItem>("mnuExportListConditionnement").Disable();
+                X.GetCmp<MenuItem>("mnuExportListConditionnementProduit").Disable();
             else
-                X.GetCmp<MenuItem>("mnuExportListConditionnement").Enable();
+                X.GetCmp<MenuItem>("mnuExportListConditionnementProduit").Enable();
 
             X.GetCmp<Hidden>("CohiddenPermCreer").SetValue(HasAccessFunction.fnGetUserAccessStatus("{DD2ADDF1-5C34-4E81-A6BA-C55A630AAAF4}", UserName));
-            X.GetCmp<Hidden>("CohiddenPermModifier").SetValue(HasAccessFunction.fnGetUserAccessStatus("{5E817109-CC57-4653-BAB5-831792397000}", UserName));
+            X.GetCmp<Hidden>("CohiddenPermModifier").SetValue(HasAccessFunction.fnGetUserAccessStatus("{DD2ADDF1-5C34-4E81-A6BA-C55A630AAAF4}", UserName));
             X.GetCmp<Hidden>("CohiddenPermDesactiver").SetValue(HasAccessFunction.fnGetUserAccessStatus("{146AB76D-7CAB-4202-937E-3EC3614F4B09}", UserName));
             X.GetCmp<Hidden>("CohiddenPermActiver").SetValue(HasAccessFunction.fnGetUserAccessStatus("{515375D3-8FB0-4657-B5F1-3B243EFEAEFA}", UserName));
             X.GetCmp<Hidden>("CohiddenPermExporterExcel").SetValue(HasAccessFunction.fnGetUserAccessStatus("{05015259-CFDD-4CDB-9CF4-380063D3DDD1}", UserName));
@@ -81,7 +81,7 @@ namespace Tms2017.MVC.Controllers
             ConditionnementProduitVm._ConditionnementProduit = new ConditionnementProduit();
             ConditionnementProduitVm._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew;
 
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormConditionnement", Model = ConditionnementProduitVm };
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormConditionnementProduit", Model = ConditionnementProduitVm };
         }
 
         public ActionResult OnEdit(string ItemSelected)
@@ -93,7 +93,7 @@ namespace Tms2017.MVC.Controllers
             ConditionnementProduitVm._ConditionnementProduit = JSON.Deserialize<ConditionnementProduit>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
             ConditionnementProduitVm._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Update;
 
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormConditionnement", Model = ConditionnementProduitVm };
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormConditionnementProduit", Model = ConditionnementProduitVm };
 
         }
 
@@ -106,7 +106,7 @@ namespace Tms2017.MVC.Controllers
             ConditionnementProduitVm._ConditionnementProduit = JSON.Deserialize<ConditionnementProduit>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
             ConditionnementProduitVm._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.Consult;
 
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormConditionnement", Model = ConditionnementProduitVm };
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormConditionnementProduit", Model = ConditionnementProduitVm };
 
         }
 
@@ -115,48 +115,48 @@ namespace Tms2017.MVC.Controllers
 
             try
             {
-                ConditionnementProduit package = new ConditionnementProduit();
+                ConditionnementProduit ConditionnementProduit = new ConditionnementProduit();
 
                 Tms.Components.Settings.EnumsDefinition.eExecMode formExecMode = GetFormExecMode(X.GetCmp<Hidden>("hiddenExecMode").Value);
 
                 if (formExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
-                    package.IsNew = true;
+                    ConditionnementProduit.IsNew = true;
                 else
                 {
-                    package.IsNew = false;
+                    ConditionnementProduit.IsNew = false;
 
-                    package.fnGet(int.Parse(GetFormValue("TxtConditionnementID")));
+                    ConditionnementProduit.fnGet(int.Parse(GetFormValue("TxtConditionnementProduitID")));
 
-                    if (package == null || package.ID == 0)
-                        throw new Exception("SubmitFormMethod : Packaging load failed.");
+                    if (ConditionnementProduit == null || ConditionnementProduit.ID == 0)
+                        throw new Exception("SubmitFormMethod : Conditionnement Produit load failed.");
                 }
 
-                package = MapFormToObject(package);
+                ConditionnementProduit = MapFormToObject(ConditionnementProduit);
 
-                bool result = package.fnUpdate();
+                bool result = ConditionnementProduit.fnUpdate();
 
                 if (result)
                 {
-                    Store mstore = X.GetCmp<Store>("storeListeConditionnement");
+                    Store mstore = X.GetCmp<Store>("storeListeConditionnementProduit");
                     if (formExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
                     {
-                        mstore.Insert(0, package);
-                        X.GetCmp<RowSelectionModel>("rowSelectionConditionnement").Select(0);
+                        mstore.Insert(0, ConditionnementProduit);
+                        X.GetCmp<RowSelectionModel>("rowSelectionConditionnementProduit").Select(0);
                     }
                     else
                     {
-                        ModelProxy mProxy = mstore.GetById(package.ID);
+                        ModelProxy mProxy = mstore.GetById(ConditionnementProduit.ID);
 
                         mProxy.BeginEdit();
 
-                        mProxy.Set(package);
+                        mProxy.Set(ConditionnementProduit);
 
                         mProxy.Commit();
 
                         mProxy.EndEdit();
                     }
 
-                    X.GetCmp<Window>("FormConditionnement").Close();
+                    X.GetCmp<Window>("FormConditionnementProduit").Close();
                     Viewport mViewport = X.GetCmp<Viewport>("TmsViewPort");
                     mViewport.Unmask();
                 }
@@ -165,7 +165,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Packaging : Data Validation",
+                    Title = "Conditionnement Produit : Data Validation",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -196,33 +196,33 @@ namespace Tms2017.MVC.Controllers
         {
             try
             {
-                ConditionnementProduit package = JSON.Deserialize<ConditionnementProduit>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
+                ConditionnementProduit ConditionnementProduit = JSON.Deserialize<ConditionnementProduit>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
 
-                bool result = package.fnGet(package.ID);
+                bool result = ConditionnementProduit.fnGet(ConditionnementProduit.ID);
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Packaging loading failed.");
+                    throw new Exception("OnActivateDeactivate : Conditionnement Produit loading failed.");
                 //(string)Session["userName"];
-                package.UtilisateurModification = (string)Session["userName"];
+                ConditionnementProduit.UtilisateurModification = (string)Session["userName"];
 
-                if (package.Desactive)
-                    result = package.fnActivate();
+                if (ConditionnementProduit.Desactive)
+                    result = ConditionnementProduit.fnActivate();
                 else
-                    result = package.fnDeActivate();
+                    result = ConditionnementProduit.fnDeActivate();
 
                 if (!result)
-                    throw new Exception("OnActivateDeactivate : Packaging, operation failed.");
+                    throw new Exception("OnActivateDeactivate : Conditionnement Produit, operation failed.");
 
 
                 if (result)
                 {
                     Store mstore = X.GetCmp<Store>("storeListeConditionnement");
 
-                    ModelProxy mProxy = mstore.GetById(package.ID);
+                    ModelProxy mProxy = mstore.GetById(ConditionnementProduit.ID);
 
                     mProxy.BeginEdit();
 
-                    mProxy.Set(package);
+                    mProxy.Set(ConditionnementProduit);
 
                     mProxy.Commit();
 
@@ -234,7 +234,7 @@ namespace Tms2017.MVC.Controllers
             {
                 X.MessageBox.Show(new MessageBoxConfig
                 {
-                    Title = "Packaging : OnActivateDeactivate",
+                    Title = "Conditionnement Produit : OnActivateDeactivate",
                     Message = ex.Message,
                     Buttons = MessageBox.Button.OK,
                     Icon = MessageBox.Icon.WARNING
@@ -246,14 +246,14 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult OnFilter()
         {
-            FormPanel mform = X.GetCmp<FormPanel>("ConditionnementCriteriaPanel");
+            FormPanel mform = X.GetCmp<FormPanel>("ConditionnementProduitCriteriaPanel");
             mform.ToggleCollapse();
             return this.Direct();
         }
 
         public ActionResult OnRefresh(string ItemStatus)
         {
-            Store mstore = X.GetCmp<Store>("storeListeConditionnement");
+            Store mstore = X.GetCmp<Store>("storeListeConditionnementProduit");
 
             mstore.Reload();
 
@@ -261,21 +261,21 @@ namespace Tms2017.MVC.Controllers
                             {
                                 new Ext.Net.Parameter("ItemStatus", ItemStatus)
                             });
-            FormPanel mform = X.GetCmp<FormPanel>("ConditionnementCriteriaPanel");
+            FormPanel mform = X.GetCmp<FormPanel>("ConditionnementProduitCriteriaPanel");
 
             mform.Collapsed = true;
 
             return this.Direct();
         }
 
-        private ConditionnementProduit MapFormToObject(ConditionnementProduit package)
+        private ConditionnementProduit MapFormToObject(ConditionnementProduit ConditionnementProduit)
         {
-            package.Designation = X.GetCmp<TextField>("TxtDesignationConditionnement").Text;
+            ConditionnementProduit.Designation = X.GetCmp<TextField>("TxtDesignationConditionnementProduit").Text;
             //(string)Session["userName"]
-            package.UtilisateurCreation = (string)Session["userName"];
-            package.UtilisateurModification = (string)Session["userName"];
+            ConditionnementProduit.UtilisateurCreation = (string)Session["userName"];
+            ConditionnementProduit.UtilisateurModification = (string)Session["userName"];
 
-            return package;
+            return ConditionnementProduit;
         }
 
         #region Method

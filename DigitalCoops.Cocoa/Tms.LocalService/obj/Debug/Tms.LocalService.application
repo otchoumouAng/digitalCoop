@@ -7,14 +7,14 @@
     <framework targetVersion="4.5.2" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="Tms.LocalService.exe.manifest" size="99040">
+    <dependentAssembly dependencyType="install" codebase="Tms.LocalService.exe.manifest" size="99137">
       <assemblyIdentity name="Tms.LocalService.exe" version="1.0.0.30" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>dGtWn+V/BkiYjjaxo1F1Fa/1hwfsjMFLOG3+4bQLDdw=</dsig:DigestValue>
+        <dsig:DigestValue>rV2YOdlMU6rGEmCmSxP5y0el94A4qQNDCp8EQKY3MLQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
