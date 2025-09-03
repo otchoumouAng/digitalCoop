@@ -51,7 +51,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult LoadProvenance()
         {
-            List<DataPersist> mList = new Provenance().fnSelect();
+            List<DataPersist> mList = new Provenance().fnSelect(0);
 
             Provenance mclass = new Provenance();
 
@@ -121,7 +121,7 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult LoadProvenanceAll()
         {
-            List<DataPersist> mList = new Provenance().fnSelect();
+            List<DataPersist> mList = new Provenance().fnSelect(0);
 
             Provenance mclass = new Provenance();
 

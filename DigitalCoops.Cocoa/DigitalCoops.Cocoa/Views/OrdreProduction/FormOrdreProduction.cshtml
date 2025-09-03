@@ -173,7 +173,7 @@ X.Window()
                                             ),
                                     X.Checkbox()
                                         .ID("ChkEstReusine")
-                                        .FieldLabel("Reusiné")
+                                        .FieldLabel("Reusinage")
                                         .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.EstReusine : false)
                                         .LabelAlign(LabelAlign.Right)
 
@@ -295,7 +295,7 @@ X.Window()
                                                           ),
                                             X.ComboBox()
                                                         .ID("cmbMelangeur")
-                                                        .FieldLabel("Qualité")
+                                                        .FieldLabel("Responsable Qualité")
                                                         .DisplayField("Nom")
                                                         .ValueField("ID")
                                                         .AllowBlank(false)

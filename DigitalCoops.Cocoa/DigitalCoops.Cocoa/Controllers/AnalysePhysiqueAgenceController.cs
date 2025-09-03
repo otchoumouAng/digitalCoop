@@ -586,6 +586,11 @@ namespace Tms2017.MVC.Controllers
             else
                 mAnalyse.Ffa = double.Parse(X.GetCmp<NumberField>("TxtFfa").RawText);
 
+            if (string.IsNullOrEmpty(X.GetCmp<NumberField>("TxtFfa").RawText))
+                mAnalyse.Ffa = (double?)null;
+            else
+                mAnalyse.Ffa = double.Parse(X.GetCmp<NumberField>("TxtFfa").RawText);
+
             mAnalyse.Commentaire = X.GetCmp<TextField>("TxtCommentaireAnalysePhysique").Text;
             mAnalyse.Confirmation = false;
             mAnalyse.Statut = X.GetCmp<ComboBox>("CmbResultatAnalyse").RawValue.ToString();

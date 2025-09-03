@@ -128,12 +128,12 @@ namespace Tms.Classes.Business
 
         public string NumeroLivraison
         {
-            get { return (_Facture != null && _Facture.BonDeLivraison.Livraison != null) ? _Facture.BonDeLivraison.Livraison.Numero : string.Empty ; }            
+            get { return (_Facture != null && _Facture.BonDeLivraison != null && _Facture.BonDeLivraison.Livraison != null) ? _Facture.BonDeLivraison.Livraison.Numero : string.Empty ; }            
         }
 
         public string NomFournisseur
         {
-            get { return (_Facture !=null && _Facture.BonDeLivraison.Livraison.Fournisseur != null) ? _Facture.BonDeLivraison.Livraison.Fournisseur.Nom : string.Empty; }
+            get { return (_Facture !=null &&  _Facture.BonDeLivraison != null && _Facture.BonDeLivraison.Livraison.Fournisseur != null) ? _Facture.BonDeLivraison.Livraison.Fournisseur.Nom : string.Empty; }
         }
 
         public string DateFacture
@@ -191,6 +191,48 @@ namespace Tms.Classes.Business
             }
         }
 
+        public bool fnBicValide()
+        {
+            bool bolResult = false;
+            IDataReader mdataReader = null;
+            try
+            {
+                DataCommand mCommand = db().CreateStoredProcCommand("Facture_Deduction_BicValide");
+
+                db().AddInParameter(mCommand, "@DeliveryNoteID", SqlDbType.UniqueIdentifier, _ElementID);                                
+                db().AddOutParameter(mCommand, "@EstValide", SqlDbType.Bit, 0);
+                db().AddParameter(mCommand, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
+
+                //mdataReader = db().ExecuteReader(mCommand);
+                db().ExecuteNonQuery(ref mCommand);
+                switch ((int)db().Parameters(mCommand, "ReturnValue"))
+                {
+                    case 0:                                                                                                
+                        bolResult = (bool)db().Parameters(mCommand, "@EstValide");
+
+                        break;
+                    default:
+                        //Unkown error
+                        bolResult = false;
+                        break;
+                }
+
+                //if (mdataReader.Read())
+                //{
+                //    bolResult = (bool)db().Parameters(mCommand, "@EstValide");
+                //}                
+            }
+            catch (Exception ex)
+            {
+                bolResult = false;
+                throw new Exception(ex.Message + Environment.NewLine);
+            }
+            finally
+            {
+                if (mdataReader != null) mdataReader.Close();
+            }
+            return bolResult;
+        }
 
         public override List<DataPersist> fnSelect()
         {

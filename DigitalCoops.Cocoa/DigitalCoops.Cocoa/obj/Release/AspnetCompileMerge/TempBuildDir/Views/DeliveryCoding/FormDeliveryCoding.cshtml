@@ -36,86 +36,99 @@
 
 
 </script>
-@(X.FormPanel()        
-    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
-    .Items(
-            X.Window()
-            .ID("FormDeliveryCoding")
-            .Width(500)
-            .Resizable(false)
-            .Height(470)
-            .CloseAction(Ext.Net.CloseAction.Destroy)
-            .Listeners(l =>
-            {
-                l.Close.Handler = "App.TmsViewPort.unmask();";
+@(
+X.Window()
+    .ID("FormDeliveryCoding")
+    .Width(500)
+    .Resizable(false)
+    .Height(470)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Listeners(l =>
+    {
 
-                if (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
-                {
-                    l.Show.Handler = "App.grpDeliveryCodeListe.getStore().load(); App.BtnGenerateCode.setDisabled(true);";
-                }
-                else
-                {
-                    l.Show.Handler = "App.grpDeliveryCodeListe.getStore().load(); App.TxtDeliveryNum.focus();";
-                }
-            })
-            //.X(400)
-            .Y(20)
-            .Title("Codification : Detail")
-            .Layout(LayoutType.Form)
-            .Items(
+        if (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+        {
+            l.Show.Handler = "App.grpDeliveryCodeListe.getStore().load(); App.BtnGenerateCode.setDisabled(true);";
+        }
+        else
+        {
+            l.Show.Handler = "App.grpDeliveryCodeListe.getStore().load(); App.TxtDeliveryNum.focus();";
+        }
+    })
+    //.X(400)
+    .Y(20)
+    .Title("Codification : Detail")
+    //.Layout(LayoutType.Form)
+    .Layout(LayoutType.VBox)
+    .BodyPadding(10)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Items(
+
                         X.Hidden().ID("CdhiddenPermRemove").Value(ViewData["HavPermissionRemove"]).ReadOnly(true),
                         X.Hidden().ID("CdhiddenPermPrintCode").Value(ViewData["HavPermissionPrint"]).ReadOnly(true),
-                    X.FormPanel().ID("DeliveryCodingFormPanel")
-                        .Layout(LayoutType.VBox)
-                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
-                        .Items(
-                                X.Panel()
-                                    .Layout(LayoutType.Form)                                    
-                                    .Items(
-                                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
-                                            X.Hidden().ID("hiddenRowversion").Value(Model._Livraison.RowVersionKey),
-                                            X.Hidden().ID("hiddenMaxCodeAnalyseGenerate").Value(Model._Parametres.MaxCodeAnalyseGenere),                                            
-                                            X.Hidden().ID("TxtDeliveryCodingID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.ID : Guid.Empty),                                            
-                                            X.TextField().ID("TxtDeliveryNum").FieldLabel("Livraison N°").LabelAlign(LabelAlign.Right).Flex(1).AllowBlank(false).IndicatorIconCls("IndicatorRedStar").IndicatorText("*")
-                                            .ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew? true : false)
-                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Numero.ToString() : string.Empty)                                                
+                        //X.Panel().ID("DeliveryCodingFormPanel")
+                        //    .Layout(LayoutType.VBox)
+                        //    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                        //    .Items(
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Items(
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._Livraison.RowVersionKey),
+                                    X.Hidden().ID("hiddenMaxCodeAnalyseGenerate").Value(Model._Parametres.MaxCodeAnalyseGenere),
+                                    X.Hidden().ID("TxtDeliveryCodingID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.ID : Guid.Empty),
+                                    X.TextField()
+                                        .ID("TxtDeliveryNum")
+                                        .FieldLabel("Livraison N°")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Flex(1).AllowBlank(false)
+                                        .IndicatorIconCls("IndicatorRedStar").IndicatorText("*")
+                                        .ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew? true : false)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Numero.ToString() : string.Empty)
                                                 .Listeners(ls =>
                                                 {
                                                     ls.SpecialKey.Fn = "enterKeyPressHandler";
                                                 })
                                                 ,
-                                            X.Button().ID("BtnSearchDeliveryInfo").Text("OK").Hidden(true)
-                                            .DirectEvents(de => {
-                                                de.Click.Url = Url.Action("SelectDeliveryInfo");
-                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemDeliveryNumber", Mode = ParameterMode.Raw, Value = "#{TxtDeliveryNum}.getRawValue()" });
+                                    X.Button()
+                                        .ID("BtnSearchDeliveryInfo")
+                                        .Text("OK").Hidden(true)
+                                        .DirectEvents(de => {
+                                            de.Click.Url = Url.Action("SelectDeliveryInfo");
+                                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemDeliveryNumber", Mode = ParameterMode.Raw, Value = "#{TxtDeliveryNum}.getRawValue()" });
 
-                                            }),                                                                        
-                                            X.TextField()
-                                                .ID("TxtDeliveryDate")
-                                                .FieldLabel("Date Livraison")
-                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.DateLivraison.ToString() : string.Empty)
-                                                .LabelAlign(LabelAlign.Right)
-                                                .ReadOnly(true),
-                                            X.TextField()
-                                                .ID("TxtDeliveryType")
-                                                .FieldLabel("Type de livraison")
-                                                .LabelAlign(LabelAlign.Right)
-                                                .ReadOnly(true)
-                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.LivraisonType.Designation.ToString() : string.Empty),
-                                            X.TextField()
-                                                .ID("TxtSupplier")
-                                                .FieldLabel("Fournisseur")
-                                                .LabelAlign(LabelAlign.Right)
-                                                .ReadOnly(true)
-                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Fournisseur.Nom.ToString() : string.Empty),
-                                            X.TextField()
-                                                .ID("TxtTruckID")
-                                                .FieldLabel("Immatriculation")
-                                                .LabelAlign(LabelAlign.Right)
-                                                .ReadOnly(true)
-                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Immatriculation.ToString() : string.Empty)
+                                        }),
+                                    X.TextField()
+                                        .ID("TxtDeliveryDate")
+                                        .FieldLabel("Date Livraison")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.DateLivraison.ToString() : string.Empty)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ReadOnly(true),
+                                    X.TextField()
+                                        .ID("TxtDeliveryType")
+                                        .FieldLabel("Type de livraison")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ReadOnly(true)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.LivraisonType.Designation.ToString() : string.Empty),
+                                    X.TextField()
+                                        .ID("TxtSupplier")
+                                        .FieldLabel("Fournisseur")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ReadOnly(true)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Fournisseur.Nom.ToString() : string.Empty),
+                                    X.TextField()
+                                        .ID("TxtTruckID")
+                                        .FieldLabel("Immatriculation")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ReadOnly(true)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Immatriculation.ToString() : string.Empty)
 
-                                            ),
+                                    ),
                            X.Panel()
                            .Layout(LayoutType.Fit)
                            .TopBar(
@@ -128,13 +141,27 @@
                                             .IconCls("action_new_02")
                                             .Border(false)
                                             .Cls("ButtonStyle")
-                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                            //.Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                            .Text("Concessionaire")
                                             .Disable(false)
                                             .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
                                             .DirectEvents( de =>
                                             {
-                                                de.Click.Url  = Url.Action("GenerateCode");
+                                                de.Click.Url  = Url.Action("OnGenererInterne");
                                                 de.Click.ExtraParams.Add( new Parameter { Name = "StoreNbrOfRows", Mode = ParameterMode.Raw, Value = "#{storeDeliveryCodeListe}.getCount()" });
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Value = "App.grpDeliveryCodeListe.getRowsValues({selectedOnly : false})" });
+                                                de.Click.EventMask.ShowMask = true;
+                                            } ),
+                                        X.Button()
+                                            .ID("BtnCodeCS")
+                                            .Icon(Icon.AsteriskYellow)
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text("Interne")
+                                            .DirectEvents( de =>
+                                            {
+                                                de.Click.Url  = Url.Action("GenerateCode");
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Value = "App.grpDeliveryCodeListe.getRowsValues({selectedOnly : false})" });
                                                 de.Click.EventMask.ShowMask = true;
                                             } ),
                                         X.Button()
@@ -167,6 +194,7 @@
                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Value = "#{grpDeliveryCodeListe}.getSelectionModel().getSelection()[0].data.Code" });
                                                 de.Click.EventMask.ShowMask = true;
                                             } )
+                                       
                                     }
                                })
                             .Items(
@@ -198,7 +226,8 @@
                                         .ColumnModel
                                         (
                                             Html.X().Column().Text("Code").DataIndex("Code").Hideable(false),
-                                            Html.X().Column().Text("Coding Date").DataIndex("DateCodeAsString").Hideable(false)
+                                            Html.X().Column().Text("Coding Date").DataIndex("DateCodeAsString").Hideable(false),
+                                            Html.X().Column().Text("Type").DataIndex("LibelleTypeCode").Hideable(false)
                                         )
                                         .SelectionModel(
                                                         X.RowSelectionModel()
@@ -221,26 +250,26 @@
 
                     )
 
-            )
-            .Buttons(
-                        X.Button().Text("OK")
-                        .ID("BtnSaveCode")
-                        .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
-                        .DirectEvents(de =>
-                        {
-                            de.Click.Url = Url.Action("SubmitFormMethod");
-                            //de.Click.Success = "ShowNotifaction();";
-                            de.Click.Before = "return validNew(App.FormDeliveryCoding.id);";
-                            de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDeliveryCodeListe.getRowsValues({selectedOnly : false})" });
-                            de.Click.ExtraParams.Add(new Parameter { Name = "storeListeDelivery", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeCodeOverview.getRowsValues({selectedOnly : false})" });
-                        }),
-                        X.Button()
-                            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
-                            .Handler("App.FormDeliveryCoding.doClose()").Cls("btncancel")
+    )
+    .Buttons(
+                X.Button().Text("OK")
+                    .ID("BtnSaveCode")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        //de.Click.Success = "ShowNotifaction();";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormDeliveryCoding.id);";
+                        de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDeliveryCodeListe.getRowsValues({selectedOnly : false})" });
+                        de.Click.ExtraParams.Add(new Parameter { Name = "storeListeDelivery", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeCodeOverview.getRowsValues({selectedOnly : false})" });
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormDeliveryCoding.doClose()").Cls("btncancel")
 
-                    )
+        )
 
-            )
 )
 
 @Scripts.Render("~/bundles/validation")

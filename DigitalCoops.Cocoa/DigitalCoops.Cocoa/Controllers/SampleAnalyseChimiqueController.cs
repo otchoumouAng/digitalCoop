@@ -619,7 +619,7 @@ namespace Tms2017.MVC.Controllers
             if (string.IsNullOrEmpty(Sample))
                 throw new Exception("Fiche N° : Operation failed.");
              
-            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'Sample{0}', '{1}/SampleAnalyseChimique/ViewSampleCode?Sample={2}', this, 'Sample Fiche N°','')", EchantillonID, BaseUrl, EchantillonID));
+            return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'Sample{0}', '{1}/SampleAnalyseChimique/ViewSampleCode?Sample={2}', this, 'Echantillon N°','')", EchantillonID, BaseUrl, EchantillonID));
         }
 
         public ActionResult ViewSampleCode(Guid Sample)

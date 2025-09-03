@@ -311,7 +311,11 @@ namespace Tms2017.MVC.Controllers
             if (X.GetCmp<Hidden>("hidNombreSacsLivraison").Text != string.Empty)
                 ViewData["NbrSacLivraisons"] = int.Parse(X.GetCmp<Hidden>("hidNombreSacsLivraison").Text);
             if (X.GetCmp<Hidden>("txtTareUnitaire").Text != string.Empty)
-                ViewData["tareSacs"] = decimal.Parse(X.GetCmp<Hidden>("txtTareUnitaire").Text);
+            {
+                double mtare = double.Parse(X.GetCmp<Hidden>("txtTareUnitaire").Text, CultureInfo.InvariantCulture);
+                ViewData["tareSacs"] = decimal.Parse(X.GetCmp<Hidden>("txtTareUnitaire").Text, CultureInfo.InvariantCulture);
+            }
+                
 
             PeseeAvantUsinage pesee = new PeseeAvantUsinage();
             
@@ -661,7 +665,7 @@ namespace Tms2017.MVC.Controllers
             if (X.GetCmp<Hidden>("hidImmatriculation").Text != string.Empty) mPesee.LivraisonImmatriculation = X.GetCmp<Hidden>("hidImmatriculation").Text;
             if (X.GetCmp<Hidden>("hidBonDeLivraisonID").Text != string.Empty) mPesee.BonDeLivraison.ID = Guid.Parse(X.GetCmp<Hidden>("hidBonDeLivraisonID").Text);            
             if (X.GetCmp<Hidden>("NombreSacsLivraison").Text != string.Empty) NbrSacLivraisons = int.Parse(X.GetCmp<Hidden>("NombreSacsLivraison").Text);
-            if (X.GetCmp<Hidden>("hidTareUnitaire").Text != string.Empty) tareSacs = decimal.Parse(X.GetCmp<Hidden>("hidTareUnitaire").Text);
+            if (X.GetCmp<Hidden>("hidTareUnitaire").Text != string.Empty) tareSacs = decimal.Parse(X.GetCmp<Hidden>("hidTareUnitaire").Text, CultureInfo.InvariantCulture);
             mPesee.TareSacs = mPesee.NombreSacs * tareSacs;
             mPesee.IsNew = true;
             mPesee.DatePesee = DateTime.Now;
@@ -685,7 +689,7 @@ namespace Tms2017.MVC.Controllers
                     X.MessageBox.Show(new MessageBoxConfig
                     {
                         Title = "Pesée Avant Usinage : Data Validation",
-                        Message = "Verify Number Of Bags Per Pallet",
+                        Message = "Verifier le nombre de sacs par palettes",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
                     });
@@ -697,26 +701,24 @@ namespace Tms2017.MVC.Controllers
                     X.MessageBox.Show(new MessageBoxConfig
                     {
                         Title = "Pesée Avant Usinage : Data Validation",
-                        Message = "Can't Weight New Pallet",
+                        Message = "Impossible de peser une nouvelle palette",
                         Buttons = MessageBox.Button.OK,
                         Icon = MessageBox.Icon.WARNING
                     });
                     return this.Direct();
                 }
 
-                //if (ListePalettesPesees != null && ((ListePalettesPesees.Count > 0) && ((ListePalettesPesees.Where(l => l.NumeroLivraison == mPesee.NumeroLivraison).Sum(x => x.NombreSacs) + mPesee.NombreSacs) > NbrSacLivraisons)))
-                //{
-                //    X.MessageBox.Show(new MessageBoxConfig
-                //    {
-                //        Title = "Pesée Avant Usinage : Data Validation",
-                //        Message = "Total Nbr Of Bag is higher than authorized Number Of bags",
-                //        Buttons = MessageBox.Button.OK,
-                //        Icon = MessageBox.Icon.WARNING
-                //    });
-                //    return this.Direct();
-                //}
-
-
+                if (ListePalettesPesees != null && ((ListePalettesPesees.Count > 0) && ((ListePalettesPesees.Where(l => l.NumeroLivraison == mPesee.NumeroLivraison).Sum(x => x.NombreSacs) + mPesee.NombreSacs) > NbrSacLivraisons)))
+                {
+                    X.MessageBox.Show(new MessageBoxConfig
+                    {
+                        Title = "Pesée Avant Usinage : Data Validation",
+                        Message = "Prière verifier le nombre total de sac",
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.WARNING
+                    });
+                    return this.Direct();
+                }
 
                 Store mstore = X.GetCmp<Store>("storeListeWeightPAU");
                 mstore.Insert(mIndex,mPesee);
@@ -1068,7 +1070,7 @@ namespace Tms2017.MVC.Controllers
         {
             DataSource _db = new DataSource();
             DataTransaction mtran = new DataTransaction();
-
+            Parametres mParam = new Parametres(0);
             try
             {
                 PeseeAvantUsinage mPesee = new PeseeAvantUsinage();
@@ -1140,6 +1142,7 @@ namespace Tms2017.MVC.Controllers
                             if (palette.IsNew)
                             {
                                 resultPalette = palette.fnUpdate(mtran);
+                                result = resultPalette;
                             }
 
                             if (!resultPalette)
@@ -1152,12 +1155,76 @@ namespace Tms2017.MVC.Controllers
                     {
                         _db.RollBackTransaction(mtran);
                     }
-                    _db.CommitTransaction(mtran);
+
+
+                    #region Mvt
+                    BonDeLivraison mBon = new BonDeLivraison();
+                    MouvementStock _mouvement = new MouvementStock();
+                    bool resultMouvement = false;
+
+                    if (resultMouvement)
+                    {
+                        _mouvement = new MouvementStock();
+                        _mouvement.mCampagne = new Campagne();
+                        _mouvement.Exportateur = new Exportateur();
+                        _mouvement.SacType = new SacType();
+                        _mouvement.TypeElementStock = new TypeElementStock();
+                        _mouvement.Certification = new Certification();
+                        _mouvement.Magasin = new Magasin();
+                        _mouvement.Emplacement = new Emplacement();
+                        _mouvement.MouvementStockType = new MouvementStockType();
+                        _mouvement.Sites = new Site();
+                        InventaireElementStock Items = new InventaireElementStock();
+
+                        _mouvement.SetDataSource(_db);
+                        _mouvement.mCampagne.Designation = mPesee.Campagne.Designation;
+                        _mouvement.Exportateur.ID = mParam.Exportateur.ID;
+                        _mouvement.DateMouvement = DateTime.Now;
+                        _mouvement.SacType.ID = mPesee.BonDeLivraison.Livraison.SacType.ID;
+                        _mouvement.ObjetEnStock = mPesee.BonDeLivraison.ID;
+                        _mouvement.ObjetEnStockType = mParam.LivraisonTypeElementStock;
+                        _mouvement.MouvementStockType.ID = mParam.PrelevementUsinageMvtTypeID;
+                        _mouvement.Sites.ID = mParam.Site;
+                        //_mouvement.Sites.Nom = mClass.Sites.Nom;
+                        _mouvement.Certification = null;
+
+                        if (mPesee.BonDeLivraison.Livraison.Certification.ID != 0)
+                        {
+                            _mouvement.Certification = new Certification();
+                            _mouvement.Certification.ID = mPesee.BonDeLivraison.Livraison.Certification.ID;
+                        }
+                        _mouvement.Sens = -1;
+                        _mouvement.Quantite = mPesee.NombreSacs;
+                        _mouvement.PoidsBrut = mPesee.PoidsBrut;
+                        _mouvement.TarePalettes = mPesee.TarePalette;
+                        _mouvement.TareSacs = mPesee.TareSacs;
+                        _mouvement.PoidsNetLivre = mPesee.PoidsNet;
+                        _mouvement.PoidsNetAccepte = mPesee.PoidsNet;
+                        _mouvement.Retention = 0;
+                        _mouvement.Magasin.ID = mParam.MagasinTV;
+                        //_mouvement.Magasin.ID = mClass.MagasinDefID;
+                        _mouvement.Emplacement.ID = mParam.EmplacementParDefaut;
+                        _mouvement.Reference1 = mPesee.BonDeLivraison.Livraison.Numero;
+                        _mouvement.Reference2 = mPesee.OrdreProduction.NumeroProduction;
+                        _mouvement.Commentaire = "generé automatiquement";
+                        _mouvement.Statut = "AP";
+                        _mouvement.UtilisateurCreation = (string)Session["userName"];
+                        _mouvement.UtilisateurModification = (string)Session["userName"];
+
+                        result = _mouvement.fnUpdate(mtran);
+                        
+                        if (!resultMouvement)
+                            _db.RollBackTransaction(mtran);
+                    }
+                    #endregion
+                    
+                    
                 }
 
 
                 if (result)
                 {
+                    _db.CommitTransaction(mtran);
                     Store mstore = X.GetCmp<Store>("storeListePeseeAvtUsinage");
                     if (formExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
                     {
@@ -1185,6 +1252,9 @@ namespace Tms2017.MVC.Controllers
             }
             catch (Exception ex)
             {
+                if (mtran != null)
+                    _db.RollBackTransaction(mtran);
+
                 X.MessageBox.Show(new MessageBoxConfig
                 {
                     Title = "Pesée Avant Usinage : Data Validation",
@@ -1213,6 +1283,7 @@ namespace Tms2017.MVC.Controllers
             //livraison.Immatriculation = X.GetCmp<Hidden>("txtLivraisonImmatriculation").Text;
             BonDeLivraison mBonDeLivraison = new BonDeLivraison();
             mBonDeLivraison.ID = Guid.Parse(GetFormValue("txtBonDeLivraisonID"));
+            bool res = mBonDeLivraison.fnGet(mBonDeLivraison.ID);
             //livraison.ID = Guid.Parse(GetFormValue("txtLivraisonID"));
             //livraison.Numero = X.GetCmp<TextField>("txtDeliveryNumero").Text;
 

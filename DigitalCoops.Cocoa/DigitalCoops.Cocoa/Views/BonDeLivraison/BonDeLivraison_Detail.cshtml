@@ -20,7 +20,7 @@ X.Window()
     .ID("BonDeLivraison_Detail")
     .Width(1100)
     .Resizable(false)
-    .Height(460)
+    .Height(490)
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .Modal(true)
     .DirectEvents
@@ -61,9 +61,10 @@ X.Window()
                                         X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
                                         X.Hidden().ID("hiddenPending").Value(Model._BonDeLivraison.isViewPending),
                                         X.Hidden().ID("hiddenID").Value(Model._BonDeLivraison.ID),
+                                        X.Hidden().ID("hiddenSiteID"),
                                         X.Hidden().ID("hiddenLivraisonID").Value(Model._BonDeLivraison.Livraison != null ? Model._BonDeLivraison.Livraison.ID : new Guid()),
                                         X.Hidden().ID("hiddenRowversion").Value(Model._BonDeLivraison.RowVersionKey),
-                                        X.Hidden().ID("hiddenCodingID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.AnalyseCode.ID : new Guid()),
+                                        X.Hidden().ID("hiddenCodingID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._BonDeLivraison.AnalyseCode != null ? Model._BonDeLivraison.AnalyseCode.ID : new Guid()),
                                         X.Hidden().ID("hiddenHumidite").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.Humidite : 0),
                                         X.Hidden().ID("hiddenME").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.MatieresEtrangeres : 0),
                                         X.Hidden().ID("hiddenBrisure").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.Brisures : 0),
@@ -424,7 +425,7 @@ X.Window()
                    //.Height(120)
                    .Layout(LayoutType.Form)
                    .Flex(1)
-                   .Height(90)
+                   .Height(120)
                    .Items
                    (
                       X.FieldContainer()
@@ -450,7 +451,7 @@ X.Window()
                             X.TextField()
                                 .ID("txtRetHumidite")
                                 .FieldLabel("Ret Humidite")
-                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionHumidite.ToString() : "0")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionHumidite.ToString("#,#") : "0")
                                 .LabelAlign(LabelAlign.Right)
                                 .ReadOnly(true)
                                 //.LabelWidth(93)
@@ -488,7 +489,7 @@ X.Window()
                            X.TextField()
                             .ID("txtRetME")
                             .FieldLabel("Ret Mat. Etrang")
-                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionMatieresEtg.ToString() : "0")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionMatieresEtg.ToString("#,#") : "0")
                             .LabelAlign(LabelAlign.Right)
                             .ReadOnly(true)
                             //.LabelWidth(93)
@@ -527,7 +528,45 @@ X.Window()
                            X.TextField()
                             .ID("txtRetBrisure")
                             .FieldLabel("Ret brisures")
-                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionBrisures.ToString() : "0")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionBrisures.ToString("#,#") : "0")
+                            .LabelAlign(LabelAlign.Right)
+                            .ReadOnly(true)
+                            //.LabelWidth(95)
+                            .IndicatorText("*")
+                            .EmptyText("0")
+                            .RawText("0")
+                                .EmptyValue(0)
+                            .IndicatorCls("IndicatorRedStar")
+                            .AllowBlank(false)
+                            .Flex(1)
+                            //.Width(170)
+                            .LabelStyle("font-weight:bold;")
+                            .FieldStyle("text-align: right; font-weight: bold;")
+                        ),
+                      X.FieldContainer()
+                        .HideLabel(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .Layout(LayoutType.HBox)
+                        .Width(340)
+                        .Items
+                        (
+                            X.TextField()
+                           .ID("txtStdDechet")
+                           .FieldLabel("Std Dechet")
+                           .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.StdDechet.ToString() : string.Empty)
+                           .LabelAlign(LabelAlign.Right)
+                           .ReadOnly(true)
+                           //.LabelWidth(95)
+                           .IndicatorText("*")
+
+                           .IndicatorCls("IndicatorRedStar")
+                           .AllowBlank(false)
+                           .Flex(1),
+                           //.Width(170),
+                           X.TextField()
+                            .ID("txtRetDechet")
+                            .FieldLabel("Ret Dechet")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.RefactionDechet.ToString("#,#") : "0")
                             .LabelAlign(LabelAlign.Right)
                             .ReadOnly(true)
                             //.LabelWidth(95)
@@ -675,7 +714,7 @@ X.Window()
                    //.LayoutConfig(new TableLayoutConfig { Columns = 2 })
                    .Layout(LayoutType.HBox)
                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center})
-                   .Height(70)
+                   //.Height(70)
                    //.MarginSpec("0 0 0 6")
                    .Items
                    (
@@ -684,7 +723,8 @@ X.Window()
                        //.Layout(LayoutType.Table)
                        //.LayoutConfig(new TableLayoutConfig { Columns = 1 })
                        .Layout(LayoutType.Form)
-                       .Width(300)
+                       .Flex(1)
+                       //.Width(300)
                        //.LayoutConfig(new TableLayoutConfig { Columns = 1 })
                        //.Width(300)
                        //.Height(800)
@@ -698,7 +738,7 @@ X.Window()
                           .LabelAlign(LabelAlign.Right)
                           .ReadOnly(true)
                           .EmptyText("0")
-                                .EmptyValue(0)                                
+                                .EmptyValue(0)
                           .LabelStyle("font-weight:bold;")
                           .FieldStyle("text-align: right; font-weight: bold;"),
 
@@ -721,7 +761,8 @@ X.Window()
                        //.Layout(LayoutType.Table)
                        //.LayoutConfig(new TableLayoutConfig { Columns = 1 })
                        .Layout(LayoutType.Form)
-                       .Width(350)
+                       .Flex(1)
+                       //.Width(350)
                        //.LayoutConfig(new TableLayoutConfig { Columns = 1 })
                        //.Width(340)
                        //.Height(800)
@@ -799,6 +840,8 @@ X.Window()
                           ),
 
 
+
+
                          X.TextField()
                           .ID("txtCommentaire")
                           .FieldLabel("Commentaire")
@@ -806,7 +849,84 @@ X.Window()
                           .LabelAlign(LabelAlign.Right)
                           .LabelWidth(110)
                           .Width(330)
-                       )
+                       ),
+                       X.Panel()
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items(
+                                X.TextField()
+                                      .ID("txtDistance")
+                                      .FieldLabel("Distance")
+                                      .ReadOnly(true)
+                                      .Hidden(true)
+                                      .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.Distance.ToString() : string.Empty)
+                                      .LabelAlign(LabelAlign.Right),
+                                X.ComboBox()
+                            .ID("cmbProvenance")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .TypeAhead(true)
+                            .QueryMode(DataLoadMode.Local)
+                            //.ForceSelection(true)
+
+                            .FieldLabel("Provenance").DisplayField("Nom").ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                            //.Select(0)
+                            //.Width(310)
+                            //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.Livraison.Provenance.ID : (int?)null)
+                            .Store
+                            (
+                                X.Store()
+                                    .AutoLoad(true)
+                                    .Model(
+                                        Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                        )
+                                        )
+                                .Proxy
+                                (
+                                    Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadProvenance", "Provenance"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                            )
+                            .DirectEvents
+                            (
+                                de =>
+                                {
+                                    //de.Select.Url = Url.Action("GetInfoTKM");
+                                    //de.Select.ExtraParams.Add(new Parameter { Name = "siteID", Mode = ParameterMode.Raw, Value = "App.hiddenSiteID.value" });
+                                    //de.Select.ExtraParams.Add(new Parameter { Name = "provenanceID", Mode = ParameterMode.Raw, Value = "App.cmbProvenance.value" });
+                                    //de.Select.ExtraParams.Add(new Parameter { Name = "poidsNet", Mode = ParameterMode.Raw, Value = "App.txtPoidsNet.value" });
+
+                                    de.Change.Url = Url.Action("GetInfoTKM");
+                                    de.Change.ExtraParams.Add(new Parameter { Name = "siteID", Mode = ParameterMode.Raw, Value = "App.hiddenSiteID.value" });
+                                    de.Change.ExtraParams.Add(new Parameter { Name = "provenanceID", Mode = ParameterMode.Raw, Value = "App.cmbProvenance.value" });
+                                    de.Change.ExtraParams.Add(new Parameter { Name = "poidsNet", Mode = ParameterMode.Raw, Value = "App.txtPoidsNet.value" });
+
+                                }),
+                                X.TextField()
+                                      .ID("txtCoutTkm")
+                                      .FieldLabel("Barême Transport")
+                                      .ReadOnly(true)
+                                      .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.CoutTransport.ToString("#,#") : string.Empty)
+                                      .LabelAlign(LabelAlign.Right),
+                                X.TextField()
+                                      .ID("txtCoutTheorique")
+                                      .FieldLabel("Coût transport théorique")
+                                      .ReadOnly(true)
+                                      .Hidden(true)
+                                      .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._BonDeLivraison.PrimeTransportCCC.ToString("#,#") : string.Empty)
+                                      .LabelAlign(LabelAlign.Right)
+
+                            )
 
                    )
               )
@@ -886,6 +1006,7 @@ X.Window()
                     App.txtRetHumidite.setValue('0');
                     App.txtRetME.setValue('0');
                     App.txtRetBrisure.setValue('0');
+                    App.txtRetDechet.setValue('0');
                     App.txtTotalRetention.setValue('0');
                     App.txtPoidsNet.setValue('0');
 
@@ -894,6 +1015,7 @@ X.Window()
                     var mStdHumidite = parseFloat(App.txtStdHumidite.value.replace(',', '.'));
                     var mStdME = parseFloat(App.txtStdME.value.replace(',', '.'));
                     var mStdBrisure = parseFloat(App.txtStdBrisure.value.replace(',', '.'));
+                    var mStdDechet = parseFloat(App.txtStdDechet.value.replace(',', '.'));
                     var PoidsLivre = unformatNumber(App.txtDelivered.value) || '0';
                     var GrossWeight = unformatNumber(App.txtGrossWeight.value) || '';
                     var TotalRetention = unformatNumber(App.txtTotalRetention.value) || '';
@@ -921,10 +1043,12 @@ X.Window()
                         var RetHumidite = 0;
                         var RetME = 0;
                         var RetBrisure = 0;
+                        var RetDechet = 0;
 
                         var RetHumiditeFinal = 0;
                         var RetMEFinal = 0;
                         var RetBrisureFinal = 0;
+                        var RetDechetFinal = 0;
 
                         var TotalRetention = 0;
                         var PoidsNet = 0;
@@ -955,12 +1079,21 @@ X.Window()
                                 RetBrisureFinal = RetBrisure.toFixed(0);
                                 App.txtRetBrisure.setValue(RetBrisureFinal.toString().replace('.', ','));
                             }
-
                         }
 
-                        if (Ext.isNumeric(RetHumiditeFinal) && Ext.isNumeric(RetMEFinal) && Ext.isNumeric(RetBrisureFinal)) {
+                        /*Consider Sieving*/
+                        if (Ext.isNumeric(mAnSieving) && Ext.isNumeric(mStdDechet) && (mAnSieving - mStdDechet > 0) && Ext.isNumeric(PoidsLivre)) {
+                            /*RetBrisure = (mAnBrisure - mStdBrisure) * PoidsLivre / 100;*/
+                            RetDechet = (mAnSieving - mStdDechet) * PoidsLivre / 100;
+                            if (RetDechet > 0) {
+                                RetDechetFinal = RetDechet.toFixed(0);
+                                App.txtRetDechet.setValue(RetDechetFinal.toString().replace('.', ','));
+                            }
+                        }
 
-                            TotalRetention = parseFloat(RetHumiditeFinal) + parseFloat(RetMEFinal) + parseFloat(RetBrisureFinal);
+                        if (Ext.isNumeric(RetHumiditeFinal) && Ext.isNumeric(RetMEFinal) && Ext.isNumeric(RetBrisureFinal) && Ext.isNumeric(RetDechetFinal)) {
+
+                            TotalRetention = parseFloat(RetHumiditeFinal) + parseFloat(RetMEFinal) + parseFloat(RetBrisureFinal) + parseFloat(RetDechetFinal);
                             App.txtTotalRetention.setValue(formatNumber(TotalRetention));
 
                             if (Ext.isNumeric(GrossWeight) && Ext.isNumeric(TotalRetention) && Ext.isNumeric(TareOfBags) && Ext.isNumeric(TareOfPalets)) {

@@ -146,6 +146,11 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
     private DevExpress.XtraReports.Parameters.Parameter IsCopy;
     private XRPageInfo xrPageInfo1;
     private XRLabel xrLabel11;
+    private XRTableRow xrTableRow5;
+    private XRTableCell xrTableCell11;
+    private XRTableCell xrTableCell12;
+    private XRTableCell xrTableCell13;
+    private XRTableCell xrTableCell14;
 
     /// <summary>
     /// Required designer variable.
@@ -271,6 +276,11 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell22 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell56 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell67 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTableRow5 = new DevExpress.XtraReports.UI.XRTableRow();
+            this.xrTableCell11 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTableCell12 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTableCell13 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTableCell14 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrLabel18 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel9 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel8 = new DevExpress.XtraReports.UI.XRLabel();
@@ -819,8 +829,9 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
             this.xrTableRow9,
             this.xrTableRow11,
             this.xrTableRow12,
-            this.xrTableRow10});
-            this.xrTable3.SizeF = new System.Drawing.SizeF(667F, 200F);
+            this.xrTableRow10,
+            this.xrTableRow5});
+            this.xrTable3.SizeF = new System.Drawing.SizeF(667F, 225F);
             this.xrTable3.StylePriority.UseBorders = false;
             // 
             // xrTableRow3
@@ -1259,6 +1270,55 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
             this.xrTableCell67.Weight = 0.37392060935560656D;
             this.xrTableCell67.WordWrap = false;
             // 
+            // xrTableRow5
+            // 
+            this.xrTableRow5.Cells.AddRange(new DevExpress.XtraReports.UI.XRTableCell[] {
+            this.xrTableCell11,
+            this.xrTableCell12,
+            this.xrTableCell13,
+            this.xrTableCell14});
+            this.xrTableRow5.Name = "xrTableRow5";
+            this.xrTableRow5.Weight = 1D;
+            // 
+            // xrTableCell11
+            // 
+            this.xrTableCell11.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xrTableCell11.Name = "xrTableCell11";
+            this.xrTableCell11.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
+            this.xrTableCell11.StylePriority.UseFont = false;
+            this.xrTableCell11.StylePriority.UsePadding = false;
+            this.xrTableCell11.StylePriority.UseTextAlignment = false;
+            this.xrTableCell11.Text = "Barême Transport :";
+            this.xrTableCell11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopRight;
+            this.xrTableCell11.Weight = 0.37392050432424129D;
+            // 
+            // xrTableCell12
+            // 
+            this.xrTableCell12.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "BonDeLivraison_Print.CoutTransport", "{0:#.00}")});
+            this.xrTableCell12.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xrTableCell12.Name = "xrTableCell12";
+            this.xrTableCell12.StylePriority.UseFont = false;
+            this.xrTableCell12.Weight = 1.121761840571287D;
+            // 
+            // xrTableCell13
+            // 
+            this.xrTableCell13.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xrTableCell13.Name = "xrTableCell13";
+            this.xrTableCell13.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
+            this.xrTableCell13.StylePriority.UseFont = false;
+            this.xrTableCell13.StylePriority.UsePadding = false;
+            this.xrTableCell13.StylePriority.UseTextAlignment = false;
+            this.xrTableCell13.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopRight;
+            this.xrTableCell13.Weight = 0.37392009341301868D;
+            // 
+            // xrTableCell14
+            // 
+            this.xrTableCell14.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.xrTableCell14.Name = "xrTableCell14";
+            this.xrTableCell14.StylePriority.UseFont = false;
+            this.xrTableCell14.Weight = 0.37392060935560656D;
+            // 
             // xrLabel18
             // 
             this.xrLabel18.Borders = DevExpress.XtraPrinting.BorderSide.Top;
@@ -1282,7 +1342,7 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel9.SizeF = new System.Drawing.SizeF(135F, 15.83333F);
             this.xrLabel9.StylePriority.UseFont = false;
             this.xrLabel9.StylePriority.UseTextAlignment = false;
-            this.xrLabel9.Text = "Visa Direction";
+            this.xrLabel9.Text = "Visa Exportateur";
             this.xrLabel9.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // xrLabel8
@@ -1586,7 +1646,7 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel11.SizeF = new System.Drawing.SizeF(135F, 15.83333F);
             this.xrLabel11.StylePriority.UseFont = false;
             this.xrLabel11.StylePriority.UseTextAlignment = false;
-            this.xrLabel11.Text = "Visa Magasinier";
+            this.xrLabel11.Text = "Visa CCC";
             this.xrLabel11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // DetailReport
@@ -1602,7 +1662,7 @@ public class rptBonDeLivraisonDivers : DevExpress.XtraReports.UI.XtraReport
             // 
             this.Detail1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrTable3});
-            this.Detail1.HeightF = 204.1667F;
+            this.Detail1.HeightF = 235.0001F;
             this.Detail1.Name = "Detail1";
             // 
             // GroupHeader2

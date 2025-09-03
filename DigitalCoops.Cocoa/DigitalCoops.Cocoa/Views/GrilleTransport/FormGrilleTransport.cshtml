@@ -1,0 +1,186 @@
+﻿@model Tms.Classes.Business.GrilleTransportViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormGrilleTransport")
+    .Width(600)
+    .Resizable(false)
+    .Height(200)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Y(20)
+    .Title("Grille Transport : Detail")
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle | HBoxAlign.Stretch })
+                .Items(
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Items(
+                                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._GrilleTransport.RowVersionKey),
+                                        X.Hidden().ID("TxtGrilleTransportID").Value(Model._GrilleTransport.ID),
+                                        X.ComboBox()
+                                            .ID("cmbSite")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .TypeAhead(true)                                            
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            .FieldLabel("Site").DisplayField("Nom").ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                            //.Select(0)
+                                            //.Width(310)
+                                            //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._GrilleTransport.Sites.ID : (int?)null)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                            )
+                                                            )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadSite", "Site"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                             ),
+                                        X.ComboBox()
+                                            .ID("cmbProvenance")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .TypeAhead(true)                                            
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            .FieldLabel("Origine").DisplayField("Nom").ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                            //.Select(0)
+                                            //.Width(310)
+                                            //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._GrilleTransport.Provenance.ID : (int?)null)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                            )
+                                                            )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadProvenance", "Provenance"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                             )
+
+                                ),
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Items(
+                                        X.NumberField()
+                                            .ID("txtDistance")
+                                            .FieldLabel("Distance")                                            
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._GrilleTransport.Distance : 0)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .AllowDecimals(true)
+                                            .HideTrigger(true)
+                                            .MinValue(0)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*"),
+                                        X.NumberField()
+                                            .ID("txtCout")
+                                            .FieldLabel("Coût")
+                                            .AllowDecimals(true)
+                                            .HideTrigger(true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._GrilleTransport.CoutTransport : 0)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .MinValue(0)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                )
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSubmitExportateur")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormGrilleTransport.id);";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormGrilleTransport.doClose()").Cls("btncancel")
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Exportateur : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -51,4 +51,3 @@ C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Newtonsoft.Json
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\bin\Debug\Transformer.NET.xml
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.dll
 C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.pdb
-C:\DATA\Sources\SITC\DigitalCoops.Cocoa\Tms.Components\obj\Debug\Tms.Components.csprojResolveAssemblyReference.cache

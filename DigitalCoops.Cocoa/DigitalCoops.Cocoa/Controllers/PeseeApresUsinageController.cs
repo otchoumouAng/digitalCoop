@@ -363,8 +363,8 @@ namespace Tms2017.MVC.Controllers
                 mLot.LotType.ID = mPesee.LotType.ID;
                 mLot.DateLot = DateTime.Now;
                 mLot.EstManuel = false;
-                //mLot.EstQueue = mPesee.NombreSacs >= mLotType.NombreSacs ? false : true;
-                mLot.EstQueue = false;
+                mLot.EstQueue = mPesee.NombreSacs >= mLotType.NombreSacs ? false : true;
+                //mLot.EstQueue = false;
                 mLot.NombreSacs = mPesee.NombreSacs;
                 mLot.PoidsBrut = mPesee.PoidsBrut;
                 mLot.TareSacs = mPesee.TareSacs;
@@ -630,17 +630,18 @@ namespace Tms2017.MVC.Controllers
             if (X.GetCmp<TextField>("txtTare").Text != string.Empty) mPesee.PoidsBrut = decimal.Parse(X.GetCmp<TextField>("txtTare").Text);
             mPesee.IsNew = true;
             mPesee.DatePesee = DateTime.Now;
-            //if ((OlDNombreSacs + mPesee.NombreSacs) > NombreSacsAutorises)
-            //{
-            //    X.MessageBox.Show(new MessageBoxConfig
-            //    {
-            //        Title = "Pesée Apres Usinage : Data Validation",
-            //        Message = "*Nbr de sacs added is higher than Authorized Nbr de sacs",
-            //        Buttons = MessageBox.Button.OK,
-            //        Icon = MessageBox.Icon.WARNING
-            //    });
-            //    return this.Direct();
-            //}
+
+            if ((OlDNombreSacs + mPesee.NombreSacs) > NombreSacsAutorises)
+            {
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Pesée Apres Usinage : Data Validation",
+                    Message = "Nbre de sacs supérieure au nombre de sacs autorisé",
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+                return this.Direct();
+            }
 
             if (mPesee.NombreSacs > 0 && mPesee.PoidsBrut > 0)
             {
@@ -669,17 +670,17 @@ namespace Tms2017.MVC.Controllers
                     return this.Direct();
                 }
 
-                //if (ListePalettesPesees != null && ((ListePalettesPesees.Count > 0) && ((ListePalettesPesees.Sum(x => x.NombreSacs) + mPesee.NombreSacs) > mlotType.NombreSacs)))
-                //{
-                //    X.MessageBox.Show(new MessageBoxConfig
-                //    {
-                //        Title = "Pesée Apres Usinage : Data Validation",
-                //        Message = "Total Nbr Of Bag is higher than authorized Number Of bags",
-                //        Buttons = MessageBox.Button.OK,
-                //        Icon = MessageBox.Icon.WARNING
-                //    });
-                //    return this.Direct();
-                //}
+                if (ListePalettesPesees != null && ((ListePalettesPesees.Count > 0) && ((ListePalettesPesees.Sum(x => x.NombreSacs) + mPesee.NombreSacs) > mlotType.NombreSacs)))
+                {
+                    X.MessageBox.Show(new MessageBoxConfig
+                    {
+                        Title = "Pesée Apres Usinage : Data Validation",
+                        Message = "Nbre de sacs supérieure au nombre de sacs autorisé",
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.WARNING
+                    });
+                    return this.Direct();
+                }
                 Store mstore = X.GetCmp<Store>("storeListeWeightPU");
                 mstore.Insert(mIndex, mPesee);
                 X.GetCmp<RowSelectionModel>("rowWeightPU").Select(mIndex);

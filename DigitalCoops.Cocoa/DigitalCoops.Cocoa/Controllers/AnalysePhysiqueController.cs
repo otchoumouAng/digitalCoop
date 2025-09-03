@@ -180,7 +180,6 @@ namespace Tms2017.MVC.Controllers
                 analyse.Commentaire = X.GetCmp<TextField>("TxtCommentaireAnalysePhysique").Text;
                 analyse.UtilisateurModification = (string)Session["userName"];
 
-
                 result = analyse.fnApprove();
 
                 if (result)
@@ -377,7 +376,6 @@ namespace Tms2017.MVC.Controllers
                 mstore.RemoveAll();
                 myList = null;
             }
-
             return this.Store(myList);
         }
 
@@ -483,10 +481,16 @@ namespace Tms2017.MVC.Controllers
             analysephysique.Brisure = double.Parse(X.GetCmp<NumberField>("TxtBrokenBean").RawText);
             analysephysique.Humidite = double.Parse(X.GetCmp<NumberField>("TxtMoisture").RawText);
             analysephysique.MatiereEtrangere = double.Parse(X.GetCmp<NumberField>("TxtForeignMatter").RawText);
+            
             if (string.IsNullOrEmpty(X.GetCmp<NumberField>("TxtFfa").RawText))
                 analysephysique.Ffa = (double?)null;
             else
                 analysephysique.Ffa = double.Parse(X.GetCmp<NumberField>("TxtFfa").RawText);
+
+            if (string.IsNullOrEmpty(X.GetCmp<NumberField>("txtBeanCluster").RawText))
+                analysephysique.BeansCluster = (double?)null;
+            else
+                analysephysique.BeansCluster = double.Parse(X.GetCmp<NumberField>("txtBeanCluster").RawText);
 
             analysephysique.Commentaire = X.GetCmp<TextField>("TxtCommentaireAnalysePhysique").Text;
             analysephysique.Confirmation = false;
@@ -701,7 +705,7 @@ namespace Tms2017.MVC.Controllers
             if (mParam.Site == mSiteParDefaut.ID) ViewData["UrlSite"] = "LoadSiteAll";
             else ViewData["UrlSite"] = "LoadSiteByAccess";
 
-            ViewData["Titre"] = "Print Analyse Physique";
+            ViewData["Titre"] = "Analyse Physique Concessionaire";
             ViewData["actionToDo"] = "OnPrintAnalysePhysiqueList";
             ViewData["ControllerName"] = "AnalysePhysique";
             return new Ext.Net.MVC.PartialViewResult { ViewName = "frmCriteriaForPhysicalAnalysis", ViewData = ViewData };
@@ -725,7 +729,7 @@ namespace Tms2017.MVC.Controllers
                 Session["paramStatut"] = GetFormValue("CmbDetStatutAnalyse");
                 Session["paramStatutText"] = X.GetCmp<ComboBox>("CmbDetStatutAnalyse").SelectedItem.Text.ToString();
 
-                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/AnalysePhysique/ViewReportListResult', this, 'List Of Analyse Physique',''),App.frmCriteriaForPhysicalAnalysis.doClose()", Guid.NewGuid(), BaseUrl));
+                return JavaScript(String.Format("addTab(window.parent.Ext.getCmp('tabCenter'), 'rdm{0}', '{1}/AnalysePhysique/ViewReportListResult', this, 'Liste des Analyses Physique',''),App.frmCriteriaForPhysicalAnalysis.doClose()", Guid.NewGuid(), BaseUrl));
             }
             catch (Exception ex)
             {

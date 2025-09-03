@@ -1149,7 +1149,6 @@ namespace Tms2017.MVC.Controllers
         }
         #endregion
 
-
         public ActionResult OnDisplaySpotPriceList()
         {
             ViewData["Titre"] = "Liste des Prix Negociés";

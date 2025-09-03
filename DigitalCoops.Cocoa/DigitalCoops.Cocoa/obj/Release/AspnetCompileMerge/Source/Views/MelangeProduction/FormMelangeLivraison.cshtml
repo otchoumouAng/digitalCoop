@@ -83,42 +83,14 @@ X.Window()
     (
         X.Panel()
             .ID("ProdAvailableDeliveriesCP")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Livraisons disponibles", Height = 30 })
+            //.TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Livraisons disponibles", Height = 30 })
             .Collapsed(false)
-            .Collapsible(false)
+            //.Collapsible(true)
             .BodyPadding(0)
             .MarginSpec("0 0 5 0")
             .Frame(true)
             .Layout(LayoutType.HBox)
             .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
-            .HeaderConfig
-            (
-                new PanelHeader
-                {
-                    Items = {
-                                X.Button()
-                                    .ID("btnRefreshDelivery")
-                                    .IconCls("action_refresh_01")
-                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
-                                    .Border(false)
-                                    .Disable(false)
-                                    .DirectEvents
-                                    (
-                                        de =>
-                                        {
-                                            de.Click.Url  = Url.Action("OnRefreshForProduction");
-                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCertification", Encode=true, Value= "#{cmbCertificationLiv}.getValue()", Mode=ParameterMode.Raw});
-                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemLivraisonType", Encode=true, Value= "#{cmbLivraisonType}.getValue()", Mode=ParameterMode.Raw});
-                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtDateDebutLiv}.getRawValue()",   Mode=ParameterMode.Raw});
-                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtDateFinLiv}.getRawValue()",     Mode=ParameterMode.Raw});
-                                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Value= "#{cmbCropYearLiv}.getRawValue()",     Mode=ParameterMode.Raw});
-                                            de.Click.Success = "App.ProdAvailableDeliveriesCP.setTitle('Type De Livraison = ' + App.cmbLivraisonType.rawValue + ' , Certification = ' + App.cmbCertificationLiv.rawValue + ' , du  '+ App.txtDateDebutLiv.rawValue  + ' au  '+ App.txtDateFinLiv.rawValue )";
-                                            de.Click.EventMask.ShowMask = true;
-                                        }
-                                    )
-                            }
-                }
-            )
             .Items
             (
     #region Zone A
@@ -138,6 +110,8 @@ X.Window()
                             .QueryMode(DataLoadMode.Local)
                             .TriggerAction(TriggerAction.All)
                             .LabelAlign(LabelAlign.Right)
+                            .ReadOnly(true)
+                            .Value(Model._CompositionUsinageLivraison.MelangeID)
                             .Store
                             (
                                 X.Store()
@@ -288,7 +262,32 @@ X.Window()
                                 .ID("summaryLivProd")
                                 .Text("Resume")
                                 .EmptyText("")
-                            )
+                            ),
+                X.Container()
+                    .Layout(LayoutType.Center)
+                    .Flex(1)
+                    .Items(
+                            X.Button()
+                                    .ID("btnRefreshDelivery")
+                                    .IconCls("action_refresh_01")
+                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                    .Border(false)
+                                    .Disable(false)
+                                    .DirectEvents
+                                    (
+                                        de =>
+                                        {
+                                            de.Click.Url = Url.Action("OnRefreshForProduction");
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemCertification", Encode = true, Value = "#{cmbCertificationLiv}.getValue()", Mode = ParameterMode.Raw });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemLivraisonType", Encode = true, Value = "#{cmbLivraisonType}.getValue()", Mode = ParameterMode.Raw });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodStart", Value = "#{txtDateDebutLiv}.getRawValue()", Mode = ParameterMode.Raw });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodEnd", Value = "#{txtDateFinLiv}.getRawValue()", Mode = ParameterMode.Raw });
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Value = "#{cmbCropYearLiv}.getRawValue()", Mode = ParameterMode.Raw });
+                                            de.Click.Success = "App.ProdAvailableDeliveriesCP.setTitle('Type De Livraison = ' + App.cmbLivraisonType.rawValue + ' , Certification = ' + App.cmbCertificationLiv.rawValue + ' , du  '+ App.txtDateDebutLiv.rawValue  + ' au  '+ App.txtDateFinLiv.rawValue )";
+                                            de.Click.EventMask.ShowMask = true;
+                                        }
+                                    )
+                    )
             ),
         X.Button().ID("BtnReloadListe").Text("OK").Hidden(true)
                 .DirectEvents(de =>
@@ -299,10 +298,121 @@ X.Window()
                     de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeToAdd", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListDeliveriesProd.getRowsValues({selectedOnly : false})" });
 
                 }),
+    #region Zone Melanges
+                        X.Panel()
+                            .Layout(LayoutType.VBox)
+                            //.Margin(3)
+                            .MarginSpec("3 0 3 0")
+                            .Frame(true)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .TopBar(
+                                        new Toolbar()
+                                        {
+                                            Items =
+                                            {
+                                                X.Label().Text("Resultat Melange"),
+                                                X.ToolbarSeparator(),
+                                                X.Button()
+                                                    .ID("")
+                                                    .IconCls("action_new_02")
+                                                    .Border(false)
+                                                    .Hidden(true)
+                                                    .Cls("ButtonStyle").Text("Heure").Disable(false)
+                                                    .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .DirectEvents
+                                                    (
+                                                        de =>
+                                                            {
+                                                                de.Click.Url  = Url.Action("GenerateCode");
+                                                                de.Click.ExtraParams.Add( new Parameter { Name = "StoreNbrOfRows", Mode = ParameterMode.Raw, Value = "#{storeDeliveryCodeListe}.getCount()" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                    )
+
+                                            }
+                                        }
+                            )
+                            .Items(
+    #region Grid
+                             X.Button().ID("BtnLoadCumul_").Text("OK").Hidden(true)
+                                            .DirectEvents(de =>
+                                            {
+                                                de.Click.Url = Url.Action("LoadCumulMelanges");
+                                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "rowsLivraisons", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+
+                                            }),
+                                    X.GridPanel()
+                                        .Layout(LayoutType.Fit)
+                                        .ID("grpListeMelange_temp")
+                                        .Region(Region.Center)
+                                        .ForceFit(true)
+                                        .Frame(true)
+                                        .Height(100)
+                                        .AllowDeselect(true)
+                                        .Store(
+                                                    X.StoreFor<Tms.Classes.Business.stock.CompositionUsinageLivraison>()
+                                                        .ID("storeListeMelange_temp")
+                                                        .AutoLoad(false)
+                                                        .Proxy(
+                                                                X.AjaxProxy()
+                                                                    .Url(Url.Action("kgg"))
+                                                                    .Reader(
+                                                                             X.JsonReader().RootProperty("data")
+                                                                    )
+                                                        )
+                                        //.Parameters
+                                        //(
+                                        //    ps =>
+                                        //    {
+                                        //        ps.Add(new StoreParameter("rowsLivraisons", "App.grpListeLivraisons.getRowsValues({selectedOnly : false})", ParameterMode.Raw, true));
+                                        //    }
+                                        //)
+                                        )
+                                        .ColumnModel
+                                        (
+                                            //Html.X().Column().Text("Melange").DataIndex("MelangeAsString").Hideable(false),
+                                            Html.X().Column().Text("Sacs").DataIndex("NombreSacs").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Livré").DataIndex("PoidsLivreAsString").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Acc").DataIndex("PoidsNetAsString").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Humidite").DataIndex("Humidite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Moisie").DataIndex("Moisi").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Grainage").DataIndex("Grainage").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Mite").DataIndex("Mite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Ardoisee").DataIndex("Ardoisee").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Mat. Etr").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Tamis").DataIndex("Sievings").Flex(1).Hideable(false)
+                                        //Html.X().Column().Text("Heure").DataIndex("DateCodeAsString").Hideable(false)
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowCode_det")
+                                                            .Mode(SelectionMode.Single)
+                                                            .AllowDeselect(true)
+                                        )
+                                        .Listeners
+                                        (
+                                            l =>
+                                            {
+                                                if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                                {
+                                                    l.Select.Fn = "OverviewCode.SetButtons";
+                                                    l.Deselect.Fn = "OverviewCode.SetButtons";
+                                                }
+
+
+                                            }
+                                        )
+    #endregion
+
+                            ),
+    #endregion
+
         X.GridPanel()
             .Layout(LayoutType.Fit)
             .ID("grpListDeliveriesProd")
-            .Height(250)
+            .Height(150)
             //.Border(true)
             .Frame(true)
             .FrameHeader(false)
@@ -353,7 +463,22 @@ X.Window()
                 Html.X().Column().Text("Date Livraison").DataIndex("DateLivraisonAstring").Flex(1).Hideable(false),
                 Html.X().Column().Text("Livraison N°").DataIndex("LivraisonID").Flex(1).Hideable(false),
                 Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(false),
-                Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false).Editor(Html.X().NumberField().ID("NewNbrSacs").HideTrigger(true)),
+                Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false)
+                        .Editor(
+                                Html.X()
+                                    .NumberField()
+                                    .ID("NewNbrSacs")
+                                    .HideTrigger(true)
+                                    .DirectEvents(
+                                            de => {
+                                                de.Blur.Url = Url.Action("GetTempMelange");
+                                                de.Blur.ExtraParams.Add(new Parameter { Name = "rowsDeliveriesInListe", Mode = ParameterMode.Raw, Value = "App.grpListDeliveriesProd.getRowsValues({selectedOnly : false})" });
+                                                de.Blur.ExtraParams.Add(new Parameter { Name = "melangeID", Mode = ParameterMode.Raw, Value = "App.cmbMelangeProduction.getValue()" });
+                                            }
+                                    )
+                                ),
+                Html.X().Column().Text("Livré").DataIndex("PoidsLivreAsString").Flex(1).Hideable(false),
+                Html.X().Column().Text("Acc").DataIndex("PoidsNetAsString").Flex(1).Hideable(false),
                 Html.X().Column().Text("Type De Livraison").DataIndex("LibelleTypeDeLivraison").Flex(1).Hideable(false),
                 Html.X().Column().Text("Certification").DataIndex("LibelleCertification").Flex(1).Hideable(false),
                 Html.X().Column().Text("Humidite").DataIndex("Humidite").Flex(1).Hideable(false).Editor(Html.X().NumberField().ID("HumditeBeans").HideTrigger(true)),
@@ -383,6 +508,22 @@ X.Window()
                                     {
                                         l.Select.Handler = "SetBtnOK();";
                                         l.Deselect.Handler = "SetBtnOK();";
+                                    }
+                                )
+                                .DirectEvents(
+                                    de =>
+                                    {
+                                        de.Select.Url = Url.Action("GetTempMelange");
+                                        de.Select.ExtraParams.Add(new Parameter { Name = "rowsDeliveriesInListe", Mode = ParameterMode.Raw, Value = "App.grpListDeliveriesProd.getRowsValues({selectedOnly : true})" });
+                                        de.Select.ExtraParams.Add(new Parameter { Name = "melangeID", Mode = ParameterMode.Raw, Value = "App.cmbMelangeProduction.getValue()" });
+                                    }
+                                )
+                                .DirectEvents(
+                                    de =>
+                                    {
+                                        de.Deselect.Url = Url.Action("GetTempMelange");
+                                        de.Deselect.ExtraParams.Add(new Parameter { Name = "rowsDeliveriesInListe", Mode = ParameterMode.Raw, Value = "App.grpListDeliveriesProd.getRowsValues({selectedOnly : true})" });
+                                        de.Deselect.ExtraParams.Add(new Parameter { Name = "melangeID", Mode = ParameterMode.Raw, Value = "App.cmbMelangeProduction.getValue()" });
                                     }
                                 )
             )

@@ -9,6 +9,8 @@ using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 //using System.ServiceModel;
 using System.Threading;
 using System.Web;
@@ -35,6 +37,7 @@ namespace Tms2017.MVC.Controllers
         static int _CapturedFirstWeight;
         static int _CapturedSecondWeight;
 
+        private const string ApiToken = "1F52C417-D568-4EE3-BE43-3F76F0E9BB56";
         /// <summary>
         /// Access routine for global variable.
         /// </summary>
@@ -191,29 +194,83 @@ namespace Tms2017.MVC.Controllers
         {
             try
             {
-                Parametres mParam = new Parametres(0);
-                BtnReadClicked = true;
-                CapturedFirstWeight = 0;
-                int sWeight = 0;
-                string ip = System.Web.HttpContext.Current.Request.UserHostAddress;
-                //string ip = "198.168.8.101";
-                // initialize services  
-                if (mParam.IsInDevelopment == false)
-                {
-                    ServiceLib.IService proxy = ServicesHelper.CreateClientServiceInstance(ip);
+                //Parametres mParam = new Parametres(0);
+                //BtnReadClicked = true;
+                //CapturedFirstWeight = 0;
+                //int sWeight = 0;
+                //string ip = System.Web.HttpContext.Current.Request.UserHostAddress;
+                ////string ip = "198.168.8.101";
+                //// initialize services  
+                //if (mParam.IsInDevelopment == false)
+                //{
+                //    ServiceLib.IService proxy = ServicesHelper.CreateClientServiceInstance(ip);
 
-                    sWeight = proxy.GetWeight();
-                    //int sWeight = 20000;
-                    X.GetCmp<TextField>("txtFirstGrossWeight").Text = sWeight.ToString();
-                }
-                else
-                {
-                    sWeight = 20000;
-                    X.GetCmp<TextField>("txtFirstGrossWeight").Text = sWeight.ToString();
+                //    sWeight = proxy.GetWeight();
+                //    //int sWeight = 20000;
+                //    X.GetCmp<TextField>("txtFirstGrossWeight").Text = sWeight.ToString();
+                //}
+                //else
+                //{
+                //    sWeight = 20000;
+                //    X.GetCmp<TextField>("txtFirstGrossWeight").Text = sWeight.ToString();
 
+                //}
+                //CapturedFirstWeight = sWeight;
+                using (var client = new HttpClient())
+                {
+                    // Set your API base URL here.
+                    client.BaseAddress = new Uri("https://capturepoidsapi.odmtec.com/");
+                    // Configure the authorization header using the hardcoded token.
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", ApiToken);
+
+                    //string apiUrl = "https://tnci-api.touton.com:2104/api/DataExtract/?debut=" + debut + "&fin=" + fin;
+                    // Prepare the API endpoint with query string parameters.
+                    // Adjust the endpoint (here: "api/lot") as required.
+                    //string requestUri = string.Format("api/poids",
+                    //    debut.ToString("yyyy-MM-dd"),
+                    //    fin.ToString("yyyy-MM-dd"));
+
+                    string requestUri = "api/poids";
+
+                    var response = client.GetAsync(requestUri).Result;
+                    //if (true)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the API response (you might want to deserialize it).
+                        var apiResponse = response.Content.ReadAsStringAsync().Result;
+
+                        //var realResult = JsonConvert.DeserializeObject<LotData[]>(apiResponse);
+                        PeseeAPI mPesee = new PeseeAPI();
+                        mPesee = JSON.Deserialize<PeseeAPI>(apiResponse, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+                        X.GetCmp<TextField>("txtFirstGrossWeight").Text = mPesee.Valeur.ToString();                                                                     
+
+                        // Ext.Net Direct returns a JSON response with success flag and data.
+                        return this.Direct(new
+                        {
+                            success = true,
+                            message = "API call succeeded",
+                            data = apiResponse
+                        });
+                    }
+                    else
+                    {
+                        X.MessageBox.Show(new MessageBoxConfig
+                        {
+                            Title = "Importation des lots",
+                            Message = "API call failed: " + response.ReasonPhrase,
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.ERROR
+                        });
+
+                        return this.Direct(new
+                        {
+                            success = false,
+                            error = "API call failed: " + response.ReasonPhrase
+                        });
+                    }
                 }
-                CapturedFirstWeight = sWeight;
-                
+
             }
             catch (Exception ex)
             {
@@ -226,25 +283,80 @@ namespace Tms2017.MVC.Controllers
         {
             try
             {
-                Parametres mParam = new Parametres(0);
-                string ip = System.Web.HttpContext.Current.Request.UserHostAddress;
-                //string ip = "198.168.8.101";
-                // initialize services    
-                int sWeight = 0;
-                if (mParam.IsInDevelopment == false)
+                //Parametres mParam = new Parametres(0);
+                //string ip = System.Web.HttpContext.Current.Request.UserHostAddress;
+                ////string ip = "198.168.8.101";
+                //// initialize services    
+                //int sWeight = 0;
+                //if (mParam.IsInDevelopment == false)
+                //{
+                //    ServiceLib.IService proxy = ServicesHelper.CreateClientServiceInstance(ip);
+                //    //CapturedSecondWeight = 0;
+                //    sWeight = proxy.GetWeight();
+                //    //int sWeight = 10300;
+                //    X.GetCmp<TextField>("txtSecondGrossWeight").Text = sWeight.ToString();
+                //}
+                //else
+                //{
+                //    sWeight = 10300;
+                //    X.GetCmp<TextField>("txtSecondGrossWeight").Text = sWeight.ToString();                
+                //}
+                //CapturedSecondWeight = sWeight;
+                using (var client = new HttpClient())
                 {
-                    ServiceLib.IService proxy = ServicesHelper.CreateClientServiceInstance(ip);
-                    //CapturedSecondWeight = 0;
-                    sWeight = proxy.GetWeight();
-                    //int sWeight = 10300;
-                    X.GetCmp<TextField>("txtSecondGrossWeight").Text = sWeight.ToString();
+                    // Set your API base URL here.
+                    client.BaseAddress = new Uri("https://capturepoidsapi.odmtec.com/");
+                    // Configure the authorization header using the hardcoded token.
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", ApiToken);
+
+                    //string apiUrl = "https://tnci-api.touton.com:2104/api/DataExtract/?debut=" + debut + "&fin=" + fin;
+                    // Prepare the API endpoint with query string parameters.
+                    // Adjust the endpoint (here: "api/lot") as required.
+                    //string requestUri = string.Format("api/poids",
+                    //    debut.ToString("yyyy-MM-dd"),
+                    //    fin.ToString("yyyy-MM-dd"));
+
+                    string requestUri = "api/poids";
+
+                    var response = client.GetAsync(requestUri).Result;
+                    //if (true)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the API response (you might want to deserialize it).
+                        var apiResponse = response.Content.ReadAsStringAsync().Result;
+
+                        //var realResult = JsonConvert.DeserializeObject<LotData[]>(apiResponse);
+                        PeseeAPI mPesee = new PeseeAPI();
+                        mPesee = JSON.Deserialize<PeseeAPI>(apiResponse, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+                        X.GetCmp<TextField>("txtSecondGrossWeight").Text = mPesee.Valeur.ToString();
+                        //Save Date                                               
+
+                        // Ext.Net Direct returns a JSON response with success flag and data.
+                        return this.Direct(new
+                        {
+                            success = true,
+                            message = "API call succeeded",
+                            data = apiResponse
+                        });
+                    }
+                    else
+                    {
+                        X.MessageBox.Show(new MessageBoxConfig
+                        {
+                            Title = "Capture Poids",
+                            Message = "API call failed: " + response.ReasonPhrase,
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.ERROR
+                        });
+
+                        return this.Direct(new
+                        {
+                            success = false,
+                            error = "API call failed: " + response.ReasonPhrase
+                        });
+                    }
                 }
-                else
-                {
-                    sWeight = 10300;
-                    X.GetCmp<TextField>("txtSecondGrossWeight").Text = sWeight.ToString();                
-                }
-                CapturedSecondWeight = sWeight;
             }
             catch (Exception ex)
             {
@@ -2410,5 +2522,79 @@ namespace Tms2017.MVC.Controllers
             }
             
         }
+
+        public ActionResult FetchFromApi_New1()
+        {
+            //System.Threading.Tasks.Task x = FetchFromApi(debut, fin);
+            try
+            {
+                // Using HttpClient to call the API.
+                using (var client = new HttpClient())
+                {
+                    // Set your API base URL here.
+                    client.BaseAddress = new Uri("https://capturepoidsapi.odmtec.com/");
+                    // Configure the authorization header using the hardcoded token.
+                    client.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", ApiToken);
+
+                    //string apiUrl = "https://tnci-api.touton.com:2104/api/DataExtract/?debut=" + debut + "&fin=" + fin;
+                    // Prepare the API endpoint with query string parameters.
+                    // Adjust the endpoint (here: "api/lot") as required.
+                    //string requestUri = string.Format("api/poids",
+                    //    debut.ToString("yyyy-MM-dd"),
+                    //    fin.ToString("yyyy-MM-dd"));
+
+                    string requestUri = "api/poids";
+
+                    var response = client.GetAsync(requestUri).Result;
+                    //if (true)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the API response (you might want to deserialize it).
+                        var apiResponse = response.Content.ReadAsStringAsync().Result;
+
+                        //var realResult = JsonConvert.DeserializeObject<LotData[]>(apiResponse);
+                        PeseeAPI mPesee = new PeseeAPI();
+                        mPesee = JSON.Deserialize<PeseeAPI>(apiResponse, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+                        X.GetCmp<TextField>("txtFirstGrossWeight").Text = mPesee.Valeur.ToString();
+                        //Save Date                                                
+
+                        // Ext.Net Direct returns a JSON response with success flag and data.
+                        return this.Direct(new
+                        {
+                            success = true,
+                            message = "API call succeeded",
+                            data = apiResponse
+                        });
+                    }
+                    else
+                    {
+                        X.MessageBox.Show(new MessageBoxConfig
+                        {
+                            Title = "Importation des lots",
+                            Message = "API call failed: " + response.ReasonPhrase,
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.ERROR
+                        });
+
+                        return this.Direct(new
+                        {
+                            success = false,
+                            error = "API call failed: " + response.ReasonPhrase
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return the exception error message in the response.
+                return this.Direct(new
+                {
+                    success = false,
+                    error = ex.Message
+                });
+            }
+        }
+
     }
 }

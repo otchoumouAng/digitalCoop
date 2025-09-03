@@ -45,7 +45,7 @@ X.Window()
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .X(200)
     .Y(10)
-    .Title("Available Lots")
+    .Title("Lots Disponilbles")
     .Layout(LayoutType.VBox)
     .BodyPadding(5)
     .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
@@ -53,7 +53,7 @@ X.Window()
     (
         X.FormPanel()
             .ID("SelectLotCP")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Production - Available Lots", Height = 20 })
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Production - Lots Disponibles", Height = 20 })
             .Region(Region.North)
             .Border(false)
             .Collapsed(false)
@@ -84,7 +84,7 @@ X.Window()
                                         de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtFiltreDateDebut}.getRawValue()",   Mode=ParameterMode.Raw});
                                         de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtFiltreDateFin}.getRawValue()",     Mode=ParameterMode.Raw});
                                         de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCertification", Encode=false, Value= "#{cmbFiltreCertification}.getValue()", Mode=ParameterMode.Raw});
-                                        de.Click.Success = "App.SelectLotCP.setTitle('Campagne : '+ App.cmbFiltreCampagne.rawValue +', Exportateur : ' + App.cmbFiltreExportateur.rawValue +', Lot Type : '+ App.cmbFiltreTypeLot.rawValue +', Certification : '+ App.cmbFiltreCertification.rawValue +', du '+ App.txtFiltreDateDebut.rawValue + ' au '+ App.txtFiltreDateFin.rawValue )";
+                                        de.Click.Success = "App.SelectLotCP.setTitle('Campagne : '+ App.cmbFiltreCampagne.rawValue +', Exportateur : ' + App.cmbFiltreExportateur.rawValue +', Type Lot : '+ App.cmbFiltreTypeLot.rawValue +', Certification : '+ App.cmbFiltreCertification.rawValue +', du '+ App.txtFiltreDateDebut.rawValue + ' au '+ App.txtFiltreDateFin.rawValue )";
                                         de.Click.EventMask.ShowMask = true;
                                     }
                                 )

@@ -1,0 +1,189 @@
+﻿@model Tms.Classes.Business.ExonerationBICViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormExonerationBIC")
+    .Width(600)
+    .Resizable(false)
+    .Height(200)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    .Y(20)
+    .Title("Exoneration BIC : Detail")
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle | HBoxAlign.Stretch })
+                .Items(
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(3)
+                                .Items(
+                                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._ExonerationBIC.RowVersionKey),
+                                        X.Hidden().ID("TxtExonerationBICID").Value(Model._ExonerationBIC.ID),
+                                        X.NumberField()
+                                            .ID("txtAnnee")
+                                            .TabIndex(8)
+                                            .HideTrigger(true)
+                                            .FieldLabel("Année")
+                                            .ReadOnly(false)
+                                            .MinValue(0)
+                                            .AllowDecimals(false)
+                                            .MaxValue(9999)                                            
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            //.Format("Y")
+                                            //.Type(DatePickerType.Month)                                            
+                                            .AllowBlank(false)
+                                            //.Flex(1)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ExonerationBIC.Annee : DateTime.Now.Year)
+                                            .LabelAlign(LabelAlign.Right),
+
+                                        //X.ComboBox()
+                                        //    .ID("cmbDetCrop")
+                                        //    .AllowBlank(false)
+                                        //    .IndicatorCls("IndicatorRedStar")
+                                        //    .IndicatorText("*")
+                                        //    .TypeAhead(true)
+                                        //    .QueryMode(DataLoadMode.Local)
+                                        //    .ForceSelection(true)
+                                        //    .FieldLabel("Site").DisplayField("Designation").ValueField("ID")
+                                        //    .LabelAlign(LabelAlign.Right)
+                                        //    .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                        //    //.Select(0)
+                                        //    //.Width(310)
+                                        //    //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                                        //    .Value(Model._ExonerationBIC.Campagne.Designation)
+                                        //    .Store
+                                        //    (
+                                        //        X.Store()
+                                        //            .AutoLoad(true)
+                                        //            .Model(
+                                        //                    Html.X().Model()
+                                        //                    .IDProperty("ID")
+                                        //                    .Fields
+                                        //                    (
+                                        //                        new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" },
+                                        //                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        //                    )
+                                        //                    )
+                                        //            .Proxy
+                                        //            (
+                                        //                Html.X().AjaxProxy()
+                                        //                .Url(Url.Action("LoadCampagne", "Campagne"))
+                                        //                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        //            )
+
+                                        //     ),
+                                        X.ComboBox()
+                                            .ID("cmbFournisseur")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            .FieldLabel("Fournisseur").DisplayField("Nom").ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                            //.Select(0)
+                                            //.Width(310)
+                                            //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ExonerationBIC.Fournisseur.ID : (int?)null)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                            )
+                                                            )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadSupplierBySite", "Fournisseur"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                    .Parameters
+                                            (
+                                            ps =>
+                                            {
+                                                ps.Add(new StoreParameter("siteID", "-1", ParameterMode.Value));
+                                            }
+                                            )
+
+                                             )
+
+                                ),
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(3)
+                                .Items(
+
+                                       X.DateField()
+                                            .ID("txtDateBIC")
+                                            .TabIndex(8)
+                                            .FieldLabel("Date")
+                                            .ReadOnly(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .AllowBlank(false)
+                                            //.Flex(1)
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ExonerationBIC.DateExoneration.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+
+                                )
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSubmitExportateur")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormExonerationBIC.id);";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormExonerationBIC.doClose()").Cls("btncancel")
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Exportateur : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>

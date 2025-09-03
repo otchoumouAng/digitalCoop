@@ -223,7 +223,7 @@
                                     .Disable(false)
                                     .DirectEvents( de =>{
                                                     de.Click.Url  = Url.Action("OnAdd");
-                                                    de.Click.Success = "App.FormAnalysePhysique.setTitle('Analyse Physique : Nouveau')";
+                                                    de.Click.Success = "App.FormAnalysePhysique.setTitle('Analyse Concessionaire : Nouveau')";
                                                     de.Click.EventMask.ShowMask = true;
                                                 }
                                     ),
@@ -237,7 +237,7 @@
                                     .Disabled(true)
                                     .DirectEvents( de =>{
                                                     de.Click.Url  = Url.Action("OnEdit");
-                                                    de.Click.Success = "App.FormAnalysePhysique.setTitle('Analyse Physique : Modifier')";
+                                                    de.Click.Success = "App.FormAnalysePhysique.setTitle('Analyse Concessionaire : Modifier')";
                                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeAnalysePhysique}.getSelectionModel().getSelection()[0].data"});
                                                     de.Click.EventMask.ShowMask = true;
                                     }
@@ -252,12 +252,12 @@
                                     .Disabled(true)
                                     .DirectEvents( de =>{
                                                     de.Click.Url  = Url.Action("onApprove");
-                                                    de.Click.Success = "App.FormAnalysePhysique.setTitle('Analyse Physique : Approuver')";
+                                                    de.Click.Success = "App.FormAnalysePhysique.setTitle('Analyse Concessionaire : Approuver')";
                                                     de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true,Value="#{grpListeAnalysePhysique}.getSelectionModel().getSelection()[0].data"});
                                                     de.Click.EventMask.ShowMask = true;
                                                     //de.Click.Success = "Overview.resetButtons();";
                                                     //de.Click.Confirmation.ConfirmRequest = true;
-                                                    //de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Physique : Approuver'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
+                                                    //de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Concessionaire : Approuver'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
                                     }
                                     ),
 
@@ -275,7 +275,7 @@
 
                                             X.MenuItem()
                                                 .ID("mnuPrintAnalysePhysiqueList")
-                                                .Text("Analyse Physique")
+                                                .Text("Analyse Concessionaire")
                                                 .DirectEvents
                                                 (
                                                     de=>
@@ -320,7 +320,7 @@
                                                             de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeAnalysePhysique}.getSelectionModel().getSelection()[0].data" });
                                                             de.Click.EventMask.ShowMask = true;
                                                             de.Click.Confirmation.ConfirmRequest = true;
-                                                            de.Click.Confirmation.Title = "Analyse Physique";
+                                                            de.Click.Confirmation.Title = "Analyse Concessionaire";
                                                             de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeAnalysePhysique}.getSelectionModel().getSelection()[0].data.Desactive)";
                                                             de.Click.Success = "Overview.resetButtons();";
                                                         })
@@ -333,7 +333,7 @@
                                 ,
         X.FormPanel()
             .ID("AnalysePhysiqueCriteriaPanel")
-            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Analyse Physique - overview" })
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Analyse Concessionaire - overview" })
             .Region(Region.North)
             .Floatable(false)
             .Border(false)
@@ -474,9 +474,10 @@
                                 Html.X().Column().Text("Violette (%)").DataIndex("Violette").Flex(1),
                                 Html.X().Column().Text("Humidite (%)").DataIndex("Humidite").Flex(1),
                                 Html.X().Column().Text("M. Etrangere (%)").DataIndex("MatiereEtrangere").Flex(1),
-                                Html.X().Column().Text("Tamis (%)").DataIndex("Tamis").Flex(1).Hidden(true),
+                                //Html.X().Column().Text("Tamis (%)").DataIndex("Tamis").Flex(1).Hidden(true),
+                                Html.X().Column().Text("Dechets (%)").DataIndex("Tamis").Flex(1).Hidden(true),
                                 Html.X().Column().Text("BC (Grainage) (%)").DataIndex("NombreFevesPc").Flex(1).Hidden(true),
-                                Html.X().Column().Text("Fragment (%)").DataIndex("Fragment").Flex(1).Hidden(true),
+                                Html.X().Column().Text("Fèves brisées (%)").DataIndex("Fragment").Flex(1).Hidden(true),
                                 Html.X().Column().Text("Brisure (%)").DataIndex("Brisure").Flex(1).Hidden(true),
                                 Html.X().Column().Text("Grade").DataIndex("NomClassificationFeves").Flex(1).Hidden(true),
                                 X.Column().Text("User Approval").DataIndex("Approbateur").Flex(1).Hidden(true),

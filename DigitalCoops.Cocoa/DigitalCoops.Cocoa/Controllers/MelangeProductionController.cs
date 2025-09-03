@@ -410,18 +410,33 @@ namespace Tms2017.MVC.Controllers
             return mClass;
         }
 
-        public ActionResult onAddDelivery(string rowsDeliveriesInListe = "")
+        public ActionResult onAddDelivery(string melangeID, string rowsDeliveriesInListe = "")
         {
             CompositionUsinageLivraisonViewModel mclass = new CompositionUsinageLivraisonViewModel();
+            int IdMelange = -1;
+            bool res = true;
+            res = int.TryParse(melangeID, out IdMelange);
 
+            if (!res)
+            {
+                X.MessageBox.Show(new MessageBoxConfig
+                {
+                    Title = "Melange Production",
+                    Message = "Prière selectionner un melange",
+                    Buttons = MessageBox.Button.OK,
+                    Icon = MessageBox.Icon.WARNING
+                });
+
+                return this.Direct();
+            }
+                
             //OrdreProduction ordreproduction = JSON.Deserialize<OrdreProduction>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
             mclass._CompositionUsinageLivraison = new CompositionUsinageLivraison();
-
+            mclass._CompositionUsinageLivraison.MelangeID = IdMelange;
             mclass._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew;
             Parametres mParam = new Parametres(0);
             mclass._Campagne = mParam.Campagne;        
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormMelangeLivraison", Model = mclass, };
-
+            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormMelangeLivraison", Model = mclass };
         }
 
         public ActionResult OnSelectProduction()
@@ -431,7 +446,6 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult SelectForProduction(StoreRequestParameters parameters, string ItemCertification, string ItemLivraisonType, string ItemPeriodStart, string ItemPeriodEnd, string ItemListeLivraisons, string ItemCampagne = "{Tous}")
         {
-
             int CertificationID = GetCriteriaValue(ItemCertification);
             int TypeLivraisonID = GetCriteriaValue(ItemLivraisonType);
             string mCampagne = string.IsNullOrEmpty(ItemCampagne) ? "{Tous}" : ItemCampagne;
@@ -760,25 +774,30 @@ namespace Tms2017.MVC.Controllers
                 double weevil = 0;
                 double slaty = 0;
                 double sieving = 0;
-                double poidsnetAccepte = 0;
+                double poidsnetAccepte = 0;                
+                double poidsnetLivre = 0;
+                double poidsbrut = 0;
 
                 foreach (CompositionUsinageLivraison comp in mLivraison.Where(ml => ml.Melange.ID == item.ID))
                 {
                     composition = new CompositionUsinageLivraison();
 
                     NbreSac += comp.NombreSacs;
-                    NbreFeves += comp.Grainage;
+                    //NbreFeves += comp.Grainage;
+                    NbreFeves += int.Parse((comp.Grainage * (double)comp.PoidsNet).ToString());
                     Ffa += (comp.Ffa * (double)comp.PoidsNet);
                     Moisi += (comp.Moisi * (double)comp.PoidsNet);
-                    //MatieresEtrangeres += (comp.MatiereEtrangere * (double)comp.PoidsNet);
-                    MatieresEtrangeres += comp.MatiereEtrangere;
+                    MatieresEtrangeres += (comp.MatiereEtrangere * (double)comp.PoidsNet);
+                    //MatieresEtrangeres += comp.MatiereEtrangere;
                     Humidite += (comp.Humidite * (double)comp.PoidsNet);
                     weevil += (comp.Mite * (double)comp.PoidsNet);
                     slaty += (comp.Ardoisee * (double)comp.PoidsNet);
-                    //sieving += (comp.Sievings * (double)comp.PoidsNet);
-                    sieving += comp.Sievings;
+                    sieving += (comp.Sievings * (double)comp.PoidsNet);
+                    //sieving += comp.Sievings;
                     NombreLivraisons += 1;
                     poidsnetAccepte += (double)comp.PoidsNet;
+                    poidsnetLivre += (double)comp.PoidsLivre;
+                    poidsbrut += (double)comp.PoidsBrut;
                     ContientMelange = true;
                 }
                 if (ContientMelange)
@@ -788,14 +807,17 @@ namespace Tms2017.MVC.Controllers
                     composition.Melange.ID = item.ID;
                     composition.Melange.Designation = item.Designation;
                     composition.NombreSacs = NbreSac;
-                    composition.Grainage = NbreFeves;
+                    composition.Grainage = int.Parse(Math.Round(NbreFeves / poidsnetAccepte, 0).ToString()); ;
                     composition.Moisi = Math.Round(Moisi / poidsnetAccepte, 2);
                     composition.Ffa = Math.Round(Ffa / poidsnetAccepte, 2);
-                    composition.MatiereEtrangere = Math.Round(MatieresEtrangeres,2);
+                    composition.MatiereEtrangere = Math.Round(MatieresEtrangeres / poidsnetAccepte, 2);
                     composition.Mite = Math.Round(weevil / poidsnetAccepte, 2);
                     composition.Ardoisee = Math.Round(slaty / poidsnetAccepte, 2);
-                    composition.Sievings = Math.Round(sieving,2);
+                    composition.Sievings = Math.Round(sieving / poidsnetAccepte, 2);
                     composition.Humidite = Math.Round(Humidite / poidsnetAccepte, 2);
+                    composition.PoidsBrut = (decimal)poidsbrut;
+                    composition.PoidsLivre = (decimal)poidsnetLivre;
+                    composition.PoidsNet = (decimal)poidsnetAccepte;
                     listeComposition.Add(composition);
                 }
             }
@@ -921,7 +943,6 @@ namespace Tms2017.MVC.Controllers
             return View();
         }
 
-
         public ActionResult OnCancel(string ItemSelected)
         {
             try
@@ -973,7 +994,6 @@ namespace Tms2017.MVC.Controllers
 
             return this.Direct();
         }
-
 
         #region Method
         private string GetFormValue(string id_Component)
@@ -1029,6 +1049,93 @@ namespace Tms2017.MVC.Controllers
 
         #endregion
 
+        public ActionResult GetTempMelange(string rowsDeliveriesInListe = "", string melangeID = "")
+        {
+            List<CompositionUsinageLivraison> mLivraison = JSON.Deserialize<List<CompositionUsinageLivraison>>(rowsDeliveriesInListe, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
+            CompositionUsinageLivraison composition = new CompositionUsinageLivraison();
+            List<CompositionUsinageLivraison> listeComposition = new List<CompositionUsinageLivraison>();
+
+            Store mStoreMelange = X.GetCmp<Store>("storeListeMelange_temp");
+            mStoreMelange.RemoveAll();
+
+            bool isInt = false;
+            int IdMelange;
+            isInt = int.TryParse(melangeID, out IdMelange);
+            Melange _melange = new Melange(IdMelange);
+
+            int NombreLivraisons = 0;
+            
+            int NbreSac = 0;
+            int NbreFeves = 0;
+            double Humidite = 0;
+            double Ffa = 0;
+            double Moisi = 0;
+            double MatieresEtrangeres = 0;
+            double weevil = 0;
+            double slaty = 0;
+            double sieving = 0;
+            double poidsnetAccepte = 0;
+            double poidsnetLivre = 0;
+            double poidsbrut = 0;
+
+            if (mLivraison.Count > 0)
+            {
+                foreach (CompositionUsinageLivraison comp in mLivraison)
+                {
+                    composition = new CompositionUsinageLivraison();
+
+                    if (comp.NombreSacs != comp.NbreSacsTotalLivraison)
+                    {
+                        comp.PoidsBrut = Math.Round((comp.NombreSacs * comp.PoidsBrutReel) / comp.NbreSacsTotalLivraison);
+                        comp.TareSacs = int.Parse(((comp.NombreSacs * comp.TareSacsReel) / comp.NbreSacsTotalLivraison).ToString());
+                        comp.TarePalettes = int.Parse(((comp.NombreSacs * comp.TarePalettesReel) / comp.NbreSacsTotalLivraison).ToString());
+                        comp.PoidsLivre = comp.PoidsBrut - comp.TareSacs - comp.TarePalettes;
+                        comp.PoidsNet = Math.Round((comp.NombreSacs * comp.PoidsNetReel) / comp.NbreSacsTotalLivraison);
+                        comp.Retention = Math.Round((comp.NombreSacs * comp.Retention) / comp.NbreSacsTotalLivraison);
+                    }
+
+                    NbreSac += comp.NombreSacs;
+                    //NbreFeves += comp.Grainage;
+                    NbreFeves += int.Parse((comp.Grainage * (double)comp.PoidsNet).ToString());
+                    Ffa += (comp.Ffa * (double)comp.PoidsNet);
+                    Moisi += (comp.Moisi * (double)comp.PoidsNet);
+                    MatieresEtrangeres += (comp.MatiereEtrangere * (double)comp.PoidsNet);
+                    //MatieresEtrangeres += comp.MatiereEtrangere;
+                    Humidite += (comp.Humidite * (double)comp.PoidsNet);
+                    weevil += (comp.Mite * (double)comp.PoidsNet);
+                    slaty += (comp.Ardoisee * (double)comp.PoidsNet);
+                    sieving += (comp.Sievings * (double)comp.PoidsNet);
+                    //sieving += comp.Sievings;
+                    NombreLivraisons += 1;
+                    poidsnetAccepte += (double)comp.PoidsNet;
+                    poidsnetLivre += (double)comp.PoidsLivre;
+                    poidsbrut += (double)comp.PoidsBrut;
+                }
+            }
+
+            composition.ID = Guid.NewGuid();
+            composition.Melange = new Melange();
+            composition.Melange.ID = _melange.ID;
+            composition.Melange.Designation = _melange.Designation;
+            composition.NombreSacs = NbreSac;
+            //composition.Grainage = int.Parse(Math.Round(NbreFeves / poidsnetAccepte, 2).ToString());
+            composition.Grainage = int.Parse(Math.Round(NbreFeves / poidsnetAccepte, 0).ToString());
+            composition.Moisi = Math.Round(Moisi / poidsnetAccepte, 2);
+            composition.Ffa = Math.Round(Ffa / poidsnetAccepte, 2);
+            composition.MatiereEtrangere = Math.Round(MatieresEtrangeres / poidsnetAccepte, 2);
+            composition.Mite = Math.Round(weevil / poidsnetAccepte / poidsnetAccepte, 2);
+            composition.Ardoisee = Math.Round(slaty / poidsnetAccepte, 2);
+            composition.Sievings = Math.Round(sieving / poidsnetAccepte, 2);
+            composition.Humidite = Math.Round(Humidite / poidsnetAccepte, 2);
+            composition.PoidsBrut = (decimal)poidsbrut;
+            composition.PoidsLivre = (decimal)poidsnetLivre;
+            composition.PoidsNet = (decimal)poidsnetAccepte;
+            listeComposition.Add(composition);
+
+            mStoreMelange.Add(listeComposition);
+            return this.Direct();
+            //return this.Store(listeComposition.OrderBy(ord => ord.Melange.Designation));
+        }
 
     }
 }

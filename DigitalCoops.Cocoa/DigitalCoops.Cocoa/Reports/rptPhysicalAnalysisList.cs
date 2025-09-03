@@ -1057,6 +1057,7 @@ public class rptPhysicalAnalysisList : DevExpress.XtraReports.UI.XtraReport
             // 
             this.paramDateDebut.Name = "paramDateDebut";
             this.paramDateDebut.Type = typeof(System.DateTime);
+            this.paramDateDebut.ValueInfo = "2018-01-01";
             this.paramDateDebut.Visible = false;
             // 
             // xrTableCell12
@@ -1085,6 +1086,7 @@ public class rptPhysicalAnalysisList : DevExpress.XtraReports.UI.XtraReport
             // 
             this.paramDateFin.Name = "paramDateFin";
             this.paramDateFin.Type = typeof(System.DateTime);
+            this.paramDateFin.ValueInfo = "2027-01-01";
             this.paramDateFin.Visible = false;
             // 
             // xrTableCell16
@@ -1143,7 +1145,7 @@ public class rptPhysicalAnalysisList : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel1.StylePriority.UseBorderWidth = false;
             this.xrLabel1.StylePriority.UseFont = false;
             this.xrLabel1.StylePriority.UseTextAlignment = false;
-            this.xrLabel1.Text = "Liste des analyses physiques";
+            this.xrLabel1.Text = "Liste des analyses physiques - Concessionaire";
             this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // ReportFooter
@@ -1200,7 +1202,7 @@ public class rptPhysicalAnalysisList : DevExpress.XtraReports.UI.XtraReport
             storedProcQuery1.Name = "AnalysePhysique_Select";
             queryParameter1.Name = "@cropyear";
             queryParameter1.Type = typeof(string);
-            queryParameter1.ValueInfo = "{Tous}";
+            queryParameter1.ValueInfo = "{Toute}";
             queryParameter2.Name = "@SiteID";
             queryParameter2.Type = typeof(DevExpress.DataAccess.Expression);
             queryParameter2.Value = new DevExpress.DataAccess.Expression("[Parameters.paramSite]", typeof(int));
@@ -1208,8 +1210,8 @@ public class rptPhysicalAnalysisList : DevExpress.XtraReports.UI.XtraReport
             queryParameter3.Type = typeof(int);
             queryParameter3.ValueInfo = "-1";
             queryParameter4.Name = "@Fournisseur";
-            queryParameter4.Type = typeof(DevExpress.DataAccess.Expression);
-            queryParameter4.Value = new DevExpress.DataAccess.Expression("-1", typeof(int));
+            queryParameter4.Type = typeof(int);
+            queryParameter4.ValueInfo = "-1";
             queryParameter5.Name = "@begindate";
             queryParameter5.Type = typeof(DevExpress.DataAccess.Expression);
             queryParameter5.Value = new DevExpress.DataAccess.Expression("[Parameters.paramDateDebut]", typeof(System.DateTime));
@@ -1236,7 +1238,7 @@ public class rptPhysicalAnalysisList : DevExpress.XtraReports.UI.XtraReport
             this.paramSite.Description = "Site";
             this.paramSite.Name = "paramSite";
             this.paramSite.Type = typeof(int);
-            this.paramSite.ValueInfo = "0";
+            this.paramSite.ValueInfo = "-1";
             this.paramSite.Visible = false;
             // 
             // rptPhysicalAnalysisList
