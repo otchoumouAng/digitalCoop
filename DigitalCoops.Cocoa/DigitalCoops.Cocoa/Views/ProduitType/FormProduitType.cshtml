@@ -1,0 +1,117 @@
+﻿@model Tms.Classes.Shared.ProduitTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(X.Window()
+    .ID("FormProduitType")
+    .Width(500)
+    .Height(250)
+    .Resizable(false)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Location : Detail")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+    .Listeners(l =>
+    {
+        l.Show.Handler = "#{TxtDesignation}.focus();";
+    })
+    .Items(
+        X.FormPanel()
+            .ID("FormProduitTypeForm")
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+            .Layout(LayoutType.VBox)
+            .Padding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items(
+                X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                X.Hidden().ID("hiddenRowVersion").Value(Model._ProduitType.RowVersionKey),
+                X.Hidden().ID("TxtProduitTypeID").Value(Model._ProduitType.ID),
+
+                X.TextField()
+                    .ID("TxtDesignation")
+                    .FieldLabel("Designation")
+                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew
+                        ? Model._ProduitType.Designation
+                        : string.Empty)
+                    .LabelAlign(LabelAlign.Right)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*"),
+
+                X.ComboBox()
+                    .ID("CmbDefautProduitFini")
+                    .FieldLabel("Produit Fini")
+                    .DisplayField("Designation")
+                    .ValueField("ID")
+                    .LabelAlign(LabelAlign.Right)
+                    .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                    .ForceSelection(true)
+                    .TypeAhead(true)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .QueryMode(DataLoadMode.Local)
+                    .TriggerAction(TriggerAction.All)
+                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew
+                        ? (int?)Model._ProduitType.ProduitFini?.ID
+                        : null)
+                    .Store(
+                        X.Store()
+                            .AutoLoad(true)
+                            .Model(Html.X().Model()
+                                .IDProperty("ID")
+                                .Fields(
+                                    new ModelField("ID", ModelFieldType.Int),
+                                    new ModelField("Designation", ModelFieldType.String)
+                                )
+                            )
+                            .Proxy(Html.X().AjaxProxy()
+                                .Url(Url.Action("LoadProduitFini", "ProduitFini"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                    )
+            )
+            .Buttons(
+                X.Button()
+                    .ID("BtnSubmitProduitType")
+                    .Text("OK")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.Before = "return validNew(App.FormProduitTypeForm.id);";
+                        de.Click.FormID = "FormProduitTypeForm";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormProduitType.doClose()")
+                    .Cls("btncancel")
+            )
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (formId) {
+        var allFilled = isFormValid(formId);
+        if (!allFilled) {
+            Ext.Msg.show({
+                title: 'Location : Data Validation',
+                icon: Ext.MessageBox.WARNING,
+                msg: 'Veuillez remplir les champs réquis.',
+                buttons: Ext.Msg.OK
+            });
+            return false;
+        }
+        return true;
+    };
+</script>

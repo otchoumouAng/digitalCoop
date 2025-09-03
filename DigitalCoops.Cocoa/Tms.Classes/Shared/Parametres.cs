@@ -1734,6 +1734,7 @@ namespace Tms.Classes.Shared
                     if (!DBNull.Value.Equals(mDataReader["IdTaxeRtc"])) mClass.IdTaxeRtc = (int)mDataReader["IdTaxeRtc"];
                     if (!DBNull.Value.Equals(mDataReader["ProduitExportId"])) mClass.IdProduitExport = (int)mDataReader["ProduitExportId"];
                     if (!DBNull.Value.Equals(mDataReader["PaiementOptionId"])) mClass.PaiementOptionId = (int)mDataReader["PaiementOptionId"];
+                    //if (!DBNull.Value.Equals(mDataReader["LotUsineTypeMvtID"])) mClass.LotUsineTypeMvtID = (int)mDataReader["LotUsineTypeMvtID"];
                     if (!DBNull.Value.Equals(mDataReader["LotUsineTypeMvtID"])) mClass.LotUsineTypeMvtID = (int)mDataReader["LotUsineTypeMvtID"];
                     if (!DBNull.Value.Equals(mDataReader["DefDeductionTypeBIC"])) mClass._DefDeductionTypeBIC = (int)mDataReader["DefDeductionTypeBIC"];
                     if (!DBNull.Value.Equals(mDataReader["PrelevementUsinageMvtTypeID"])) mClass._PrelevementUsinageMvtTypeID = (int)mDataReader["PrelevementUsinageMvtTypeID"];

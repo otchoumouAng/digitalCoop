@@ -1,0 +1,852 @@
+﻿Je comprends qu'il faut garder exactement la même structure et simplement ajouter les propriétés de validation sans autre modification. Voici le code avec uniquement les ajouts demandés :
+
+```csharp
+@model Tms.Classes.Business.DemandeEtiquetteViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+            X.Window()
+                .ID("FormDemandeEtiquette")
+                .Width(1050)
+                .Resizable(false)
+                .Height(480)
+                .Modal(true)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                 .Listeners(l =>
+                 {
+                     l.Close.Handler = "App.TmsViewPort.unmask();";
+                 })
+                //.X(400)
+                .Y(20)
+                .Title("Demandes d’étiquettes : Imprimer" )
+
+
+    .Items
+                (
+
+                X.Panel()
+                .Layout(LayoutType.HBox)
+                .MarginSpec("5 0 0 0")
+                .StyleSpec("border-bottom: 0.5px solid #1976d2; padding: 2px; border-radius: 0px; background-color: #f9f9f9;")
+                .Items(
+                    X.FormPanel()
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+                    .Items(
+    #region zone A
+                            X.Panel()
+                                .Width(350)
+                                .Layout(LayoutType.Form)
+                                .Flex(1)
+                                .Items(
+                                    X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._DemandeEtiquette.RowVersionKey),
+                                    X.Hidden().ID("TxtDemandeEtiquetteId").ReadOnly(true).Value(Model._DemandeEtiquette.ID),
+                                    X.ComboBox()
+                                        .ID("cmbAnnee")
+                                        .FieldLabel("Année")
+                                        .TabIndex(1)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Editable(true)
+                                        .ForceSelection(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (int?)Model._DemandeEtiquette.OrdreFabrication.Annee : DateTime.Now.Year)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Store(
+                                            X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                    X.Model().Fields(
+                                                        X.ModelField().Name("Annee").Type(ModelFieldType.Int)
+                                                    )
+                                                )
+                                                .DataSource(
+                                                    Enumerable.Range(DateTime.Now.Year - 4, 5)
+                                                        .Select(y => new { Annee = y })
+                                                        .OrderByDescending(a => a.Annee)
+                                                )
+                                        )
+                                        .DisplayField("Annee")
+                                        .ValueField("Annee")
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Select.Url = Url.Action("SelectOrdreFabricationInfo");
+                                            de.Select.ExtraParams.Add(new Parameter("ItemAnnee", "this.getRawValue()", ParameterMode.Raw));
+                                        })
+                                        .Listeners(l =>
+                                        {
+                                            l.Select.Handler = "App.storePaletteListe.reload();";
+                                        }),
+                                    X.ComboBox()
+                                        .ID("cmbSemaine")
+                                        .FieldLabel("Semaine")
+                                        .TabIndex(2)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Editable(true)
+                                        .ForceSelection(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (int?)Model._DemandeEtiquette.OrdreFabrication.Semaine : DateTime.Now.DayOfYear / 7 + 1)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Store(
+                                            X.Store()
+                                                .ID("StoreSemaine")
+                                                .Model(
+                                                    X.Model().Fields(
+                                                        X.ModelField().Name("Semaine").Type(ModelFieldType.Int)
+                                                    )
+                                                )
+                                                .DataSource(
+                                                    Enumerable.Range(1, 52)
+                                                        .Select(w => new { Semaine = w })
+                                                )
+                                        )
+                                        .DisplayField("Semaine")
+                                        .ValueField("Semaine")
+                                        .Listeners(l =>
+                                        {
+                                            l.Select.Handler = @"
+                                                App.cmbOrdreFabricationID.clearValue();
+                                                App.StoreOrdreFabrication.reload();
+                                                App.storePaletteListe.reload();";
+                                        }),
+                                    X.ComboBox()
+                                        .ID("cmbOrdreFabricationID")
+                                        .FieldLabel("Ordre de production")
+                                        .DisplayField("NumeroProduction")
+                                        .TabIndex(3)
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .ForceSelection(true)
+                                        .Editable(true)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Guid?)Model._DemandeEtiquette.OrdreFabrication.ID : (Guid?)null)
+
+                                        .Store(
+                                            X.Store()
+                                                .ID("StoreOrdreFabrication")
+                                                .AutoLoad(true)
+                                                .Model(
+                                                    Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                            new ModelField("ID", ModelFieldType.Object),
+                                                            new ModelField("NumeroProduction", ModelFieldType.String)
+                                                        )
+                                                )
+                                                .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadOrdreFabrication", "OrdreFabrication"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                .Parameters(ps =>
+                                                {
+                                                    ps.Add(new StoreParameter("ItemAnnee", "#{cmbAnnee}.getValue()", ParameterMode.Raw));
+                                                    ps.Add(new StoreParameter("ItemSemaine", "#{cmbSemaine}.getValue()", ParameterMode.Raw));
+                                                })
+                                        )
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Select.Url = Url.Action("SelectOrdreFabricationInfo");
+                                            de.Select.ExtraParams.Add(new Parameter("ItemOrdreFabricationID", "this.getRawValue()", ParameterMode.Raw));
+                                            de.Select.ExtraParams.Add(new Parameter("ItemDateEffectiveProduction", "#{txtDateEffectiveFabrication}.getValue()", ParameterMode.Raw));
+                                        })
+                                        .Listeners(l =>
+                                        {
+                                            l.Select.Handler = "App.storePaletteListe.reload();";
+                                            l.AfterRender.Handler = @"
+                                                if (this.getValue()) {
+                                                    App.storePaletteListe.reload();
+                                                }";
+                                        }),
+                                    X.TextField()
+                                        .ID("txtOpOrdreFabricationNum")
+                                        .FieldLabel("Ordre De Fabrication")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TabIndex(3)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.OrdreFabrication.NumeroProduction : string.Empty)
+                                        .Editable(false)
+                                        .Hidden(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true),
+
+                                       X.TextField()
+                                        .ID("txtOpOrdreFabricationID")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.OrdreFabrication.ID.ToString() : string.Empty)
+                                        .Hidden(true),
+
+                                    X.TextField()
+                                        .ID("txtOpProduit")
+                                        .FieldLabel("Produit")
+                                        .TabIndex(3)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.ProduitFini.Designation : string.Empty)
+                                        .Editable(false)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*"),
+                                    X.TextField()
+                                        .ID("txtOpTypeProduit")
+                                        .FieldLabel("Type Produit")
+                                        .TabIndex(4)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.ProduitType.Designation : string.Empty)
+                                        .Editable(false)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                ),
+    #endregion
+
+    #region Zone B
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Width(350)
+                                .Flex(1)
+                                .Items(
+                                    X.TextField()
+                                        .FieldLabel("Article - Code Interne")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TabIndex(5)
+                                        .ID("TxtOpArticleCode")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Article.Code : string.Empty)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Editable(false),
+                                    X.TextField()
+                                        .Hidden(true)
+                                        .ID("TxtOpArticleID")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Article.ID.ToString() : string.Empty),
+                                    X.TextField()
+                                        .Hidden(true)
+                                        .ID("txtOpNbrePaletteAProduit")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.OrdreFabrication.NbrePaletteAProduire.ToString() : string.Empty)
+                                      ,
+                                    X.TextField()
+                                        .ID("txtOpNomArticle")
+                                        .FieldLabel("Article - Designation")
+                                        .TabIndex(6)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Article.Nom : string.Empty)
+                                        .Editable(false)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*"),
+                                    X.TextField()
+                                        .ID("txtOpEmballage")
+                                        .FieldLabel("Emballage")
+                                        .TabIndex(7)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.ConditionnementProduit.Designation : string.Empty)
+                                        .Editable(false)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*"),
+                                    X.TextField()
+                                        .Hidden(true)
+                                        .ID("txtArticleBestBeforeDate")
+                                        .FieldLabel("Durée BB")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Article.BestBeforeDate.ToString() : string.Empty)
+                                        .Listeners(l =>
+                                        {
+                                            l.Change.Handler = "calculerBestBeforeDate();";
+                                        }),
+                                    X.TextField()
+                                        .ID("txtOpNbreUniteParPalette")
+                                        .FieldLabel("#Unite/Palette")
+                                        .TabIndex(8)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Article.NbreUniteParPalette.ToString() : string.Empty)
+                                        .Editable(false)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*"),
+                                    X.DateField()
+                                        .ID("txtDateEffectiveFabrication")
+                                        .FieldLabel("Date Effective FA")
+                                        .TabIndex(9)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Flex(1)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                        .SelectedDate(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.DateEffectiveProduction : DateTime.Now)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Editable(true)
+                                        .Listeners(l =>
+                                        {
+                                            l.Change.Handler = "calculerBestBeforeDate();";
+                                        })
+                                ),
+    #endregion
+
+    #region Zone C
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Width(345)
+                                .Flex(1)
+                                .Items(
+
+                                    X.TextArea()
+                                        .ID("txtDescription")
+                                        .FieldLabel("Description")
+                                        .TabIndex(10)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Flex(1)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Description : string.Empty)
+                                        .AllowBlank(true)
+                                        .Editable(true),
+
+                                    X.DateField()
+                                        .ID("txtBestBeforeDate")
+                                        .FieldLabel("Best Before Date")
+                                        .TabIndex(11)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Flex(1)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                        .SelectedDate(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.Article.BBDate ?? DateTime.Now : DateTime.Now)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Editable(true),
+
+                                    X.TextField()
+                                        .ID("txtNbreExemplaireA4")
+                                        .ReadOnly(true)
+                                        .HideTrigger(true)
+                                        .TabIndex(12)
+                                        .MaskRe("[0-9]")
+                                        .FieldLabel("Nbre d'exemplaire A4")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        .IndicatorText("*")
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .Flex(1)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                        .Value(Model._DemandeEtiquette.NbreExemplaireA4.ToString())
+                                        .Listeners(ls =>
+                                        {
+                                            ls.Blur.Handler = "#{txtNbreExemplaireA4}.setValue(formatNumber(#{txtNbreExemplaireA4}.getValue()));";
+                                            ls.Focus.Handler = "if (App.txtNbreExemplaireA4.value) { #{txtNbreExemplaireA4}.setRawValue(unformatNumber(#{txtNbreExemplaireA4}.getValue()));}";
+                                        })
+                                        .Editable(true),
+
+                                     X.TextField()
+                                        .ID("txtNbreExemplaireA5")
+                                        .ReadOnly(true)
+                                        .HideTrigger(true)
+                                        .TabIndex(13)
+                                        .MaskRe("[0-9]")
+                                        .FieldLabel("Nbre d'exemplaire A5")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        .IndicatorText("*")
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .Flex(1)
+                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._DemandeEtiquette.NbreExemplaireA5.ToString() : string.Empty)
+                                        .Listeners(ls =>
+                                        {
+                                            ls.Blur.Handler = "#{txtNbreExemplaireA5}.setValue(formatNumber(#{txtNbreExemplaireA5}.getValue()));";
+                                            ls.Focus.Handler = "if (App.txtNbreExemplaireA5.value) { #{txtNbreExemplaireA5}.setRawValue(unformatNumber(#{txtNbreExemplaireA5}.getValue()));}";
+                                        }).Editable(true)
+                                ).DockedItems(
+                                        X.Toolbar()
+                                            .Dock(Dock.Bottom)
+                                            .Layout(LayoutType.HBox)
+                                            .LayoutConfig(new HBoxLayoutConfig { Pack = BoxPack.End })
+                                            .Items(
+                                                X.Container()
+                                                    .Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Pack = BoxPack.End })
+                                                    .Items(
+                                                        X.Button()
+                                                            .ID("btnConfirmer")
+                                                            .Text("Confirmer")
+                                                            .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                                            .Icon(Icon.Accept)
+                                                            .Cls("ButtonStyle")
+                                                            .DirectEvents(de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("UpdateFormMethod");
+                                                                de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                                                                // Masque de chargement
+                                                                de.Click.EventMask.ShowMask = true;
+                                                                de.Click.EventMask.Msg = "Traitement en cours...";
+                                                                de.Click.EventMask.MinDelay = 500;
+                                                                // Message de succès dans une MessageBox
+                                                                de.Click.Success = @"
+                                                                        Ext.Msg.show({
+                                                                            title: 'Succès',
+                                                                            msg: 'Opération effectuée avec succès',
+                                                                            icon: Ext.Msg.INFO,
+                                                                            buttons: Ext.Msg.OK,
+                                                                            fn: function() {
+                                                                                // Réactive le bouton après fermeture de la modal
+                                                                                #{btnConfirmer}.setDisabled(true).setText('Confirmer');
+                                                                            }
+                                                                        });";
+                                                                de.Click.EventMask.ShowMask = true;
+                                                                de.Click.EventMask.Msg = "Traitement en cours...";
+                                                            })
+                                                    )
+    #endregion
+                                                    )
+
+                                                    )
+                                                    )
+
+
+
+
+
+
+
+                                ),
+
+
+                X.Panel()
+                .ID("PnPalette")
+                .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+
+                         .TopBar(
+    new Toolbar
+    {
+        Items =
+        {
+           X.ComboBox()
+    .ID("cmbTypeEtiquette")
+    .LabelAlign(LabelAlign.Right)
+    .Editable(true)
+    .ForceSelection(true)
+    .Value("A4") // Par défaut
+    .DisplayField("Text")
+    .ValueField("Value")
+    .Store(
+        X.Store()
+            .ID("StoreTypeEtiquette")
+            .Model(
+                X.Model()
+                    .Fields(
+                        X.ModelField().Name("Value").Type(ModelFieldType.String)
+                    )
+            )
+            .Data(new object[]
+            {
+                new { Value = "A4" , Text = "A4"},
+                new { Value = "A5" , Text = "A5"}
+            })
+    ) .Listeners(l =>
+    {
+        l.Select.Handler = "App.storePaletteListe.reload();";
+    }),
+            X.Button()
+                .ID("BtnAddNewPalette")
+                .Icon(Icon.Add)
+                .Border(false)
+                .Cls("ButtonStyle")
+                .Text("Ajouter")
+                .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
+                .DirectEvents(de =>
+                                {
+                                    de.Click.Url = Url.Action("GeneratePalette", "Palette"); // ou .DirectMethod = "ValiderSelection"
+
+                                    de.Click.ExtraParams.Add(new Parameter
+                                    {
+                                        Name = "ItemOrdreDeFabricationID",
+                                        Value = @"App.txtOpOrdreFabricationID.getValue()",
+                                        Mode = ParameterMode.Raw
+                                    });
+
+                                    de.Click.ExtraParams.Add(new Parameter
+                                    {
+                                        Name = "ItemNbreEtiquetteA4Demande",
+                                        Value = @"App.txtNbreExemplaireA4.getValue()",
+                                        Mode = ParameterMode.Raw
+                                    });
+
+                                    de.Click.ExtraParams.Add(new Parameter
+                                    {
+                                        Name = "ItemNbreEtiquetteA5Demande",
+                                        Value = @"App.txtNbreExemplaireA5.getValue()",
+                                        Mode = ParameterMode.Raw
+                                    });
+
+                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.Message = "Confirmez-vous l'ajout ?";
+                                                    de.Click.Confirmation.Title = "Confirmation - Ajout";
+                                }),
+
+            X.Button()
+                .ID("BtnRemovePalette")
+                .Icon(Icon.Delete)
+                .Border(false)
+                .Cls("ButtonStyle")
+                .Text("Retirer")
+                .Disabled(true)
+            .DirectEvents(de =>
+                                                {
+                                                    de.Click.Url = Url.Action("RemovePalette", "Palette"); // ou .DirectMethod = "ValiderSelection"
+
+                                                     de.Click.ExtraParams.Add(new Parameter
+                                                    {
+                                                        Name = "selectedIds",
+                                                        Value = @"App.grpPaletteListe.getSelectionModel().getSelection().map(function(r){ return r.data.ID; })",
+                                                        Mode = ParameterMode.Raw
+                                                    });
+
+
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.Message = "Confirmez-vous la suppression ?";
+                                                    de.Click.Confirmation.Title = "Confirmation - Suppression";
+
+                                                    // Après suppression réussie, appeler ta fonction JS (exemple : resetButtons) et recharger la grille
+                                                    de.Click.Success = @"
+                                                        var selModel = App.rowPalette;
+                                                        selModel.deselectAll();
+                                                    ";
+                                                }),
+
+                                               X.Checkbox()
+    .ID("chkActif")
+    .BoxLabel("RéImprimer")
+    .Checked(false)
+    .Listeners(l =>
+    {
+        l.Change.Handler = @"
+                var selModel = App.rowPalette;
+                selModel.deselectAll();
+            
+            App.storePaletteListe.reload();
+            OverviewForm.resetButtons();
+        ";
+    }),
+
+
+            X.Button()
+    .ID("BtnImprimerPalette")
+    .IconCls("action_print_02")
+    .Border(false)
+    .Cls("ButtonStyle")
+    .Text("Imprimer")
+    .Disabled(true)
+    .DirectEvents(de =>
+    {
+        de.Click.Url = Url.Action("OnPrintDemandeEtiquette");
+
+        de.Click.ExtraParams.Add(new Parameter
+        {
+            Name = "selectedIds",
+            Value = @"App.grpPaletteListe.getSelectionModel().getSelection().map(function(r){ return r.data; })",
+            Mode = ParameterMode.Raw
+        });
+
+        de.Click.ExtraParams.Add(new Parameter
+        {
+            Name = "typeEtiquette",
+            Value = @"#{cmbTypeEtiquette}.getValue()",
+            Mode = ParameterMode.Raw
+        });
+
+        // Quand le serveur renvoie un succès → recharger le store
+        de.Click.Success = "App.storePaletteListe.reload();";
+    })
+
+        }
+    }
+)
+
+
+
+                            .Items(
+                                X.Hidden().ID("PAhiddenPermAdd").Value(ViewData["PAhiddenPermAdd"]).ReadOnly(true),
+                                X.Hidden().ID("PAhiddenPermRemove").Value(ViewData["PAhiddenPermRemove"]).ReadOnly(true),
+                                X.Hidden().ID("PAhiddenPermPrintCode").Value(ViewData["PAhiddenPermPrintCode"]).ReadOnly(true),
+                                   X.GridPanel()
+    .Layout(LayoutType.Fit)
+    .ID("grpPaletteListe")
+    .Region(Region.Center)
+    .ForceFit(true)
+    .Border(true)
+    .Height(150)
+    .AllowDeselect(true)
+
+    .Store(
+       X.StoreFor<Tms.Classes.Business.Palette>()
+            .ID("storePaletteListe")
+             .RemotePaging(false)
+            .AutoLoad(false)
+            .Proxy
+            (
+                X.AjaxProxy()
+                .Url(Url.Action("SelectByOrdreDeProduction", "Palette"))
+                .Reader(X.JsonReader().RootProperty("data"))
+            )
+            .Parameters(
+                ps =>
+                {
+                    ps.Add(new StoreParameter("ItemOrdreDeFabricationID", "#{txtOpOrdreFabricationID}.getValue()", ParameterMode.Raw));
+                    ps.Add(new StoreParameter("ItemTypeEtiquette", "#{cmbTypeEtiquette}.getValue()", ParameterMode.Raw)); 
+                    ps.Add(new StoreParameter("ItemRePrint", "#{chkActif}.getValue()", ParameterMode.Raw));
+                    ps.Add(new StoreParameter("ItemOverviewPrint", "true", ParameterMode.Raw));
+                }
+            )
+
+    )
+    .ColumnModel(
+        Html.X().Column().Text("Numéro de fabrication").DataIndex("OrdreFabricationNumeroAsString"),
+        Html.X().Column().Text("Numéro de palettes").DataIndex("Numero"),
+        Html.X().Column().Text("Type d'étiquettes").DataIndex("TypeEtiquette"),
+        Html.X().Column().Text("Nbre Exemplaire").DataIndex("NbreExemplaire"),
+
+        Html.X().Column().DataIndex("ID").Hidden(true),
+        Html.X().Column().DataIndex("ProduitTypeDesignation").Hidden(true),
+        Html.X().Column().DataIndex("NbreUnite").Hidden(true),
+        Html.X().Column().DataIndex("PoidsBrutUnitaire").Hidden(true),
+        Html.X().Column().DataIndex("UniteDePoidsDesignation").Hidden(true),
+        Html.X().Column().DataIndex("DateFabricationAsString").Hidden(true),
+        Html.X().Column().DataIndex("DemandeEtiqueteBestBeforeDate").Hidden(true)
+    )
+
+    .SelectionModel(
+        Html.X().CheckboxSelectionModel()
+            .ID("rowPalette")
+            .Mode(SelectionMode.Multi)
+            .ShowHeaderCheckbox(true) // ✅ Pour ajouter la case à cocher dans l'en-tête
+            .CheckOnly(true)          // ✅ Empêche la sélection par clic sur la ligne
+            .AllowDeselect(true)
+    )
+    .
+    Listeners(l => { l.Select.Fn = "OverviewForm.resetButtons"; l.Deselect.Fn = "OverviewForm.resetButtons"; })
+
+    )
+
+    )
+    .Buttons
+    (
+
+         X.Button()
+            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? "OK" : "Approuver")
+            .ID("BtnOk")
+            .TabIndex(24)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url =  Url.Action("OnApprove");
+                de.Click.Before = "return validNew(App.FormDemandeEtiquette.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+                de.Click.Confirmation.ConfirmRequest = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false;
+                de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Demande Etiquette : Approuver'; config.confirmation.message = 'Voulez-vous approuver cette Demande ?'";
+                de.Click.EventMask.ShowMask = true;
+                de.Click.EventMask.Msg = "Traitement en cours...";
+            }),
+        X.Button()
+            .TabIndex(15)
+            .Text("Fermer")
+            .Handler("App.FormDemandeEtiquette.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'DemandeEtiquettes de production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+       /* if (App.cmbTypeDemandeEtiquette.value) {
+            var AutNombreSacs = App.cmbTypeDemandeEtiquette.getSelectedRecord().data.NombreSacs;
+            var NombreSacDemandeEtiquette = App.txtNombreSacs.value || 0;
+            if (NombreSacDemandeEtiquette > AutNombreSacs) {
+                Ext.Msg.show({ title: 'Production - DemandeEtiquettes de production : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Nbr de sacs added is higher than authorized Nbr de sacs for the Selected Type of DemandeEtiquettes de production !', buttons: Ext.Msg.OK });
+                return false;
+            }
+        }*/
+
+
+    };
+
+
+    var OverviewForm = {
+
+        resetButtons: function () {
+
+            App.BtnAddNewPalette.disable();
+            App.BtnRemovePalette.disable();
+            App.BtnImprimerPalette.disable();
+
+            console.log(App.PAhiddenPermPrintCode.value);
+
+            if (App.rowPalette.hasSelection()) {
+
+                if (App.PAhiddenPermAdd.value == 'true') {
+                    App.BtnAddNewPalette.enable();
+                }
+
+                if (App.PAhiddenPermRemove.value == 'true') {
+                    App.BtnRemovePalette.enable();
+                }
+
+                if (App.PAhiddenPermPrintCode.value == 'true') {
+                    App.BtnImprimerPalette.enable();
+                }
+
+            }
+        },
+
+        ReloadPaletteListe: function(){
+            App.storePaletteListe.reload();
+        }
+    };
+
+
+    var calculerBestBeforeDate = function () {
+      
+        var nbMois = parseInt(unformatNumber(App.txtArticleBestBeforeDate.value), 10) || 0;
+
+        if (isNaN(nbMois)) return;
+
+        console.log(App.txtDateEffectiveFabrication);
+
+        var dateEff = App.txtDateEffectiveFabrication.getValue();
+        if (!dateEff) return;
+
+        var newDate = new Date(dateEff);
+        newDate.setMonth(newDate.getMonth() + nbMois);
+
+        App.txtBestBeforeDate.setValue(newDate);
+    };
+
+
+    var calculerNetLivre = function () {
+        var tareBags = parseInt(unformatNumber(App.txtTareSacs.value), 10) || 0;
+        var tarePallets = parseInt(unformatNumber(App.txtTarePalette.value), 10) || 0;
+        var poidsbrut = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+        var poidsnet = poidsbrut - tareBags - tarePallets;
+
+        poidsnet = formatNumber(poidsnet);
+        App.txtPoidsNet.setValue(poidsnet);
+
+    };
+
+    var calculerPoidsBrutTotal = function () {
+        var NbreUniteParPalette = parseInt(unformatNumber(App.txtNombreUnitePalette.value), 10) || 0;
+        var PoidsBrutUnitaire = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+        var PoidsBrutTotal = NbreUniteParPalette * PoidsBrutUnitaire;
+        PoidsBrutTotal = formatNumber(PoidsBrutTotal);
+        App.txtPoidsBrutTotal.setValue(PoidsBrutTotal);
+
+        var TareUnitaire = parseInt(unformatNumber(App.txtTareUnitaireEmbalage.value), 10) || 0;
+        var TareTotaleEmballage = NbreUniteParPalette * TareUnitaire;
+
+        TareTotaleEmballage = formatNumber(TareTotaleEmballage);
+        App.txtTareTotaleEmballage.setValue(TareTotaleEmballage);
+
+    
+        var _TareTotaleEmballage = parseInt(unformatNumber(App.txtTareTotaleEmballage.value), 10) || 0;
+        var _PoidsBrutTotal = parseInt(unformatNumber(App.txtPoidsBrutTotal.value), 10) || 0;
+        var TarePalette = parseInt(unformatNumber(App.txtTarePalette.value), 10) || 0; 
+
+        var PoidsNetTotalPalette = _PoidsBrutTotal - _TareTotaleEmballage - TarePalette;
+        PoidsNetTotalPalette = formatNumber(PoidsNetTotalPalette);
+        App.txtPoidsNetTotalPalette.setValue(PoidsNetTotalPalette);
+
+
+    };
+
+   
+
+    var setCtrlIsRequired = function (field, value) {
+        field.allowBlank = !value;
+
+        field.setIndicator("");
+        field.setIndicatorCls('');
+        field.showIndicator();
+
+        if (value == true) {
+
+            field.setIndicator("*");
+            field.setIndicatorCls('IndicatorRedStar');
+            field.showIndicator();
+        }
+    };
+
+   /* var DefinirZonesObligatoires = function (record) {
+        setCtrlIsRequired(App.txtOrdreProduction, false);
+        if (record.ID == App.hiddenProduit.value) {
+            setCtrlIsRequired(App.txtOrdreProduction, true);
+        }
+
+        /*setCtrlIsRequired(App.TxtNumero, true);
+        App.TxtNumero.setReadOnly(false);
+        if (record.ID == App.hiddenProduit.value) {
+            setCtrlIsRequired(App.TxtNumero, false);
+            App.TxtNumero.setReadOnly(true);
+        }
+    };*/
+
+    var SetNumberDemandeEtiquetteField = function () {
+        if (App.ChkEstReusine.checked)
+        {
+           /* App.TxtNumero.setReadOnly(false);
+            App.TxtNumero.allowBlank = (false);
+            App.TxtNumero.setIndicator("*");
+            App.TxtNumero.validate();*/
+        } else {
+            /*App.TxtNumero.setReadOnly(true);
+            App.TxtNumero.allowBlank = (true);
+            App.TxtNumero.setIndicator("");
+            App.TxtNumero.validate();*/
+        }
+    };
+
+
+   
+
+
+</script>
+
