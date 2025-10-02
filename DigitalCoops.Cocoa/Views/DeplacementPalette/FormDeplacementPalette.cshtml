@@ -324,6 +324,7 @@
             .DirectEvents(de =>
             {
                 de.Click.Url = Url.Action("SubmitFormMethod", "DeplacementPalette");
+                de.Click.FormID = "FormDeplacementPanel";
                 de.Click.Before = "return validDeplacementForm(App.FormDeplacementPaletteWindow.id);";
                 de.Click.EventMask.ShowMask = true;
                 de.Click.Success = @"
