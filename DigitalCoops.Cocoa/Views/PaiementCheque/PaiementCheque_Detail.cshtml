@@ -1,0 +1,257 @@
+﻿
+@model Tms.Classes.Business.Sales.PaiementChequeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 30px;
+        min-height: 75px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+
+      X.Window()
+            .ID("PaiementCheque_Detail")
+            .Width(500)
+            .Modal(true)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(200)
+            .BodyPadding(5)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+
+            .Title("Payment")
+            .Items
+            (
+
+             X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+
+
+                X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenPay")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden()
+                                        .ID("hiddenExecMode")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                        X.Hidden()
+                                            .ID("hiddenRowversion")
+                                            .Value(Model._PaiementCheque.RowVersionKey)
+                                            ,
+
+                                        X.Hidden()
+                                            .ID("txtPaiementChequeID")
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PaiementCheque.ID : Guid.Empty)
+                                            ,
+
+                                            X.Panel()
+                                             .ID("firstColPay")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(1)
+                                             .Items
+                                             (
+
+
+                                                X.ComboBox()
+                                                 .ID("_cmbBanque")
+                                                 .TypeAhead(true)
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(true)
+                                                 //.IndicatorCls("IndicatorRedStar")
+                                                 //.IndicatorText("*")
+                                                 .FieldLabel("Bank")
+                                                 .DisplayField("Nom")
+                                                 .ListConfig(new BoundList { MinWidth = 300 })
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew  && Model._PaiementCheque.Banque !=null ? Model._PaiementCheque.Banque.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadBanque", "Banque"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+                                                ,
+                                                X.TextField()
+                                                .FieldLabel("Montant (CFA)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .HideTrigger(true)
+                                                //.MaskRe("[0123456789]")
+                                                .ID("txtAmountPayment")
+                                                .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PaiementCheque.Montant.ToString("n0") : string.Empty)
+                                                //.Width(170)
+                                                .Listeners
+                                                 (
+                                                   ls =>
+                                                   {
+                                                       ls.Blur.Handler = "if (App.txtAmountPayment.value && !App.txtAmountPayment.readOnly) {#{txtAmountPayment}.setValue(formatNumber(#{txtAmountPayment}.getValue()))}";
+                                                       ls.Focus.Handler = "if (App.txtAmountPayment.value && !App.txtAmountPayment.readOnly) { #{txtAmountPayment}.setRawValue(unformatNumber(#{txtAmountPayment}.getValue()));}";
+
+                                                   }
+
+                                                 )
+                                                 ,
+                                                 X.TextField()
+                                                .ID("txtRefCheque")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PaiementCheque.ReferenceCheque : string.Empty)
+                                               // .Width(340)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Ref. Check")
+                                                .LabelAlign(LabelAlign.Right)
+                                               
+                                 //1stCol
+                                 )
+
+                              //End first panel
+                              )
+
+
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOkAdd")
+                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Validate" : "Ok")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitOnAdd", "PaiementCheque");
+                            de.Click.Before = "return validAdd(App.PaiementCheque_Detail.id); ";
+
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemPaiementChequeID", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtPaiementChequeID}.getValue()" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenExecMode}.getValue()" });
+
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemBanqueID", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbBanque}.getValue()" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemMontant", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtAmountPayment}.getRawValue()" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemRefCheque", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtRefCheque}.getValue()" });
+                            de.Click.Confirmation.ConfirmRequest = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false;
+                            de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Payment : Edit Payment'; config.confirmation.message = 'Do you want to edit this item? ';";
+
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.PaiementCheque_Detail.doClose()")
+                    .Cls("btncancel")
+
+                //End Button
+                )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validAdd = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Payment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = Number(App.txtAmountPayment.value);
+      
+        if (Ext.isNumeric(Amount) && parseFloat(Amount) < 0 ) {
+            Ext.Msg.show({ title: 'Payment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var NumCheck = App.txtRefCheque.value;
+        var ExecMode = App.hiddenExecMode.value;
+        var IDPaiement = App.txtPaiementChequeID.value;
+        if (App.grpDetailPaiementCheque.getRowsValues().length >= 1) {
+            for (i = 0; i < App.grpDetailPaiementCheque.getRowsValues().length; i++) {
+                if (App.grpDetailPaiementCheque.getRowsValues()[i].Desactive == 0) {
+
+                    if (NumCheck == App.grpDetailPaiementCheque.getRowsValues()[i].ReferenceCheque && IDPaiement != App.grpDetailPaiementCheque.getRowsValues()[i].ID) {
+                        Ext.Msg.show({ title: 'Payment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Reference already exist', buttons: Ext.Msg.OK });
+                        return false;
+                    }
+
+                }
+            }
+
+        }
+
+
+
+    };
+
+
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+   
+
+</script>
+

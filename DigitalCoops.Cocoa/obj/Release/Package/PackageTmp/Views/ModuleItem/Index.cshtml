@@ -1,0 +1,309 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+
+<script type="text/javascript">
+
+    var GetNbrStoreRows = function () {
+        var nbr = App.storeListeModuleItem.getCount();
+        App.LblResumeModuleItem.setText(nbr+ ' Functionality(s)');
+        App.storeListeModuleItem.getCount()
+    };
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        return Ext.String.format(tpl, icon_url);
+    };
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+    };
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red'; // glyphicon glyphicon-remove red
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue'; // glyphicon glyphicon-file blue
+            }
+        },
+        resetButtons: function () {
+
+            if (App.rowSelectionModuleItem.hasSelection()) {
+                App.btnModifyModuleItem.enable();
+                
+                App.mnuCancelModuleItem.enable();
+                var isDisabled = App.rowSelectionModuleItem.selected.items[0].data.IsDisable;
+
+                if (isDisabled === true) {
+                    App.mnuCancelModuleItem.setText('Activer');
+
+                    App.mnuCancelModuleItem.setIconCls('glyphicon glyphicon-ok green');
+                }
+                else {
+                    App.mnuCancelModuleItem.setText('Annuler');
+                    App.mnuCancelModuleItem.setIconCls('glyphicon glyphicon-remove red');
+                }
+
+            } else {
+
+
+                App.btnModifyModuleItem.disable();                
+                App.mnuCancelModuleItem.disable();
+            }
+        }
+    };
+
+
+</script>
+
+
+@model Tms.Classes.Security.ModuleItem
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+
+    @(X.Viewport()
+        .Layout(LayoutType.Border)
+        .ID("TmsViewPort")
+        .Items(
+            X.Panel()
+                .ID("pnlNorth")
+                .Region(Region.North)
+                .Layout(LayoutType.Border)
+                .TopBar(new Toolbar()
+                {
+                    Items = { X.Button()
+                        .ID("btnFilterModuleItem")
+                        .IconCls("action_filter_02")
+                        .Border(false)
+                        .Cls("ButtonStyle")
+                        .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                        .Disabled(false)
+                        .DirectEvents( de =>{
+                            de.Click.Url  = Url.Action("OnFilter");
+                            de.Click.EventMask.ShowMask = true;
+                        } ),
+                        X.Button()
+                        .ID("btnRefreshModuleItem")
+                        .IconCls("action_refresh_01")
+                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                        .Border(false)
+                        .Cls("ButtonStyle")
+                        .Disable(false)
+                        .DirectEvents( de =>{
+                            de.Click.Url  = Url.Action("onRefresh");
+
+                            de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Encode=true, Value= "#{TxtStatus}.getValue()",     Mode=ParameterMode.Raw});
+
+                            de.Click.EventMask.ShowMask = true;
+
+                        } ),
+                        X.Button()
+                        .ID("btnNewModuleItem")
+                        .IconCls("action_new_02")
+                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                        .Cls("ButtonStyle")
+                        .Border(false)
+                        .Disable(false)
+                        .DirectEvents( de =>{
+                            de.Click.Url  = Url.Action("OnAdd");
+                            de.Click.Success = "App.FormModuleItem.setTitle('Module Item : Nouveau')";
+                            de.Click.EventMask.ShowMask = true;
+                        } ),
+                        X.Button()
+                        .ID("btnModifyModuleItem")
+                        .IconCls("action_modify_02")
+                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                        .Cls("ButtonStyle")
+                        .Border(false)
+                        .Disabled(true)
+                        .DirectEvents( de =>{
+                            de.Click.Url  = Url.Action("OnEdit");
+                            de.Click.Success = "App.FormModuleItem.setTitle('Module Item : Modifier')";
+                            de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeModuleItem}.getSelectionModel().getSelection()[0].data"});
+                            de.Click.EventMask.ShowMask = true;
+                        } ),
+                        X.SplitButton()
+                        .ID("btnPrint")
+                        .IconCls("action_print_02")
+                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                        .Disable(false)
+                        .Cls("ButtonStyle")
+                        .Border(false)
+                        .Menu(new Menu()
+                        {
+                            Items =
+                            {
+                                X.MenuItem()
+                                .ID("mnuHistorique")
+                                .Text("Overview")
+                                .OnClientClick("#{grpListeModuleItem}.print();"),
+                                X.MenuItem()
+                                .ID("mnuPrintCard")
+                                .Text("Print farmer card")
+                                .DirectEvents( de=>
+                                    {
+                                        de.Click.Url = Url.Action("OnPrint");
+
+                                        de.Click.ExtraParams.Add(new Parameter {  Name = "id_ModuleItem" , Mode= ParameterMode.Raw, Encode = true, Value = "#{grpListe}.getSelectionModel().getSelection()[0].data.ID" });
+                                    })
+                             }
+
+                        }),
+
+                        X.ToolbarFill(),
+
+                        X.Button()
+                        .ID("btnActions")
+                        .Text("Actions")
+                        .Border(false)
+                        .Cls("ButtonStyle")
+                        .IconCls("menu_04")
+                        .Disable(false)
+                            .Menu(new Menu()
+                            {
+                                Items = {
+                                            X.MenuItem()
+                                            .ID("mnuCancelModuleItem")
+                                            .IconCls("glyphicon glyphicon-remove red")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(true)
+                                            .DirectEvents(de =>
+                                            {
+                                                de.Click.Url = Url.Action("OnActivateDeactivate");
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeModuleItem}.getSelectionModel().getSelection()[0].data" });
+                                                de.Click.EventMask.ShowMask = true;
+                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'ModuleItem : Cancel'; config.confirmation.message = 'Do you want to deactivate/activate the selected ModuleItem ? ';";
+                                            })
+
+                                        }
+                                    })
+                                    }
+                }),
+                X.FormPanel()
+                .ID("ModuleItemCriteriaPanel")
+                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "ModuleItem - overview" })
+                .Region(Region.North)
+                .Border(false)
+                .Collapsed(true)
+                .Collapsible(true)
+                //.CollapsedCls("panelcollapse")
+                .BodyPadding(5)
+                .Frame(true)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+                .Items(
+                        X.Panel()
+                        .Border(false)
+                        .Frame(true)
+                        .Margin(10)
+                        .Width(400)
+                        .Height(150)
+                        //.Title("Criteria")
+                        .Layout(LayoutType.Form)
+                        .BodyPadding(6)
+                        .Items(
+                                X.Checkbox().ID("TxtStatus").FieldLabel("Show only active Module Item").LabelAlign(LabelAlign.Right)
+                            ),
+                        X.Panel()
+                            .ID("formOverviewModuleItem")
+                            .Width(400)
+                            .Margin(10)
+                            .Flex(1)
+                            .Frame(true)
+                            .Height(150)
+                            .TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                            .Border(false)
+                            .BodyPadding(6)
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items(X.Container()
+                                .ID("")
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                .Items(
+                                        X.Label().ID("LblResumeModuleItem").Text("Resume").EmptyText("")
+                                        )
+                            )
+                        ),
+
+
+                        X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeModuleItem")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .AllowDeselect(true)
+                        .Store(
+                            X.StoreFor<Tms.Classes.Security.ModuleItem>().ID("storeListeModuleItem")
+                            .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("Select"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    ).Listeners(l => l.Load.Fn = "GetNbrStoreRows")
+                                )
+                        .ColumnModel
+                        (
+                            Html.X().Column().Text("").DataIndex("mIcon").Width(20).Renderer("renderIcon").Width(40),
+                            Html.X().Column().Text("Nom").DataIndex("Nom").Flex(1),
+                            Html.X().Column().Text("Description").DataIndex("Description").Flex(1),
+                            Html.X().Column().Text("Url").DataIndex("Url").Flex(1),
+                            Html.X().Column().Text("Order").DataIndex("Order").Flex(1)
+                        )
+                        .BottomBar(
+                        Html.X().PagingToolbar()
+                        .HideRefresh(false)
+                        .Plugins(Html.X().ProgressBarPager())
+                        )
+                        .Plugins(
+                            X.FilterHeader()
+                        )
+                        .SelectionModel(
+                            X.RowSelectionModel()
+                                .ID("rowSelectionModuleItem")
+                                .Mode(SelectionMode.Single)
+                                .AllowDeselect(true)
+                        )
+                        .Listeners(l =>
+                        {
+                            l.Select.Fn = "Overview.resetButtons";
+                            l.Deselect.Fn = "Overview.resetButtons";
+
+                        }
+                )
+
+    )
+    )
+
+</form>

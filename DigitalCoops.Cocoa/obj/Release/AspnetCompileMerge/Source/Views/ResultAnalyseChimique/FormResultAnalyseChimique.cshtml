@@ -1,0 +1,632 @@
+﻿@model Tms.Classes.Business.stock.AnalyseChimiqueViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+
+<style type="text/css">
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 75px;
+    }
+</style>
+@(
+X.Window()
+    .ID("FormResultAnalyseChimique")
+    .Width(1060)
+    .Resizable(false)
+    .Modal(true)
+    .Height(400)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Chemical Analysis - Result : Detail")
+    .Items(
+            X.FormPanel()
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch,Pack = BoxPack.Center })
+                .FieldDefaults(d => d.ReadOnly = (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult) || (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve) ? true : false)
+                .Items(
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._AnalyseChimique.RowVersionKey),
+                        X.Hidden().ID("TxtAnalyseChimiqueID").Value(Model._AnalyseChimique.ID),
+                        //X.Hidden().ID("TxtEchantillonID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Echantillon.ID : (Guid?)null),
+                        X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .Frame(true)
+                            .Margin(5)
+                            .PaddingSpec("0 50")
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                            .Items(
+    #region Gauche
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                    X.ComboBox()
+                                                        .ID("cmbEchantillon")
+                                                        .FieldLabel("Sample N°")
+                                                        .DisplayField("NumeroEchantillon")
+                                                        .ValueField("ID")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Echantillon.NumeroEchantillon : "")
+                                                       .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Echantillon.ID : (Guid?)null)
+                                                        //.ReadOnly(true)
+                                                        .TabIndex(1)
+                                                        .AllowBlank(false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                        .HideTrigger(true)
+                                                        //.ForceSelection(true)
+                                                        .TypeAhead(true)
+                                                        .QueryMode(DataLoadMode.Remote)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .SelectOnFocus(true)
+                                                        .MinChars(4)                                                        
+                                                        .Store(
+                                                                    X.Store()
+                                                                        .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                                        .Model(
+                                                                                X.Model()
+                                                                                    .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                        new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                                                        new ModelField("NumeroEchantillon", ModelFieldType.String) { Mapping = "NumeroEchantillon" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(
+                                                                                    X.AjaxProxy()
+                                                                                        .Url(Url.Action("LoadSamplesCode", "SampleAnalyseChimique"))
+                                                                                        .ActionMethods(am => am.Read = HttpMethod.POST)
+                                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                    )
+                                                                            .Parameters(                                                                        
+                                                                        ps => ps.Add(new StoreParameter("query",( Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Echantillon.NumeroEchantillon : string.Empty), ParameterMode.Value))
+                                                                        )                                                        
+                                                        )
+
+                                                        ,
+                                                X.ComboBox()
+                                                    .ID("CmbLaboratoire")
+                                                    .FieldLabel("Laboratoire")
+                                                    .DisplayField("Designation")
+                                                    .ValueField("ID")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Laboratoire.ID : Model._DefaultLaboratoire)
+                                                    //.ReadOnly(true)
+                                                    .TabIndex(2)
+                                                    .ForceSelection(true)
+                                                    .TypeAhead(true)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .MatchFieldWidth(false)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    //.ReadOnly(true)
+                                                    .Store(
+                                                            X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(
+                                                                        X.Model()
+                                                                            .IDProperty("ID")
+                                                                            .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                            )
+                                                                        )
+                                                                .Proxy(
+                                                                        X.AjaxProxy()
+                                                                            .Url(Url.Action("LoadLaboratoire", "Laboratoire"))
+                                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                        )
+                                                    ),
+                                                X.DateField()
+                                                    .ID("TxtDateAnalyseChimique")
+                                                    .FieldLabel("Date Analyse")
+                                                    //.ReadOnly(true)
+                                                    .TabIndex(3)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.DateAnalyse.ToString() : DateTime.Now.ToString())
+                                                    .LabelAlign(LabelAlign.Right)
+                                            ),
+    #endregion
+    #region Droite
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.ComboBox()
+                                                    .ID("CmbAnalyseur")
+                                                    .FieldLabel("Analysé Par")
+                                                    .DisplayField("Nom")
+                                                    .ValueField("ID")
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Analyseur.ID : (int?)null)
+                                                    //.ReadOnly(true)
+                                                    .TabIndex(4)
+                                                    .ForceSelection(true)
+                                                    .TypeAhead(true)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    .Store(
+                                                            X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                        .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                        )
+                                                                    )
+                                                                .Proxy(Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadAnalyseur", "Analyseur"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                    )
+                                                        ),
+                                                X.ComboBox()
+                                                    .ID("CmbSuperviseur")
+                                                    .FieldLabel("Supervisé Par")
+                                                    .DisplayField("Nom")
+                                                    .ValueField("ID")
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    //.ReadOnly(true)
+                                                    .TabIndex(5)
+                                                    .ForceSelection(true)
+                                                    .TypeAhead(true)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Model._AnalyseChimique.Verificateur != null ? Model._AnalyseChimique.Verificateur.ID : (int?)null) : (int?)null)
+                                                    .Store(
+                                                            X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                        .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                        )
+                                                                    )
+                                                                .Proxy(Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadAnalyseur", "Analyseur"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                )
+                                                    ),
+                                                X.TextField()
+                                                    .ID("TxtSheetNumber")
+                                                    .FieldLabel("Fiche N°")
+                                                    //.ReadOnly(true)
+                                                    .TabIndex(6)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.FicheNumero : "")
+                                                    .LabelAlign(LabelAlign.Right)
+                                            )
+    #endregion
+                                ),
+
+                        X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .Margin(5)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                            .Items(
+    #region Colonne 1
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(3)
+                                        .Items(
+
+                                                X.NumberField()
+                                                    .ID("TxtPoidsFeves")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Weight of cocoa beans")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.PoidsFeves : (double?)null)
+                                                    .AllowDecimals(true)
+                                                    .DecimalPrecision(4)
+                                                    .MinValue(0)
+                                                    .TabIndex(7)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculatePrShellContent();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtWeightShell")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Weight Of Shell")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightShell : (double?)null)
+                                                    .AllowDecimals(true)
+                                                    .MinValue(0)
+                                                    .DecimalPrecision(4)
+                                                    .TabIndex(8)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculatePrShellContent();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtShellContentPc")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("% of Shell Content")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(true)
+                                                    .ReadOnly(true)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.ShellContentPc : (double?)null)
+                                                    .TabIndex(9),
+                                                X.NumberField()
+                                                    .ID("TxtWeightGroundBeans")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Wgt of ground C. bean")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowDecimals(true)
+                                                    .DecimalPrecision(4)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightGroundBeans : (double?)null)
+                                                    //.ReadOnly(true)                                                    
+                                                    .TabIndex(10)
+                                                    .Listeners(ls =>
+                                                    {
+                                                        ls.Change.Handler = "CalculatePrMoisture();";
+                                                    }),
+                                                X.NumberField()
+                                                    .ID("TxtWeightGroundBeansAndAluminium")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Wgt of ground C. bean + al. CUP")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowDecimals(true)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .DecimalPrecision(4)
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightGroundBeansAndAluminium : (double?)null)
+                                                    //.ReadOnly(true)
+                                                    //.MinValue(0)
+                                                    .TabIndex(11)
+                                                    .Listeners(ls =>
+                                                    {
+                                                        ls.Change.Handler = "CalculatePrMoisture();";
+                                                    }),
+                                                X.NumberField()
+                                                    .ID("TxtWeightGroundBeansAluminumClean")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Wgt of ground C. bean + al. CUP after drying")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(true)
+                                                    .AllowDecimals(true)
+                                                    .DecimalPrecision(4)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightGroundBeansAluminumClean : (double?)null)
+                                                    //.ReadOnly(true)                                                                                                        
+                                                    .TabIndex(12)
+                                                    .Listeners(ls =>
+                                                    {
+                                                        ls.Change.Handler = "CalculatePrMoisture();";
+                                                    })
+                                             ),
+    #endregion
+    #region Colonne 2
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(3)
+                                        .Items(
+                                                X.NumberField()
+                                                    .ID("TxtMoisture")
+                                                    .HideTrigger(true)
+                                                    .Flex(1)
+                                                    .FieldLabel("% of moisture")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ReadOnly(true)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .TabIndex(13)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Moisture : (double?)null),
+                                                X.NumberField()
+                                                    .ID("TxtPH")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("pH (%)")
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .TabIndex(14)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.PH : (double?)null),
+                                                X.NumberField()
+                                                    .ID("TxtWeightDryFlaskPumice")
+                                                    .HideTrigger(true)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .DecimalPrecision(4)
+                                                    .TabIndex(15)
+                                                    .FieldLabel("Wgt of dry flask + pumice stones (%)")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightDryFlaskPumice : (double?)null)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculateWeightOfFat();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtWeightGroundBeans2")
+                                                    .HideTrigger(true)
+                                                    .AllowBlank(false)
+                                                    .DecimalPrecision(4)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .TabIndex(16)
+                                                    .FieldLabel("Wgt of ground C. beans (2) (%)")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightGroundBeans2 : (double?)null)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculatePrFatContent();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtWeightFlaskFatClean")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Wgt of flask + fat after drying")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .DecimalPrecision(4)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightFlaskFatClean : (double?)null)
+                                                    .TabIndex(17)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculateWeightOfFat();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtWeightFat")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Weight of fat (%)")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .TabIndex(18)
+                                                    .DecimalPrecision(4)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.WeightFat : (double?)null)
+                                                    .ReadOnly(true)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculatePrFatContent(); CalculateFFA();"
+                                                    )
+
+                                            ),
+    #endregion
+    #region Colonne 3
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(2)
+                                        .Items(
+                                                X.NumberField()
+                                                    .ID("TxtFatContentPc")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("% Fat Content")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.FatContentPc : (double?)null)
+                                                    .ReadOnly(true)
+                                                    .TabIndex(19)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculatePrActualFatContent();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtBlankFromPetroleum")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Blank From Petroleum")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.BlankFromPetroleum : (double?)null)                                                    
+                                                    .TabIndex(20)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculatePrActualFatContent();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtActualFatContent")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Actual % Fat content")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.ActualFatContent : (double?)null)
+                                                    .ReadOnly(true)
+                                                    .TabIndex(21),
+                                                X.NumberField()
+                                                    .ID("TxtKOH")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("KOH Volume")
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.KOH : (double?)null)
+                                                    .TabIndex(22)
+                                                    .Listeners(
+                                                        ls => ls.Change.Handler = "CalculateFFA();"
+                                                    ),
+                                                X.NumberField()
+                                                    .ID("TxtFFA")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("FFA")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.FFA : (double?)null)
+                                                    .ReadOnly(true)
+                                                    .TabIndex(23),
+                                                X.ComboBox()
+                                                    .ID("CmbResultatAnalyse")
+                                                    .FieldLabel("Resultat")
+                                                    .ReadOnly(true)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .TabIndex(24)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalyseChimique.Statut : "AC")
+                                                    .Items(
+                                                            new ListItem("Accepté", "AC"),
+                                                            new ListItem("Rejeté", "RE")
+
+                                                        )
+                                            )
+    #endregion
+                            )
+                    )
+
+    )
+    .Buttons(
+                X.Button()
+                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? "OK" : "Approve")
+                    .ID("BtnSubmitAnalyse")
+                    .TabIndex(25)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? Url.Action("SubmitFormMethod") : Url.Action("SubmitAnalyeApprove");
+                        de.Click.Before = "return validNew(App.FormResultAnalyseChimique.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Confirmation.ConfirmRequest = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false;
+                        de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Physique - Lot - Approve'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormResultAnalyseChimique.doClose()")
+                    .Cls("btncancel")
+                    .TabIndex(26)
+    )
+)
+@Scripts.Render("~/bundles/validation")
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fields');
+            Ext.Msg.show({ title: 'Analyse Physique : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if ((App.CmbAnalyseur.value && App.CmbSuperviseur.value) && (App.CmbAnalyseur.value == App.CmbSuperviseur.value)) {
+            Ext.Msg.show({ title: 'Analyse Physique : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please change Reviewer or Analyzeur', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };        
+</script>
+
+<script type="text/javascript">
+    var CalculatePrShellContent = function () {
+        var poidsfeves = parseFloat(App.TxtPoidsFeves.value) || 0;
+        var weightShell = parseFloat(App.TxtWeightShell.value) || 0;
+        var result = (weightShell / poidsfeves) * 100;
+        App.TxtShellContentPc.setValue(result);
+    };
+
+    var CalculatePrMoisture = function () {
+        var WGroudBeans = parseFloat(App.TxtWeightGroundBeans.value) || 0;
+        var WGroundAlu = parseFloat(App.TxtWeightGroundBeansAndAluminium.value) || 0;
+        var WGroudBeansAluClean = parseFloat(App.TxtWeightGroundBeansAluminumClean.value) || 0;
+        
+        var result = ((WGroundAlu - WGroudBeansAluClean) / WGroudBeans) * 100;
+        App.TxtMoisture.setValue(result);
+    };
+
+    var CalculateWeightOfFat = function () {
+        var WPumice = parseFloat(App.TxtWeightDryFlaskPumice.value) || 0;
+        var WFlask = parseFloat(App.TxtWeightFlaskFatClean.value) || 0;
+        var result = WFlask - WPumice;
+        App.TxtWeightFat.setValue(result);
+    };
+
+    var CalculatePrFatContent = function () {
+        var WFat = parseFloat(App.TxtWeightFat.value) || 0;
+        var WGroundBeans = parseFloat(App.TxtWeightGroundBeans2.value) || 0;
+        var result = (WFat / WGroundBeans) * 100;
+        App.TxtFatContentPc.setValue(result);
+    };
+
+    var CalculatePrActualFatContent = function () {
+        var PrFat = parseFloat(App.TxtFatContentPc.value) || 0;
+        var Blank = parseFloat(App.TxtBlankFromPetroleum.value) || 0;
+        var result = (PrFat - Blank);
+        App.TxtActualFatContent.setValue(result);
+    };
+
+    var CalculateFFA = function () {
+        var koh = parseFloat(App.TxtKOH.value) || 0;
+        var Wfat = parseFloat(App.TxtWeightFat.value) || 0;
+        var result = (koh * 2.82) / Wfat;
+        App.TxtFFA.setValue(result);
+    };
+
+    var RoundIntToPrecision = function (v) {
+        try {
+            var partieEntiere = parseInt(v);
+            var partieDecimale = parseFloat(v) - parseInt(v);
+            partieDecimale = partieDecimale.toFixed(2);
+
+            if (partieDecimale == 0)
+                return partieEntiere;
+            else if (partieDecimale < 0.34)
+                return partieEntiere + 0.33;
+            else if (partieDecimale <= 0.67)
+                return partieEntiere + 0.66;
+            else
+                return partieEntiere + 1;
+
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var numInput;
+    window.onload = function () {
+        numInput = document.ge('input.number');
+        numInput.onkeypress = numInput.onkeydown = numInput.onblur = numInput.onkeyup = function () {
+            numInput.value = numInput.value.replace(/[^0-9]+/, "");
+        }
+    }
+</script>
+
+
+
+
+
+
+
+

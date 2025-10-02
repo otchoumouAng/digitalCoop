@@ -1,0 +1,308 @@
+﻿@model Tms.Classes.Business.stock.Lot
+
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+ 
+</head>
+@(
+X.Window()
+    .ID("LotProduction_Print")
+    .Width(700)
+    .Resizable(false)
+    .Height(240)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title("Lot : Print")
+    //.Layout(LayoutType.HBox)
+    //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Items
+            (
+    #region A
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbCampagne")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(ViewData["Campagne"])
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                                .IDProperty("Designation")
+                                                .Fields
+                                                (
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ),
+
+                            X.ComboBox()
+                                .ID("cmbExportateur")
+                                .FieldLabel("Exportateur")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Value(ViewData["Exportateur"])
+                                .Store
+                                    (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                    ),
+                            X.ComboBox()
+                                .ID("cmbTypeLot")
+                                .FieldLabel("Type De Lot")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(true)
+                                .ForceSelection(true)
+                                .Store
+                                (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadActiveLotTypeAll", "LotType"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                    )
+                                            .SelectedItems
+                                            (
+                                            it =>
+                                            {
+                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                            }
+                                            )
+                        ),
+    #endregion
+    #region B
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbCertification")
+                                .FieldLabel("Certification")
+                                .LabelWidth(110)
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store
+                                (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                )
+                                .SelectedItems
+                                (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                                ),
+                            X.DateField().ID("txtDateDebut").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(@StartDate),
+                            X.DateField().ID("txtDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(@EndDate),
+                            X.ComboBox()
+                            .ID("cmbStatut")
+                            .FieldLabel("Statut")
+                            .LabelWidth(110)
+                            .DisplayField("Description")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .TypeAhead(true)
+                            .ForceSelection(true)
+                            .Items
+                            (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                    it.Add(new ListItem { Text = "Canceled", Value = "1" });
+                                    it.Add(new ListItem { Text = "Approuvé", Value = "0" });
+                                }
+                            )
+                            .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                            }
+                            )
+                        )
+    #endregion
+
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("")
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("OnPrintLotList");
+                de.Click.Before = "return validNew(App.LotProduction_Print.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";                
+            }),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.LotProduction_Print.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var enterKeyPressHandler = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            var param = App.txtDeliveryID.value;
+            var baseurl = App.baseUrlVal.value;
+            Ext.net.DirectMethod.request({ url: baseurl + "/PeseeProduction/SubmitDeliveryNumber?ItemDeliveryNumber=" + param });
+            /*App.BtnSearchDeliveryInfo.fireEvent('click', App.BtnSearchDeliveryInfo);*/
+            e.stopEvent();
+        }
+    };
+
+    var SetCertification = function () {
+        var certificationID = App.cmbFicheLotCertifie.getSelectedRecord().data.Certification.ID;
+        console.log(certificationID);
+        App.cmbCertification.setValue(certificationID);
+    };
+</script>
+
+
+
+
+
+
+
+

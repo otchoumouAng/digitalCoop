@@ -1,0 +1,117 @@
+﻿
+@model Tms.Classes.Shared.Bascule
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    #txtFirstGrossWeight-inputEl{
+            font-size:30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align:center !important;
+            line-height: 30px !important;
+        }
+</style>
+@(X.FormPanel()
+        .Items(
+                X.Window()
+                .ID("FormTestScale")
+                .Width(400)
+                .Resizable(false)
+                .Height(270)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners(l =>
+                {
+                    l.Close.Handler = "App.TmsViewPort.unmask();";
+                })
+                //.X(400)
+                .Y(20)
+                .Title("Test Scale")
+                .BodyPadding(10)
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items(
+
+                            X.DisplayField()
+                                .ID("TxtDesignationRecolte")
+                                //.FieldLabel(" ")
+                                .Text(Model.Designation)
+                                .LabelAlign(LabelAlign.Right)
+                                ,
+                            X.NumberField()
+                                .ReadOnly(true)
+                                .FieldLabel("Poids (Kg)")
+                                .LabelAlign(LabelAlign.Right)
+                                //.FieldCls("weighingCapture")
+                                .ID("txtFirstGrossWeight")
+                                .MinValue(0)
+                                .HideTrigger(true)
+                                ,
+                            X.FieldContainer()
+                            .MarginSpec("10 0 0 0")
+                                .Layout(LayoutType.Fit)
+                                .Width(100)
+                                .Items(
+                                        X.Button()
+                                            .Text("Lire")
+                                            .ID("btnFirstWeightRead")
+                                            .Height(40)
+                                            //.Width(197)
+                                            .DirectEvents
+                                            (
+                                                de =>
+                                                {
+                                                    de.Click.Url = Url.Action("OnCaptureFirstWeight");
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                            )
+                                )
+
+                    )
+            .Buttons(
+                X.Button()
+                .Text("Fermer")
+                .Handler("App.FormTestScale.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Crop Quality : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

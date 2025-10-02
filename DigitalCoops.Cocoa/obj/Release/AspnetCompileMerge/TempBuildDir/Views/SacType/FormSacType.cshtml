@@ -1,0 +1,128 @@
+﻿
+@model Tms.Classes.Shared.SacTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 110px !important;
+}
+</style>
+@(X.Window()
+            .ID("FormSacType")
+            .Width(500)
+            .Resizable(false)
+            .Height(265)
+            .Modal(true)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Show.Handler = "#{TxtDesignationSacType}.focus();";
+            })
+            //.X(400)
+            .Y(20)
+            .Title("Type of Bag : Detail")
+            .Items(
+    X.FormPanel()
+    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+    .Layout(LayoutType.VBox)
+            .BodyPadding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items(
+            
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._SacType.RowVersionKey),
+                            X.Hidden().ID("TxtSacTypeID").Value(Model._SacType.ID),
+                            X.TextField().ID("TxtDesignationSacType").FieldLabel("Designation")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.Designation.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                .MarginSpec("0 5 0 0"),
+                            X.NumberField().ID("TxtTareSacType").FieldLabel("Tare")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.Tare.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                .MarginSpec("0 5 0 0").MinValue(0).AllowDecimals(true).HideTrigger(true),
+                            X.NumberField().ID("TxtPoidsMinSacType").FieldLabel("Min Weight")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.PoidsMin.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).MinValue(0).AllowDecimals(true).HideTrigger(true)
+                                .MarginSpec("0 5 0 0"),
+                            X.NumberField().ID("TxtPoidsMaxSacType").FieldLabel("Max Weight")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.PoidsMax.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).MinValue(0).AllowDecimals(true)
+                                .MarginSpec("0 5 0 0").HideTrigger(true),
+                            X.Checkbox().ID("ChkGenereMvtSacType").FieldLabel("Generate Mvt")
+                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.GenMouvement : false)
+                                .LabelAlign(LabelAlign.Right)
+                                .MarginSpec("0 5 0 0"),
+                            X.Checkbox().ID("TxtVisibilityOnWeighing").FieldLabel("Visible on Weighing")
+                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.EstVisiblePourPeseeSite : true)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._SacType.EstVisiblePourPeseeSite : true)
+                                .LabelAlign(LabelAlign.Right)
+                                .MarginSpec("0 5 0 0")
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitSacType")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormSacType.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormSacType.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Type of Bag : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var minval = parseFloat(App.TxtPoidsMinSacType.value);
+        var maxval = parseFloat(App.TxtPoidsMaxSacType.value);
+
+        if (maxval < minval) {
+            Ext.Msg.show({ title: 'Type of Bag : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Max weight must be higher than min weight .', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+

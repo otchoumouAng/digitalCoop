@@ -1,0 +1,553 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+
+@*<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript" src="~/Scripts/renderers.js"></script>*@
+@Scripts.Render("~/bundles/CommonScripts")
+<script type="text/javascript">
+
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeFactureTransport.columnManager.getColumns(), App.grpListeFactureTransport.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var SetCriteriaTitle = function (cropyear, Transporteur, begin, end) {
+
+        App.CriteriaPanelFactureTransport.title = "";
+        var texttitle = "";
+        if (cropyear) texttitle += "Campagne : " + cropyear + " | ";
+
+        if (Transporteur) texttitle += "Transporter : " + Transporteur + " | ";        
+
+        if (begin) texttitle += "Du : " + begin;
+
+        if (end) texttitle += " Au : " + end;       
+
+        App.CriteriaPanelFactureTransport.setTitle(texttitle);
+    }
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    }
+
+    var renderNameAndCode = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.NameAndCode)
+                return value.NameAndCode;
+        }
+
+        return value;
+    }
+
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';        
+
+        var icon_url = Overview.getBootStrapIcons(value);        
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red'; // glyphicon glyphicon-remove red
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue'; // glyphicon glyphicon-file blue
+            }
+        },
+        resetButtons: function () {
+            
+            if (App.rowSelectionListeFactureTransport.hasSelection()) {
+
+                if (App.FthiddenPermPrintCopyOfPayment.value == 'true')
+                    App.mnuPrintTransprortVoucher.enable();
+
+                if (App.FthiddenPermDesactiver.value == 'true')
+                    App.mnuCancelFactureTransport.enable();
+
+                var isDisabled = App.rowSelectionListeFactureTransport.selected.items[0].data.Desactive;
+
+                if (isDisabled === true) {
+                    App.mnuPrintTransprortVoucher.disable();
+                    App.mnuCancelFactureTransport.disable();
+                    /*App.mnuCancelFactureTransport.setText('Activer');
+                    App.mnuCancelFactureTransport.setIconCls('glyphicon glyphicon-ok green');*/
+                }
+                else {
+                    if (App.FthiddenPermPrintCopyOfPayment.value == 'true')
+                        App.mnuPrintTransprortVoucher.enable();
+
+                    App.mnuCancelFactureTransport.setText('Annuler');
+                    App.mnuCancelFactureTransport.setIconCls('glyphicon glyphicon-remove red');
+                }
+
+            } else {
+
+                App.mnuPrintTransprortVoucher.disable();
+                App.mnuCancelFactureTransport.disable();
+            }
+        }
+    }
+
+
+</script>
+
+
+@model Tms.Classes.Business.FactureTransport
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+    @(X.Viewport()
+    .Layout(LayoutType.Border)
+    .ID("TmsViewPort")
+    .Items(
+    #region North ToolBar
+    X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+    X.Hidden().ID("FthiddenPermCreer").ReadOnly(true),
+    X.Hidden().ID("FthiddenPermDesactiver").ReadOnly(true),
+    X.Hidden().ID("FthiddenPermPrintCopyOfPayment").ReadOnly(true),
+    X.Hidden().ID("FthiddenPermExporterExcel").ReadOnly(true),
+    X.Hidden().ID("FthiddenPermPrintListOfPayment").ReadOnly(true),
+    X.Hidden().ID("FthiddenPermOverview").ReadOnly(true),                            
+            X.Panel()
+                .ID("pnlNorth")
+                .Region(Region.North)
+                .Layout(LayoutType.Border)
+                .TopBar(
+                        new Toolbar()
+                        {
+                            Items = {
+                                        X.Button()
+                                            .ID("btnFilterFactureTransport")
+                                            .IconCls("action_filter_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                                            .Disable(false)
+                                            .DirectEvents( de =>{
+                                                de.Click.Url  = Url.Action("OnFilter");
+                                                de.Click.EventMask.ShowMask = true;
+                                            } ),
+                                        X.Button()
+                                            .ID("btnRefreshFactureTransport")
+                                            .IconCls("action_refresh_01")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                            .Border(false)
+                                                .Cls("ButtonStyle")
+                                                .Disable(false)
+                                                .DirectEvents( de =>{
+                                                    de.Click.Url  = Url.Action("onRefresh");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Value= "#{FactureTransportCampagneID}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemTransporteur" ,Value= "#{FactureTransportTransporteurID}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{TxtFactureTransportPeriodStart}.getRawValue()",   Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{TxtFactureTransportPeriodEnd}.getRawValue()",     Mode=ParameterMode.Raw});
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.Success = "SetCriteriaTitle(App.FactureTransportCampagneID.rawValue,App.FactureTransportTransporteurID.rawValue, App.TxtFactureTransportPeriodStart.rawValue, App.TxtFactureTransportPeriodEnd.rawValue);";
+
+                                                } ),
+                                        X.Button()
+                                            .ID("btnNewFactureTransport")
+                                            .IconCls("action_new_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disable(false)
+                                            .DirectEvents( de =>{
+                                                de.Click.Url  = Url.Action("OnAdd");
+                                                de.Click.Success = "App.FormFactureTransport.setTitle('Facture Transport : Nouveau')";
+                                                de.Click.EventMask.ShowMask = true;
+                                            } ),
+                                        X.SplitButton()
+                                            .ID("btnPrintFactureTransport")
+                                            .IconCls("action_print_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Disable(false)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Menu(
+                                                new Menu()
+                                                    {
+                                                    Height = 80,
+                                                        Items =
+                                                        {
+                                                            
+
+                                                            X.MenuItem()
+                                                                .ID("mnuPrintTransportInvoiceList")
+                                                                .Text("Liste des factures")
+                                                                .Disabled(false)
+                                                                .DirectEvents(de =>
+                                                                        {
+                                                                            de.Click.Url = Url.Action("OnDisplayInvoiceList");                                                                            
+                                                                            de.Click.EventMask.ShowMask = true;
+                                                                        }),
+
+                                                            X.MenuItem()
+                                                                .ID("mnuPrintTransprortVoucher")
+                                                                .Text("Voucher")
+                                                                .Disabled(true)
+                                                                .DirectEvents( de=>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnPrintTransportVoucher");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeFactureTransport}.getSelectionModel().getSelection()[0].data" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                })
+                                                        }
+                                                }),
+                                        X.ToolbarFill(),
+                                        X.Button()
+                                            .ID("btnActions")
+                                            .Text("Actions")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .IconCls("menu_04")
+                                            .Disable(false)
+                                            .Menu(
+                                                    new Menu()
+                                                    {
+                                                        Items = {
+                                                            X.MenuItem()
+                                                                .ID("mnuExportTrInvoices")
+                                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                                .Icon(Icon.PageExcel)
+                                                                .Handler("SetExcelList();"),
+
+                                                                    X.MenuItem()
+                                                                        .ID("mnuCancelFactureTransport")
+                                                                        .IconCls("glyphicon glyphicon-remove red")
+                                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                                                        .Cls("ButtonStyle")
+                                                                        .Border(false)
+                                                                        .Disabled(true)
+                                                                        .DirectEvents(de =>
+                                                                        {
+                                                                            de.Click.Url = Url.Action("OnActivateDeactivate");
+                                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeFactureTransport}.getSelectionModel().getSelection()[0].data" });
+                                                                            de.Click.EventMask.ShowMask = true;
+                                                                            de.Click.Confirmation.ConfirmRequest = true;
+                                                                            de.Click.Confirmation.Title = "Facture Transport";
+                                                                            de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeFactureTransport}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                                                            de.Click.Success = "Overview.resetButtons();";
+                                                                        })
+
+
+
+                                                                    }
+                                                            })
+                                                            }
+                        }),
+    #endregion
+    #region Critere
+                X.FormPanel()
+                    .ID("CriteriaPanelFactureTransport")
+                    .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Facture Transport - Overwiew" })
+                    .Region(Region.North)
+                    .Floatable(false)
+                    .Border(false)
+                    .Collapsed(true)
+                    .Collapsible(true)
+                    .BodyPadding(5)
+                    .Frame(true)
+                    .Listeners(ls => ls.Expand.Handler = "LoadAllStoreInCriteriaPanel();")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                    .Items(
+                                X.Panel()
+                                    .Layout(LayoutType.HBox)
+                                    .Flex(1)
+                                    //.Frame(true)
+                                    .Height(80)
+                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                    .Items(
+    #region Zone Critere gauche *Campagne, Transporter*
+                                                                                            X.Panel()
+                                                                                                .Layout(LayoutType.Form)
+                                                                                                .Flex(2)
+                                                                                                .Items(
+                                                                                                        X.ComboBox()
+                                                                                                            .ID("FactureTransportCampagneID")
+                                                                                                            .FieldLabel("Campagne")
+                                                                                                            .LabelWidth(120)
+                                                                                                            .DisplayField("Designation")
+                                                                                                            .QueryMode(DataLoadMode.Local)
+                                                                                                            .TriggerAction(TriggerAction.All)
+                                                                                                            .ValueField("Designation")
+                                                                                                            .LabelAlign(LabelAlign.Right)
+                                                                                                            .Store(
+                                                                                                                    X.Store()
+                                                                                                                        .AutoLoad(true)
+                                                                                                                        .Model(
+                                                                                                                                Html.X().Model()
+                                                                                                                                    .IDProperty("Designation")
+                                                                                                                                    .Fields(
+                                                                                                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                                                                            )
+                                                                                                                                )
+                                                                                                                        .Proxy(
+                                                                                                                                Html.X().AjaxProxy()
+                                                                                                                                .Url(
+                                                                                                                                        Url.Action("LoadCampagneAll", "Campagne")
+                                                                                                                                )
+                                                                                                                        .Reader(
+                                                                                                                                    Html.X().JsonReader().RootProperty("data")
+                                                                                                                                    )
+                                                                                                                        )
+                                                                                                                        ),
+                                                                                                        X.ComboBox()
+                                                                                                            .ID("FactureTransportTransporteurID")
+                                                                                                            .FieldLabel("Transporteur")
+                                                                                                            .LabelWidth(120)
+                                                                                                            .MatchFieldWidth(false)
+                                                                                                            .ListConfig(new BoundList { MinWidth = 350 })
+                                                                                                            .DisplayField("Nom")
+                                                                                                            .ValueField("ID")
+                                                                                                            .LabelAlign(LabelAlign.Right)
+                                                                                                            .TypeAhead(false)
+                                                                                                            .ForceSelection(true)
+                                                                                                            .QueryMode(DataLoadMode.Local)
+                                                                                                            .TriggerAction(TriggerAction.All)
+                                                                                                            .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                                                                                            .Store(
+                                                                                                                    X.Store()
+                                                                                                                        .AutoLoad(false)
+                                                                                                                        .Model(
+                                                                                                                                Html.X().Model()
+                                                                                                                                    .IDProperty("ID")
+                                                                                                                                        .Fields(
+                                                                                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                                                                        )
+                                                                                                                                )
+                                                                                                                        .Proxy(
+                                                                                                                                Html.X()
+                                                                                                                                    .AjaxProxy()
+                                                                                                                                    .Url(Url.Action("LoadTransporteurAll", "Transporteur")
+                                                                                                                                    )
+                                                                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                                                        ))
+
+                                                                                ),
+    #endregion
+    #region Critere Droit *Date Debut, Date Fin*
+                                    X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.DateField().ID("TxtFactureTransportPeriodStart").FieldLabel("Date Debut").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToShortDateString())
+                                                ,
+                                                X.DateField().ID("TxtFactureTransportPeriodEnd").FieldLabel("Date Fin").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToShortDateString())
+
+                                                )
+    #endregion
+                                        ),
+
+                                X.Panel()
+                                    .ID("formOverview")
+                                    .Flex(1)
+                                    //.Margin(10)
+                                    //.Frame(true)
+                                    .Height(80)
+                                    //.TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                                    .Border(false)
+                                    //.BodyPadding(6)
+                                    .Layout(LayoutType.HBox)
+                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                    .Items(
+                                            X.Container()
+                                                .ID("")
+                                                .Layout(LayoutType.VBox)
+                                                .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                                .Items(
+                                                        X.Label()
+                                                            .ID("LblFactureTransportTotal")
+                                                            .Text("Montant Total : ")
+                                                            .EmptyText("")
+                                                        )
+                                            )
+                            ),
+    #endregion
+    #region GridPanel
+                X.GridPanel()
+                    .Layout(LayoutType.Fit)
+                    .ID("grpListeFactureTransport")
+                    .Region(Region.Center)
+                    .ForceFit(false)
+                    .AllowDeselect(false)
+                    .Store(
+                            X.StoreFor<Tms.Classes.Business.FactureTransport>()
+                                .ID("storeListeFactureTransport")
+                                .PageSize(100)
+                                .RemotePaging(false)
+                                .Proxy(
+                                            Html.X()
+                                                .AjaxProxy()
+                                                .Url(Url.Action("Select"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                .Parameters(ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemCampagne", "#{FactureTransportCampagneID}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriodStart", "#{TxtFactureTransportPeriodStart}.getRawValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriodEnd", "#{TxtFactureTransportPeriodEnd}.getRawValue()", ParameterMode.Raw));
+
+                                }
+                                )
+                                .DirectEvents(de =>
+                                {
+                                    de.Add.Url = Url.Action("OnPrintTransportVoucher");
+                                    de.Add.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Value = "#{grpListeFactureTransport}.getSelectionModel().getSelection()[0].data" });
+                                    de.Add.ExtraParams.Add(new Parameter { Name = "IsCopy", Mode = ParameterMode.Raw, Value = "0" });
+                                }
+                                )
+                                .Listeners(ls =>
+                                {
+                                    ls.Load.Handler = "CalculateTotalAmount(); Ext.net.Mask.hide();";
+                                    ls.Add.Handler = "SelectNewRecordAddedOnGrid(records, #{grpListeFactureTransport}.id); CalculateTotalAmount();";
+                                    ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                })
+                                )
+                                .ColumnModel(
+                                                Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Width(40).Hideable(false).Filterable(false),
+                                                Html.X().Column().Text("Date").DataIndex("DateFactureTransportAsString").Flex(1),
+                                                Html.X().Column().Text("Facture N°").DataIndex("Numero").Flex(1),
+                                                Html.X().Column().Text("Transporteur").DataIndex("TransporteurAsString").Flex(1),
+                                                Html.X().Column().Text("Poids Total(Kg)").DataIndex("TonnageAsString").Flex(1),
+                                                Html.X().Column().Text("Montant").DataIndex("MontantAsString").Flex(1),
+                                                Html.X().Column().Text("Deduction").DataIndex("DeductionAsString").Flex(1).EmptyCellText("0"),
+                                                X.Column().Text("Utilisation Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                                                X.DateColumn().Text("Date Creation").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                                                X.Column().Text("Utilisation Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                                                X.DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+                                )
+                                .BottomBar(
+                                            Html.X()
+                                                .PagingToolbar()
+                                                .HideRefresh(true)
+                                                .Plugins(
+                                                            Html.X().ProgressBarPager()
+                                                            )
+                                        )
+                                .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                .View(
+                                        Html.X().GridView().LoadingText("Chargement...")
+                                )
+                                .SelectionModel(
+                                                    X.RowSelectionModel()
+                                                    .ID("rowSelectionListeFactureTransport")
+                                                    .Mode(SelectionMode.Single)
+                                                    .AllowDeselect(false)
+                                                )
+                                .Listeners(l =>
+                                {
+                                    l.Select.Fn = "Overview.resetButtons";
+                                    l.Deselect.Fn = "Overview.resetButtons";
+
+                                })
+                                .DirectEvents(de =>
+                                {
+                                    de.RowDblClick.Url = Url.Action("OnConsult");
+                                    de.RowDblClick.CleanRequest = true;
+                                    de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeFactureTransport}.getSelected().items[0].data" });
+                                    de.RowDblClick.EventMask.ShowMask = true;
+                                }
+                                )
+    #endregion
+
+    )
+    )
+
+</form>
+
+
+
+<script type="text/javascript" language="javascript">
+    var LoadAllStoreInCriteriaPanel = function () {
+        if (App.FactureTransportTransporteurID.getStore().isLoaded() == false) {
+            App.FactureTransportTransporteurID.getStore().load();
+        }
+        
+    };
+
+    var OnSearchFactureTransportByNumber = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            /*Ext.net.DirectMethod.request({ url: "/DeliveryCoding/SelectDeliveryInfo"});*/
+            App.BtnSearchFactureTransportByNumber.fireEvent('click', App.BtnSearchFactureTransportByNumber);
+            e.stopEvent();
+        }
+    };
+
+    var ShowNotifaction = function () {
+        Ext.Msg.notify("Codification", "Code has been saved !");
+    };
+
+    var CalculateTotalAmount = function () {
+        var nbrOfrows = App.grpListeFactureTransport.getStore().getCount();
+        var totalAmount = parseFloat(App.storeListeFactureTransport.sum('Montant')) || 0;
+        var totalTonnage = parseFloat(App.storeListeFactureTransport.sum('Tonnage')) || 0;
+
+        /*var total = 
+        for (var i = 0; i < nbrOfrows; i++) {
+            totalAmount += parseFloat(App.grpListeFactureTransport.getRowsValues()[i].Montant);
+            totalTonnage += parseFloat(App.grpListeFactureTransport.getRowsValues()[i].Tonnage);
+        }*/
+        totalAmount = FormatAmount(totalAmount);
+        totalTonnage = FormatAmount(totalTonnage);
+        App.LblFactureTransportTotal.setText("Poids Total : " + totalTonnage + "  |  Montant Total : " + totalAmount);
+    };
+</script>

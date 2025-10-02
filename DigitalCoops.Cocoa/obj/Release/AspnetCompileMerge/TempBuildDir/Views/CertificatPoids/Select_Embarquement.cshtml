@@ -1,0 +1,270 @@
+﻿@model Tms.Classes.Business.Sales.EmbarquementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    //string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    //string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var SetAvailableShipmentsInfos = function () {
+        var Qty = App.storeListShipment.sum('Quantite') || 0;
+
+        var mChaine = Ext.String.format('Total Quantité : {0} (Kg)', formatNumber(Qty));
+        App.LblResumeAvlbShipments.setText(mChaine);
+
+    };
+   
+
+    var SetBtnOK = function () {
+        if (App.rowSelectionListShipment.hasSelection())
+            App.BtnSendShipment.enable();
+        else
+            App.BtnSendShipment.disable();
+    };
+</script>
+@(
+
+                        X.Window()
+                        .ID("ListOfShipments")
+                        .Width(1200)
+                        .Resizable(false)
+                        .Height(470)
+                        .Modal(true)
+                        .CloseAction(Ext.Net.CloseAction.Destroy)
+                        .Y(20)
+                        .BodyPadding(5)
+                        .Title("List of Shipments")
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+
+                            X.FormPanel()
+                            .ID("CriteriaPanelShi")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Weighing Certificate - Shipments", Height = 30 })
+                            .Region(Region.North)
+                            //.Border(true)
+                            .Collapsed(true)
+                            .Collapsible(true)
+                            .BodyPadding(0)
+                            .MarginSpec("0 0 5 0")
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+                            .HeaderConfig(new PanelHeader
+                            {
+                                Items = {
+                                            X.Button()
+                                                .ID("btnRefreshShipment")
+                                                .IconCls("action_refresh_01")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                .Border(false)
+                                                .Disable(false)
+                                                .DirectEvents
+                                                (
+                                                  de =>
+                                                  {
+                                                    de.Click.Url  = Url.Action("OnRefreshForAvailableShipments");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExportateur", Encode=true, Value= "#{cmbExportateurFD}.getValue()", Mode=ParameterMode.Raw});
+                                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDateFD}.getRawValue()",   Mode=ParameterMode.Raw});
+                                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDateFD}.getRawValue()",     Mode=ParameterMode.Raw});
+                                                   // de.Click.Success = "App.CriteriaPanelShi.setTitle('Exportateur = ' + App.cmbExportateurFD.rawValue + ' , du  '+ App.dtpStartDateFD.rawValue  + ' au  '+ App.dtpEndDateFD.rawValue )";
+                                                    de.Click.Success = "App.CriteriaPanelShi.setTitle('Exportateur = ' + App.cmbExportateurFD.rawValue )";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                  }
+                                               )
+                                }
+                            }
+                            )
+                            .Height(150)
+                            .Items
+                             (
+                                X.Panel()
+                                 .Border(false)
+                                 .Frame(true)
+                                 .Margin(10)
+                                 .Width(350)
+                                 .Height(80)
+                                 .Layout(LayoutType.Form)
+                                 .BodyPadding(0)
+                                 .Items
+                                 (
+                                       X.ComboBox()
+                                        .ID("cmbExportateurFD")
+                                        .FieldLabel("Exportateur")
+                                        .LabelWidth(30)
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .Width(340)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(true)
+                                        .ForceSelection(true)
+
+                                        .Store
+                                        (
+                                          X.Store()
+                                           .AutoLoad(true)
+                                           .Model
+                                           (
+                                             Html.X().Model()
+                                             .IDProperty("ID")
+                                             .Fields
+                                             (
+                                               new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                               new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                             )
+                                           )
+                                           .Proxy
+                                           (
+                                             Html.X().AjaxProxy()
+                                             .Url(Url.Action("LoadExportateurAll", "Exportateur"))
+                                             .Reader(Html.X().JsonReader().RootProperty("data"))
+                                           )
+                                         )
+                                         .SelectedItems
+                                         (
+                                           it =>
+                                           {
+                                               it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                           }
+                                         )
+                                   // ,
+
+                                   //X.FieldContainer()
+                                   // .LabelWidth(90)
+                                   // .FieldLabel("From/To")
+                                   // .LabelAlign(LabelAlign.Right)
+                                   // .Layout(LayoutType.HBox)
+                                   // .Width(370)
+                                   // .Items
+                                   // (
+                                   //    X.DateField().ID("dtpStartDateFD").Text(@StartDate).Width(125).Height(25).MarginSpec("0 30 0 0"),
+                                   //    X.DateField().ID("dtpEndDateFD").Text(@EndDate).Width(120).Height(25)
+                                   // )
+
+                                   ),
+
+
+                               X.Panel()
+                                .ID("formOverviewSelectShipment")
+                                .Width(500)
+                                //.Margin(10)
+                                .Flex(1)
+                                //.Frame(true)
+                                .Height(80)
+                                //.TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                                .Border(false)
+                                //.BodyPadding(0)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("LblResumeAvlbShipments").Text("").EmptyText(""))
+                                 )
+
+                               ),
+
+                           X.Hidden()
+                            .ID("TxtExecMode")
+                            .Value(Model._ExecMode)
+                            ,
+                           X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListShipment")
+                            .Height(300)
+                            //.Border(true)
+                            .Frame(true)
+                            .FrameHeader(false)
+                            .AllowDeselect(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.Sales.Embarquement>()
+                                .ID("storeListShipment")
+                                .AutoLoad(true)
+                             .Proxy
+                             (
+                              Html.X().AjaxProxy()
+                                  .Url(Url.Action("LoadListOfAvailableShipments"))
+                                  .Reader(Html.X().JsonReader().RootProperty("data"))
+                             )
+                             .Listeners(
+                                   ls => ls.Load.Handler = "SetAvailableShipmentsInfos();"
+                                   )
+                             .Parameters
+                             (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemExportateur", "#{cmbExportateurFD}.getValue()", ParameterMode.Raw));
+                                   //ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDateFD}.getRawValue()", ParameterMode.Raw));
+                                   //ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDateFD}.getRawValue()", ParameterMode.Raw));
+                               }
+                             )
+                             )
+                             .ColumnModel
+                             (
+                                //Html.X().DateColumn().Text("Date").DataIndex("Date").Format("dd/m/Y").Flex(1).Hideable(false),
+                                Html.X().Column().Text("N° Contract").DataIndex("ContratAsString").Flex(2).Hideable(false),                                                                 
+                                 Html.X().Column().Text("N° affaire ONCC").DataIndex("NumeroONCC").Flex(2).Hideable(false),
+                                 Html.X().Column().Text("Numero").DataIndex("Numero").Flex(2).Hideable(false),
+                                 Html.X().Column().Text("Exportateur").DataIndex("ExportateurNameAndCode").Flex(2).Hideable(false),
+                                Html.X().Column().Text("Destination").DataIndex("DestinationExportAsString").Flex(2),
+                                Html.X().DateColumn().Text("Periode").DataIndex("PeriodeEmbarquement").Format("m/Y").Flex(1),
+                                Html.X().Column().Text("Quantité (Kg)").DataIndex("QuantiteAsString").Flex(2)
+                             //Html.X().Column().Text("Statut").DataIndex("StatutAsSTring").Flex(2)
+                             )
+                            .SelectionModel(X.RowSelectionModel().ID("rowSelectionListShipment").Mode(SelectionMode.Single)
+                           .Listeners(l =>
+                           {
+                               l.Select.Handler = "SetBtnOK();";
+                               l.Deselect.Handler = "SetBtnOK();";
+                           })
+
+                           )
+                       )
+
+                       .Buttons
+                       (
+                           X.Button()
+                            .Text("OK")
+                            .ID("BtnSendShipment")
+                            .Disabled(true)
+                           //.Handler("validNew(App.FormExportateur.id)")
+                           .DirectEvents
+                           (
+                              de =>
+                              {
+                                  de.Click.Url = Url.Action("SubmitOnSelectShipment");
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListShipment}.getSelectionModel().getSelection()[0].data" });
+                              }
+                           ),
+
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.ListOfShipments.doClose()")
+                            .Cls("btncancel")
+
+                          )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+

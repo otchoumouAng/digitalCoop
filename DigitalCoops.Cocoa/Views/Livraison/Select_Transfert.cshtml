@@ -1,0 +1,277 @@
+﻿
+@model Tms.Classes.Business.Sites.TransfertFevesViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    //string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    /*.x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }*/
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+@(
+        X.Window()
+        .ID("Select_Transfert")
+        .Width(1000)
+        .Resizable(false)
+        .Height(500)
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        .Y(10)
+        .Title("Transfert disponible")
+        .Layout(LayoutType.VBox)
+        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+        //.Listeners(ls=> ls.AfterRender.Handler = "App.btnSearchLot.fireEvent('click', App.btnSearchLot);")
+        .Items(
+                    //X.Hidden().ID("HCampagne").Value((string)ViewData["Campagne"]),
+                    X.Hidden().ID("HFournisseur").Value(ViewData["Fournisseur"]),
+                //X.Hidden().ID("HSite").Value(ViewData["Site"]),
+
+
+                X.Panel()
+                .Frame(false)
+                .Border(false)
+                .ID("pnlFlexEvenLot")
+                .Layout(LayoutType.VBox)
+                .PaddingSpec("0 5 0 5")
+                .Flex(1)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                .Items
+                (
+
+                    X.Panel()
+                                           .ID("CriteriaPanelPending")
+
+                                           .BodyPadding(5)
+                                           .Frame(true)
+                                           .Margin(5)
+                                           .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                            .Items
+                                            (
+                                                         X.Button()
+                                                        .ID("btnSearchLot")
+                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                        .IconCls("action_refresh_01")
+                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                        .Border(false)
+                        .DirectEvents
+                        (
+                            de =>
+                            {
+                                de.Click.Url = Url.Action("OnRefreshForAvaibleTransfertFeve");
+                                //de.Click.ExtraParams.Add(new Parameter {
+                                //    Name = "ItemCampagne",
+                                //    Mode = ParameterMode.Raw,
+                                //    Encode = false,
+                                //    Value = "#{HCampagne}.getValue()" });
+
+                                de.Click.ExtraParams.Add(new Parameter
+                                {
+                                    Name = "ItemFournisseur",
+                                    Mode = ParameterMode.Raw,
+                                    Encode = false,
+                                    Value = "#{HFournisseur}.getValue()"
+                                });
+
+                                de.Click.ExtraParams.Add(new Parameter
+                                {
+                                    Name = "siteID",
+                                    Mode = ParameterMode.Raw,
+                                    Encode = false,
+                                    Value = "#{cmbSiteTr}.getValue()"
+                                });
+
+                                de.Click.EventMask.ShowMask = true;
+                            }
+                        ),
+                                         X.ComboBox()
+                                                    .ID("cmbSiteTr")
+                                                    .FieldLabel("Site")
+                                                    .DisplayField("Nom")
+                                                    .ValueField("ID")
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .TypeAhead(false)
+                                                    .Flex(3)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .ForceSelection(true)
+                                                    //.ReadOnly(true)
+                                                    .Value(-1)
+                                                    .Store(
+                                                                X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(
+                                                                        Html.X().Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                )
+                                                                    )
+                                                                .Proxy(
+                                                                            Html.X().AjaxProxy()
+                                                                            .Url(Url.Action("LoadSiteAll", "Site"))
+                                                                .Reader(
+                                                                            Html.X().JsonReader().RootProperty("data")
+                                                                            )
+                                                                )
+                                                        )
+                                            //.Listeners(
+                                            //        ls =>
+                                            //        {
+                                            //            ls.Select.Handler = "if (App.cmbSite.value) { App.cmbFournisseur.clearValue(); App.cmbFournisseur.getStore().load(); };";
+                                            //        }
+                                            //    )
+                                            ),
+                    X.GridPanel()
+                    .Layout(LayoutType.Fit)
+                    .ID("grpListAvailableTransferFeves")
+                    .MarginSpec("5 0 0 0")
+                    //.MinHeight(130)
+                    .Frame(true)
+                    .Height(330)
+                    .AllowDeselect(true)
+                    .Store
+                        (
+                            X.StoreFor<Tms.Classes.Business.Livraison>
+    ()
+    .ID("storeListAvailableTransferFeves")
+    .AutoLoad(true)
+    .Proxy
+    (
+    Html.X().AjaxProxy()
+
+    .Url( Url.Action("LoadListAvailableTransfert"))
+    .Reader(Html.X().JsonReader().RootProperty("data"))
+    )
+    .Parameters(
+    ps =>
+    {
+
+        ps.Add(new StoreParameter(
+        "ItemFournisseur",
+        "#{HFournisseur}.getValue()",
+        ParameterMode.Raw));
+
+        ps.Add(new StoreParameter(
+        "siteID",
+        "#{cmbSiteTr}.getValue()",
+        ParameterMode.Raw));
+
+    }
+    )
+
+
+    )
+    .ColumnModel
+    (
+
+    Html.X().Column().Text("Numrero").DataIndex("Numero").Flex(1),
+    Html.X().Column().Text("Bl").DataIndex("NumeroInterne").Flex(1),
+    Html.X().Column().Text("Campagne").DataIndex("CampagneAsString").Flex(2),
+    Html.X().Column().Text("Site)").DataIndex("SiteAsString").Flex(2),
+    Html.X().Column().Text("Date Livraison").DataIndex("DateLivraisonAsString").Flex(1),
+    Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1),
+    Html.X().Column().Text("Nb Sacs").DataIndex("SacsDeclares").Flex(1)
+
+
+    )
+
+
+
+    .BottomBar(
+    Html.X().PagingToolbar()
+    .HideRefresh(true)
+    .Plugins(Html.X().ProgressBarPager())
+    )
+    .Plugins(X.FilterHeader())
+    .SelectionModel(
+    X.CheckboxSelectionModel()
+    .ID("rowSelectionListAvailableTransferFeves")
+    .Mode(SelectionMode.Multi)
+    .AllowDeselect(true)
+    )
+
+
+    )
+
+
+    // En Panel
+
+    )
+    .Buttons
+    (
+    X.Button()
+    .Text("Valider")
+    .ID("BtnSend")
+    .DirectEvents
+    (
+    de =>
+    {
+        de.Click.Url = Url.Action("SubmitSelectTransfertFeves", "Livraison");
+        de.Click.Before = "return validNewList(App.Select_Transfert.id);";
+
+        de.Click.ExtraParams.Add(new Parameter
+        {
+            Name = "ItemSelected",
+            Mode = ParameterMode.Raw,
+            Encode = false,
+            Value = "App.grpListAvailableTransferFeves.getSelectionModel().getSelection()[0].data.Numero"
+        });
+
+
+    }
+    ),
+
+    X.Button()
+    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+    .Handler("App.Select_Transfert.doClose()")
+    .Cls("btncancel")
+    )
+
+
+    )
+
+
+    @Scripts.Render("~/bundles/validation")
+
+    <script type="text/javascript">
+
+        var validNewList = function (winId) {
+            /*console.log(App.grpListAvailableTransferFeves.getRowsValues({ selectedOnly: true }));*/
+            /**Verifiaction d'articles**/
+            if (App.grpListAvailableTransferFeves.getRowsValues({ selectedOnly: true }).length <= 0) {
+
+                Ext.Msg.show({ title: 'Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Choisir au moins un transfert.', buttons: Ext.Msg.OK });
+                return false;
+            }
+        };
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

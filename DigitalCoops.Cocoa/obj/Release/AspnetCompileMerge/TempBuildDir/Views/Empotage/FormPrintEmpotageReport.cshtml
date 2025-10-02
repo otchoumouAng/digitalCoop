@@ -1,0 +1,191 @@
+﻿
+@model Tms.Classes.Business.Sales.EmpotageViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string Campagne = (new Tms.Classes.Shared.Parametres(0).Campagne);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(
+
+X.Window()
+.ID("FormPrintEmpotageReport")
+.Width(600)
+.Resizable(false)
+.Height(230)
+.CloseAction(Ext.Net.CloseAction.Destroy)
+.Modal(true)
+.Title("Stuffing Report")
+.Y(50)
+.Items(
+        X.FormPanel()
+         .Items(
+                 X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenReport")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("10 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+
+                         X.Hidden().ID("SScurrentcampagne").Value(@Campagne),
+                         X.Hidden().ID("SSTypeReport").Value(ViewData["typeReport"]),
+
+                       X.Panel()
+                        .ID("reportCol1")
+                        .Layout(LayoutType.Form)
+                        .Flex(2)
+                            .Items(
+
+                                    X.ComboBox()
+                                        .ID("SScropYearForReport")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .AllowBlank(false)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                        .Fields(
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Listeners(ls =>
+                                                    {
+                                                        ls.Load.Handler = "#{SScropYearForReport}.setValue(#{SScurrentcampagne}.value)";
+                                                    })
+                                                ),
+                                    X.ComboBox()
+                                        .ID("SSexportateurForReport")
+                                        .FieldLabel("Exportateur")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                         .AutoSelect(true)
+                                        .ForceSelection(true)
+                                         .Value(-1)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                            )
+                                                    .Proxy(
+                                                        Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadExportateurAll", "Exportateur"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                )
+                                ),
+
+                    X.Panel()
+                        .ID("reportCol2")
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items(
+                                X.ComboBox()
+                                    .ID("SSStatus")
+                                    .FieldLabel("Statut")
+                                    .DisplayField("Description")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Hidden((string)ViewData["typeReport"] == "Hi" ? false : true)
+                                     .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                     .Items
+                                        (
+                                            it =>
+                                            {
+                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                it.Add(new ListItem { Text = "Actived", Value = "0" });
+                                                it.Add(new ListItem { Text = "Desactived", Value = "1" });
+                                            }
+                                        )
+                                        .SelectedItems
+                                        (
+                                            it =>
+                                            {
+                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                            }
+                                        ),
+                                X.DateField()
+                                    .ID("SSstartDateForReport")
+                                    .FieldLabel("Date Debut")
+                                    .Text(DateTime.Now.ToString())
+                                    .LabelAlign(LabelAlign.Right),
+                                X.DateField()
+                                    .ID("SSdueDateForReport")
+                                    .FieldLabel("Date Fin")
+                                    .Text(DateTime.Now.ToString())
+                                    .LabelAlign(LabelAlign.Right)
+                              )
+                    )
+                )
+
+            )
+            .Buttons(
+                        X.Button()
+                            .Text("OK")
+                            .ID("BtnGenerateContractReport")
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Url.Action("PrintStuffing");
+                                de.Click.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "TypeReport", Value = "App.SSTypeReport.value" });
+                                de.Click.Before = "return validNew(App.FormPrintEmpotageReport.id);";
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                            }),
+                        X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.FormPrintEmpotageReport.doClose()")
+                            .Cls("btncancel")
+                        )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                /*alert(winId);*/
+                /*var winId = #{FormFournisseur}.id;*/
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Stuffing | Print Report : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+
+                }
+
+    };  
+</script>

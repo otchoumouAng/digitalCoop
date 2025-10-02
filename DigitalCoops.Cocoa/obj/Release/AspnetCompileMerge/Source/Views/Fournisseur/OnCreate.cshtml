@@ -1,0 +1,51 @@
+﻿@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(X.FormPanel()
+    .Items(
+        X.Window()
+        .ID("FrmCreate")
+        .Width(400)
+        .Resizable(false)        
+        .Height(300)
+        //.Modal(true)
+        .CloseAction(CloseAction.Destroy)
+        .Listeners(l =>
+        {
+            l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+        })
+        .X(300)
+        .Y(100)
+        .Title("Fournisseur : Nouveau")
+        .Layout(LayoutType.Form)
+        .Items(
+            X.TextField()
+            .FieldLabel("Nom")
+            .LabelAlign(LabelAlign.Right)
+            .ID("txtNom"),
+               X.TextField()
+            .FieldLabel("Piece Numero")
+            .LabelAlign(LabelAlign.Right)
+            .ID("txtPieceNumero"),
+               X.TextField()
+            .FieldLabel("Piece Type")
+            .LabelAlign(LabelAlign.Right)
+            .ID("txtPieceType"),
+               X.TextField()
+            .FieldLabel("Provenance")
+            .LabelAlign(LabelAlign.Right)
+            .ID("txtProvenance")
+            )
+            .Buttons(
+                X.Button().Text("OK")
+                    .DirectEvents(de => {
+                        de.Click.Url = Url.Action("AddFormMethod");
+                    }),
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                )
+
+            )
+    )
+)

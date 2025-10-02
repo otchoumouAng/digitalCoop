@@ -1,0 +1,300 @@
+﻿
+@model Tms.Classes.Business.Sales.FactureCommercialePrefinancementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+    double TauxDevise = (new Tms.Classes.Shared.Parametres(0).ValeurTauxEuro);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+
+          X.Window()
+                .ID("Prefinancement_Detail")
+                .Width(400)
+                .Modal(true)
+                .Resizable(false)
+                .AutoScroll(true)
+                .Scrollable(ScrollableOption.Vertical)
+                .Height(300)
+                .BodyPadding(5)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Title("Prefinancing : Add")
+                .Items
+                (
+
+                 X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+                 X.FormPanel()
+                    .Items(
+
+                        X.Panel()
+                        .Frame(false)
+                        .Border(false)
+                        .FrameHeader(false)
+                        .ID("pnlFlexEvenSPD")
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("0 0 5 0")
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                        (
+                            X.Hidden()
+                                            .ID("hiddenExecModeSPD")
+                                            .Value(Model._ExecMode)
+                                            ,
+                                            X.Hidden()
+                                                .ID("hiddenRowversionSPD")
+                                                .Value(Model._FactureCommercialePrefinancement.RowVersionKey)
+                                                ,
+
+                                            X.Hidden()
+                                                .ID("hiddenFactureCommercialePrefinancementID")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.ID : Guid.Empty)
+                                                ,
+                                          X.Hidden()
+                                                .ID("hiddenExportateurSPD")
+                                                .Value((string)ViewData["exportateurID"])
+                                                ,
+                                           X.Hidden()
+                                                .ID("hiddenTauxDeviseSPD")
+                                                .Value(@TauxDevise)
+                                                ,
+
+                                                X.Panel()
+                                                 .ID("firstColSPD")
+                                                 .Layout(LayoutType.Form)
+                                                 .Flex(1)
+                                                 .Items
+                                                 (
+                                                     X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Prefinancing Number")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                         X.TextField()
+                                                            .ID("txtPrefinancingNumber")
+                                                            .Width(152)
+                                                            .ReadOnly(true)
+                                                            .MarginSpec("0 20 0 0")
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.Prefinancement.Numero : string.Empty),
+                                                        X.TextField()
+                                                            .ID("txtPrefiancementID")
+                                                            .Hidden(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.Prefinancement.ID : Guid.Empty),
+                                                        X.TextField()
+                                                            .ID("txtTypeID")
+                                                            .Hidden(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.Prefinancement.PrefinancementType.ID : (int?)null),
+                                                        X.Button()
+                                                            .Text("...")
+                                                            .Height(20)
+                                                            .Width(40)
+                                                            .ID("btnSelectPrefinancing")
+                                                            .Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnSelectPrefinancing", "FactureCommerciale");
+                                                                    de.Click.Success = "App.ListOfPrefinancings.setTitle('Prefinancing : Available prefinancing')";
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemExportateur", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenExportateurSPD}.getValue()" });
+
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            )
+
+                                                )
+                                                ,
+                                                X.TextField()
+                                                .FieldLabel("Type Of Prefinancing")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .ID("txtTypeDesignation")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.Prefinancement.PrefinancementType.Designation : string.Empty)
+
+                                                .AllowBlank(false)
+                                               ,
+                                                X.TextField()
+                                                .FieldLabel("Actual Balance (CFA)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .ID("txtBalance")
+                                                .AllowBlank(false)
+                                               .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.Prefinancement.SoldeAsString : string.Empty)
+
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Blur.Handler = "if (App.txtBalance.value && !App.txtBalance.readOnly) {#{txtBalance}.setValue(formatNumber(#{txtBalance}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtBalance.value && !App.txtBalance.readOnly) { #{txtBalance}.setRawValue(unformatNumber(#{txtBalance}.getValue()));}";
+
+                                                })
+                                                ,
+                                                 X.TextField()
+                                                .ID("txtAmountPreleve")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.MontantCFAAsString : string.Empty)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Allocated Montant (CFA)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Change.Fn = "CalculBalance";
+                                                    ls.BeforeRender.Fn = "CalculBalance";
+                                                    ls.Blur.Handler = "if (App.txtAmountPreleve.value && !App.txtAmountPreleve.readOnly) {#{txtAmountPreleve}.setValue(formatNumber(#{txtAmountPreleve}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtAmountPreleve.value && !App.txtAmountPreleve.readOnly) { #{txtAmountPreleve}.setRawValue(unformatNumber(#{txtAmountPreleve}.getValue()));}";
+
+                                                })
+                                                ,
+                                                X.TextField()
+                                                .ID("txtAmountEuroPreleve")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureCommercialePrefinancement.MontantAsString : string.Empty)
+                                                .AllowBlank(false)
+                                                .ReadOnly(true)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Allocated Amount (Euro)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Listeners(ls =>
+                                                {
+                                                  
+                                                    ls.Blur.Handler = "if (App.txtAmountEuroPreleve.value && !App.txtAmountEuroPreleve.readOnly) {#{txtAmountEuroPreleve}.setValue(formatNumber(#{txtAmountEuroPreleve}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtAmountEuroPreleve.value && !App.txtAmountEuroPreleve.readOnly) { #{txtAmountEuroPreleve}.setRawValue(unformatNumber(#{txtAmountEuroPreleve}.getValue()));}";
+
+                                                })
+                                                ,
+                                                X.TextField()
+                                                .FieldLabel("New Balance (CFA)")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .ID("txtNewBalance")
+                                                .AllowBlank(false)
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Blur.Handler = "if (App.txtNewBalance.value && !App.txtNewBalance.readOnly) {#{txtNewBalance}.setValue(formatNumber(#{txtNewBalance}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtNewBalance.value && !App.txtNewBalance.readOnly) { #{txtNewBalance}.setRawValue(unformatNumber(#{txtNewBalance}.getValue()));}";
+
+                                                })
+
+                                 //1stCol
+                                 )
+
+                              //End first panel
+                              )
+
+                //End Form Panel
+                )
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOkAdd")
+                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Validate" : "Ok")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitOnAddPrefinancing", "FactureCommerciale");
+                            de.Click.Before = "return validAdd(App.Prefinancement_Detail.id); ";
+
+
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Prefinancement_Detail.doClose()")
+                    .Cls("btncancel")
+
+                //End Button
+                )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validAdd = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Prefinancing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Preleve = unformatNumber(App.txtAmountPreleve.value);
+        var TotalAmount = unformatNumber(App.txtBalance.value);
+        var reduce = TotalAmount - Preleve;
+
+        if (Ext.isNumeric(reduce) && parseFloat(reduce) < 0 ) {
+            Ext.Msg.show({ title: 'Prefinancing : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Balance invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+
+    };
+
+    var CalculBalance = function () {
+        var Preleve = unformatNumber(App.txtAmountPreleve.value) || 0;
+        var TotalAmount = unformatNumber(App.txtBalance.value) || 0;
+        var reduce = TotalAmount - Preleve;
+
+        var tauxDevise = Number(App.hiddenTauxDeviseSPD.value);
+        var PreleveEuro = (Preleve / tauxDevise).toFixed(3);
+
+        App.txtAmountEuroPreleve.setValue(formatNumberDecimal(PreleveEuro));
+        App.txtNewBalance.setValue(formatNumber(reduce));
+        
+        
+        
+    };
+
+    function formatNumberDecimal(amount) {
+
+        amount = thousands_separators(amount.toString().replace(".", ","));
+
+        formatted = amount.toString().replace(".", ",");
+
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.toString().replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    };
+
+</script>
+
+

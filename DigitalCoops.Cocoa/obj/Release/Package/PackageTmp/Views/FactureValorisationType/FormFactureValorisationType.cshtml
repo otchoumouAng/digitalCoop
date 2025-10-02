@@ -1,0 +1,90 @@
+﻿
+@model Tms.Classes.Shared.FactureValorisationTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Items(
+                X.Window()
+                .ID("FormFactureValorisationType")
+                .Width(500)
+                .Resizable(false)
+                .Height(150)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners(l =>
+                {
+                    l.Close.Handler = "App.TmsViewPort.unmask();";
+                })
+                //.X(400)
+                .Y(20)
+                .Title("Type de Valorisation Facture : Detail")
+                .Layout(LayoutType.VBox)
+                .BodyPadding(6)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._FactureValorisationType.RowVersionKey),
+                            X.Hidden().ID("TxtFactureValorisationTypeID").Value(Model._FactureValorisationType.ID),
+                            X.TextField().ID("TxtDesignationFactureValorisationType").FieldLabel("Designation")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FactureValorisationType.Designation.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")                            
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitFactureValorisationType")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormFactureValorisationType.id);";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormFactureValorisationType.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Type de Valorisation Facture : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+

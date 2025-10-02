@@ -1,0 +1,455 @@
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Tms.Classes.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Tms.Classes.pdb
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.CodeParser.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Data.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.DataAccess.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Printing.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Utils.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Xpo.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraPrinting.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.Web.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\EPPlus.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Ext.Net.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Microsoft.IO.RecyclableMemoryStream.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Newtonsoft.Json.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Tms.Components.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.Shared.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.CrystalReports.Engine.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.RichEdit.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Office.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Pdf.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraBars.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraEditors.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraTreeList.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraLayout.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraCharts.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Charts.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraGauges.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.PivotGrid.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Sparkline.v17.1.Core.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Web.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Web.Resources.v17.1.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.Controllers.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.DataDefModel.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.ClientDoc.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.ReportDefModel.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.CommLayer.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.DataSetConversion.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.Prompting.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.XmlSerialize.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.CubeDefModel.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.CommonObjectModel.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.ObjectFactory.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\CrystalDecisions.ReportAppServer.CommonControls.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\stdole.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Tms.Components.pdb
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Data.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.DataAccess.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Printing.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Utils.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Xpo.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraPrinting.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.Web.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\EPPlus.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Ext.Net.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Microsoft.IO.RecyclableMemoryStream.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.RichEdit.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Office.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Pdf.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraBars.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraEditors.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraTreeList.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraLayout.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraCharts.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.XtraGauges.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.PivotGrid.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Sparkline.v17.1.Core.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\DevExpress.Web.v17.1.xml
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\de\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\es\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ja\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\ru\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\Tms.Classes.csprojResolveAssemblyReference.cache
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\TicketPeseeNormal.resources
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\TicketPeseeNormalSansVGM.resources
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\Tms.Classes.csproj.GenerateResource.Cache
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\Tms.Classes.dll.licenses
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\Tms.Classes.dll
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\obj\Debug\Tms.Classes.pdb
+C:\DATA\Sources\TMS\Tms2017.MVC\Tms.Classes\bin\Debug\Newtonsoft.Json.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Classes.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Classes.pdb
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.CodeParser.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Data.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.DataAccess.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Printing.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Utils.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Xpo.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraPrinting.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.Web.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\EPPlus.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Ext.Net.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Microsoft.IO.RecyclableMemoryStream.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Newtonsoft.Json.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Components.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\CrystalDecisions.Shared.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\CrystalDecisions.CrystalReports.Engine.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.RichEdit.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Office.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Pdf.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraBars.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraEditors.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraTreeList.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraLayout.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraCharts.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Charts.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraGauges.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.PivotGrid.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Sparkline.v17.1.Core.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Web.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Web.Resources.v17.1.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Components.pdb
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Data.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.DataAccess.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Printing.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Utils.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Xpo.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraPrinting.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.Web.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\EPPlus.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Ext.Net.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Microsoft.IO.RecyclableMemoryStream.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.RichEdit.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Office.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Pdf.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraBars.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraEditors.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraTreeList.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraLayout.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraCharts.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraGauges.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.PivotGrid.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Sparkline.v17.1.Core.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Web.v17.1.xml
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Data.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.DataAccess.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Printing.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Utils.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Xpo.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraReports.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Office.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraBars.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraEditors.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraLayout.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraCharts.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Web.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Web.Resources.v17.1.resources.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.csprojResolveAssemblyReference.cache
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\TicketPeseeNormal.resources
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\TicketPeseeNormalSansVGM.resources
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.csproj.GenerateResource.Cache
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.dll.licenses
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.dll
+C:\DATA\Sources\Cocoa\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.pdb
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Classes.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Classes.pdb
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.CodeParser.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Data.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.DataAccess.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Printing.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Utils.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Xpo.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraPrinting.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.Web.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\EPPlus.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Ext.Net.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Microsoft.IO.RecyclableMemoryStream.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Newtonsoft.Json.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Components.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\CrystalDecisions.Shared.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\CrystalDecisions.CrystalReports.Engine.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.RichEdit.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Office.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Pdf.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraBars.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraEditors.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraTreeList.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraLayout.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraCharts.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Charts.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraGauges.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.PivotGrid.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Sparkline.v17.1.Core.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Web.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Web.Resources.v17.1.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Tms.Components.pdb
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Data.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.DataAccess.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Printing.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Utils.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Xpo.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraPrinting.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraReports.v17.1.Web.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\EPPlus.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Ext.Net.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\Microsoft.IO.RecyclableMemoryStream.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.RichEdit.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Office.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Pdf.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraBars.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraEditors.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraTreeList.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraLayout.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraCharts.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.XtraGauges.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.PivotGrid.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Sparkline.v17.1.Core.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\DevExpress.Web.v17.1.xml
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Data.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Data.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Data.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Data.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.DataAccess.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.DataAccess.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.DataAccess.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.DataAccess.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Printing.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Printing.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Printing.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Printing.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Utils.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Utils.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Utils.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Utils.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Xpo.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Xpo.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Xpo.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Xpo.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraPrinting.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraReports.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraReports.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraReports.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraReports.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraReports.v17.1.Web.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.RichEdit.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Office.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Office.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Office.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Office.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Pdf.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraBars.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraBars.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraBars.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraBars.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraEditors.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraEditors.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraEditors.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraEditors.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraTreeList.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraLayout.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraLayout.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraLayout.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraLayout.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraCharts.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraCharts.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraCharts.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraCharts.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.XtraGauges.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.PivotGrid.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Sparkline.v17.1.Core.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Web.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Web.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Web.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Web.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\de\DevExpress.Web.Resources.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\es\DevExpress.Web.Resources.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ja\DevExpress.Web.Resources.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\bin\Debug\ru\DevExpress.Web.Resources.v17.1.resources.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.csprojResolveAssemblyReference.cache
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\TicketPeseeNormal.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\TicketPeseeNormalSansVGM.resources
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.csproj.GenerateResource.Cache
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.dll.licenses
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.dll
+C:\Users\HP\Documents\Visual Studio 2015\Projects\DigitalCoops.Cocoa\Tms.Classes\obj\Debug\Tms.Classes.pdb

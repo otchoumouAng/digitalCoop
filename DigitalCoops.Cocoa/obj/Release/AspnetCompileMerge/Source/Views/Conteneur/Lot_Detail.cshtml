@@ -1,0 +1,241 @@
+﻿
+@model Tms.Classes.Business.Sales.ConteneurLotViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+@(
+
+      X.Window()
+            .ID("Lot_Detail")
+            .Width(500)
+            .Modal(true)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(200)
+            .BodyPadding(5)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Title("Lot")
+            .Items
+            (
+
+             X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+             X.FormPanel()
+                .Items(
+
+                    X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenLD")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden()
+                                        .ID("hiddenExecModeCL")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                        X.Hidden()
+                                            .ID("hiddenRowversionCL")
+                                            .Value(Model._ConteneurLot.RowVersionKey)
+                                            ,
+
+                                        X.Hidden()
+                                            .ID("hiddenConteneurLotID")
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConteneurLot.ID : Guid.Empty)
+                                            ,
+                                            X.Panel()
+                                             .ID("firstCol")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(1)
+                                             .Items
+                                             (
+                                                X.ComboBox()
+                                                 .ID("_cmbLot")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Lot")
+                                                 .DisplayField("NumeroLot")
+                                                 .ListConfig(new BoundList { MinWidth = 300 })
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._ConteneurLot.Lot != null ? Model._ConteneurLot.Lot.ID : (Guid?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.String) { Mapping = "ID" },
+                                                          new ModelField("NumeroLot", ModelFieldType.String) { Mapping = "NumeroLot" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadAvailableLot", "Conteneur"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                    .Parameters
+                                                     (
+                                                        ps =>
+                                                        {
+                                                            ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecModeCL}.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemConteneurID", "#{HiConteneurID}.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemEmbarquementID", "#{HiEmbarquementID}.getValue()", ParameterMode.Raw));
+                                                        }
+                                                     )
+
+
+                                                )
+                                                .Listeners(l => l.Select.Fn = "SelectLot")
+                                                ,
+                                                X.TextField()
+                                                .FieldLabel("Actual Number of Bags")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(true)
+                                                .ID("txtNbrOfBags")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                ,
+                                                 X.TextField()
+                                                .ID("txtNbrOfBagsPreleve")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConteneurLot.NbreSacs : (int?)null)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Allocated Number of Bags ")
+                                                .LabelAlign(LabelAlign.Right)
+
+                                 //1stCol
+                                 )
+
+                              //End first panel
+                              )
+
+                  //End Form Panel
+                )
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOkAdd")
+                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Validate" : "Ok")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitOnAdd", "Conteneur");
+                            de.Click.Before = "return validAdd(App.Lot_Detail.id); ";
+
+                            de.Click.Confirmation.ConfirmRequest = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false;
+                            de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Lot : Edit Lot'; config.confirmation.message = 'Do you want to edit this item? ';";
+
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Lot_Detail.doClose()")
+                    .Cls("btncancel")
+
+                //End Button
+                )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validAdd = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Preleve = Number(App.txtNbrOfBagsPreleve.value);
+        var NumberBag = Number(App.txtNbrOfBags.value);
+        var reduce = NumberBag - Preleve;
+
+        if (Ext.isNumeric(reduce) && parseFloat(reduce) < 0 ) {
+            Ext.Msg.show({ title: 'Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Number invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var NumLot = App._cmbLot.lastSelection[0].data.NumeroLot;
+        
+        if (App.grpDetailLot.getRowsValues().length >= 1) {
+            for (i = 0; i < App.grpDetailLot.getRowsValues().length; i++) {
+             
+                if (NumLot == App.grpDetailLot.getRowsValues()[i].LotAsString) {
+                    Ext.Msg.show({ title: 'Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Lot already exist', buttons: Ext.Msg.OK });
+                    return false;
+                }
+            }
+
+        }
+
+
+    };
+
+    var SelectLot = function () {
+        var value = App._cmbLot.lastSelection[0].data.NombreSacs;
+        App.txtNbrOfBags.setValue(value);
+    };
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+
+
+</script>
+
+

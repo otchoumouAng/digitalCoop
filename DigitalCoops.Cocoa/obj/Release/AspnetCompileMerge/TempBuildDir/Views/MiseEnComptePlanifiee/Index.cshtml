@@ -1,0 +1,555 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 100px !important;
+    }
+</style>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeMecP.columnManager.getColumns(), App.grpListeMecP.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    }
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+            else if (value == 3) {
+                return 'action_new_03';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red';
+            }
+            else if (value == 1) {
+                return  'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+            else if (value == 3) {
+                return 'glyphicon-ban-circle red';
+            }
+            else if (value == 4) {
+                return 'glyphicon-ban-circle red';
+            }
+        },
+
+        SummaryMECP: function () {
+            var nbrOfrows = App.grpListeMecP.getStore().getCount();
+            nbrOfrows = FormatAmount(nbrOfrows);
+            App.lblSummaryMECP.setText("Total number : " + nbrOfrows + " planned savings ");
+        },
+
+        resetButtons: function () {
+
+            App.btnModify.disable();
+            App.btnCancel.disable();
+
+            if (App.rowSelectionListeMECP.hasSelection()) {
+
+                var isActive = App.rowSelectionListeMECP.selected.items[0].data.IsActive;
+
+                if (isActive === true)
+                {
+                    if (App.MphiddenPermModifier.value == 'true')
+                        App.btnModify.enable();
+
+                    if (App.MphiddenPermDesactiver.value == 'true')
+                        App.btnCancel.enable();
+
+                }
+                else
+                {
+                  App.btnModify.disable();
+                  App.btnCancel.disable();
+                }
+
+            }
+        }
+    }
+
+
+</script>
+
+@model Tms.Classes.Business.MiseEnComptePlanifiee
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                        .Layout(LayoutType.Border)
+                        .ID("TmsViewPort")
+                        .Items
+                         (
+                            X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+                            X.Hidden().ID("MphiddenPermCreer").ReadOnly(true),
+                            X.Hidden().ID("MphiddenPermModifier").ReadOnly(true),
+                            X.Hidden().ID("MphiddenPermDesactiver").ReadOnly(true),
+                            X.Hidden().ID("MphiddenPermPrintSavingList").ReadOnly(true),
+                            X.Hidden().ID("MphiddenPermExporterExcel").ReadOnly(true),
+                            X.Hidden().ID("MphiddenPermOverview").ReadOnly(true),
+
+                            X.Panel()
+                                .ID("pnlNorth")
+                                .Region(Region.North)
+                                .Layout(LayoutType.Border)
+                                .TopBar(new Toolbar()
+                                {
+                                    Items =
+                                    {
+                                         X.Button()
+                                            .ID("btnFilter")
+                                            .IconCls("action_filter_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                {
+                                                    de.Click.Url  = Url.Action("OnFilter");
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnRefresh")
+                                            .IconCls("action_refresh_01")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                {
+                                                    de.Click.Url  = Url.Action("OnRefresh");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemFournisseur", Encode=true, Value= "#{cmbFournisseur}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Encode=false, Value= "#{cmbStatus}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.Success = "App.CriteriaPanelMP.setTitle(' Fournisseur : ' + App.cmbFournisseur.rawValue +  ', Statut : '+ App.cmbStatus.rawValue + ' , du  '+ App.dtpStartDate.rawValue  + ' au  '+ App.dtpEndDate.rawValue )";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnNew")
+                                            .IconCls("action_new_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                    {
+                                                        de.Click.Url  = Url.Action("OnAdd");
+                                                        de.Click.Success = "App.MecPlanifiee_Detail.setTitle('Planned saving : Nouveau')";
+                                                        de.Click.EventMask.ShowMask = true;
+                                                    }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnModify")
+                                            .IconCls("action_modify_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(true)
+                                            .DirectEvents
+                                             (
+                                                 de =>
+                                                 {
+                                                    de.Click.Url  = Url.Action("OnEdit");
+                                                    de.Click.Success = "App.MecPlanifiee_Detail.setTitle('Planned saving : Modifier')";
+                                                    de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeMecP}.getSelectionModel().getSelection()[0].data"});
+                                                    de.Click.EventMask.ShowMask = true;
+                                                 }
+                                             ),
+
+                                         X.SplitButton()
+                                            .ID("btnPrint")
+                                            .IconCls("action_print_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Menu
+                                             (
+                                                new Menu()
+                                                {
+                                                    Items =
+                                                    {
+                                                        X.MenuItem()
+                                                            .ID("mnuPrintProgSavingList")
+                                                            .Text("Mise en Compte planifiées")                                                                    
+                                                            .DirectEvents
+                                                            (
+                                                                de=>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnDisplayProgSavingList");
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            )
+                                                    }
+                                                }
+                                               ),
+
+                                            X.ToolbarFill(),
+
+                                            X.Button()
+                                                .ID("btnActions")
+                                                .Text("Actions")
+                                                .Border(false)
+                                                .Cls("ButtonStyle")
+                                                .IconCls("menu_04")
+                                                .Disabled(false)
+                                                .Menu
+                                                 (
+                                                    new Menu()
+                                                    {
+                                                        Items =
+                                                        {
+                                                            X.MenuItem()
+                                                            .ID("mnuExportPlanSaving")
+                                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                            .Icon(Icon.PageExcel)
+                                                            .Handler("SetExcelList();"),
+                                                           X.MenuItem()
+                                                            .ID("btnCancel")
+                                                            .Icon(Icon.Cross)
+                                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                                            .Cls("ButtonStyle")
+                                                            .Border(false)
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                              de =>
+                                                              {
+                                                                de.Click.Url = Url.Action("OnCancel");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeMecP}.getSelectionModel().getSelection()[0].data" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                                de.Click.Confirmation.Title = "Mise en Compte planifiée";
+                                                                de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeMecP}.getSelectionModel().getSelection()[0].data.IsActive)";
+                                                                de.Click.Success = "Overview.resetButtons();";
+                                                              }
+                                                            )
+
+
+                                                        }
+                                                    }
+                                                )
+                                     }
+                                }
+                           ),
+
+
+                           X.FormPanel()
+                            .ID("CriteriaPanelMP")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Mise en Compte planifiée - overview" })
+                            .Region(Region.North)
+                            .Floatable(false)
+                            .Border(false)
+                            .Collapsed(true)
+                            .Collapsible(true)
+                            .BodyPadding(5)
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                            .Items
+                             (
+
+                               X.Panel()
+                                    .Border(false)
+                                    //.Frame(true)
+                                    .MarginSpec("0 0 0 0")
+                                    .Width(750)
+                                    .Height(80)
+                                    .Layout(LayoutType.HBox)
+                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                    //.BodyPadding(0)
+                                    .Items
+                                     (
+                                            X.Panel()
+                                            .Border(false)
+                                            .Frame(false)
+                                            .MarginSpec("0 0 0 0")
+                                            .Width(450)
+                                            .Layout(LayoutType.Form)
+                                            .Margin(0)
+                                            .BodyPadding(0)
+                                            .Items
+                                            (
+
+                                                     X.ComboBox()
+                                                        .ID("cmbFournisseur")
+                                                        .FieldLabel("Fournisseur")
+                                                        .LabelWidth(110)
+                                                        .DisplayField("NameAndCode")
+                                                        .ValueField("ID")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .TypeAhead(true)
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .ForceSelection(true)
+                                                        .MatchFieldWidth(false)
+                                                        .ListConfig(new BoundList { MinWidth = 350 })
+                                                        .Width(400)
+                                                        .Store
+                                                         (
+                                                               X.Store()
+                                                               .AutoLoad(true)
+                                                               .Model
+                                                               (
+                                                                   Html.X().Model()
+                                                                  .IDProperty("ID")
+                                                                  .Fields
+                                                                  (
+                                                                     new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                     new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                  )
+                                                               )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadAllCocoaBeansSuppliers", "Fournisseur"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+
+                                                           )
+                                                         .SelectedItems
+                                                         (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                         ),
+
+                                                     X.ComboBox()
+                                                      .ID("cmbStatus")
+                                                      .FieldLabel("Statut")
+                                                      .LabelWidth(110)
+                                                      .DisplayField("Description")
+                                                      .ValueField("ID")
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .TypeAhead(true)
+                                                      .ForceSelection(true)
+                                                      .Items
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                                             it.Add(new ListItem { Text = "Non Approuvé", Value = "NA" });
+                                                             it.Add(new ListItem { Text = "Approuvé", Value = "AP" });
+                                                         }
+                                                      )
+                                                      .SelectedItems
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                                         }
+                                                      )
+
+                                                     ),
+
+                                         X.Panel()
+                                            .Border(false)
+                                            .Frame(false)
+                                            .Margin(0)
+                                            .Width(300)
+                                            .Layout(LayoutType.Form)
+                                            .BodyPadding(0)
+                                            .Items
+                                            (
+                                               X.DateField().ID("dtpStartDate").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(""),
+                                               X.DateField().ID("dtpEndDate").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text("")
+                                            )
+                               ),
+
+
+                               X.Panel()
+                                .ID("formOverview")
+                                .Width(400)
+                                //.Margin(10)
+                                .Flex(1)
+                                //.Frame(true)
+                                .Height(80)
+                                //.TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                                .Border(false)
+                                //.BodyPadding(6)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("lblSummaryMECP").Text("Montant").EmptyText(""))
+                                 )
+                        ),
+
+                        X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeMecP")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .AllowDeselect(false)
+                       .Store
+                       (
+                          X.StoreFor<Tms.Classes.Business.Financement>()
+                          .ID("storeListeMiseEnComptePlanifiee")
+                          .RemotePaging(false)
+                          .PageSize(100)
+                          .AutoLoad(true)
+                          .Proxy
+                            (
+                                Html.X().AjaxProxy()
+                                .Url(Url.Action("LoadListOfMec"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                          .Parameters
+                          (
+                            ps =>
+                            {
+                                ps.Add(new StoreParameter("ItemFournisseur", "#{cmbFournisseur}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDate}.getRawValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDate}.getRawValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemStatus", "#{cmbStatus}.getValue()", ParameterMode.Raw));
+                            }
+                          )
+                          .Listeners
+                          (
+                            ls =>
+                            {
+                                ls.Load.Handler = "Overview.SummaryMECP(); Ext.net.Mask.hide();";
+                                ls.Add.Handler = "SelectNewRecordAddedOnGrid(records, #{grpListeMecP}.id); Overview.SummaryMECP();";
+                                ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                            }
+                           )
+
+                       )
+                       .ColumnModel
+                       (
+                          Html.X().Column().Text("").DataIndex("mIcon").Width(40).Filterable(false).Hideable(false).Renderer("renderIcon"),
+                          Html.X().DateColumn().Text("Date").DataIndex("DateMiseEnCompte").Flex(1),
+                          Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1),
+                          Html.X().Column().Text("Fournisseur").DataIndex("FournisseurNameAndCode").Flex(2),
+                          Html.X().Column().Text("Type").DataIndex("LibelleMiseEnCompteType").Flex(1),
+                          Html.X().DateColumn().Text("Date Fin").DataIndex("DateEcheance").Flex(1),
+                          Html.X().Column().Text("Saving mode").DataIndex("LibellePrelevementMode").Flex(1),
+                          Html.X().Column().Text("Taux").DataIndex("PrelevementTauxAsString").Flex(1),
+                          Html.X().Column().Text("Commentaire").DataIndex("Commentaire").Flex(1).Hidden(true),
+                          Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                          Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                          Html.X().Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                          Html.X().DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+
+                         )
+                         .BottomBar
+                         (
+                             Html.X().PagingToolbar()
+                            .HideRefresh(false)
+                            .Plugins(Html.X().ProgressBarPager())
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                         .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowSelectionListeMECP")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(false)
+                        )
+                       .Listeners(l => { l.Select.Fn = "Overview.resetButtons"; l.Deselect.Fn = "Overview.resetButtons"; })
+                       .DirectEvents(de =>
+                       {
+                           de.RowDblClick.Url = Url.Action("OnConsult");
+                           de.RowDblClick.CleanRequest = true;
+                           de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeMECP}.getSelected().items[0].data" });
+                           de.RowDblClick.EventMask.ShowMask = true;
+                           de.RowDblClick.Success = "App.MecPlanifiee_Detail.setTitle('Planned Saving : Detail')";
+                       }
+                       )
+        )
+    )
+
+</form>

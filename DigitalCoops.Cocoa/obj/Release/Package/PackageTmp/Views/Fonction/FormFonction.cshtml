@@ -1,0 +1,132 @@
+﻿
+@model Tms.Classes.Security.FonctionViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+    .Items(
+            X.Window()
+            .ID("FormFonction")
+            .Width(500)
+            .Resizable(false)
+            .Height(200)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+            })
+            //.X(400)
+            .Y(20)
+            .Title("Function : Detail")
+            .Items(
+                 X.FormPanel()
+                    .Border(false)
+                    .DefaultAnchor("100%")
+                    .FieldDefaults(d =>
+                    {
+                        d.LabelWidth = 100;
+                    })
+                    //.Title("Criteria")
+                    .Layout(LayoutType.VBox)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                    .BodyPadding(10)
+                    .Items(
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._Fonction.RowVersionKey),
+                        X.Hidden().ID("TxtFonctionID").Value(Model._Fonction.ID),
+                        X.ComboBox().ID("CmbModule").FieldLabel("Module").DisplayField("NomComplet").ValueField("ID").LabelAlign(LabelAlign.Right)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Fonction.Module.ID : (Guid?)null)
+                            .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            .ForceSelection(true)
+                            .TypeAhead(true)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                                .Store(X.Store().ID("storecomboModule")
+                                        .AutoLoad(true)
+                                        .Model(Html.X().Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                    new ModelField("NomComplet", ModelFieldType.String) { Mapping = "NomComplet" },
+                                                    new ModelField("ApplicationAndModuleAsString", ModelFieldType.String) { Mapping = "ApplicationAndModuleAsString" }
+                                                )
+                                            )
+                                        .Proxy(Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadModule", "Module"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        )
+                                        .Listeners(ls =>
+                                        {
+                                            ls.Select.Fn = "SetFunctionName";
+                                        })
+                            ,
+                        X.TextField().ID("TxtNomFonction").FieldLabel("Nom")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Fonction.Nom.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                          ,
+                        X.TextField().ID("TxtDescriptionFonction").FieldLabel("Description")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Fonction.Description.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right).MarginSpec("0 6 0 0")
+                )
+                    )
+            .Buttons(
+                X.Button().Text("OK")
+                .ID("BtnSubmitFonction")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormFonction.id);";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormFonction.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {            
+            Ext.Msg.show({ title: 'Function : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+<script type="text/javascript">
+    var SetFunctionName = function () {
+        var name = App.storecomboModule.getById(App.CmbModule.value).get('ApplicationAndModuleAsString');
+        App.TxtNomFonction.setValue(name);
+    };
+</script>
+
+
+
+
+
+
+

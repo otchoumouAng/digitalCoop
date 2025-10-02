@@ -1,0 +1,224 @@
+﻿
+@model Tms.Classes.Business.Sites.TransfertFeves
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px;
+    }
+</style>
+<script>
+
+    var SetValidBtnOK = function () {
+        if (App.RowPendingLivforWeighing.hasSelection())
+            App.BtnSendTransfer.enable();
+        else
+            App.BtnSendTransfer.disable();
+    };
+</script>
+@(
+X.Window()
+    .ID("Livraison_SelectTransfert")
+    .Width(850)
+    .Resizable(false)
+    .Height(460)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(200)
+    .Y(20)
+    .Title("Available Transfer")
+    .Layout(LayoutType.VBox)
+    .BodyPadding(5)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items
+    (
+        //X.Hidden().ID("TransfertID").Value(Model.TransfertFeves.ID),
+        X.Panel()
+            .Border(true)
+            //.Frame(true)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items
+            (
+    #region Zone A
+                    X.Container()
+                        .Flex(3)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbTrCampagne")
+                                .FieldLabel("Campagne")
+                                .MarginSpec("0 8 5 0")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model.Campagne.Designation)
+                                .Store
+                                (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy().Url(Url.Action("LoadCampagne", "Campagne"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                    )
+
+                        ),
+    #endregion
+    #region Zone B
+                    X.Container()
+                        .Flex(2)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.DateField().ID("trfFiltreDateDebut").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToString()),
+                            X.DateField().ID("trfFiltreDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToString())
+                        )
+    #endregion
+        ),
+        //X.Button().ID("BtnReloadListe").Text("OK").Hidden(true)
+        //    .DirectEvents(de =>
+        //    {
+        //        de.Click.Url = Url.Action("SetAvailableNbrSacs");
+        //        de.Click.FormID = "#(return this.up('window').down('form');)";
+        //        de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeAdded", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+        //        de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeToAdd", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListePendindTransfert.getRowsValues({selectedOnly : false})" });
+
+        //    }),
+        X.GridPanel()
+            .Layout(LayoutType.Fit)
+            .ID("grpListePendindTransfert")
+            .MarginSpec("5 0 0 0")
+            .Frame(true)
+            .Height(290)
+            .AllowDeselect(true)
+            .Store
+            (
+                X.StoreFor<Tms.Classes.Business.Sites.TransfertFeves>()
+                    .ID("storeListPendingTransfert")
+                    .AutoLoad(false)
+                    .Proxy
+                    (
+                    Html.X().AjaxProxy()
+                        .Url(Url.Action("LoadListOfAvailableTransfert", "LivraisonAgence"))
+                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                    )
+                    .Listeners(
+                        ls =>
+                        {
+                            ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                            ls.Load.Handler = "Ext.net.Mask.hide();";
+                            //ls.Load.Handler = "Ext.net.Mask.hide(); App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);";
+                        }
+                    )
+                    .Parameters
+                    (
+                        ps =>
+                        {
+                            ps.Add(new StoreParameter("ItemSite", string.Format("{0}", Model.Sites.ID.ToString()), ParameterMode.Value));
+                            ps.Add(new StoreParameter("ItemCampagne", "App.cmbTrCampagne.getValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemPeriodStart", "#{trfFiltreDateDebut}.getRawValue()", ParameterMode.Raw));
+                            ps.Add(new StoreParameter("ItemPeriodEnd", "#{trfFiltreDateFin}.getRawValue()", ParameterMode.Raw));
+                            //ps.Add(new StoreParameter("ItemPeseeID", "App.TxtPeseePauID.getValue()", ParameterMode.Raw));
+                        }
+                    )
+            )
+            //.Listeners(ls => ls.Add.Handler = "App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);")
+            .ColumnModel
+            (
+                Html.X().Column().Text("Date").DataIndex("DateTransfertAsString").Flex(1).Hideable(false),
+                Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1).Hideable(false),
+                Html.X().Column().Text("Destination").DataIndex("DestinationAsString").Flex(1).Hideable(false),
+                Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false),
+                Html.X().Column().Text("Poids Brut (Kg)").DataIndex("PoidsBrutAsString").Flex(1).Hideable(false),
+                Html.X().Column().Text("Tare Sacs").DataIndex("TareSacs").Flex(1).Hideable(false),
+                Html.X().Column().Text("Tare. Pallets").DataIndex("TarePalette").Flex(1).Hideable(false),
+                Html.X().Column().Text("Poids Net (Kg)").DataIndex("PoidsNet").Flex(1).Hideable(false)
+            )
+            .DockedItems(
+                            X.Toolbar()
+                                .Dock(Dock.Top)
+                                .Items(
+                                        X.Button()
+                                            .ID("btnRefreshList")
+                                            .IconCls("action_refresh_01")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Disable(false)
+                                            .Listeners(
+                                                ls => ls.Click.Handler = "App.grpListePendindTransfert.getStore().load();"
+                                            )
+                                         )
+
+            )
+            .SelectionModel(
+                X.RowSelectionModel()
+                    .ID("RowPendingLivforWeighing")
+                    .Mode(SelectionMode.Single)
+                    .Listeners
+                    (
+                        l =>
+                        {
+                            l.Select.Handler = "SetValidBtnOK();";
+                            l.Deselect.Handler = "SetValidBtnOK();";
+                        })
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+                    .Text("Selectionner")
+                    .ID("BtnSendTransfer")
+                    .Disabled(true)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitTransfert");
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListePendindTransfert}.getSelectionModel().getSelection()[0].data" });                            
+                        }
+                    ),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Livraison_SelectTransfert.doClose()")
+                    .Cls("btncancel")
+            )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+<script>
+    var FilterDelivery = function () {
+        App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);
+    };
+</script>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,431 @@
+﻿body > .x-mask {
+            background-image: none;
+            background-color: rgba(0, 0, 0, 0.20);
+}
+/*Title Background color collapsed*/
+.panelcollapse{
+    background-color: #E4E4E4;
+}    
+    /*Title Background color expanded*/
+.x-panel-header-default-framed-top{
+    background-color: #fff;
+}
+    /*Title border color*/
+.x-panel-header-default-framed{
+    border: 1px solid #D3D3D3;
+}
+/*Inner Title border color*/
+.x-panel-default-framed, x-border-item{
+        border: 1px solid #D3D3D3;        
+}
+/*Title font color*/
+x-panel-header-title-default-framed, x-title, x-panel-header-title, .title_font_color{
+    color: black !important;
+}
+/*Title arrow color*/
+.x-panel-header-default-framed .x-tool-tool-el 
+{
+        background-color: #d4d4d4;
+}
+.ButtonStyle{
+    background-color: transparent;
+}
+.ViewportStyle{
+            /*zoom:90% !important;*/
+}
+#tms_header {
+    background-color: #428bca;
+    height: 60px;
+}
+        
+    #tms_header p {
+        color: white;
+        font-weight: bold;
+        font-family: Segoe UI, serif, Garamond;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+
+#tms_settings 
+{
+    height: 60px;
+}
+
+/* arriere plan entête du tabpanel*/
+.x-tab-bar-default 
+{
+    background-color: #CFD8DC !important;
+    /*background-color: #F2F2F2 !important;*/
+}
+        
+/* couleur de texte pour onglet inactif*/
+.x-tab-inner-default 
+{
+    color:#404040;
+}  
+body{
+    zoom:100% !important;
+}
+.customgrid{
+    zoom : 90% !important;
+    margin-top:10px;
+    width: auto;
+}
+/*.x-form-text-default, .x-form-trigger-default{
+    /*height: px !important;*/
+    /*min-height:15px;
+    padding:0px 4px 0px 4px !important;
+    background-color: transparent !important;
+}
+.x-form-text, .x-form-trigger{
+    min-height:15px;    
+    padding:0px 4px 0px 4px !important;
+    background-color: transparent !important;
+}*/
+/*.x-form-trigger{
+    font: 16px/15px FontAwesome;    
+    padding-top: 2px !important;
+    background-color: transparent !important;
+}
+.x-form-trigger-default{    
+    font: 16px/15px FontAwesome;
+    padding-top: 2px !important;
+    background-color: transparent !important;
+}*/
+.x-column-header-inner{
+    padding: 2px 10px 2px 10px;
+}
+.x-grid-cell-inner {
+    position: relative;
+    text-overflow: ellipsis;
+    padding: 2px 10px 2px;
+}
+.IndicatorRedStar{
+    color: #ff0000 !important; 
+    content: ' *';
+    font-weight: bold !important;
+}
+/* Change TextField readonly Background color*/
+input[readonly="readonly"]
+ {  
+  background-color: #F6F6f6 !important;
+}
+
+/* Change TextArea readonly Background color*/
+textarea[readonly="readonly"]
+ {  
+  background-color: #F6F6f6 !important;
+}
+
+/* Change Gripanel icon color*/
+/*.glyphicon-remove
+ {  
+  color: #ff0000;
+}
+.glyphicon-ok
+ {  
+  color: green;
+}*/
+
+/*Change cancel button backgroud color style*/
+.btncancel{
+    background-color : transparent !important;
+        
+}
+/*Change cancel button inner text color*/
+.btncancel .x-btn-inner-default-small{
+    color : #000 !important;
+}
+
+.BorderBottomGrid{
+    border-left:none;
+    border-right:none;
+    border-top: 1px solid #D3D3D3 !important;
+}
+
+/* Customize Bootstrap icon color */
+.blue 
+{
+    font-size:15px;
+    /*color:#5fa2dd;*/
+    color: #87CEEB;
+}
+.grey
+{
+    font-size:15px;
+    /*color:#5fa2dd;*/
+    color: #D3D3D3;
+}
+
+.red 
+{
+    font-size:15px;
+    color:#ff0000;
+}
+
+.green 
+{
+    font-size:15px;
+    color:#7df209;
+}
+
+.x-column-header-checkbox .x-column-header-inner, .x-grid-checkcolumn-cell-inner {
+    padding: 2px 4px 0px 4px !important;
+    text-overflow: clip;
+}
+
+/*Largeur minimum des champs de saise*/
+.x-form-text-field-body-default {
+    min-width: 100px !important;
+    max-width: 170px;    
+    background-color: transparent !important;
+}
+
+
+.weighingCapture 
+{
+    /*text-align:center;
+    font-weight:bold;
+    font-size:36px;      
+    line-height:25px!important;   
+    min-height:20px!important;
+    padding-top:20px!important */
+
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 15px!important;
+    min-height: 0px!important;
+    padding-top: 10px!important;
+}
+
+.reasonChangeWeighing 
+{
+    /*text-align:center;
+    font-weight:bold;
+    font-size:36px;      
+    line-height:25px!important;   
+    min-height:20px!important;
+    padding-top:20px!important */
+          
+    line-height: 25px!important;
+    min-height: 0px!important;
+    padding-top: 10px!important;
+}
+
+.innerlistcombo{    
+    width: 100% !important;
+}
+
+
+.IndicatorToItalic{
+    /*position: absolute !important;
+    display: block !important;*/    
+}
+.x-webkit .x-form-text {
+     height: 100% !important; 
+}
+.AmountLetterStyle{
+    text-align: right; 
+    font-weight: bold; 
+    text-transform: capitalize; 
+    background-color : transparent !important;
+    font-style: italic !important;        
+}
+
+
+
+/* Couleur entête fênetre detail*/
+.x-window-header-default-top
+{
+    border-style: solid;
+    background-color: rgba(0, 0, 0, 0.20);    
+}
+
+/* bodure fenetre details*/
+.x-window-default
+{
+    border-color: rgba(0, 0, 0, 0.20);    
+}
+
+/*icone close fenetre detail*/
+.x-window-header-default .x-tool-img 
+{
+    background-color: #7f7f7f;
+}
+
+/*Couleur arrère plan  de l'entete des écrans de détails */
+.x-window-header-default {
+    font-size: 16px;
+    border-color:#B0BEC5;
+    /*background-color: #B0BEC5;*/
+    background-color: #3498DB;
+    /*border-color:#606060;
+    background-color: #606060;*/
+    color:black;
+
+}
+/* couleur du texte de l'entête des fenêtres détails*/
+.x-window-header-title-default {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Segoe UI', 'Helvetica Neue', helvetica, arial, verdana, sans-serif!important;
+    line-height: 20px;
+}
+
+
+/*Boutons OK*/
+.x-btn-default-small 
+{
+    border-color: #419641;
+}
+
+.x-btn-default-small, .x-btn-over .x-btn-default-small
+{
+    padding: 7px 7px 7px 7px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #419641;
+}
+
+.x-btn.x-btn-disabled.x-btn-default-small {    
+    background-color: #419641;
+}
+
+/*
+ * CUSTOM COLORS FOR MENU IN METRO UI STYLE   
+ **/
+.bg-color-grayDark 
+{
+     /*background-color: #78909C !important;*/
+     background-color: #606060 !important;
+}
+
+/*.bg-grayDark {
+    background-color: #78909C!important;
+} => Supplier*/
+
+ 
+
+.bg-color-steel 
+{
+    /*background-color: #90A4AE !important;  7f8c8d*/
+    background-color: #647687 !important; 
+}/*=>Reference Prix*/
+
+.bg-color-gray 
+{
+    /*background-color: #B0BEC5 !important;*/
+    background-color: #567C73 !important;
+} /*=> Negociated Prix*/
+
+.bg-color-emerland
+{    
+    background-color: #2ECC71 !important;
+}
+.bg-color-silver
+{    
+    background-color: #bdc3c7 !important;
+}
+.bg-color-concrete
+{    
+    background-color: #95a5a6 !important;
+}
+.bg-color-asbestos
+{    
+    background-color: #7f8c8d !important;
+}
+.bg-color-greensea
+{    
+    background-color: #16a085 !important;
+}
+
+.bg-color-belizehole
+{    
+    background-color: #2980b9 !important;
+}
+.bg-color-carrot
+{    
+    background-color: #e67e22 !important;
+}
+.bg-color-lightGreen 
+{
+    /*background-color: #00aa8d !important;*/
+    background-color: #27ae60 !important;
+} /*=> forwad contracts*/
+.bg-color-vert-olive
+{    
+    background-color: #BAD80A !important;
+}
+
+.x-btn-over.x-btn-default-small {
+    border-color: #419641;
+    background-image: none;
+    background-color: #419610;
+}
+
+/*a:focus {
+    color: #419641 !important;
+    text-decoration: underline !important;
+}*/
+
+.x-btn-focus.x-btn-default-small {    
+    background-color: #419641 !important; 
+}
+
+/*.x-grid-item-alt {
+    background-color: transparent !important;
+}
+
+
+.x-grid-with-row-lines .x-grid-item {    
+    border-color: #B0BEC5 !important;
+}*/
+.x-grid-item-alt {
+    background-color: #fafafa;
+}
+.x-grid-item-selected {    
+    background-color: #ffefbb !important;
+}
+/*New Style*/
+.x-form-trigger-default {    
+    width: 24px !important;
+    font: 16px/22px FontAwesome !important;
+    background: transparent !important;    
+}
+
+.x-form-text-default {    
+    padding: 2px 10px 2px !important;
+    background-color: transparent !important;
+    font: 300 13px/18px 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif !important;
+    min-height: 22px !important;
+}
+.x-form-item-label-default {    
+    font: 300 13px/17px 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif !important;
+    min-height: 22px !important;
+    padding-top: 5px !important;    
+}
+
+.x-form-layout-wrap {
+    border-spacing: 5px !important;
+}
+.x-form-item-body-default {
+    min-height: 22px !important;
+}
+.x-autocontainer-form-item, .x-anchor-form-item, .x-vbox-form-item, .x-table-form-item {
+    margin-bottom: 5px !important;
+}
+.x-panel .x-panel-header-default-framed-top {
+    border-bottom-width: 1px !important;
+}
+
+
+
+
+
+
+
+
+

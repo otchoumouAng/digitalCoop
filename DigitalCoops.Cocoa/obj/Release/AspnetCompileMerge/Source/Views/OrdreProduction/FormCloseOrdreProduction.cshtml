@@ -1,0 +1,120 @@
+﻿@model Tms.Classes.Business.stock.OrdreProduction
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 280px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 60px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormCloseOrdreProduction")
+    .Width(400)
+    .Resizable(false)
+    .Height(250)
+    .Modal(true)    
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Production Order - Close")        
+    .Items
+    (
+        X.FormPanel()            
+            .Layout(LayoutType.Form)            
+            .Items(                   
+                    X.Hidden()
+                        .ID("TxtOrdreProductionID")
+                        .Value(Model.ID),
+                    X.TextField()
+                        .ID("")
+                        .FieldLabel("Production Order N°")
+                        .TabIndex(1)
+                        .ReadOnly(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .Text(Model.NumeroProduction),
+                    X.TextField()
+                        .ID("")
+                        .FieldLabel("Production Date")
+                        .TabIndex(2)
+                        .ReadOnly(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .Text(Model.DateProductionAstring),
+                    X.DateField()
+                        .ID("txtDateFinProduction")
+                        .TabIndex(3)
+                        .FieldLabel("Date Fin")
+                        .Text(DateTime.Now.ToString())
+                        .LabelAlign(LabelAlign.Right)
+                        .AllowBlank(false)                                               
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*"),
+                    X.TextArea()
+                        .ID("txtComment")
+                        .FieldLabel("Commentaire")
+                        .TabIndex(4)
+                        .LabelAlign(LabelAlign.Right)
+                        .Text("")                             
+                )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(5)            
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("CloseProduction");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.Before = "return validNew(App.FormCloseOrdreProduction.id);";
+                }
+            ),           
+        X.Button()
+            .TabIndex(6)       
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.FormCloseOrdreProduction.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Financement : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+
+
+</script>
+
+

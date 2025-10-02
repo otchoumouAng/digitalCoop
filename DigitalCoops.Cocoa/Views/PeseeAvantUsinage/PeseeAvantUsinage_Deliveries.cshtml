@@ -1,0 +1,150 @@
+﻿@model Tms.Classes.Business.stock.OrdreProduction
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px;
+    }
+</style>
+<script>    
+    var SetValidBtnOK = function () {
+        if (App.RowPendingBLforInvoice.hasSelection())
+            App.BtnSendBlDelivery.enable();
+        else
+            App.BtnSendBlDelivery.disable();
+    };
+</script>
+@(                        
+X.Window()
+    .ID("PeseeAvantUsinage_Deliveries")
+    .Width(600)
+    .Resizable(false)
+    .Height(400)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(200)
+    .Y(20)
+    .Title("BE Disponibles")
+    .Layout(LayoutType.VBox)
+    .BodyPadding(5)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items
+    (
+        //X.Button().ID("BtnReloadListe").Text("OK").Hidden(true)
+        //    .DirectEvents(de =>
+        //    {
+        //        de.Click.Url = Url.Action("SetAvailableNbrSacs");
+        //        de.Click.FormID = "#(return this.up('window').down('form');)";
+        //        de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeAdded", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeWeightPAU.getRowsValues({selectedOnly : false})" });
+        //        de.Click.ExtraParams.Add(new Parameter { Name = "ItemListeToAdd", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListDeliveryNotes.getRowsValues({selectedOnly : false})" });
+
+        //    }),
+        X.GridPanel()
+            .Layout(LayoutType.Fit)
+            .ID("grpListDeliveryNotes")
+            .MarginSpec("5 0 0 0")
+            .Frame(true)
+            .Height(290)
+            .AllowDeselect(true)
+            .Store
+            (
+                X.StoreFor<Tms.Classes.Business.stock.CompositionUsinageLivraison>()
+                    .ID("storeListDeliveryNotes")
+                    .AutoLoad(true)
+                    .Proxy
+                    (
+                    Html.X().AjaxProxy()
+                        .Url(Url.Action("LoadListOfAvailableDeliveryNotes"))
+                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                    )
+                    .Listeners(
+                        ls =>
+                        {
+                            ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                            ls.Load.Handler = "Ext.net.Mask.hide();";
+                            //ls.Load.Handler = "Ext.net.Mask.hide(); App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);";
+                        }
+                    )
+                    .Parameters
+                    (
+                        ps =>
+                        {
+                            ps.Add(new StoreParameter("ItemProduction", string.Format("{0}", Model.ID.ToString()), ParameterMode.Value));
+                            ps.Add(new StoreParameter("ItemPeseeID", "App.TxtPeseePauID.getValue()", ParameterMode.Raw));
+                        }
+                    )
+            )
+            //.Listeners(ls => ls.Add.Handler = "App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);")
+            .ColumnModel
+            (
+                Html.X().Column().Text("Livraison N°").DataIndex("LivraisonID").Flex(1).Hideable(false),
+                Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(false),
+                Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false),
+                Html.X().Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(1).Hideable(false)
+            )
+            .Plugins
+            (
+                X.FilterHeader()
+            )
+            .SelectionModel(
+                X.RowSelectionModel()
+                    .ID("RowPendingBLforInvoice")
+                    .Mode(SelectionMode.Single)
+                    .Listeners
+                    (
+                        l =>
+                        {
+                            l.Select.Handler = "SetValidBtnOK();";
+                            l.Deselect.Handler = "SetValidBtnOK();";
+                        })
+            )
+            .DirectEvents(de =>
+            {
+                de.RowDblClick.Url = Url.Action("SubmitDeliveryNote");
+                de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeliveryNotes}.getSelectionModel().getSelection()[0].data" });
+            }
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+                    .Text("Selectionner")
+                    .ID("BtnSendBlDelivery")
+                    .Disabled(true)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitDeliveryNote");
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeliveryNotes}.getSelectionModel().getSelection()[0].data" });
+                        }
+                    ),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.PeseeAvantUsinage_Deliveries.doClose()")
+                    .Cls("btncancel")
+            )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+<script>
+    var FilterDelivery = function () {
+        App.BtnReloadListe.fireEvent('click', App.BtnReloadListe);        
+    };
+</script>
+
+
+
+
+
+
+
+
+

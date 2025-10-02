@@ -1,0 +1,138 @@
+﻿
+@model Tms.Classes.Shared.Sales.CompteBancaireViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormCompteBancaire")
+    .Width(400)
+    .Resizable(false)
+    .Height(230)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(20)
+    .Title("Account : Detail")
+    .Layout(LayoutType.Form)
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.Form)
+                .Items(
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._CompteBancaire.RowVersionKey),
+                        X.Hidden().ID("TxtCompteBancaireID").Value(Model._CompteBancaire.ID),
+                        X.TextField().ID("TxtNumeroCompteBancaire")
+                            .FieldLabel("Designation")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CompteBancaire.Numero : string.Empty)
+                            .LabelAlign(LabelAlign.Right)
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*"),
+                        X.ComboBox()
+                            .ID("cmbBanque")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .FieldLabel("Bank")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .ListConfig(new BoundList { Width = 350, MinWidth = 200 })
+                            .ForceSelection(true)
+                            .TypeAhead(true)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CompteBancaire.Banque.ID : (int?)null)
+                            .Store(
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model(
+                                                X.Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                    )
+                                                )
+                                        .Proxy(
+                                                X.AjaxProxy()
+                                                    .Url(Url.Action("LoadBanqueActive", "Banque"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                            ),
+                        X.ComboBox()
+                            .ID("cmbExportateur")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .FieldLabel("Exportateur")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .ListConfig(new BoundList { Width = 350, MinWidth = 200 })
+                            .ForceSelection(true)
+                            .TypeAhead(true)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CompteBancaire.Exportateur.ID : (int?)null)
+                            .Store(
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model(
+                                                X.Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                    )
+                                                )
+                                        .Proxy(
+                                                X.AjaxProxy()
+                                                    .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                            )
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSubmitCompteBancaire")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormCompteBancaire.id);";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormCompteBancaire.doClose()").Cls("btncancel")
+
+            )
+
+)
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Origin : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+</script>

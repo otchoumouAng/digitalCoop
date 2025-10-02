@@ -1,0 +1,143 @@
+﻿@model Tms.Classes.Shared.Sales.ContratDeVentePoidsStandard
+@{
+    Layout = null;
+    var X = Html.X();
+    //string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    /*.x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }*/
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+@(
+X.Window()
+    .ID("ContratDeVentes_Poids")
+    .Width(300)
+    .Resizable(false)
+    .Height(400)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(10)
+    .Title("Standard Weight")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items(
+                //X.Panel()
+                //    .Frame(false)
+                //    .Border(false)
+                //    .ID("pnlFlexEvenLot")
+                //    .Layout(LayoutType.VBox)
+                //    .PaddingSpec("0 5 0 5")
+                //    .Flex(1)
+                //    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                //    .Items
+                //    (                    
+                X.GridPanel()
+                    .Layout(LayoutType.Fit)
+                    .ID("grpListOfWeight")
+                    .Margin(5)
+                    //.MinHeight(130)
+                    .Frame(true)
+                    .Height(280)
+                    .AllowDeselect(true)
+                    .Store
+                    (
+                        X.StoreFor<Tms.Classes.Shared.Sales.ContratDeVentePoidsStandard>()
+                            .ID("storeListOfWeight")
+                            .AutoLoad(true)
+                            .Proxy
+                            (
+                                X.AjaxProxy()
+                                    .Url( Url.Action("LoadListOfWeight"))
+                                    .Reader(X.JsonReader().RootProperty("data"))
+                            )
+                        )
+                    .ColumnModel
+                    (
+                        X.Column().Text("Poids").DataIndex("PoidsConvention").Flex(1)
+                    //X.Column().Text("Poids Net (kg)").DataIndex("PoidsNetNAsString").Flex(2)
+                    )
+                    .BottomBar(
+                        X.PagingToolbar()
+                            .HideRefresh(true)
+                            .Plugins(X.ProgressBarPager())
+                        )
+                    .SelectionModel(
+                        X.RowSelectionModel()
+                            .ID("rowSelectionPoids")
+                            .Mode(SelectionMode.Single)
+                            .AllowDeselect(true)
+                )
+                .DirectEvents(de =>
+                {
+                    de.RowDblClick.Url = Url.Action("OnSubmitWeight");
+                    //de.RowDblClick.FormID = "#(return this.up('window').down('form');)";
+                    de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionPoids}.getSelected().items[0].data" });
+                }
+        )
+        )
+        .Buttons
+              (
+                    X.Button()
+                    .Text("Valider")
+                    .ID("BtnSend")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("OnSubmitWeight");
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionPoids}.getSelected().items[0].data" });
+                            de.Click.Before = "return validNewList(App.ContratDeVentes_Poids.id);";
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListOfWeight.getRowsValues({selectedOnly : true})" });
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = true,  Value = "App.HExecMode.getValue()" });
+                        }
+                    ),
+
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.ContratDeVentes_Poids.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+
+    var validNewList = function (winId) {
+        /*console.log(App.grpListOfWeight.getRowsValues({ selectedOnly: true }));*/
+        /**Verifiaction d'articles**/
+        if (App.grpListOfWeight.getRowsValues({ selectedOnly: true }).length <= 0) {
+            
+            Ext.Msg.show({ title: 'Weight : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please choose One Weight.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

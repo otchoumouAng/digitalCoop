@@ -1,0 +1,260 @@
+﻿@model Tms.Classes.Business.FinancementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(
+
+X.Window()
+    .ID("FormPrintFinancingReport")
+    .Width(700)
+    .Resizable(false)
+    .Height(230)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    //.X(300)
+    .Y(20)
+    .Title("Etat Financement")
+    .Items(
+            X.FormPanel()
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                            X.Hidden().ID("FIcurrentcampagne").Value(Model._Financement.Campagne),
+                            X.Hidden().ID("FITypeReport").Value(Model._ReportType),
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items(
+                                    X.ComboBox()
+                                        .ID("FISiteForReport")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        .ReadOnly(true)
+                                        //.ReadOnly(true)
+                                        .Value(Model._Financement.Sites.ID)
+                                        .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadSiteByAccess", "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ).Listeners(
+                                                ls =>
+                                                {
+                                                    ls.Select.Handler = "if (App.FISiteForReport.value) { App.CPfournisseurForReport.clearValue(); App.CPfournisseurForReport.getStore().load(); };";
+                                                }
+                                            ),
+                                    X.ComboBox()
+                                        .ID("FIPcropYearForReport")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .AllowBlank(false)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                        .Fields(
+                                                                            //new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Listeners(ls =>
+                                                    {
+                                                        ls.Load.Handler = "#{FIPcropYearForReport}.setValue(#{FIcurrentcampagne}.value)";
+                                                    })
+                                                ),
+                                    X.ComboBox()
+                                        .ID("FIfournisseurForReport")
+                                        .FieldLabel("Fournisseur")
+                                        .DisplayField("NameAndCode")
+                                        .ValueField("ID")
+                                        .Value(-1)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)                                        
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Listeners(l => l.Load.Handler = "App.FIfournisseurForReport.setValue(App.FIfournisseurForReport.getStore().getAt(0));")
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                                )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadAllSupplierBySite", "Fournisseur"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Parameters
+                                                        (
+                                                        ps => { ps.Add(new StoreParameter("siteID", "App.FISiteForReport.getValue()", ParameterMode.Raw)); }
+                                                        )
+                                                ),
+                                    X.ComboBox()
+                                        .ID("FITypeFinancementForReport")
+                                        .FieldLabel("Type De Financement")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .Value(-1)
+                                        .ReadOnly(Model._ReportType == Tms.Classes.Business.FinancementReportType.Exposure ? true : false)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AutoSelect(true)
+                                        .ForceSelection(true)
+                                        //.MatchFieldWidth(false)
+                                        //.ListConfig(new BoundList { MinWidth = 300 })
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    //.Listeners(l => l.Load.Handler = "App.TypeContratID.setValue(App.TypeContratID.getStore().getAt(0));")
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadAll", "FinancementType"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                    )
+                                ),
+
+                    X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items(
+
+                                X.DateField()
+                                    .ID("FIstartDateForReport")
+                                    .FieldLabel("Date Debut")
+                                    .ReadOnly(Model._ReportType == Tms.Classes.Business.FinancementReportType.Exposure ? true : false)
+                                    .Text(Model._Financement.DateFinancement.ToString())
+                                    .LabelAlign(LabelAlign.Right),
+                                X.DateField()
+                                    .ID("FIdueDateForReport")
+                                    .FieldLabel("Date Fin")
+                                    .ReadOnly(Model._ReportType == Tms.Classes.Business.FinancementReportType.Exposure ? true : false)
+                                    .Text(Model._Financement.DateEcheance.ToString())
+                                    .LabelAlign(LabelAlign.Right)
+                                    ,
+                                X.ComboBox()
+                                    .ID("FIOptionReport")
+                                    .FieldLabel("Option")
+                                    .ReadOnly(Model._ReportType == Tms.Classes.Business.FinancementReportType.Exposure ? true : false)
+                                    .LabelAlign(LabelAlign.Right)
+                                    //.MatchFieldWidth(false)
+                                    //.ListConfig(new BoundList { MinWidth = 200 })
+                                    .TypeAhead(false)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .Items(
+                                            new ListItem("All", "NO"),
+                                            new ListItem("Ouvert", "OP"),
+                                            new ListItem("Terminé", "FF")
+                                        )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "All", Value = "NO" }); })
+                                )
+
+            )
+        )
+            .Buttons(
+                        X.Button()
+                            .Text("OK")
+                            .ID("BtnGenerateFinancingReport")
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Url.Action("GenerateReport");
+                                de.Click.ExtraParams.Add(new Parameter { Mode = ParameterMode.Raw, Name = "TypeReport", Value = "App.FITypeReport.value" });
+                                de.Click.Before = "return validNew(App.FormPrintFinancingReport.id);";
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                            }),
+                        X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.FormPrintFinancingReport.doClose()")
+                            .Cls("btncancel")
+                        )
+
+            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                /*alert(winId);*/
+                /*var winId = #{FormFournisseur}.id;*/
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Finaning | Print Report : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+
+                }
+
+    };
+
+    var CloseWindow = function () {
+        App.TmsViewPort.unmask();
+        App.FormPrintFinancingReport.doClose();
+    };
+</script>
+
+
+
+
+
+
+
+

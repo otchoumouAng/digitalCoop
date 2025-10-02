@@ -1,0 +1,249 @@
+﻿@model Tms.Classes.Business.ContratPeriode
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(
+
+    X.Window()
+        .ID("frmCriteriaForPrime")
+        .Width(700)
+        .Resizable(false)
+        .Height(230)
+        .Modal(true)
+        .Y(100)
+        .Title("Liste des Primes")
+        .Layout(LayoutType.Form)
+        .Items
+        (
+
+            X.FormPanel()
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                .Items(
+                            X.Panel().Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                            .Flex(1)
+                            .Items(
+                                 X.ComboBox()
+                                        .ID("CpDetcmbSiteP")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        //.ReadOnly(true)
+                                        .Value(Model.Sites.ID)
+                                        .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadSiteAll", "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ).Listeners(
+                                                ls =>
+                                                {
+                                                    ls.Select.Handler = "if (App.CpDetcmbSiteP.value) { App.cmbDetFournisseurP.clearValue(); App.cmbDetFournisseurP.getStore().load(); };";
+                                                }
+                                            ),
+                                X.ComboBox()
+                                .ID("cmbDetCropYearP")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store(
+                                        X.Store()
+                                            .AutoLoad(true)
+                                            .Listeners(l => l.Load.Handler = "App.cmbDetCropYearP.setValue(App.cmbDetCropYearP.getStore().getAt(0));")
+                                            .Model(
+                                                    Html.X().Model()
+                                                        .IDProperty("Designation")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                    )
+                                            .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                    .Url(
+                                                            Url.Action("LoadCampagneAll", "Campagne")
+                                                    )
+                                            .Reader(
+                                                        Html.X().JsonReader().RootProperty("data")
+                                                        )
+                                            )
+                                            ),
+                            X.ComboBox()
+                                .ID("cmbDetFournisseurP")
+                                .FieldLabel("Fournisseur")
+                                .MatchFieldWidth(false)
+                                .ListConfig(new BoundList { MinWidth = 350 })
+                                .DisplayField("NameAndCode")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(false)
+                                .ForceSelection(true)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                .Store(
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Listeners(l => l.Load.Handler = "App.cmbDetFournisseurP.setValue(App.cmbDetFournisseurP.getStore().getAt(0));")
+                                        .Model(
+                                                Html.X().Model()
+                                                    .IDProperty("ID")
+                                                        .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                        )
+                                                )
+                                        .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadAllSupplierBySite", "Fournisseur"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        ).Parameters
+                                                        (
+                                                        ps => { ps.Add(new StoreParameter("siteID", "App.CpDetcmbSiteP.getValue()", ParameterMode.Raw)); }
+                                                        )
+
+                                        ),
+                            X.ComboBox()
+                                .ID("cmbDetTypeContratP")
+                                .FieldLabel("Type de Contrat")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                //.MatchFieldWidth(false)
+                                //.ListConfig(new BoundList { MinWidth = 300 })
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(false)
+                                .Hidden(true)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .ForceSelection(true)
+                                .Store(
+                                        X.Store()
+                                        .Listeners(l => l.Load.Handler = "#{cmbDetTypeContratP}.setValue(App.cmbDetTypeContratP.getStore().getAt(0));")
+                                        .AutoLoad(true)
+                                        .Model(
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields(
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                            )
+                                .Proxy(
+                                            Html.X().AjaxProxy()
+                                            .Url(
+                                                    Url.Action("LoadTypeContratPeriodeAll", "ContratPeriodeType")
+                                                    )
+                                .Reader(
+                                            Html.X().JsonReader().RootProperty("data")
+                                            )
+                                )
+                            )
+            ),
+            X.Panel()
+                .Layout(LayoutType.Form)
+                .Flex(1)
+                .Items(
+                        X.DateField().ID("dtfDetStartDateP").FieldLabel("Date Debut").LabelAlign(LabelAlign.Right).SelectedDate(Model.DateDebut)
+                        ,
+                        X.DateField().ID("dtfDetEndDateP").FieldLabel("Date Fin").LabelAlign(LabelAlign.Right).SelectedDate(Model.DateEcheance)
+                        ,
+                        X.ComboBox()
+                            .ID("cmbDetStatusP")
+                            .FieldLabel("Statut")
+                            .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .TypeAhead(true)
+                            .ForceSelection(true)
+                            .Items(
+                                    new ListItem("{Tous}", "-1"),
+                                    new ListItem("Approuvé", "AP"),
+                                    new ListItem("Non Approuvé", "NA"),
+                                    new ListItem("Annulé", "CA")
+                                    )
+                        )
+                )
+        )
+        .Buttons
+        (
+            X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .DirectEvents
+                (
+                    d =>
+                    {
+                        d.Click.Url = Url.Action("PrintBonus");
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "cropyear", Value = "#{cmbDetCropYearP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "fournisseur", Value = "#{cmbDetFournisseurP}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "fournisseurText", Value = "#{cmbDetFournisseurP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "typecontract", Value = "#{cmbDetTypeContratP}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "typecontractText", Value = "#{cmbDetTypeContratP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "statut", Value = "#{cmbDetStatusP}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "statutText", Value = "#{cmbDetStatusP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "startDate", Value = "#{dtfDetStartDateP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "endDate", Value = "#{dtfDetEndDateP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "siteID", Value = "#{CpDetcmbSiteP}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "siteNom", Value = "#{CpDetcmbSiteP}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.FormID = "#(return this.up('window').down('form');)";
+                    }
+                ),
+            X.Button()
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.frmCriteriaForPrime.doClose()")
+                .Cls("btncancel")
+        )
+
+)
+<script type="text/javascript">
+    var validNew = function (winId) {
+                /*alert(winId);*/
+                /*var winId = #{FormFournisseur}.id;*/
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Contrat Periode | Print Balance : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+
+                }
+
+    };
+
+    var CloseFormPrimeCP = function () {
+        App.frmCriteriaForPrime.doClose();
+    };
+</script>
+
+
+
+

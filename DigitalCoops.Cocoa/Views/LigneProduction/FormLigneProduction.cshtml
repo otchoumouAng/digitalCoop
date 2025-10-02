@@ -1,0 +1,136 @@
+﻿
+@model Tms.Classes.Shared.LigneProductionViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(X.Window()
+    .ID("FormLigneProduction")
+    .Width(500).Height(300)
+    .Modal(true)
+    .Title("Détail Ligne Production")
+    .Layout(LayoutType.VBox)
+    .Items(
+        X.FormPanel()
+         .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+         .Padding(10)
+         .ID("FormLigneProductionPanel")
+         .Layout(LayoutType.VBox)
+         .Items(
+
+            //–– Hidden fields
+            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+            X.Hidden().ID("hiddenRowVersion").Value(Model._LigneProduction.RowVersionKey),
+            X.Hidden().ID("TxtLigneProductionID").Value(Model._LigneProduction.ID),
+            X.Hidden().ID("TxtDateCreation").Value(Model._LigneProduction.DateCreation),
+
+            //–– Designation (string)
+            X.TextField()
+             .ID("TxtDesignation")
+             .FieldLabel("Désignation")
+             .LabelAlign(LabelAlign.Right)
+             .Value(Model._LigneProduction.Designation)
+             .AllowBlank(false)
+             .IndicatorCls("IndicatorRedStar")
+
+           
+
+        //–– Date de création (lecture seule)
+        //X.DateField()
+        // .ID("DateCreation")
+        // .FieldLabel("Créé le")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._LigneProduction.DateCreation)
+        // .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? true : false),
+
+        //–– Utilisateur création (lecture seule)
+        //X.TextField()
+        // .ID("TxtCreationUtilisateur")
+        // .FieldLabel("Par")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._LigneProduction.UtilisateurCreation)
+        // .ReadOnly(true),
+
+        //–– Date de modification (lecture seule)
+        //X.DateField()
+        // .ID("DateModification")
+        // .FieldLabel("Modifié le")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._LigneProduction.UtilisateurModification)
+        //.Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? true : false),
+
+        //–– Utilisateur modif (lecture seule)
+        //X.TextField()
+        // .ID("TxtModificationUtilisateur")
+        // .FieldLabel("Par")
+        // .LabelAlign(LabelAlign.Right)
+        // .Value(Model._LigneProduction.UtilisateurModification)
+        // .ReadOnly(true),
+
+        //–– Désactivé
+        //X.Checkbox()
+        // .ID("ChkDesactive")
+        // .BoxLabel("Désactivé")
+        // .Checked(Model._LigneProduction.Desactive)
+        )
+    )
+    .Buttons(
+        // OK / Enregistrer
+        X.Button()
+         .ID("BtnSubmitLigneProduction")
+         .Text("OK")
+         .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+         .DirectEvents(de =>
+         {
+             de.Click.Url = Url.Action("SubmitFormMethod");
+             de.Click.FormID = "FormLigneProductionPanel";
+             de.Click.Before = "return validNew(App.FormLigneProduction.getId());";
+         }),
+
+        // Annuler / Fermer
+        X.Button()
+         .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Fermer" : "Annuler")
+         .Handler("App.FormLigneProduction.close();")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Location : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+

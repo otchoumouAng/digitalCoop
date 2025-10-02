@@ -1,0 +1,109 @@
+﻿@model Tms.Classes.Business.Fournisseur
+
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(          
+                        X.Window()
+                        .ID("frmSupplierStatusAccount")
+                        .Width(450)
+                        .Resizable(false)
+                        .Height(160)
+                        .Modal(true)
+                        //.CloseAction(Ext.Net.CloseAction.Destroy)
+                        //.Listeners
+                        //(
+                        //    l =>
+                        //    {
+                        //        l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                        //    }
+                        //)
+                        //.X(300)
+                        .Y(100)
+                        .Title("Statut Fournisseur : Critere")
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+
+                                X.ComboBox()
+                                .ID("cmbFournisseur")
+                                .FieldLabel("Fournisseur")
+                                .DisplayField("FournisseurNameAndCode")
+                                .ValueField("ID")                                
+                                //.Width(410)
+                                .TypeAhead(true)
+                                .QueryMode(DataLoadMode.Local)
+                                .ForceSelection(true)
+                                //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model.ID)
+                                .Store
+                                (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                        (
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("FournisseurNameAndCode", ModelFieldType.String) { Mapping = "FournisseurNameAndCode" }
+                                                        )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadFournisseurActiveAll", "Fournisseur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                )
+                                ,
+
+                                X.FieldContainer()
+                                .FieldLabel("Debut/Fin").LabelAlign(LabelAlign.Right)
+                                .Width(450)
+                                .Layout(LayoutType.HBox)
+                                .Items
+                                (
+                                    X.DateField()
+                                    .ID("dtfStartDate")
+                                    .Width(170)
+                                    .SelectedDate(DateTime.Now.AddDays(-1))
+                                    .MarginSpec("0 5 0 0")
+                                    ,
+
+                                    X.DateField()
+                                    .ID("dtfEndDate")
+                                    .Width(170)                                    
+                                    .SelectedDate(DateTime.Now)
+                               )
+                        )
+                        .Buttons
+                        (
+                                X.Button()
+                                .Text("OK")
+                                .ID("BtnOk")
+                                .DirectEvents
+                                (
+                                    d =>
+                                    {
+                                        d.Click.Url = Url.Action("OnPrintSupplierStatusAccount");
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "id_farmer", Value = "#{cmbFournisseur}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "startDate", Value = "#{dtfStartDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "endDate", Value = "#{dtfEndDate}.getRawValue()", Encode= false, Mode= ParameterMode.Raw});
+                                    }
+                                )
+                                ,
+                                X.Button()
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                .Handler("App.frmSupplierStatusAccount.doClose()")
+                                .Cls("btncancel")
+                    )
+
+)
+
+

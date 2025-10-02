@@ -1,0 +1,129 @@
+﻿
+@model Tms.Classes.Shared.LaboratoireViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+ X.Window()
+    .ID("FormLaboratoire")
+    .Width(400)
+    .Resizable(false)
+    .Height(170)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)    
+    //.X(400)
+    .Y(20)
+    .Title("Laboratory : Detail")   
+    .Items(
+            X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+             .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items(
+
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._Laboratoire.RowVersionKey),
+                            X.Hidden().ID("TxtLaboratoireID").Value(Model._Laboratoire.ID),
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Items(
+                                    X.TextField().ID("TxtDesignationLaboratoire").FieldLabel("Designation")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Laboratoire.Designation.ToString() : string.Empty)
+                                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")  ,                              
+                            X.ComboBox()
+                            .ID("cmbSite")
+                            .FieldLabel("Site")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                            .LabelAlign(LabelAlign.Right)
+                            .ForceSelection(true)
+                            .Value(Model._Laboratoire.Sites.ID)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            // .LabelWidth(110)
+                            //.Width(340)
+                            .Store
+                                (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                         )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadSite", "Site"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                             )
+                             )
+                    )
+            )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitLaboratoire")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormLaboratoire.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormLaboratoire.doClose()").Cls("btncancel")
+
+                )            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormLaboratoire}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Laboratory : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+

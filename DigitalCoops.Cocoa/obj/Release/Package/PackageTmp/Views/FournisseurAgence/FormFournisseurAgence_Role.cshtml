@@ -1,0 +1,98 @@
+﻿
+@model Tms.Classes.Shared.Site
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(      
+X.Window()
+    .ID("FormFournisseurAgence_Role")
+    .Width(300)
+    .Resizable(false)
+    .Height(440)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(400)
+    .Y(30)
+    .Title("Fournisseur : Select Site")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items(
+            //X.Hidden().ID("TxtFournisseurID").Value(Model.ID),
+            X.Container()
+                .Layout(LayoutType.Fit)
+                .Items(
+                        X.Hidden().ID("siteID").Value(ViewData["ItemSite"]).ReadOnly(true),
+                        X.Hidden().ID("fournisseurID").Value(ViewData["ItemFournisseur"]).ReadOnly(true),
+                        X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListeSiteFS")
+                            .Region(Region.Center)
+                            .ForceFit(false)
+                            .Height(320)
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Shared.Site>().ID("storeListeSiteFS")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectSiteToAdd"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(
+                                            ps =>
+                                            {
+                                                ps.Add(new StoreParameter("ItemSite", "#{siteID}.getRawValue()", ParameterMode.Raw));
+                                                ps.Add(new StoreParameter("ItemFournisseur", "#{fournisseurID}.getRawValue()", ParameterMode.Raw));
+                                            }
+                                        )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Width(40).Hideable(false).Filterable(false),
+                                        Html.X().Column().Text("Nom").DataIndex("Nom").Flex(1).Hideable(false)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )
+
+                            )
+
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitListsite")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListeSites");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeSiteFS.getRowsValues({selectedOnly : true})" });
+
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormFournisseurAgence_Role.doClose()").Cls("btncancel")
+
+                )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,476 @@
+﻿@model Tms.Classes.Business.stock.LotViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormLot")
+    .Width(750)
+    .Resizable(false)
+    .Height(340)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Lot : Detail")
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items(
+    #region zone A
+                    X.Container()
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items
+                        (
+                            X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenExportateur").ReadOnly(true).Value(Model._DefaultExportateur),
+                            X.Hidden().ID("TxtLotId").ReadOnly(true).Value(Model._Lot.ID),
+                            X.Hidden().ID("txtOrdreProductionID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._Lot.Production != null ? Model._Lot.Production.ID : (Guid?)null),
+                            X.ComboBox()
+                                .ID("cmbCampagne")
+                                .TabIndex(1)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.Campagne.Designation : Model._DefaultCampagne)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(false)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadCampagne", "Campagne"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ),
+                            X.ComboBox()
+                                .ID("cmbExportateur")
+                                .TabIndex(2)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .FieldLabel("Exportateur")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.Exportateur.ID : (int?)null)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            X.Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                    .Listeners(
+                                        ls => ls.Load.Handler = "if (App.cmbExportateur.value){ DefinirZonesObligatoires(App.cmbExportateur.getSelectedRecord().data);};"
+                                    )
+                                )
+                                .Listeners(
+                                    ls =>
+                                    {
+                                        //ls.Change.Handler = "";
+                                        ls.Select.Handler = "DefinirZonesObligatoires(App.cmbExportateur.getSelectedRecord().data);";
+                                    }
+                                ),
+                            X.DateField()
+                                .ID("TxtDateLot")
+                                .TabIndex(3)
+                                .FieldLabel("Date")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.DateLot.ToShortDateString() : DateTime.Now.ToShortDateString())
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .SubmitFormat("d/m/Y H:i:s")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*"),
+                            X.FieldContainer()
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                .FieldLabel("Production N°")
+                                .Flex(2)
+                                .PaddingSpec("0 8 0 0")
+                                .LabelAlign(LabelAlign.Right)
+                                .Items
+                                (
+                                    X.TextField()
+                                        .ID("txtOrdreProduction")
+                                        .TabIndex(4)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Flex(3)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._Lot.Production != null ? Model._Lot.Production.NumeroProduction : string.Empty),
+                                    X.Button()
+                                        .Text("...")
+                                        .Height(18)
+                                        .Flex(1)
+                                        .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                        .ID("btnSelectProduction")
+                                        .DirectEvents
+                                        (
+                                            de =>
+                                            {
+                                                de.Click.Url = Url.Action("OnSelectProduction");
+                                                de.Click.EventMask.ShowMask = true;
+                                            }
+                                        )
+                                    ),
+                            X.Checkbox()
+                                .ID("ChkEstReusine")
+                                .FieldLabel("Is Re-Cleaned")
+                                .TabIndex(13)
+                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.EstReusine : false)
+                                .LabelAlign(LabelAlign.Right)
+                                .Listeners(
+                                    ls => {
+                                        ls.Change.Fn = "SetNumberLotField";
+                                        ls.AfterRender.Fn = "SetNumberLotField";
+                                    }
+                                ),
+                            X.TextField()
+                                .ID("TxtNumero")
+                                .FieldLabel("Lot N°")
+                                .TabIndex(5)
+                                .AllowBlank(true)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("")
+                                .ReadOnly(true)
+                                .LabelAlign(LabelAlign.Right)
+                                .Text(Model._Lot.NumeroLot),
+                            X.ComboBox()
+                                .ID("cmbTypeLot")
+                                .TabIndex(6)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .FieldLabel("Type De Lot")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.LotType.ID : (int?)null)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadActiveLotType", "LotType"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ),
+                            X.ComboBox()
+                                  .ID("cmbCertification")
+                                  .FieldLabel("Certification")
+                                  .DisplayField("Designation")
+                                  .ValueField("ID")
+                                  .TabIndex(7)
+                                  //.IndicatorText("*")
+                                  //.IndicatorCls("IndicatorRedStar")
+                                  //.AllowBlank(false)
+                                  .LabelAlign(LabelAlign.Right)
+                                  .Value(Model._Lot.Certification != null ? (int?)Model._Lot.Certification.ID : (int?)null)
+                                  .Store
+                                  (
+                                     X.Store()
+                                          .AutoLoad(true)
+                                          .Model
+                                          (
+                                            X.Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                  new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                  new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                           )
+                                          .Proxy
+                                           (
+                                             Html.X().AjaxProxy()
+                                                 .Url(Url.Action("LoadCertification", "Certification"))
+                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                           )
+                                    )
+                            ),
+    #endregion
+                    X.Panel()
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items
+                        (
+                            X.TextField()
+                                .ID("txtNombreSacs")
+                                .FieldLabel("Nbr. Bags")
+                                .HideTrigger(true)
+                                .TabIndex(8)
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .MaskRe("[0123456789]")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.NombreSacsAsString : string.Empty)
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{txtNombreSacs}.setValue(formatNumber(#{txtNombreSacs}.getValue()));";
+                                    ls.Focus.Handler = "if (App.txtNombreSacs.value) { #{txtNombreSacs}.setRawValue(unformatNumber(#{txtNombreSacs}.getValue()));}";
+                                }),
+                            X.TextField()
+                                .ID("txtPoidsBrut")
+                                .FieldLabel("Poids Brut")
+                                .TabIndex(9)
+                                .MaskRe("[0123456789]")
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.PoidsBrutAsString : string.Empty)
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{txtPoidsBrut}.setValue(formatNumber(#{txtPoidsBrut}.getValue()));";
+                                    ls.Focus.Handler = "if (App.txtPoidsBrut.value) { #{txtPoidsBrut}.setRawValue(unformatNumber(#{txtPoidsBrut}.getValue()));}";
+                                    ls.Change.Handler = "calculerNetLivre();";
+                                }),
+                            X.TextField()
+                                .ID("txtTareSacs")
+                                .TabIndex(10)
+                                .MaskRe("[0123456789]")
+                                .FieldLabel("Tare des sacs")
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.TareSacsAsString : string.Empty)
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{txtTareSacs}.setValue(formatNumber(#{txtTareSacs}.getValue()));";
+                                    ls.Focus.Handler = "if (App.txtTareSacs.value) { #{txtTareSacs}.setRawValue(unformatNumber(#{txtTareSacs}.getValue()));}";
+                                    ls.Change.Handler = "calculerNetLivre();";
+                                }),
+                            X.TextField()
+                                .ID("txtTarePalette")
+                                .TabIndex(11)
+                                .MaskRe("[0123456789]")
+                                .FieldLabel("Tare des palettes")
+                                .LabelAlign(LabelAlign.Right)
+                                .IndicatorCls("IndicatorRedStar")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.TarePaletteAsString : string.Empty)
+                                .IndicatorText("*")
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{txtTarePalette}.setValue(formatNumber(#{txtTarePalette}.getValue()));";
+                                    ls.Focus.Handler = "if (App.txtTarePalette.value) { #{txtTarePalette}.setRawValue(unformatNumber(#{txtTarePalette}.getValue()));}";
+                                    ls.Change.Handler = "calculerNetLivre();";
+                                }),
+                            X.TextField()
+                                .ID("txtPoidsNet")
+                                .HideTrigger(true)
+                                .TabIndex(12)
+                                .MaskRe("[0123456789]")
+                                .FieldLabel("Poids Net")
+                                .LabelAlign(LabelAlign.Right)
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.PoidsNetAsString.ToString() : string.Empty)
+                                .Listeners(ls =>
+                                {
+                                    ls.Blur.Handler = "#{txtPoidsNet}.setValue(formatNumber(#{txtPoidsNet}.getValue()));";
+                                    ls.Focus.Handler = "if (App.txtPoidsNet.value) { #{txtPoidsNet}.setRawValue(unformatNumber(#{txtPoidsNet}.getValue()));}";
+                                    //ls.Change.Handler = "calculerNetAccepte()";
+                                }),
+                             X.Checkbox()
+                                .ID("ChkEstQueue")
+                                .FieldLabel("Queue")
+                                .TabIndex(13)
+                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Lot.EstQueue : false)
+                                .LabelAlign(LabelAlign.Right)
+                             )
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(14)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("UpdateFormMethod");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.Before = "return validNew(App.FormLot.id);";
+                }
+            ),
+        X.Button()
+            .TabIndex(15)
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormLot.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Production - Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if (App.cmbTypeLot.value) {
+            var AutNombreSacs = App.cmbTypeLot.getSelectedRecord().data.NombreSacs;
+            var NombreSacLot = App.txtNombreSacs.value || 0;
+            if (NombreSacLot > AutNombreSacs) {
+                Ext.Msg.show({ title: 'Production - Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Nbr de sacs added is higher than authorized Nbr de sacs for the Selected Type of Lot !', buttons: Ext.Msg.OK });
+                return false;
+            }
+        }
+        
+        
+    };
+
+
+    var calculerNetLivre = function () {
+        var tareBags = parseInt(unformatNumber(App.txtTareSacs.value), 10) || 0;
+        var tarePallets = parseInt(unformatNumber(App.txtTarePalette.value), 10) || 0;
+        var poidsbrut = parseInt(unformatNumber(App.txtPoidsBrut.value), 10) || 0;
+        var poidsnet = poidsbrut - tareBags - tarePallets;
+
+        poidsnet = formatNumber(poidsnet);
+        App.txtPoidsNet.setValue(poidsnet);
+
+    };
+
+    var setCtrlIsRequired = function (field, value) {
+        field.allowBlank = !value;
+
+        field.setIndicator("");
+        field.setIndicatorCls('');
+        field.showIndicator();
+
+        if (value == true) {
+
+            field.setIndicator("*");
+            field.setIndicatorCls('IndicatorRedStar');
+            field.showIndicator();
+        }
+    };
+
+    var DefinirZonesObligatoires = function (record) {                 
+        setCtrlIsRequired(App.txtOrdreProduction, false);
+        if (record.ID == App.hiddenExportateur.value) {
+            setCtrlIsRequired(App.txtOrdreProduction, true);
+        }
+
+        /*setCtrlIsRequired(App.TxtNumero, true);
+        App.TxtNumero.setReadOnly(false);
+        if (record.ID == App.hiddenExportateur.value) {
+            setCtrlIsRequired(App.TxtNumero, false);
+            App.TxtNumero.setReadOnly(true);
+        }*/
+    };
+
+    var SetNumberLotField = function () {
+        if (App.ChkEstReusine.checked)
+        {            
+            App.TxtNumero.setReadOnly(false);
+            App.TxtNumero.allowBlank = (false);
+            App.TxtNumero.setIndicator("*");            
+            App.TxtNumero.validate();
+        } else {
+            App.TxtNumero.setReadOnly(true);
+            App.TxtNumero.allowBlank = (true);
+            App.TxtNumero.setIndicator("");
+            App.TxtNumero.validate();
+        }        
+    };
+    /*var DefinirZones = function (record) {
+        if (App.hiddenExecMode.value == 'Update')
+        {
+            var SelectedVal = App.cmbExportateur.value || -1;
+
+            if (SelectedVal != App.hiddenExportateur.value) {
+                console.log(SelectedVal);
+                setCtrlIsRequired(App.txtOrdreProduction, false);
+                setCtrlIsRequired(App.TxtNumero, false);
+                App.TxtNumero.setReadOnly(false);            
+            } 
+       }
+    };*/
+
+</script>
+

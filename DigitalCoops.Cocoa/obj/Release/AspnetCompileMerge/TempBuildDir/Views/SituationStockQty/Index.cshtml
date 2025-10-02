@@ -1,0 +1,661 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+    @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">*@
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 100px !important;
+    }
+
+    .x-panel-header-title-default-framed {
+        color: #000 !important;
+    }
+
+    #rsNbrOfMovement-triggerWrap,
+    #rsQuantite-triggerWrap,
+    #rsGrossWeight-triggerWrap,
+    #rsDelNetWeiight-triggerWrap,
+    #rsTarePalette-triggerWrap,
+    #rsTareSacs-triggerWrap,
+    #rsRefaction-triggerWrap,
+    #rsAccNetWeight-triggerWrap
+    {
+       border-width: 0px;
+       border-style: solid;
+       border-color: #d0d0d0;       
+    }   
+     .x-form-item-label-top {   
+        text-align: center !important;         
+    }
+    .summary-tiles
+    {
+        text-align: center;        
+        /*vertical-align: middle;*/
+        font-weight: bold !important;
+        font-size: 24px !important;
+        line-height: 24px!important;
+        min-height: 0px!important;        
+    }
+</style>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+
+    var StockSummaryInfo = function () {        
+        var mTotalEntree = App.storeListeStatutStockQuantite.sum('TotalEntree') || 0;
+        var mTotalSortie = App.storeListeStatutStockQuantite.sum('TotalSortie') || 0;
+        var totalENetLivre = App.storeListeStatutStockQuantite.sum('TotalPoidsNetLivreEntree') || 0;
+        var totalSNetLivre = App.storeListeStatutStockQuantite.sum('TotalPoidsNetLivreSortie') || 0;
+        /*var stock = mTotalEntree - mTotalSortie;*/
+        var stock = totalENetLivre - totalSNetLivre;
+        var mChaine = Ext.String.format('Entrée(s) : {0} (Kg)<br/> Sortie : {1} (Kg)<br/> Stock : {2} (Kg)', FormatAmount(totalENetLivre), FormatAmount(totalSNetLivre), FormatAmount(stock));
+        App.lblRecap.setHtml(mChaine);
+
+        /*App.rowSelectionListe.deselectAll(true);*/
+
+        //Overview.resetButtons();
+    };
+
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeStatutStockQuantite.columnManager.getColumns(), App.grpListeStatutStockQuantite.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    }
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+    }
+
+    var Overview =
+    {
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red';
+            }
+            else if (value === 1) {
+                return 'glyphicon-arrow-right blue';
+            }
+            else if (value == -1) {
+                return 'glyphicon-arrow-left green';
+            }
+            else if (value == 3) {
+                return 'glyphicon-ban-circle red';
+            }
+        },
+
+        SummaryStatutStock: function () {
+            var nbrOfrows = App.grpListeStatutStockQuantite.getStore().getCount();
+            
+            /*var totalNetAccepte = App.storeListeStatutStockQuantite.sum('PoidsNetAccepte') || 0;
+            var totalNetLivre = App.storeListeStatutStockQuantite.sum('PoidsNetLivre') || 0;
+            var totalQuantite = App.storeListeStatutStockQuantite.sum('Quantite') || 0;
+            var totalPoidsBrut = App.storeListeStatutStockQuantite.sum('PoidsBrut') || 0;
+
+            var totalTarePalette = App.storeListeStatutStockQuantite.sum('TarePalettes') || 0;
+            var totalTareSacs = App.storeListeStatutStockQuantite.sum('TareSacs') || 0;
+            var totalRetention = App.storeListeStatutStockQuantite.sum('Retention') || 0;
+            ....*/
+
+            var totalENetAccepte = App.storeListeStatutStockQuantite.sum('TotalPoidsNetAccepteEntree') || 0;
+            var totalSNetAccepte = App.storeListeStatutStockQuantite.sum('TotalPoidsNetAccepteSortie') || 0;
+            var totalENetLivre = App.storeListeStatutStockQuantite.sum('TotalPoidsNetLivreEntree') || 0;
+            var totalSNetLivre = App.storeListeStatutStockQuantite.sum('TotalPoidsNetLivreSortie') || 0;
+            var totalEQuantite = App.storeListeStatutStockQuantite.sum('TotalSacsEntree') || 0;
+            var totalSQuantite = App.storeListeStatutStockQuantite.sum('TotalSacsSortie') || 0;
+            var totalEPoidsBrut = App.storeListeStatutStockQuantite.sum('TotalEntree') || 0;
+            var totalSPoidsBrut = App.storeListeStatutStockQuantite.sum('TotalSortie') || 0;
+
+            var totalETarePalette = App.storeListeStatutStockQuantite.sum('TotalTarePaletteEntree') || 0;
+            var totalSTarePalette = App.storeListeStatutStockQuantite.sum('TotalTarePaletteSortie') || 0;
+            var totalETareSacs = App.storeListeStatutStockQuantite.sum('TotalTareSacsEntree') || 0;
+            var totalSTareSacs = App.storeListeStatutStockQuantite.sum('TotalTareSacsSortie') || 0;
+
+            var totalERetention = App.storeListeStatutStockQuantite.sum('TotalRetentionEntree') || 0;
+            var totalSRetention = App.storeListeStatutStockQuantite.sum('TotalRetentionSortie') || 0;            
+            
+            totalNetAccepte = FormatAmount(totalENetAccepte - totalSNetAccepte);
+            totalNetLivre = FormatAmount(totalENetLivre - totalSNetLivre);
+            totalQuantite = FormatAmount(totalEQuantite - totalSQuantite);
+            totalPoidsBrut = FormatAmount(totalEPoidsBrut - (totalSPoidsBrut - totalSTareSacs - totalSTarePalette));
+            totalTarePalette = FormatAmount(totalETarePalette - totalSTarePalette);
+            totalTareSacs = FormatAmount(totalETareSacs - totalSTareSacs);
+            totalRetention = FormatAmount(totalERetention - totalSRetention);
+
+            /*App.rsNbrOfMovement.setValue(nbrOfrows);*/
+            App.rsQuantite.setValue(totalQuantite);
+            App.rsGrossWeight.setValue(totalPoidsBrut);
+            App.rsDelNetWeiight.setValue(totalNetLivre);
+            App.rsAccNetWeight.setValue(totalPoidsBrut);
+            App.rsTarePalette.setValue(totalTarePalette);
+            App.rsTareSacs.setValue(totalTareSacs);
+            App.rsRefaction.setValue(totalRetention);            
+            /*var mChaine = Ext.String.format('Nbr Of Movement : {0} <br/> Total Quantity : {1} <br/> Total Poids Brut : {2} <br/>Total Livré Poids Net : {3}<br/>Total Accepted Poids Net : {4}', nbrOfrows, totalQuantite, totalPoidsBrut, totalNetLivre, totalNetAccepte);
+            App.lblSummaryStatutStock.setHtml(mChaine);*/
+            /*App.lblSummaryStatutStock.setValue("Nbr Of Movement : " + nbrOfrows + "<br/>Total Quantity : " + totalQuantite + "<br/>Total Poids Brut : " + totalPoidsBrut + "<br/>Total Livré Poids Net : " + totalNetLivre + "<br/>Total Accepted Poids Net : " + totalNetAccepte);*/
+        },
+    }
+
+</script>
+
+@model Tms.Classes.Business.stock.MouvementStock
+@{
+    Layout = null;
+    var X = Html.X();
+    //string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    //DateTime dtStartDate = (new Tms.Classes.Shared.Parametres(0).Base_url);
+    //string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))//
+
+<form id="tms_form">
+    @(X.Viewport()
+    .Layout(LayoutType.Border)
+    .ID("TmsViewPort")
+    .Items
+        (
+            X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+    #region Bouton Actions
+            X.Panel()
+                .ID("pnlNorth")
+                .Region(Region.North)
+                .Layout(LayoutType.Border)
+                .TopBar(new Toolbar()
+                {
+                    Items =
+                    {
+                        X.Button()
+                            .ID("btnFilter")
+                            .IconCls("action_filter_02")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                            .Disable(false)
+                            .DirectEvents
+                            (
+                                de =>
+                                {
+                                    de.Click.Url  = Url.Action("OnFilter");
+                                    de.Click.EventMask.ShowMask = true;
+                                }
+                            ),
+                        X.Button()
+                            .ID("btnRefresh")
+                            .IconCls("action_refresh_01")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Disable(false)
+                            .DirectEvents
+                                (
+                                de =>
+                                {
+                                    de.Click.Url  = Url.Action("OnRefresh");
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=true, Value= "#{cmbFiltreCampagne}.getValue()", Mode=ParameterMode.Raw});
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemMagasin", Encode=false, Value= "#{cmbFiltreMagasin}.getValue()", Mode=ParameterMode.Raw});
+                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExportateur", Encode=true, Value= "#{cmbFiltreExportateur}.getValue()", Mode=ParameterMode.Raw});
+                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpFiltreStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtFiltreDateFin}.getRawValue()",     Mode=ParameterMode.Raw});
+                                    de.Click.Success = "App.StatutStockCP.setTitle('Campagne : '+ App.cmbFiltreCampagne.rawValue + ' , Magasin = ' + App.cmbFiltreMagasin.rawValue + ' au  '+ App.txtFiltreDateFin.rawValue)";
+                                    //de.Click.Success = "App.StatutStockCP.setTitle('Campagne : '+ App.cmbFiltreCampagne.rawValue + ' , Magasin = ' + App.cmbFiltreMagasin.rawValue + ', du  '+ App.dtpFiltreStartDate.rawValue  + ' au  '+ App.txtFiltreDateFin.rawValue )";
+                                    de.Click.EventMask.ShowMask = true;
+                                }
+                                ),
+                        X.SplitButton()
+                            .ID("btnPrint")
+                            .IconCls("action_print_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                            .Disabled(false)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Menu
+                                (
+                                    new Menu()
+                                    {
+                                        Items =
+                                        {
+
+                                            X.MenuItem()
+                                                .ID("mnuPrintStockQuantiteList")
+                                                .Text("Statut Stock")
+                                                .Disabled(true)
+                                                .DirectEvents
+                                                (
+                                                    de=>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnPrintDeliveryNote");
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    ),
+
+                        X.ToolbarFill(),
+
+                        X.Button()
+                            .ID("btnActions")
+                            .Text("Actions")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .IconCls("menu_04")
+                            .Disabled(false)
+                            .Menu
+                            (
+                                new Menu()
+                                {
+                                    Items =
+                                    {
+                                        X.MenuItem()
+                                            .ID("mnuExportStockQuantite")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Icon(Icon.PageExcel)
+                                            .Handler("SetExcelList();")
+                                    }
+                                }
+                            )
+                        }
+                }
+            ),
+    #endregion
+
+            X.FormPanel()
+                .ID("StatutStockCP")
+                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Stock Status (Quantity) - overview" })
+                .Region(Region.North)
+                .Floatable(false)
+                .Border(false)
+                .Collapsed(true)
+                .Collapsible(true)
+                .BodyPadding(5)
+                .Frame(true)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items
+                (
+    #region Zone A
+                    X.Container()
+                        .Border(false)
+                        .Frame(false)
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbFiltreMagasin")
+                                .FieldLabel("Magasin")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model().IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadActiveMagasin", "Magasin"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ),
+                            X.ComboBox()
+                                .ID("cmbFiltreCampagne")
+                                .FieldLabel("Campagne")
+                                .LabelWidth(10)
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store
+                                (
+                                        X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model().IDProperty("Designation")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                                )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ),
+                            X.DateField()
+                                .ID("txtFiltreDateFin")
+                                .FieldLabel("Date")
+                                .LabelAlign(LabelAlign.Right)
+                                .Text(DateTime.Now.ToShortDateString())
+                        //.DirectEvents(
+                        //        de =>
+                        //        {
+                        //            de.Select.Url = Url.Action("OnChangeCampagne");
+                        //            de.Select.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Encode = false, Value = "#{cmbFiltreCampagne}.getValue()", Mode = ParameterMode.Raw });
+                        //            de.Select.Success = "App.txtFiltreDateFin.setMinValue(App.cmbFiltreCampagne.getSelectedRecord().data.DateDebutAsString)";
+
+                        //        }
+                        //)
+                        //,
+                        //X.ComboBox()
+                        //    .ID("cmbFiltreExportateur")
+                        //    .FieldLabel("Exportateur")
+                        //    .DisplayField("Nom")
+                        //    .ValueField("ID")
+                        //    .LabelAlign(LabelAlign.Right)
+                        //    .QueryMode(DataLoadMode.Local)
+                        //    .TriggerAction(TriggerAction.All)
+                        //    //.MatchFieldWidth(false)
+                        //    //.ListConfig(new BoundList { MinWidth = 300 })
+                        //    .Store
+                        //    (
+                        //            X.Store()
+                        //            .AutoLoad(true)
+                        //            .Model
+                        //            (
+                        //                Html.X().Model()
+                        //                .IDProperty("ID")
+                        //                .Fields
+                        //                (
+                        //                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                        //                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                        //                )
+                        //            )
+                        //            .Proxy
+                        //            (
+                        //                Html.X().AjaxProxy()
+                        //            .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                        //            .Reader(Html.X().JsonReader().RootProperty("data"))
+                        //            )
+
+                        //    )
+                        //    .SelectedItems
+                        //    (
+                        //        it =>
+                        //        {
+                        //            it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                        //        }
+                        //    )
+
+                        ),
+    #endregion
+    #region Zone B
+                    X.Container()
+                        .Border(false)
+                        .Frame(false)
+                        //.Margin(0)
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        //.BodyPadding(0)
+                        .Items
+                        (
+                        //X.DateField().ID("dtpFiltreStartDate").FieldLabel("Debut").ReadOnly(true).LabelAlign(LabelAlign.Right),
+                        //X.DateField().ID("txtFiltreDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).MinDate(@ViewBag.CampagneMinDate)
+                        ),
+    #endregion
+    #region zone C
+                    X.Panel()
+                        .Flex(3)
+                            //.Frame(true)
+                            .Border(false)
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items
+                                (
+                                        X.Container()
+                                            .ID("")
+                                            .Layout(LayoutType.VBox)
+                                            .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                            .Items(
+                                                    X.Label()
+                                                        .ID("lblRecap")
+                                                        .Height(50)
+                                                        .StyleSpec("text-align:center;")
+                                                        .Text("Resume ici")
+                                                        .EmptyText("")
+                                                    )
+                                )
+    #endregion
+                ),
+    #region DAshBoard
+            X.Panel()
+                .Layout(LayoutType.VBox)
+                .Region(Region.North)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                        X.Panel()
+                            .MarginSpec("5 200")
+                            //.Border(true)
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items
+                                (
+                                    //X.TextField()
+                                    //    .Flex(1)
+                                    //    .ReadOnly(true)
+                                    //    .Border(true)
+                                    //    .Margin(2)
+                                    //    .FieldLabel("Nbr Of Movement ")
+                                    //    .LabelAlign(LabelAlign.Top)
+                                    //    .FieldCls("summary-tiles")
+                                    //    .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                    //    .ID("rsNbrOfMovement"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .FieldLabel("Nbr de sacs")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;"))
+                                        .ID("rsQuantite"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .FieldLabel("Poids Brut (Kg)")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                        .ID("rsGrossWeight"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .FieldLabel("Tare Des Sacs")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                        .ID("rsTareSacs"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .FieldLabel("Tare Des Palettes")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                        .ID("rsTarePalette"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .LabelSeparator("")
+                                        .FieldLabel("Net Livré (Kg)")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                        .ID("rsDelNetWeiight"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .FieldLabel("Refraction")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                        .ID("rsRefaction"),
+                                    X.TextField()
+                                        .Flex(1)
+                                        .ReadOnly(true)
+                                        .Border(false)
+                                        .Margin(2)
+                                        .LabelSeparator("")
+                                        .FieldLabel("Accepté (Kg)")
+                                        .LabelAlign(LabelAlign.Top)
+                                        .FieldCls("summary-tiles")
+                                        .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+                                        .ID("rsAccNetWeight")
+                                        )
+                        ),
+    #endregion
+
+    #region GridPanel
+            X.GridPanel()
+                .Layout(LayoutType.Fit)
+                .ID("grpListeStatutStockQuantite")
+                .ForceFit(false)
+                .Region(Region.Center)
+                .Frame(true)
+                .Flex(1)
+                .Store
+                (
+                        X.StoreFor<Tms.Classes.Business.stock.MouvementStock>()
+                           .ID("storeListeStatutStockQuantite")
+                           .PageSize(100)
+                           .RemotePaging(false)
+                           //.SorterFor(Model, m => m.DateLivraison, Ext.Net.SortDirection.DESC)
+                           .AutoLoad(true)
+                           .Proxy
+                            (
+                                 Html.X().AjaxProxy().Timeout(480000)
+                                .Url(Url.Action("Select", "SituationStockQty"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                            .Parameters
+                            (
+                                ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemCampagne", "#{cmbFiltreCampagne}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemMagasin", "#{cmbFiltreMagasin}.getValue()", ParameterMode.Raw));
+                                    //ps.Add(new StoreParameter("ItemExportateur", "#{cmbFiltreExportateur}.getValue()", ParameterMode.Raw));
+                                    ///ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpFiltreStartDate}.getRawValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriodEnd", "#{txtFiltreDateFin}.getRawValue()", ParameterMode.Raw));
+                                }
+                            )
+                            .Listeners
+                            (
+                             ls =>
+                             {
+                                 ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                 //ls.Load.Handler = "Overview.SummaryStatutStock(); Ext.net.Mask.hide(); StockSummaryInfo();";
+                                 ls.Load.Handler = "Overview.SummaryStatutStock(); Ext.net.Mask.hide(); StockSummaryInfo();";
+                             }
+                          )
+                       )
+                       .ColumnModel
+                       (
+                            Html.X().Column().Text("").DataIndex("mIcon").Width(40).Hideable(false).Renderer("renderIcon"),
+                            Html.X().Column().Text("Mouvement").DataIndex("MouvementTypeAsString").Flex(1),
+                            Html.X().Column().Text("Nbr de Sacs").DataIndex("QuantiteAsString").Flex(1),
+                            Html.X().Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(1),
+                            Html.X().Column().Text("Tare Des Sacs").DataIndex("TareSacsAsString").Flex(1),
+                            Html.X().Column().Text("Tare Des Palettes").DataIndex("TarePalettesAsString").Flex(1),
+                            Html.X().Column().Text("Net Livré").DataIndex("PoidsNetLivreAsString").Flex(1),
+                            Html.X().Column().Text("Refraction").DataIndex("RetentionAsString").Flex(1),
+                            Html.X().Column().Text("Accepté").DataIndex("PoidsNetAccepteAsString").Flex(1)
+                         )
+                         .BottomBar
+                         (
+                             Html.X().PagingToolbar()
+                            .HideRefresh(true)
+                            .Plugins(Html.X().ProgressBarPager())
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowSelectionisteStatus")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(true)
+                        )
+                        .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+    #endregion
+
+
+
+    )
+    )
+
+</form>
+
+
+
+
+

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<StyleSheetSerializer SerializerVersion="17.1.5.0" FileName="">
+  <Styles>
+    <Item1 Name="TmsGroupHeaderStyle" BorderStyle="Inset" Padding="0,0,0,0,100" Font="Segoe UI, 9pt, style=Bold, charSet=0" BackColor="255,172,185,202" BorderColor="255,172,185,202" StringFormat="Center;Center;0;None;Character;Default" TextAlignment="MiddleCenter" />
+    <Item2 Name="TmsGroupFooterStyle" BorderStyle="Inset" Font="Segoe UI, 9pt, style=Bold, charSet=0" BackColor="255,214,220,228" BorderColor="255,214,220,228" StringFormat="Center;Center;0;None;Character;Default" TextAlignment="MiddleCenter" />
+  </Styles>
+</StyleSheetSerializer>

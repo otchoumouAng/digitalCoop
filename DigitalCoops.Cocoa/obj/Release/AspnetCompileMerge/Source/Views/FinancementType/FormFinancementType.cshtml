@@ -1,0 +1,96 @@
+﻿
+@model Tms.Classes.Shared.FinancementTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+     X.Window()
+        .ID("FormFinancementType")
+        .Width(500)
+        .Resizable(false)
+        .Height(180)        
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)        
+        .Y(20)
+        .Title("Type de Financement : Detail")        
+        .Items(
+                X.FormPanel()
+                    .Layout(LayoutType.VBox)
+                    .Padding(5)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .Items(
+
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._FinancementType.RowVersionKey),
+                            X.Hidden().ID("TxtFinancementTypeID").Value(Model._FinancementType.ID),
+
+                            X.TextField().ID("TxtDesignationFinancementType").FieldLabel("Designation")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FinancementType.Designation.ToString() : string.Empty)
+                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            ,
+                            X.NumberField().ID("TxtOrdre").FieldLabel("Ordre")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FinancementType.OrdreStatus.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).MinValue(0).AllowDecimals(false)
+                                .HideTrigger(true).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+
+                    )
+                )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitFinancementType")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.Before = "return validNew(App.FormFinancementType.id);";
+
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormFinancementType.doClose()").Cls("btncancel")
+
+                )
+
+            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Type de Financement : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,156 @@
+﻿
+@model Tms.Classes.Shared.Sales.RedevanceTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Items(
+                X.Window()
+                .ID("FormRedevanceType")
+                .Width(500)
+                .Resizable(false)
+                .Height(280)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners(l =>
+                {
+                    l.Close.Handler = "App.TmsViewPort.unmask();";
+                })
+                //.X(400)
+                .Y(20)
+                .Title("Fee Type : Detail")
+                .Layout(LayoutType.VBox)
+                .BodyPadding(6)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._RedevanceType.RowVersionKey),
+                            X.Hidden().ID("TxtRedevanceTypeID").Value(Model._RedevanceType.ID),
+                            X.TextField().ID("TxtDesignationRedevanceType").FieldLabel("Designation")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceType.Designation.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                            X.Checkbox().ID("ChkIsAutoRedevanceType").FieldLabel("Is Auto")
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceType.Auto : false)
+                                .LabelAlign(LabelAlign.Right),
+                            X.NumberField()
+                                .ID("TxtTauxDeduction")
+                                .FieldLabel("Taux")
+                                .AllowDecimals(true)
+                                .MinValue(0)
+                                .HideTrigger(true)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceType.Taux: (decimal?)null)
+                                .LabelAlign(LabelAlign.Right),
+
+                                X.ComboBox()
+                                    .ID("cmbCalculType")
+                                    .FieldLabel("Type Of Calcul")
+                                    .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                    .DisplayField("Description")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .ForceSelection(true)
+                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceType.CalculType : string.Empty)
+                                    .Items
+                                    (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "Quantity", Value = "Kg" });
+                                            it.Add(new ListItem { Text = "Number Of Container", Value = "Tc" });
+                                            it.Add(new ListItem { Text = "Folder", Value = "Do" });
+                                            it.Add(new ListItem { Text = "Container (RTC)", Value = "Fx" });
+                                        }
+                                    ),
+                                X.ComboBox()
+                                    .ID("cmbNature")
+                                    .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                    .FieldLabel("Nature")
+                                    .DisplayField("Designation")
+                                    .ValueField("ID")
+                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceType.RedevanceNature.ID : (int?)null)
+                                    //.LabelWidth(120)                                                
+                                    .LabelAlign(LabelAlign.Right)
+                                    .TypeAhead(false)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .ForceSelection(true)
+                                    .Store(
+                                            X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        X
+                                                            .Model()
+                                                            .IDProperty("ID")
+                                                            .Fields(
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                            )
+                                                .Proxy(
+                                                            X.AjaxProxy()
+                                                            .Url(
+                                                                    Url.Action("LoadActive", "RedevanceNature")
+                                                                    )
+                                                            .Reader(
+                                                                        X.JsonReader().RootProperty("data")
+                                                        ))
+                                            )
+
+
+                    )
+            .Buttons(
+                X.Button().Text("OK")
+                .ID("BtnSubmitRedevanceType")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormRedevanceType.id);";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormRedevanceType.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Fee Type : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,110 @@
+﻿
+@model Tms.Classes.Business.AnalysePhysique
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+            .Items(
+                X.Window()
+                .ID("FormApproveAnalysePhysique")
+                .Width(500)
+                .Resizable(false)
+                .Height(350)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners(l =>
+                {
+                    l.Close.Handler = "App.TmsViewPort.unmask();";
+                })
+                .X(400)
+                .Y(20)
+                .Title("Analyse Physique : Approuver")
+                .Layout(LayoutType.Form)
+                .Items(
+                    X.Panel()
+                    .ID("pnlFlexEven")
+                    .Layout(LayoutType.Form)
+                    .Items(
+                            X.Hidden().ID("hiddenRowversion").Value(Model.RowVersionKey),
+                            X.Hidden().ID("TxtAnalyseID").Value(Model.ID),
+                            X.ComboBox().ID("CmbApprobateur").FieldLabel("Approbateur").DisplayField("Nom").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                            .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model(Html.X().Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                            )
+                                        .Proxy(Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadApprobateur", "Analyseur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        )
+                            ,
+                        X.DateField().ID("TxtDateApprobation").FieldLabel("Date Approbation/Time").Text(DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                          ,
+                        X.ComboBox().ID("CmbDecision").FieldLabel("Approver")
+                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            .Items(
+                                    new ListItem("Approuvé", "AP"),
+                                    new ListItem("Rejeté", "NA")                                    
+                                    
+                                )
+                            .SelectedItems(se => { se.Add(new ListItem { Text = "Approuvé", Value = "AP" }); })
+
+                            ,
+                        X.TextArea().ID("TxtCommentaireAnalyseP").FieldLabel("Commentaire").LabelAlign(LabelAlign.Right)
+
+                            )
+
+            )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnApproveAnalyse")
+                //.Handler("validNew(App.FormFournisseur.id)")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitAnalyeApprove");
+                    de.Click.Before = "return validNew(App.FormApproveAnalysePhysique.id);";
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormApproveAnalysePhysique.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fields');
+            Ext.Msg.show({ title: 'Analyse Physique : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+        
+    };
+
+</script>
+
+
+
+
+

@@ -1,0 +1,84 @@
+﻿
+@model Tms.Classes.Shared.stock.PoleProvenanceViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormPoleProvenance")
+    .Width(300)
+    .Resizable(false)
+    .Height(210)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)            
+    .Y(20)
+    .Title("Origin Of Beans : Detail")
+    .Layout(LayoutType.Form)
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.Form)
+                .Items(
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._PoleProvenance.RowVersionKey),
+                        X.Hidden().ID("TxtPoleProvenanceID").Value(Model._PoleProvenance.ID),
+                        X.TextField().ID("TxtDesignationPoleProvenance")
+                            .FieldLabel("Designation")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PoleProvenance.Designation : string.Empty)
+                            .LabelAlign(LabelAlign.Right)
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*"),
+                        X.TextField().ID("TxtPrefixePoleProvenance")
+                            .FieldLabel("Prefix")
+                            .MaxLength(1)
+                            .EnforceMaxLength(true)
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PoleProvenance.Prefixe : string.Empty)
+                            .LabelAlign(LabelAlign.Right)
+                            .AllowBlank(false)                            
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSubmitPoleProvenance")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormPoleProvenance.id);";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormPoleProvenance.doClose()").Cls("btncancel")
+
+            )
+
+    )
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Origin : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+</script>

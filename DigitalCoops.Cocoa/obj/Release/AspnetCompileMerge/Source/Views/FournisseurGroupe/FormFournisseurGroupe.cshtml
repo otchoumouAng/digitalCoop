@@ -1,0 +1,93 @@
+﻿
+@model Tms.Classes.Shared.FournisseurGroupeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.Window()
+                .ID("FormFournisseurGroupe")
+                .Width(500)
+                .Resizable(false)
+                .Height(165)
+                .Modal(true)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                //.X(400)
+                .Y(20)
+                .Title("Supplier Group : Detail")
+                .Items(
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Layout(LayoutType.VBox)
+            .BodyPadding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                   .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._FournisseurGroupe.RowVersionKey),
+                            X.Hidden().ID("TxtFournisseurGroupeID").Value(Model._FournisseurGroupe.ID),
+                            X.Checkbox().ID("TxtVisibilityOnSite").FieldLabel("Visible on Site")
+                            .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FournisseurGroupe.EstVisibleSurSite : true)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FournisseurGroupe.EstVisibleSurSite : true)
+                            .LabelAlign(LabelAlign.Right).MarginSpec("0 5 0 0"),
+                            X.TextField().ID("TxtDesignationFournisseurGroupe").FieldLabel("Designation")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._FournisseurGroupe.Designation.ToString() : string.Empty)
+                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            .MarginSpec("0 5 0 0")
+
+                    )
+               )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitFournisseurGroupe")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormFournisseurGroupe.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormFournisseurGroupe.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Supplier Group : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

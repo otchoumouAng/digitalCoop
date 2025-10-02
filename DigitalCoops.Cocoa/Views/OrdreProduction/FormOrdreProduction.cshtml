@@ -1,0 +1,418 @@
+﻿@model Tms.Classes.Business.stock.OrdreProductionViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    Tms.Classes.Shared.Parametres mParam = new Tms.Classes.Shared.Parametres(0);
+    string CurrentCampagne = mParam.Campagne;
+    int DefaultExportateur = mParam.Exportateur.ID;
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormOrdreProduction")
+    .Width(750)
+    .Resizable(false)
+    .Height(280)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Ordre de production - New")
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Top, Pack = BoxPack.Center })
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items(
+    #region Zone A
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items
+                            (
+                                    X.Hidden()
+                                        .ID("hiddenExecMode")
+                                        .ReadOnly(true)
+                                        .Value(Model._ExecMode),
+                                    X.Hidden()
+                                        .ID("txtOrdreProductionID")
+                                        .ReadOnly(true)
+                                        .Value(Model._OrdreProduction.ID),
+                                    X.TextField()
+                                        .ID("txtNumeroProductionID")
+                                        .ReadOnly(true)
+                                        .Text(Model._OrdreProduction.NumeroProduction)
+                                        .FieldLabel("Production N°")
+                                        .LabelAlign(LabelAlign.Right),
+
+                                    X.ComboBox()
+                                        .ID("cmbCampagne")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.Campagne.Designation : @CurrentCampagne)
+                                        .Store
+                                            (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                    .IDProperty("Designation")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                            )
+                                            ,
+
+                                    X.ComboBox()
+                                        .ID("cmbExportateur")
+                                        .FieldLabel("Exportateur")
+                                        .DisplayField("Nom")
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ValueField("ID")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.Exportateur.ID : DefaultExportateur)
+                                        .Store
+                                        (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                            ),
+                                    X.DateField()
+                                        .ID("txtDateProduction")
+                                        .TabIndex(3)
+                                        .FieldLabel("Date")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.DateProduction.ToShortDateString() : DateTime.Now.ToShortDateString())
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*"),
+
+                                    X.ComboBox()
+                                        .ID("cmbCertification")
+                                        .FieldLabel("Certification")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._OrdreProduction.Certification != null ? (int?)Model._OrdreProduction.Certification.ID : (int?)null)
+                                        .Store
+                                        (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadCertification", "Certification"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                            ),
+                                    X.Checkbox()
+                                        .ID("ChkEstReusine")
+                                        .FieldLabel("Is re-Cleaned")
+                                        .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.EstReusine : false)
+                                        .LabelAlign(LabelAlign.Right)
+
+
+                            ),
+    #endregion
+
+    #region Zone B
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            //.Height(350)
+                            .Flex(1)
+                            .Items
+                            (
+
+                                            X.ComboBox()
+                                                .ID("cmbPoleProvenance")
+                                                .FieldLabel("Provenance")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.PoleProvenance.ID : (int?)null)
+                                                .Store
+                                                (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("Load", "PoleProvenance"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+
+                                                    ),
+                                            X.ComboBox()
+                                                .ID("cmbQuart")
+                                                .FieldLabel("Shift")
+                                                .DisplayField("Nom")
+                                                .ValueField("ID")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._OrdreProduction.Quart != null ? Model._OrdreProduction.Quart.ID : (int?)null)
+                                                .Store
+                                                (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadActiveAgentProduction", "AgentProduction"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+                                                              .Parameters(
+                                                                ps => ps.Add(new StoreParameter("typeID", "1", ParameterMode.Value))
+                                                                )
+
+                                                          ),
+                                             X.ComboBox()
+                                                        .ID("cmbChiefQuart")
+                                                        .FieldLabel("Shift Chief")
+                                                        .DisplayField("Nom")
+                                                        .ValueField("ID")
+                                                        .AllowBlank(false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.ChefQuart.ID : (int?)null)
+                                                        .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadActiveAgentProduction", "AgentProduction"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              ).Parameters(
+                                                                ps => ps.Add(new StoreParameter("typeID", "3", ParameterMode.Value))
+                                                                )
+
+                                                          ),
+                                            X.ComboBox()
+                                                        .ID("cmbMelangeur")
+                                                        .FieldLabel("Quality Controller")
+                                                        .DisplayField("Nom")
+                                                        .ValueField("ID")
+                                                        .AllowBlank(false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.Melangeur.ID : (int?)null)
+                                                        .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadActiveAgentProduction", "AgentProduction"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              ).Parameters(
+                                                                ps => ps.Add(new StoreParameter("typeID", "2", ParameterMode.Value))
+                                                                )
+
+                                                          ),
+                                        X.TextArea()
+                                              .ID("txtComment")
+                                              .FieldLabel("Commentaire")
+                                              .TabIndex(13)
+                                              .AllowBlank(false)
+                                    .IndicatorCls("IndicatorRedStar")
+                                    .IndicatorText("*")
+                                              .LabelAlign(LabelAlign.Right)
+                                              //.LabelWidth(146)
+                                              .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreProduction.Commentaire : string.Empty)
+
+                                            )
+    #endregion
+             //)
+
+             )
+    )
+    .Buttons
+    (
+        X.Button()
+        .Text("OK")
+        .ID("BtnOk")
+        .TabIndex(12)
+        .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+        .DirectEvents
+        (
+
+            de =>
+            {
+                de.Click.Url = Url.Action("SubmitFormMethod");
+                de.Click.Before = "return validNew(App.FormOrdreProduction.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }
+        ),
+                                X.Button()
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                                .ID("BtnApproveOk")
+                                .TabIndex(12)
+                                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("SubmitApprovalFromMethod");
+                                        de.Click.Before = "return validNew(App.FormOrdreProduction.id);";
+                                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                                    }
+                               ),
+
+                                X.Button()
+                                .TabIndex(13)
+                                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                                .Handler("App.FormOrdreProduction.doClose()")
+                                .Cls("btncancel")
+
+                             )
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Production Order : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+        
+    };
+
+
+
+
+</script>
+
+

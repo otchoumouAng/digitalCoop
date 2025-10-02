@@ -1,0 +1,70 @@
+﻿
+
+@model Tms.Classes.Business.PrixNegocieViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(X.FormPanel()
+        .Items(
+            X.Window()
+            .ID("ListPendingDeliveries")
+            .Width(550)
+            .Resizable(false)
+            .Height(400)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+            })
+            //.X(800)
+            .Y(60)
+            .Title("Liste des Livraisons En attente")
+            .Layout(LayoutType.Form)
+            .Items(
+                    X.Hidden().ID("TxtExecMode").Value(Model._ExecMode),
+                            X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListPendingDeliveriesSP")
+                            .ForceFit(true)
+                            .Height(300)
+                            //.MinHeight(230)
+                            .AllowDeselect(true)
+                            .Store(
+                                X.StoreFor<Tms.Classes.Business.Livraison>().ID("storeListDeliveriesSP").AutoLoad(true)
+                                        .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadListPendngDelivery", "SpotPrice"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )                                    
+                            )
+                            .ColumnModel
+                            (
+                                Html.X().DateColumn().Text("Date Livraison").DataIndex("DateLivraison").Flex(1),
+                                Html.X().Column().Text("Livraison N°").DataIndex("Numero").Flex(1),
+                                Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1)
+                            )
+                            .SelectionModel(X.RowSelectionModel().Mode(SelectionMode.Single)
+
+)
+            )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSendListe").Handler("App.ListPendingDeliveries.doClose()")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+

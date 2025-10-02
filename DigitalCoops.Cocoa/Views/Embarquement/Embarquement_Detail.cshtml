@@ -1,0 +1,1336 @@
+﻿@model Tms.Classes.Business.Sales.EmbarquementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    var camp = new Tms.Classes.Shared.Parametres(0).Campagne;
+    var StdBrutUnitaire = (new Tms.Classes.Shared.Parametres(0).PoidsStdBrutUnitaire);
+    var StdNetUnitaire = (new Tms.Classes.Shared.Parametres(0).PoidsStdNetUnitaire);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 120px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 80px !important;
+    }
+</style>
+
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+               X.Window()
+               .Modal(true)
+                .ID("Embarquement_Detail")
+                .Width(920)
+                .Resizable(false)
+                .AutoScroll(true)
+                .Scrollable(ScrollableOption.Vertical)
+                .Height(540)
+                .BodyPadding(5)
+                .Y(5)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+
+            .Title("Shipment")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+            .Items
+            (
+                X.FormPanel()
+                .Listeners(li => li.AfterRender.Handler = "return this.up('window').down('form');")
+               .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+            .Items(
+                X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenEmb1")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .PaddingSpec("10 0 10 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden()
+                                        .ID("hiddenExecMode")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                        X.Hidden()
+                                            .ID("hiddenRowversion")
+                                            .Value(Model._Embarquement.RowVersionKey)
+                                            ,
+                                        X.Hidden()
+                                            .ID("hiddenNumero")
+                                            .Value(Model._Embarquement.Numero)
+                                            ,
+                                        X.Hidden()
+                                            .ID("txtEmbarquementID")
+                                            .Value(Model._Embarquement.ID)
+                                            ,
+                                        X.Hidden()
+                                            .ID("HiddenEnregistrementDetail")
+                                            .Value(""),
+                                       X.Hidden()
+                                            .ID("hiddenQuantity")
+                                            .Value(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? Model._Embarquement.Quantite : (decimal?)null)
+                                            ,
+                                       X.Hidden()
+                                            .ID("hiddenContrat")
+                                            .Value(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? Model._Embarquement.Contrat.ID : Guid.Empty)
+                                            ,
+
+                                         X.Hidden()
+                                            .ID("hiddenRegistre")
+                                            .Value(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update ? Model._Embarquement.Enregistrement.ID : Guid.Empty)
+                                            ,
+                                             X.Hidden().ID("HiddeniPoidsStdBrutUnitaire").Value((int)@StdBrutUnitaire),
+                                            X.Hidden().ID("HiddenPoidsStdNetUnitaire").Value((int)@StdNetUnitaire),
+                                            X.Panel()
+                                             .ID("firstColEmb1")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(2)
+                                             .Items
+                                             (
+                                                 X.TextField()
+                                                .ID("txtNumber")
+                                                .FieldLabel("Number")
+                                                .ReadOnly(true)
+                                                .LabelAlign(LabelAlign.Right)
+                                               .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Numero : string.Empty)
+
+                                                ,
+                                                X.ComboBox()
+                                                 .ID("_cmbCampagne")
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Campagne")
+                                                 .DisplayField("Designation")
+                                                 .ValueField("Designation")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+                                                 .Value(Model._Embarquement.Campagne)
+
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                   .AutoLoad(true)
+                                                   .Model
+                                                   (
+                                                      Html.X().Model()
+                                                      .IDProperty("Designation")
+                                                      .Fields
+                                                      (
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                      )
+                                                    )
+                                                   .Proxy
+                                                   (
+                                                     Html.X().AjaxProxy()
+                                                     .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                     .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                   )
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Load.Handler = "App._cmbContract.getStore().load(); App._cmbRegistration.getStore().load();";
+                                                })
+
+                                                )
+                                                .Listeners(ls =>
+                                                {
+
+                                                    ls.Select.Handler = "App._cmbContract.clearValue();App._cmbContract.getStore().load(); App._cmbRegistration.clearValue(); App._cmbRegistration.getStore().load();";
+                                                })
+
+
+                                                ,
+
+                                                X.ComboBox()
+                                                 .ID("_cmbExportateur")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Exportateur")
+                                                 .DisplayField("Nom")
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Exportateur.ID : Model._DefaultExportateur)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+                                                .Listeners(ls =>
+                                                {
+
+                                                    ls.Select.Handler = "App._cmbContract.clearValue();App._cmbContract.getStore().load(); App._cmbRegistration.clearValue(); App._cmbRegistration.getStore().load();";
+                                                })
+
+                                                ,
+                                                X.ComboBox()
+                                                 .ID("_cmbCustomer")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Customer")
+                                                 .DisplayField("Nom")
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Client.ID : Model._DefaultClient)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                .Proxy
+                                                (
+                                                   Html.X().AjaxProxy()
+                                                   .Url(Url.Action("LoadClientActive", "Client"))
+                                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                                ),
+
+                                                X.ComboBox()
+                                                 .ID("_cmbContract")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Contract")
+                                                 .DisplayField("NumeroCode")
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Contrat.ID : (Guid?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(false)
+                                                    .Model
+                                                    (
+                                                         X.Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.String) { Mapping = "ID" },
+                                                          new ModelField("NumeroCode", ModelFieldType.String) { Mapping = "NumeroCode" }
+                                                        )
+                                                     )
+
+                                                     .Proxy
+                                                    (
+                                                        X.AjaxProxy()
+                                                        .Url(Url.Action("LoadContratCampagneActive", "ContratDeVentes"))
+                                                        .Reader(X.JsonReader().RootProperty("data"))
+                                                    )
+                                                    .Parameters
+                                                     (
+                                                        ps =>
+                                                        {
+
+                                                            ps.Add(new StoreParameter("ItemCampagne", "App._cmbCampagne.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemExportateur", "App._cmbExportateur.getValue()", ParameterMode.Raw));
+
+                                                        }
+                                                     )
+
+
+
+                                                )
+                                                .Listeners(
+                                                        ls =>
+                                                        {
+                                                            ls.Select.Handler = "if (App._cmbContract.value) { loadValues(); }";
+                                                        }
+                                                        ),
+                                                X.ComboBox()
+                                                 .ID("_cmbRegistration")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Registration")
+                                                 .DisplayField("NumeroCode")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Enregistrement.ID : (Guid?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                       X.Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.String) { Mapping = "ID" },
+                                                          new ModelField("NumeroCode", ModelFieldType.String) { Mapping = "NumeroCode" },
+                                                          new ModelField("EnregistrementDetailID", ModelFieldType.Object) { Mapping = "EnregistrementDetailID" }
+                                                        )
+                                                     )
+                                                      .Proxy
+                                                    (
+                                                        X.AjaxProxy()
+                                                        .Url(Url.Action("LoadRegistrationCampagneActive", "Enregistrement"))
+                                                        .Reader(X.JsonReader().RootProperty("data"))
+                                                    ).Listeners(
+                                                        ls => {
+                                                            ls.Load.Handler = "if (App._cmbRegistration.value) { App.HiddenEnregistrementDetail.setValue(App._cmbRegistration.getSelectedRecord().data.EnregistrementDetailID)};";
+                                                        }
+                                                        )
+                                                      .Parameters
+                                                     (
+                                                        ps =>
+                                                        {
+
+                                                            ps.Add(new StoreParameter("ItemCampagne", "#{_cmbCampagne}.getValue()", ParameterMode.Raw));
+                                                            ps.Add(new StoreParameter("ItemExportateur", "App._cmbExportateur.getValue()", ParameterMode.Raw));
+                                                            //ps.Add(new StoreParameter("ItemContrat", "App._cmbContract.getValue()", ParameterMode.Raw));
+
+                                                        }
+                                                     )
+
+
+                                                )
+                                                .Listeners(
+                                                        ls =>
+                                                        {
+                                                            ls.Select.Handler = "if (App._cmbRegistration.value) { App.HiddenEnregistrementDetail.setValue(App._cmbRegistration.getSelectedRecord().data.EnregistrementDetailID); loadValues();};";
+                                                        }
+                                                        ),
+                                                X.TextField()
+                                                .ID("txtReference")
+                                                .FieldLabel("Ref.")
+                                                .LabelAlign(LabelAlign.Right)
+                                               .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Reference : string.Empty)
+
+
+
+                                                , X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Date")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+
+                                                              X.DateField()
+                                                                .ID("txtDate")
+                                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                                .AllowBlank(false)
+                                                                .Width(140)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+
+
+
+                                                    )
+
+                                                //    X.TextField()
+                                                //.ID("txtONCC")
+                                                //.FieldLabel("ONCC Number")
+                                                //.IndicatorCls("IndicatorRedStar")
+                                                //.IndicatorText("*")
+                                                //.ReadOnly(true)
+                                                //.LabelAlign(LabelAlign.Right)
+                                                //,
+                                                ,
+                                                 X.TextField()
+                                                        .ID("txtQuantity")
+                                                        .HideTrigger(true)
+                                                        .AllowBlank(false)
+                                                        .FieldLabel("Quantity (T) ")
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.QuantiteAsString : string.Empty)
+                                                             .Listeners(ls =>
+                                                             {
+
+                                                                 ls.Change.Fn = "VerifyQuantity";
+                                                                 ls.Blur.Handler = "if (App.txtQuantity.value && !App.txtQuantity.readOnly) {#{txtQuantity}.setValue(formatNumberDecimal(#{txtQuantity}.getValue()))}";
+                                                                 ls.Focus.Handler = "if (App.txtQuantity.value && !App.txtQuantity.readOnly) { #{txtQuantity}.setRawValue(unformatNumberDecimal(#{txtQuantity}.getValue()));}";
+
+                                                             }),
+
+
+                                                X.ComboBox()
+                                                 .ID("_cmbDomiciliation")
+
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Domiciliation")
+                                                 .DisplayField("Nom")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Domiciliation.ID : (int?)null)
+                                                 //.Value(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                  .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadBanqueActive", "Banque"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+
+                                               )
+                                                ,
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Periode")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                        X.DateField()
+                                                             .ID("txtPeriodeEmbarquement")
+                                                             .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PeriodeEmbarquement.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                             .Format("MM-Y")
+                                                             .Type(DatePickerType.Month)
+                                                             .AllowBlank(false)
+                                                             .Width(140)
+                                                             .IndicatorCls("IndicatorRedStar")
+                                                             .IndicatorText("*")
+
+
+                                                )
+                                               ,
+
+                                                X.ComboBox()
+                                                 .ID("_cmbDestination")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Destination")
+                                                 .DisplayField("Nom")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.DestinationExport.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "nom" }
+                                                        )
+                                                     )
+                                                     .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadDestinationActive", "DestinationExport"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+
+                                                )
+                                                ,
+
+                                                X.ComboBox()
+                                                 .ID("_cmbTransitaire")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Forwarder")
+                                                 .DisplayField("Nom")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Transitaire.ID : Model._DefaultForwarder)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "nom" }
+                                                        )
+                                                     )
+                                                     .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadTransitaire", "Transitaire"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+
+                                                )
+
+
+                                 //1stCol
+                                 ),
+                                  X.Panel()
+                                             .ID("firstColEmb2")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(2)
+                                             .Items
+                                             (
+
+
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Vessel")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+
+                                                             X.ComboBox()
+                                                                .ID("_cmbShip")
+
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .MarginSpec("0 5 0 0")
+                                                                .DisplayField("Nom")
+                                                                .Width(245)
+                                                                .ValueField("ID")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Navire.ID : (int?)null)
+                                                                .Store
+                                                                (
+                                                                X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model
+                                                                (
+                                                                        Html.X().Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                    )
+                                                                    )
+                                                                .Proxy
+                                                                (
+                                                                    Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadNavireActive", "Navire"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                )
+                                                            )
+
+                                                            ,
+                                                            X.Button()
+                                                            .Text(" + ")
+                                                            .Height(20)
+                                                            .Width(40)
+                                                            .ID("btnAddVessel")
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnAddVeselShipment", "Navire");
+                                                                    de.Click.Success = "App.FormNavire.setTitle('Vesel : Add')";
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            )
+
+                                                    ),
+                                                X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("ETA")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+
+                                                              X.DateField()
+                                                                .ID("txtETA")
+                                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.ETA.ToString() : DateTime.Now.AddMonths(2).ToString()).LabelAlign(LabelAlign.Right)
+                                                                .AllowBlank(false)
+                                                                .Width(140)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                    ),
+
+                                     X.FieldContainer()
+                                        .Layout(LayoutType.HBox)
+                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Date BL ")
+
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+
+                                                        X.DateField()
+                                                             .ID("txtPeriodeBL")
+                                                             .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PeriodeBL.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                             .Format("MM-Y")
+                                                             .Type(DatePickerType.Month)
+                                                             .AllowBlank(false)
+                                                             .Width(140)
+                                                             .IndicatorCls("IndicatorRedStar")
+                                                             .IndicatorText("*")
+
+
+
+
+                                                )
+
+                                              , X.ComboBox()
+                                                 .ID("_cmbPackaging")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Packaging")
+                                                 .DisplayField("Designation")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Conditionnement.ID : Model._DefaultConditionnement)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "Conditionnement"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+                                                ,
+
+                                     X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Shipping Line")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                            X.ComboBox()
+                                                 .ID("_cmbShippingLine")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .Width(245)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+
+                                                 .DisplayField("Nom")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.CompagnieMaritime.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "CompagnieMaritime"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                ),
+                                            X.Button()
+                                                .Text(" + ")
+                                                .Height(20)
+                                                .Width(40)
+                                                .ID("btnAddShippingLine")
+                                                .DirectEvents
+                                                (
+                                                    de =>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnAddShiplineShipment", "CompagnieMaritime");
+                                                        de.Click.Success = "App.FormCompagnieMaritime.setTitle('Ship Line : Nouveau')";
+                                                        de.Click.EventMask.ShowMask = true;
+                                                    }
+                                                )
+                                    )
+                                               ,
+
+                                                X.ComboBox()
+                                                 .ID("_cmbConsingee")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Consignee")
+                                                 .DisplayField("Designation")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.Consignee.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                     )
+                                                     .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "Consignee"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+
+                                                )
+                                                ,
+                                                X.ComboBox()
+                                                 .ID("_cmbTypeContainer")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Type Of Container")
+                                                 .DisplayField("Designation")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.ConteneurType.ID : Model._DefaultConteneurType)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "ConteneurType"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                ),
+                                                X.NumberField()
+                                                .ID("txtNbrContainer")
+                                                .FieldLabel("Number Of Container")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .HideTrigger(true)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .AllowBlank(false)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.NbreConteneurAsString : string.Empty)
+                                                .Listeners(ls =>
+                                                {
+
+                                                    ls.Blur.Handler = "if (App.txtNbrContainer.value && !App.txtNbrContainer.readOnly) {#{txtNbrContainer}.setValue(formatNumber(#{txtNbrContainer}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtNbrContainer.value && !App.txtNbrContainer.readOnly) { #{txtNbrContainer}.setRawValue(unformatNumber(#{txtNbrContainer}.getValue()));}";
+
+                                                })
+                                                ,
+                                                X.ComboBox()
+                                                 .ID("_cmbCertification")
+
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 //.AllowBlank(false)
+                                                 //.IndicatorCls("IndicatorRedStar")
+                                                 //.IndicatorText("*")
+                                                 .FieldLabel("Certification")
+                                                 .DisplayField("Designation")
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew  && Model._Embarquement.Certification != null ? Model._Embarquement.Certification.ID : (int?)null)
+                                                .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadCertification", "Certification"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+                                                , X.ComboBox()
+                                                 .ID("_cmbModeTraitement")
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(true)
+                                                 .FieldLabel("Processing Mode")
+                                                 .DisplayField("Designation")
+
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._Embarquement.ModeTraitement != null  ? Model._Embarquement.ModeTraitement.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "ModeTraitement"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                ),
+                                            X.TextArea()
+                                                .ID("txtMentionOT")
+                                                .FieldLabel("Mention OT")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                               .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.MentionOT : "Les connaissements doivent porter la mention « FCL/FCL » ; « Bulk Shipment » doit figurer sur le Certificat EUR 1 et la déclaration d’embarquement. Le fret est payé a destination Par le client")
+
+
+
+
+
+
+                                 //2ndCol
+                                 )
+
+
+                    //End first panel
+                    )
+                    ,
+                    X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    //.FrameHeader(false)
+                    .ID("pnlFlexEvenSh3")
+                    .Layout(LayoutType.HBox)
+                    //.MarginSpec("0 -140 0 0")
+                    //.PaddingSpec("10 0 10 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+
+                           X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Lots")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                             X.TextField()
+                                                            .ID("txtLots")
+                                                            .Width(650)
+                                                            .ReadOnly(true)
+                                                            .MarginSpec("0 20 0 0")
+                                                            //.Value("T0093,  T0094,  T0095,  T0096,  T0097,  T0098,  T0099,  T0100")
+
+                                                            ,
+
+                                                            X.Button()
+                                                                .ID("btnAddLot")
+                                                                .Text("...")
+                                                                .Height(20)
+                                                                .Width(40)
+                                                                .DirectEvents
+                                                                (
+                                                                    de =>
+                                                                    {
+                                                                        de.Click.Url = Url.Action("OnAddLot", "Embarquement");
+                                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbCampagne}.getValue()" });
+                                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemExportateur", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbExportateur}.getValue()" });
+                                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemCertificationID", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbCertification}.getValue()" });
+                                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmbarquementID", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtEmbarquementID}.getValue()" });
+                                                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenExecMode}.getValue()" });
+                                                                        de.Click.ExtraParams.Add(new Parameter { Name = "storeListLot",  Mode = ParameterMode.Raw, Encode = false, Value = "App.grpDetailLot.getRowsValues({selectedOnly : false})" });
+
+                                                                        de.Click.EventMask.ShowMask = true;
+                                                                    }
+                                                                )
+
+
+                                                ),
+                                                  X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                    X.TextField()
+                                                        .ID("txtGrossWeight")
+                                                        .Hidden(true)
+                                                        .AllowBlank(false)
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.QuantiteAsString : string.Empty)
+                                                             .Listeners(ls =>
+                                                             {
+
+                                                                 ls.Blur.Handler = "if (App.txtGrossWeight.value && !App.txtGrossWeight.readOnly) {#{txtGrossWeight}.setValue(formatNumber(#{txtGrossWeight}.getValue()))}";
+                                                                 ls.Focus.Handler = "if (App.txtGrossWeight.value && !App.txtGrossWeight.readOnly) { #{txtGrossWeight}.setRawValue(unformatNumber(#{txtGrossWeight}.getValue()));}";
+
+                                                             }),
+
+                                                             X.TextField()
+                                                        .ID("txtNetWeight")
+                                                        .Hidden(true)
+                                                        .AllowBlank(false)
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.QuantiteAsString : string.Empty)
+                                                             .Listeners(ls =>
+                                                             {
+
+                                                                 ls.Blur.Handler = "if (App.txtNetWeight.value && !App.txtNetWeight.readOnly) {#{txtNetWeight}.setValue(formatNumber(#{txtNetWeight}.getValue()))}";
+                                                                 ls.Focus.Handler = "if (App.txtNetWeight.value && !App.txtNetWeight.readOnly) { #{txtNetWeight}.setRawValue(unformatNumber(#{txtNetWeight}.getValue()));}";
+
+                                                             })
+
+                                                )
+
+
+                    ),
+                X.Panel()
+                    .Hidden(true)
+                    .Layout(LayoutType.Fit)
+                        //.Height(200)
+                        .Items(
+                              X.GridPanel()
+                              .Layout(LayoutType.Fit)
+                              .ID("grpDetailLot")
+                              .Region(Region.Center)
+                              .Border(true)
+                              .AllowDeselect(true)
+                              .Store
+                              (
+                                X.StoreFor<Tms.Classes.Business.stock.Lot>()
+                                .ID("storeListLot")
+                                .Proxy
+                                 (
+                                   Html.X().AjaxProxy()
+                                   .Url(Url.Action("LoadListOfLot"))
+                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                 )
+                                 .Parameters
+                                 (
+                                    ps =>
+                                    {
+                                        ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecMode}.getValue()", ParameterMode.Raw));
+                                        ps.Add(new StoreParameter("ItemEmbarquementID", "#{txtEmbarquementID}.getValue()", ParameterMode.Raw));
+                                    }
+                                 )
+
+                                .Listeners
+                                (
+                                    l =>
+                                    {
+                                        l.Add.Fn = "RefreshLot";
+                                        l.Load.Fn = "RefreshLot";
+                                        l.Update.Fn = "RefreshLot";
+                                        l.Remove.Fn = "RefreshLot";
+
+                                    }
+                                )
+                               )
+                               .ColumnModel
+                               (
+
+                                   Html.X().Column().Text("Numero").DataIndex("NumeroLot").Flex(2)
+
+
+                               )
+                               .SelectionModel
+                               (
+                                    X.RowSelectionModel()
+                                    .ID("rowSelectionListLot")
+                                    .Mode(SelectionMode.Single)
+                                    .AllowDeselect(true)
+                               )
+                        //End Panel
+                        )
+
+                  //End form panel
+                  )
+
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOk")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult  ? true : false)
+                    .DirectEvents
+                    (
+
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitFormMethod");
+                            de.Click.Before = "return validNew(App.Embarquement_Detail.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "storeListLot", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDetailLot.getRowsValues({selectedOnly : false})" });
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                        }
+                    ),
+                    X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Embarquement_Detail.doClose()")
+                    .Cls("btncancel")
+
+                )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var SoldeContrat = App._cmbContract.lastSelection[0].data.Solde;
+        var ContratKey = App._cmbContract.lastSelection[0].data.ID;
+
+        var SoldeEnregistr = App._cmbRegistration.lastSelection[0].data.TonnageRestant;
+        var EnregistrKey = App._cmbRegistration.lastSelection[0].data.ID;
+
+        var Quantity = Number(unformatNumberDecimal(App.txtQuantity.value.toString().replace(",", "."))) || 0;
+
+        var ExecMode = App.hiddenExecMode.value;
+        if (ExecMode == "Update") {
+            var hQuantity = Number(App.hiddenQuantity.value);
+            var hContrat = App.hiddenContrat.value;
+            var hRegistre = App.hiddenRegistre.value;
+
+            if (hContrat == ContratKey)
+                SoldeContrat = SoldeContrat + hQuantity;
+            if (hRegistre == EnregistrKey)
+                SoldeEnregistr = SoldeEnregistr + hQuantity;
+        }
+
+
+        var PoidsBrut = unformatNumber(App.txtGrossWeight.value) || 0;
+
+        PoidsBrut = PoidsBrut / 1000;
+
+        if (Quantity > SoldeContrat) {
+            console.log('Quantity ' + Quantity);
+            console.log('SoldeContrat ' + SoldeContrat);
+            Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'The quantity is greater than the quantity of the contract.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if (Quantity > SoldeEnregistr) {
+            console.log('Quantity ' + Quantity);
+            console.log('SoldeEnregistr ' + SoldeEnregistr);
+            Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'the quantity is greater than the quantity of the registration.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if (App.grpDetailLot.getRowsValues().length < 1) {
+            
+            Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: '¨Please add lots.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        /*if (Quantity != PoidsBrut) {
+           Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'the quantity is different from the gross weight of the lots.', buttons: Ext.Msg.OK });
+            return false;
+        }*/
+
+
+        
+    };
+
+
+    var RefreshLot = function () {
+        var text = "";
+        if (App.grpDetailLot.getRowsValues().length >= 1) {
+            for (i = 0; i < App.grpDetailLot.getRowsValues().length; i++) {
+                if (App.grpDetailLot.getRowsValues()[i].Desactive == 0) {
+                    if(i == 0)
+                        text = App.grpDetailLot.getRowsValues()[i].NumeroLot;
+                    else
+                        text = App.grpDetailLot.getRowsValues()[i].NumeroLot.replace(" ","") +",  " +text  ;
+
+
+                }
+            }
+
+        }
+
+        App.txtLots.setValue(text);
+
+        /***Calcul des poids***/
+        var NbreSac = 0;
+        console.log(App.HiddenPoidsStdNetUnitaire.value);
+        var StdBrutUnitaire = Number(App.HiddeniPoidsStdBrutUnitaire.value) || 0;
+        var StdNetUnitaire = Number(App.HiddenPoidsStdNetUnitaire.value) || 0;
+
+        if (App.grpDetailLot.getRowsValues().length >= 1) {
+            for (i = 0; i < App.grpDetailLot.getRowsValues().length; i++) {
+                if (App.grpDetailLot.getRowsValues()[i].Desactive == 0) {
+                    
+                    NbreSac = NbreSac + App.grpDetailLot.getRowsValues()[i].NombreSacs;
+
+                }
+            }
+
+        }
+
+        var PoidsNet = NbreSac * StdNetUnitaire;
+        var PoidsBrut = NbreSac * StdBrutUnitaire;
+
+        App.txtGrossWeight.setValue(formatNumber(PoidsBrut));
+        App.txtNetWeight.setValue(formatNumber(PoidsNet));
+
+        /**Control**/
+        if (App.grpDetailLot.getRowsValues().length < 1) {
+            App._cmbCampagne.setReadOnly(false);
+            App._cmbExportateur.setReadOnly(false);
+            App._cmbCertification.setReadOnly(false);
+
+        }
+
+    };
+
+    var VerifyQuantity = function () {
+        var contrat = App._cmbContract.value;
+        var enregistr = App._cmbRegistration.value;
+
+        /*console.log(App._cmbContract);*/
+        if((!contrat || contrat == undefined || contrat == "") || (!enregistr || enregistr == undefined || enregistr == ""))
+        {
+
+            Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Select a contract and a registration, please.', buttons: Ext.Msg.OK });
+            App.txtQuantity.setValue('');
+            return false;
+        }
+        else
+        {
+            
+            var SoldeContrat = App._cmbContract.lastSelection[0].data.Solde;
+            var ContratKey = App._cmbContract.lastSelection[0].data.ID;
+
+            var SoldeEnregistr = App._cmbRegistration.lastSelection[0].data.TonnageRestant;
+            var EnregistrKey = App._cmbRegistration.lastSelection[0].data.ID;
+
+            var Quantity = Number(unformatNumberDecimal(App.txtQuantity.value.toString().replace(",", "."))) || 0;
+            console.log('a ' +Quantity);
+            console.log('b ' + SoldeContrat);
+            console.log('c ' + SoldeEnregistr);
+            var ExecMode = App.hiddenExecMode.value;
+            if (ExecMode == "Update")
+            {
+                var hQuantity = Number(App.hiddenQuantity.value);
+                var hContrat = App.hiddenContrat.value;
+                var hRegistre = App.hiddenRegistre.value;
+
+                if (hContrat == ContratKey)
+                    SoldeContrat = SoldeContrat + hQuantity;
+                if (hRegistre == EnregistrKey)
+                    SoldeEnregistr = SoldeEnregistr + hQuantity;
+            }
+
+            if(Quantity > SoldeContrat)
+            {
+                console.log('Quantity ' + Quantity);
+                console.log('SoldeContrat ' + SoldeContrat);
+                Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'The quantity is greater than the Quantity of the contract.', buttons: Ext.Msg.OK });
+                return false;
+            }
+
+            if (Quantity > SoldeEnregistr) {
+                console.log('Quantity ' + Quantity);
+                console.log('SoldeEnregistr ' + SoldeEnregistr);
+                Ext.Msg.show({ title: 'Shipment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'the quantity is greater than the Quantity of the registration.', buttons: Ext.Msg.OK });
+                return false;
+            }
+           
+        }
+    };
+
+    var loadValues = function () {
+        var contrat = App._cmbContract.value;
+        var enregistr = App._cmbRegistration.value;
+
+        /*console.log(App._cmbContract);*/
+        if((!contrat || contrat == undefined || contrat == "") || (!enregistr || enregistr == undefined || enregistr == "")){        
+            return false;
+        }
+        else {
+
+            var SoldeContrat = App._cmbContract.lastSelection[0].data.Solde;
+            var ContratKey = App._cmbContract.lastSelection[0].data.ID;
+
+            var SoldeEnregistr = App._cmbRegistration.lastSelection[0].data.TonnageRestant;
+            var EnregistrKey = App._cmbRegistration.lastSelection[0].data.ID;
+            var mDomiciliation = App._cmbContract.lastSelection[0].data.Banque.ID;
+            var mCertif = App._cmbContract.lastSelection[0].data.Certification.ID;
+            
+            var Quantity = Number(unformatNumberDecimal(App.txtQuantity.value.toString().replace(",", "."))) || 0;
+            console.log('a ' + Quantity);
+            console.log('b ' + SoldeContrat);
+            console.log('c ' + SoldeEnregistr);
+            var ExecMode = App.hiddenExecMode.value;
+            if (ExecMode == "AddNew") {
+                App.txtQuantity.setValue(SoldeEnregistr.toString().replace(".", ","));
+
+                if (Number(mDomiciliation)) {
+                    App._cmbDomiciliation.setValue(mDomiciliation);
+                }
+
+                if (Number(mCertif)) App._cmbCertification.setValue(mCertif);
+            }
+            
+        }
+    };
+
+   
+    function formatNumberDecimal(amount) {
+       
+        amount = thousands_separators(amount.toString().replace(".", ","));
+        
+        formatted = amount.toString().replace(".", ",");
+      
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.toString().replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    };
+    
+
+</script>
+

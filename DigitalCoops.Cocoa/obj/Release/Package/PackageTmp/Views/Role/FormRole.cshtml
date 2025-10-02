@@ -1,0 +1,231 @@
+﻿
+@model Tms.Classes.Security.RoleViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<script type="text/javascript">
+
+
+    var renderRoleIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+        var icon_url = OverviewRole.getBootStrapIcons(value);
+
+        return Ext.String.format(tpl, icon_url);
+    };
+
+
+    var OverviewRole =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';/*Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');*/
+            }
+            else if (value == 1) {
+                return 'action_approve_02';/* 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');*/
+            }
+            else if (value == 2) {
+                return 'action_new_02';/*'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok*/
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 4) {
+                return 'glyphicon-file green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+        },
+        resetAllButtons: function () {
+            if (App.RohiddenPermSetFunction.value == 'true')
+                App.BtnAddFunctionToRole.enable();
+
+            if (App.rowSelectionRoleFonction.hasSelection() && App.RohiddenPermRemoveFunction.value == 'true') {
+                App.BtnRemoveFunctionsToRole.enable();
+            } else {
+                App.BtnRemoveFunctionsToRole.disable();
+            }
+        }
+    };
+
+
+</script>
+
+@(X.FormPanel()
+    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+    .Items(
+            X.Window()
+            .ID("FormRole")
+            .Width(760)
+            .Resizable(false)
+            .Height(450)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+                l.Show.Handler = "OverviewRole.resetAllButtons();";
+            })
+            //.X(400)
+            .Y(20)
+            .Title("Role")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                .Items(
+                X.Hidden().ID("RohiddenPermSetFunction").Value(ViewData["HavPermissionAddFunction"]).ReadOnly(true),
+                X.Hidden().ID("RohiddenPermRemoveFunction").Value(ViewData["HavPermissionRemoveFunction"]).ReadOnly(true),
+                        X.Panel().Layout(LayoutType.Form)
+                        .Items(
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._Role.RowVersionKey),
+                                    X.Hidden().ID("TxtRoleID").Value(Model._Role.ID),
+
+                                    X.TextField().ID("TxtNomRole").FieldLabel("Nom")
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Role.Nom : string.Empty)
+                                    .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                      ,
+                                    X.TextField().ID("TxtDescriptionRole").FieldLabel("Description")
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Role.Description : string.Empty)
+                                    .LabelAlign(LabelAlign.Right)
+                                ),
+                        X.Panel()
+                        .TopBar(new Toolbar()
+                        {
+                            Items = {
+                                        X.Button()
+                                            .ID("BtnAddFunctionToRole")
+                                            .IconCls("action_new_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text("Ajouter")
+                                            .Disabled(true)
+                                            .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                            .DirectEvents( de =>{
+                                                de.Click.Url  = Url.Action("AddFunctionToRole");
+                                                de.Click.EventMask.ShowMask = true;
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemRole", Mode = ParameterMode.Raw, Value = "#{TxtRoleID}.getRawValue()" });
+                                            } ),
+                                        X.Button()
+                                        .ID("BtnRemoveFunctionsToRole")
+                                        .Icon(Icon.Delete)
+                                        .Border(false)
+                                        .Cls("ButtonStyle")
+                                        .Text("Retirer")
+                                        .Disabled(true)
+                                        .DirectEvents(de =>
+                                                {
+                                                    de.Click.Url = Url.Action("RemoveFunctionToRole");
+                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeRoleFonction.getRowsValues({selectedOnly : true})" });
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Role : Retirer Function'; config.confirmation.message = 'Do you want to remove this function ? ';";
+                                                }),
+
+                                    }
+                        })
+                        .Items(
+                                  X.GridPanel()
+                                   .Layout(LayoutType.Fit)
+                                   .ID("grpListeRoleFonction")
+                                   .Region(Region.Center)
+                                   .ForceFit(false)
+                                   .Height(250)
+                                   .AllowDeselect(true)
+                                    .Store(
+                                            X.StoreFor<Tms.Classes.Security.RoleFonction>().ID("storeListeRoleFonction")
+                                            .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("SelectFonction"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                            .Parameters(ps =>
+                                            {
+                                                ps.Add(new StoreParameter("ItemRole", "#{TxtRoleID}.getRawValue()", ParameterMode.Raw));
+                                            }
+                                                )
+                                                .Listeners(
+                                      ls => ls.Add.Handler = "App.grpListeRoleFonction.getScrollable().scrollTo(top)"
+                                    )
+                                        )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("").DataIndex("mIcon").Width(20).Renderer("renderRoleIcon").Width(40).Hideable(false).Filterable(false),
+                                        Html.X().Column().Text("Module").DataIndex("ModuleAsString").Flex(1).Hideable(false),
+                                        Html.X().Column().Text("Function").DataIndex("FonctionAsString").Flex(2).Hideable(false)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                    )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .ID("rowSelectionRoleFonction")
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )
+                                    .Listeners(l =>
+                                    {
+                                        if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                        {
+                                            l.Select.Fn = "OverviewRole.resetAllButtons";
+                                            l.Deselect.Fn = "OverviewRole.resetAllButtons";
+                                        }
+
+                                    }
+                                    )
+                            )
+
+
+                    )
+            .Buttons(
+                        X.Button()
+                        .Text("OK")
+                        .ID("BtnSubmitRole")
+                        .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitFormMethod");
+                            de.Click.Before = "return validNew(App.FormRole.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeRoleFonction.getRowsValues({selectedOnly : false})" });
+                        })
+
+                            ,
+                        X.Button()
+                        .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                        .Handler("App.FormRole.doClose()").Cls("btncancel")
+
+                        )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Role : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+

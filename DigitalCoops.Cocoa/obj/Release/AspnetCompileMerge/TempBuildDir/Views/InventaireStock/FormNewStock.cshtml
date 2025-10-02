@@ -1,0 +1,158 @@
+﻿@model Tms.Classes.Business.stock.InventaireElementStock
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 300px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+
+    var OverviewCode =
+    {
+        SetButtons: function () {
+
+            if (App.rowCode.hasSelection()) {
+                if (App.CdhiddenPermRemove.value == 'true')
+                    App.BtnRemoveCode.enable();
+
+                if (App.CdhiddenPermPrintCode.value == 'true')
+                    App.BtnPrintCode.enable();
+
+            } else {
+
+                App.BtnRemoveCode.disable();
+                App.BtnPrintCode.disable();
+
+            }
+        }
+    };
+
+
+</script>
+@(
+X.Window()
+    .ID("FormNewStock")
+    .Width(320)
+    .Resizable(false)
+    .Height(240)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    //.X(400)
+    .Y(60)
+    .Title("Inventaire : Confirmer Stock")
+    
+    .Items(
+            X.FormPanel()
+                .Layout(LayoutType.Form)
+                .Items(
+                        //X.Hidden().ID("inventaireElementEnStockID").Value(Model.ID),
+                        X.TextField()
+                            .ID("txtQuantiteTheorique")
+                            .LabelAlign(LabelAlign.Right)
+                            .MaskRe("[0123456789]")
+                            .FieldLabel("Nbr de Sacs theorique")
+                            .ReadOnly(true)
+                            .Text(Model.QuantiteAsString),
+                        X.TextField()
+                            .ID("txtPoidsTheorique")
+                            .LabelAlign(LabelAlign.Right)
+                            .MaskRe("[0123456789]")
+                            .ReadOnly(true)
+                            .FieldLabel("Poids Brut Theorique")
+                            .Text(Model.PoidsBrutAsString),
+                        X.TextField()
+                            .ID("txtQuantitePhysique")
+                            .LabelAlign(LabelAlign.Right)
+                            .MaskRe("[0123456789]")
+                            .FieldLabel("Nbr de sacs")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .Text("")
+                            .Listeners
+                            (
+                                ls =>
+                                {
+                                    ls.Change.Handler = "CalculateWgtAjusted();";
+                                    ls.Blur.Handler = "#{txtQuantitePhysique}.setValue(formatNumber(#{txtQuantitePhysique}.getValue()));";
+                                    ls.Focus.Handler = "if (App.txtQuantitePhysique.value) { #{txtQuantitePhysique}.setRawValue(unformatNumber(#{txtQuantitePhysique}.getValue()));}";
+                                }
+                            ),
+                        X.Hidden()
+                            .ID("txtQuantitePhysiqueHid")
+                            .Value(""),
+                        X.TextField()
+                            .ID("txtPoidsPhysique")
+                            .LabelAlign(LabelAlign.Right)
+                            .MaskRe("[0123456789]")
+                            .FieldLabel("Poids Physique")
+                            .Text("")
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .ReadOnly(true)
+                        )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSave")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("UpdateStock");
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                            de.Click.Before = "return validNew(App.FormNewStock.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "inventaireElementEnStockID", Encode = false, Mode = ParameterMode.Value, Value = Model.ID.ToString() });
+                        }
+                    ),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.FormNewStock.doClose()").Cls("btncancel")
+        )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+        *   Vérification de la saisie des champs obligatoires
+        */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Inventaire : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please Fill empty fields', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var CalculateWgtAjusted = function () {
+
+        var qteTheorique = parseFloat(unformatNumber(App.txtQuantiteTheorique.value)) || 0;
+        var poidsTheorique = parseFloat(unformatNumber(App.txtPoidsTheorique.value)) || 0;
+        var qtePhysique = parseFloat(unformatNumber(App.txtQuantitePhysique.value)) || 0;
+
+        var result = (qtePhysique * poidsTheorique) / qteTheorique;
+        App.txtQuantitePhysiqueHid.setValue(qtePhysique);
+        App.txtPoidsPhysique.setValue(formatNumber(result));       
+
+    };
+
+</script>
+
+

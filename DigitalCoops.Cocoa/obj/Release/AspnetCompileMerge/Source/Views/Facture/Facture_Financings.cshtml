@@ -1,0 +1,344 @@
+﻿
+
+@model Tms.Classes.Business.FinancementViewModel
+@{
+    Layout = null;
+    var X = Html.X();    
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    #txtAvailableAmount-inputEl, #txtInvoiceNetWeight-inputEl,#txtTotalDeducted-inputEl{
+        text-align:right !important;
+        font-weight:bold !important;
+    }
+    #txtTotalDeducted-labelTextEl{
+        font-weight : bold;
+    }
+</style>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript">
+
+    var Financing =
+    {
+        resetButtons: function ()
+        {
+            App.btnUpdateFinancing.disable();
+
+            if (App.rowSelectionFinancing.hasSelection())
+            {
+                var isToBeDeducted = App.rowSelectionFinancing.selected.items[0].data.IsDeducted;
+
+                if (isToBeDeducted === true) {
+                    App.btnUpdateFinancing.enable();
+                }
+                else {
+                    App.btnUpdateFinancing.disable();
+                }
+            }           
+
+        },
+
+        GetListOfFinancings: function ()
+        {
+            var ListOfFinancings = [];
+
+            if (App.grpListDeductedFinancing.getRowsValues().length >= 1)
+            {
+                for (i = 0; i < App.grpListDeductedFinancing.getRowsValues().length; i++)
+                {
+                    if (App.grpListDeductedFinancing.getRowsValues()[i].IsDeducted === true && App.grpListDeductedFinancing.getRowsValues()[i].MontantPreleve != 0)
+                    {
+                        ListOfFinancings.push(App.grpListDeductedFinancing.getRowsValues()[i])
+
+                    }
+                }
+            }
+
+            return ListOfFinancings;
+
+        },
+
+
+       CalculateTotalDeductions: function ()
+       {
+           var mTotalDeduction = 0;
+          
+           if (App.grpListDeductedFinancing.getRowsValues().length >= 1)
+           {
+               for (i = 0; i < App.grpListDeductedFinancing.getRowsValues().length; i++)
+               {
+                   if(App.grpListDeductedFinancing.getRowsValues()[i].IsDeducted === true)
+                   {
+                       mTotalDeduction += App.grpListDeductedFinancing.getRowsValues()[i].MontantPreleve;
+                   }
+                  
+               }
+
+               App.txtTotalDeducted.setValue(FormatAmount(mTotalDeduction));
+               
+           }
+
+           if (App.rowSelectionFinancing.hasSelection()) {
+               var isToBeDeducted = App.rowSelectionFinancing.getSelected().items[0].data.IsDeducted;
+
+               if (isToBeDeducted === true) {
+                   App.btnUpdateFinancing.enable();
+               }
+               else {
+                   App.btnUpdateFinancing.disable();
+               }
+           }
+
+       },
+
+       ForcerCoche: function (rowModel, record, index, eOpts) {
+
+           /*alert(index);*/
+           console.log(record);
+           /*record.data.IsDeducted = !record.data.IsDeducted;*/
+           /*record.data.IsDeducted = true;*/
+
+       },
+
+       CheckTotalDeductions: function () {
+           var AvailableAmount = App.txtAvailableAmount.value || '';
+           var TotalDeduction = App.txtTotalDeducted.value || '';
+
+           if (Ext.isNumeric(AvailableAmount) && Ext.isNumeric(TotalDeduction) && parseFloat(TotalDeduction) > parseFloat(AvailableAmount)) {
+               Ext.Msg.show({ title: 'Financing Update Deduction : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Total Deduction can not be higher than available amount ! ', buttons: Ext.Msg.OK });
+               return false;
+           }
+
+       }
+
+
+    }
+
+
+</script>
+
+@(
+                        //X.FormPanel()
+                        //            .Items
+                        //            (
+X.Window()
+    .ID("ListOfDeductedFinancing")
+    .Modal(true)
+    .Width(920)
+    .Resizable(false)
+    .Height(380)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(200)
+    .Y(25)
+    .Modal(true)
+    .BodyPadding(5)
+    .Title("List of available financings")
+    //.Layout(LayoutType.VBox)
+    //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items
+    (
+                            X.FormPanel()
+                            .ID("pnl")
+                            //.Frame(true)
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                            .Items
+                            (
+                            X.Panel()
+                            .ID("pnlAvailable")
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                            .Height(40)
+                            .Items
+                            (
+                                X.Hidden().ID("hiddenFournisseurIDFinancing").Value(Model._Financement.Fournisseur != null ? Model._Financement.Fournisseur.ID : (int)0),
+                                X.Hidden().ID("hiddenFinancings").Value(Model._Financement != null ? Model._Financement.ListOfFinancementDeducted : string.Empty),
+                                X.Hidden().ID("hiddenNbDeductions").Value(Model._Financement.NbDeductions),
+
+                                X.TextField()
+                                .ID("txtAvailableAmount")
+                                .FieldLabel("Available amount")
+                                .LabelAlign(LabelAlign.Right)
+                                .ReadOnly(true)
+                                .LabelWidth(120)
+                                //.Width(270)
+                                //.LabelStyle("font-weight:bold;")
+                                //.FieldStyle("text-align: left; font-weight: bold;")
+                                .Value(Model._Financement != null ? Model._Financement.MontantDisponibleAsString : string.Empty),
+
+                               X.TextField()
+                                .ID("txtInvoiceNetWeight")
+                                .FieldLabel("Poids Net (Kg)")
+                                .LabelAlign(LabelAlign.Right)
+                                .ReadOnly(true)
+                                //.LabelWidth(250)
+                                //.Width(410)
+                                .Value(Model._Financement != null ? Model._Financement.PoidsNetFactureAsString : string.Empty)
+
+                             ),
+
+                           X.Panel()
+                            .ID("pnlNorthDelivery")
+                            .MarginSpec("0 0 0 0")
+                            .Height(40)
+                            .Border(false)
+                            .Frame(false)
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.Center})
+                            .Items(
+                               X.Button()
+                                    .ID("btnUpdateFinancing")
+                                    .MarginSpec("0 0 0 0")
+                                    .IconCls("action_modify_02")
+                                    .Text("Update Deduction")
+                                    .Border(true)
+                                    .Flat(true)
+                                    .Cls("ButtonStyle")
+                                    .Disabled(true)
+                                    .DirectEvents
+                                    (
+                                      de =>
+                                      {
+                                          de.Click.Url = Url.Action("OnUpdateDeductedFinancing");
+                                          de.Click.Success = "App.ListOfDeductedFinancing.setTitle('Financement : Available financings')";
+                                          de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeductedFinancing}.getSelectionModel().getSelection()[0].data" });
+                                          de.Click.EventMask.ShowMask = true;
+                                      }
+                                   )
+                               )
+                            ,
+
+
+
+                           X.Hidden()
+                            .ID("TxtExecMode").Value(Model._ExecMode),
+
+                           X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListDeductedFinancing")
+                            .Height(160)
+                            .AllowDeselect(true)
+                            .Frame(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.Financement>()
+                                .ID("storeListDeductedFinancing")
+                                .Proxy
+                                (
+                                    Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadListOfAvailableFinancing", "Facture"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Parameters
+                                (
+                                   ps =>
+                                   {
+                                       ps.Add(new StoreParameter("ItemFournisseur", "#{hiddenFournisseurIDFinancing}.getValue()", ParameterMode.Raw));
+                                       ps.Add(new StoreParameter("ItemsFinancing", "#{hiddenFinancings}.getValue()", ParameterMode.Raw));
+                                   }
+                                )
+                                .Listeners
+                                (
+                                   l =>
+                                   {
+                                       l.Add.Fn = "Financing.CalculateTotalDeductions";
+                                       l.Load.Fn = "Financing.CalculateTotalDeductions";
+                                       l.Update.Fn = "Financing.CalculateTotalDeductions";
+                                   }
+                                )
+
+                             )
+                             .ColumnModel
+                             (
+                                Html.X().CheckColumn().Text("").DataIndex("IsDeducted").Width(50).Editable(true).StopSelection(false),
+                                Html.X().Column().Text("Numero").DataIndex("Numero").Width(100),
+                                Html.X().DateColumn().Text("Date").DataIndex("DateFinancement").Width(110),
+                                Html.X().Column().Text("Type").DataIndex("LibelleFinancementType").Width(110),
+                                Html.X().Column().Text("Montant").DataIndex("MontantAsString").Width(90).Flex(1),
+                                Html.X().Column().Text("Prelevement").DataIndex("PrelevementMode").Width(130).Renderer("renderObject"),
+                                Html.X().Column().Text("Taux").DataIndex("PrelevementTauxAsString").Width(100),
+                                Html.X().Column().Text("Solde").DataIndex("SoldeAsString").Width(100).Flex(1),
+                                Html.X().Column().Text("Deduction").DataIndex("MontantPreleveAsString").Width(100).Flex(1).StyleSpec("font-weight:bold;")
+                             )
+
+                             //.SelectionModel
+                             //(
+                             //  X.RowSelectionModel()
+                             //   .ID("rowSelectionFinancing")
+                             //   .Mode(SelectionMode.Single)
+                             //   .ToggleOnClick(true)
+                             //   .AllowDeselect(true)
+                             //)
+
+                             .SelectionModel
+                             (
+                                Html.X().CellSelectionModel()
+                                .ID("rowSelectionFinancing")
+                             )
+                             .Listeners
+                             (
+                               l =>
+                               {
+                                   l.Select.Fn = "Financing.resetButtons"; l.Deselect.Fn = "Financing.resetButtons";
+                               }
+                             )
+                             .Plugins
+                             (
+                                Html.X().CellEditing().ClicksToEdit(1)
+                             ),
+
+                           X.Panel()
+                            .ID("pnlTotalFinancingsDeducted")
+                            .Border(false)
+                            .Frame(false)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.Center })
+                            .MarginSpec("10 0 0 0")
+                            .Items
+                            (
+                               X.TextField()
+                                .ID("txtTotalDeducted")
+                                .FieldLabel("Total Deduction")
+                                .LabelAlign(LabelAlign.Right)
+                                .ReadOnly(true)
+                                .LabelWidth(120)
+                                .Width(245)
+                             )
+                       )
+    )
+                       .Buttons
+                       (
+                           X.Button()
+                            .Text("OK")
+                            .ID("BtnSendFinancing")
+                            .DirectEvents
+                           (
+                              de =>
+                              {
+                                  de.Click.Url = Url.Action("SubmitDeductedFinancings", "Facture");
+                                  de.Click.Before = "return Financing.CheckTotalDeductions();";
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "Financing.GetListOfFinancings()" });
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemFinancings", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenFinancings}.getValue()" });
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemNbDeductions", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenNbDeductions}.getValue()" });
+
+                              }
+                           ),
+
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.ListOfDeductedFinancing.doClose()")
+                            .Cls("btncancel")
+
+                          )
+    //)
+    )
+
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+

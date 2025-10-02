@@ -1,0 +1,264 @@
+﻿
+@model Tms.Classes.Business.PayementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+<script src="~/Scripts/FormatAmount.js"></script>
+@(X.FormPanel()
+    .Items(
+            X.Window()
+            .ID("FormPrintPayment")
+            .Width(500)
+            .Resizable(false)
+            .Height(300)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";                
+            })
+            .X(400)
+            .Y(20)
+            .Title("Paiement")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+            .Items(                               
+                                X.Panel()
+                                    .Layout(LayoutType.Form)
+                                    .MaxWidth(550)
+                                    .Items(
+                                            
+                                            X.FieldContainer()
+                                                        .Layout(LayoutType.HBox).Width(350).FieldLabel("Periode").LabelAlign(LabelAlign.Right)
+                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                        .Items(
+                                                                    X.DateField()
+                                                                        .Width(120)
+                                                                        .ID("TxtPayementStartDateForReport")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .Text(DateTime.Now.ToShortDateString())
+                                                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                        .MarginSpec("0 10 0 0"),
+                                                                    X.DateField()
+                                                                        .Width(120)
+                                                                        .ID("TxtPayementEndDateForReport")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .Text(DateTime.Now.ToShortDateString())
+                                                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                        .MarginSpec("0 10 0 0")
+                                                                )
+                                                ,
+                                            X.ComboBox()
+                                                .ID("PayementCampagneIDReport")
+                                                .FieldLabel("Campagne")
+                                                .LabelWidth(120)
+                                                .Value(Model._Parametres.Campagne)
+                                                .DisplayField("Designation")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .ValueField("Designation")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X().Model()
+                                                                        .IDProperty("Designation")
+                                                                        .Fields(
+                                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                    )
+                                                            .Proxy(
+                                                                    Html.X().AjaxProxy()
+                                                                    .Url(
+                                                                            Url.Action("LoadCampagneAll", "Campagne")
+                                                                    )
+                                                            .Reader(
+                                                                        Html.X().JsonReader().RootProperty("data")
+                                                                        )
+                                                            )
+                                                            ),
+                                            X.ComboBox()
+                                                .ID("CmbPayementTypeIDForReport")
+                                                .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .FieldLabel("Type de Paiement")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .LabelWidth(120)
+                                                .MatchFieldWidth(false)
+                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(false)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .ForceSelection(true)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X()
+                                                                        .Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                )
+                                                            .Proxy(
+                                                                    Html.X()
+                                                                        .AjaxProxy()
+                                                                        .Url(
+                                                                                Url.Action("LoadAll", "PayementType")
+                                                                                )
+                                                            .Reader(
+                                                                        Html.X().JsonReader().RootProperty("data")
+                                                                        )
+                                                    )
+                                                    )
+                                                .Listeners(li =>
+                                                {
+
+                                                    li.Select.Handler = "App.CmbPayementFounisseurIDForReport.clearValue(); App.CmbPayementFounisseurIDForReport.getStore().load();";
+                                                    li.Change.Handler = "App.CmbPayementFounisseurIDForReport.clearValue(); App.CmbPayementFounisseurIDForReport.getStore().load();";
+
+                                                }
+                                                    )
+                                            ,
+                                            // )
+                                            X.ComboBox()
+                                                .ID("CmbPayementModeIDForReport")
+                                                .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .FieldLabel("Mode De Paiement")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .Value(Model._Parametres.PayementMode.ID)
+                                                .LabelWidth(120)
+                                                .MatchFieldWidth(false)
+                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(false)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .ForceSelection(true)
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X()
+                                                                        .Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                )
+                                                                        )
+                                                            .Proxy(
+                                                                        Html.X().AjaxProxy()
+                                                                        .Url(
+                                                                                Url.Action("LoadAll", "PayementMode")
+                                                                                )
+                                                                        .Reader(
+                                                                                    Html.X().JsonReader().RootProperty("data")
+                                                                 ))
+                                                        )
+                                                ,
+                                            X.ComboBox()
+                                                .ID("CmbPayementFounisseurIDForReport")
+                                                .FieldLabel("Fournisseur")
+                                                .LabelWidth(120)
+                                                .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .MatchFieldWidth(false)
+                                                .ListConfig(new BoundList { MinWidth = 350 })
+                                                .DisplayField("NameAndCode")
+                                                .ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .TypeAhead(false)
+                                                .ForceSelection(true)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                                .Store(
+                                                        X.Store()
+                                                            .AutoLoad(false)
+                                                            .Model(
+                                                                    Html.X()
+                                                                        .Model()
+                                                                        .IDProperty("ID")
+                                                                        .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                                                )
+                                                                    )
+                                                            .Proxy(
+                                                                    Html.X()
+                                                                        .AjaxProxy()
+                                                                        .Url(
+                                                                                Url.Action("LoadFournisseurByPayementTypeAll", "Fournisseur")
+                                                                            )
+                                                                        .Reader(
+                                                                                Html.X().JsonReader().RootProperty("data")
+                                                                                )
+                                                                )
+                                                            //.Listeners(li => li.Load.Handler = "var combo = App.CmbPayementFounisseurIDForReport;if(App.PayementHiddenExecMode.value == 'AddNew') { combo.setValue(records[0].get(combo.valueField)); } ")
+                                                            .Parameters
+                                                            (
+
+                                                                ps =>
+                                                                {
+                                                                    ps.Add(new StoreParameter("PayementTypeID", "App.CmbPayementTypeIDForReport.getValue()", ParameterMode.Raw));
+                                                                }
+                                                            )
+
+                                                        )                                                
+
+                                            )
+                           
+            )
+            .Buttons(
+                        X.Button().Text("OK").ID("BtnSavePayement")
+                        .DirectEvents(de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitFormMethod");
+                            //de.Click.Success = "ShowNotifaction();";
+                            de.Click.Before = "return validNew(App.FormPrintPayment.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListePendingInvoice.getRowsValues({selectedOnly : true})" });
+                        }),
+                        X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormPrintPayment.doClose()").Cls("btncancel")
+
+                    )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+                    /*alert(winId);*/
+                    /*var winId = #{FormFournisseur}.id;*/
+                    var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                    /*
+                   *   Vérification de la saisie des champs obligatoires
+                   */
+                    if (!areAllrequiredFieldsFilled) {
+                        console.log('error fileds');
+                        Ext.Msg.show({ title: 'Payment : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please enter the delivery ID', buttons: Ext.Msg.OK });
+                        return false;
+                    }
+
+                }
+
+        /*Ext.onReady(function() {
+         #{BtnOk}.on(#{BtnOk}.clickEvent,validNew );
+        //})*/
+</script>
+
+
+
+

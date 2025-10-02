@@ -1,0 +1,91 @@
+﻿
+@model Tms.Classes.Shared.ContratPeriodeTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.Window()
+                .ID("FormContratPeriodeType")
+                .Width(500)
+                .Resizable(false)
+                .Modal(true)
+                .Height(190)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Y(20)
+                .Title("Contrat Periode Type : Detail")
+                .Items(
+        X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Layout(LayoutType.VBox)
+            .BodyPadding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                .Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._ContratPeriodeType.RowVersionKey),
+                            X.Hidden().ID("TxtContratPeriodeTypeID").Value(Model._ContratPeriodeType.ID),
+                            X.Checkbox().ID("TxtVisibilityContratPeriodeType").FieldLabel("Visible In Contrat Periode")
+                            .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ContratPeriodeType.VisibleInContratPeriode : true)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ContratPeriodeType.VisibleInContratPeriode : true)
+                            .LabelAlign(LabelAlign.Right).MarginSpec("0 5 0 0"),
+                            X.TextField().ID("TxtDesignationContratPeriodeType").FieldLabel("Designation")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ContratPeriodeType.Designation.ToString() : string.Empty)
+                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            .MarginSpec("0 5 0 0")
+
+                    )
+        )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitContratPeriodeType")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormContratPeriodeType.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+
+                    ,
+                X.Button().Handler("App.FormContratPeriodeType.doClose()").Cls("btncancel")
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Contrat Periode Type : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,302 @@
+﻿
+@model Tms.Classes.Business.Sites.VenteLotViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtSecondGrossWeight-inputEl, #txtFirstGrossWeight-inputEl {
+            font-size: 30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align: center !important;
+            line-height: 34px !important;
+        }
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+    <script type="text/javascript">
+        
+
+      var RoundInt = function (v) {
+          try {
+              if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                  return parseInt(v) + 1;
+              }
+              else {
+                  return parseInt(v);
+              }
+          } catch (err) {
+              return 0;
+          }
+      };
+    </script>
+
+</head>
+@(
+X.Window()
+    .ID("FormCritSitationEcart")
+    .Width(700)
+    .Resizable(false)
+    .Height(220)
+    .Modal(true)
+    .Y(10)
+    .Title("Analyse des écarts de transfert")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Items
+            (
+                X.Panel()
+                    .Border(false)
+                    .Flex(2)
+                    .Layout(LayoutType.Form)
+                    .Items
+                    (
+                        X.ComboBox()
+                            .ID("f_cmbCampagne")
+                            .FieldLabel("Campagne")
+                            .DisplayField("Designation")
+                            .ValueField("Designation")
+                            .LabelAlign(LabelAlign.Right)
+                            .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                            //.TypeAhead(true)
+                            .QueryMode(DataLoadMode.Local)
+                            //.ForceSelection(true)
+                            .Value(Model._VenteLot.Campagne.Designation)
+                            //.SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "{Tous}" }); })
+                            .Store(X.Store()
+                            .AutoLoad(true)
+                            .Model
+                            (
+                                X.Model()
+                                        .IDProperty("Designation")
+                                        .Fields
+                                        (
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                )
+                                .Proxy
+                                (
+                                    X.AjaxProxy()
+                                    .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                    .Reader(X.JsonReader().RootProperty("data"))
+                                )
+                            ),
+                        X.ComboBox()
+                            .ID("f_cmbSite")
+                            .FieldLabel("Site")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .MatchFieldWidth(false)
+                            .ListConfig(new BoundList { MinWidth = 300 })
+                            .LabelAlign(LabelAlign.Right)
+                            .TypeAhead(false)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .ForceSelection(true)
+                            //.ReadOnly(true)
+                            .Value(Model._VenteLot.Sites.ID)
+                            .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        X.Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            X.AjaxProxy()
+                                                            .Url(Url.Action("LoadAllSiteByAccess", "Site"))
+                                                .Reader(
+                                                            X.JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ),
+
+                                    X.ComboBox()
+                                .ID("f_cmbExportateur")
+                                .FieldLabel("Exportateur")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .Value(-1)
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Store
+                                    (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            X.Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                                .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                                .Reader(X.JsonReader().RootProperty("data"))
+                                        )
+
+                                    )
+
+                            ),
+                X.Panel()
+                            .Border(false)
+                            .Flex(2)
+                            .Layout(LayoutType.Form)
+                            .Items
+                            (
+                                     X.DateField()
+                                        .ID("f_dtfDateDebutLivraison")
+                                        .FieldLabel("Date Debut")
+                                        //.ReadOnly(true)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .SelectedDate(DateTime.Now.AddDays(-1))
+                                        .MarginSpec("0 5 0 0"),
+
+                                    X.DateField()
+                                        .ID("f_dtfDateFinLivraison")
+                                        //.ReadOnly(true)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .FieldLabel("DateFin")
+                                        .SelectedDate(DateTime.Now),
+                                     X.ComboBox()
+                                        .ID("f_cmbMagasinExpedition")
+                                        .FieldLabel("Magasin de départ")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        //.ForceSelection(true)
+                                        .Value(-1)
+                                        //.SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "{Tous}" }); })
+                                        .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                                    X.Model()
+                                                .IDProperty("Designation")
+                                                .Fields
+                                                (
+                                                   new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                   new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                            .Url(Url.Action("LoadActiveMagasinAll", "Magasin"))
+                                            .Reader(X.JsonReader().RootProperty("data"))
+                                        )
+                                        ),
+                            X.ComboBox()
+                                        .ID("f_cmbMagasinReception")
+                                        .FieldLabel("Magasin de destination")
+                                        //.ReadOnly(true)
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+
+                                    .LabelAlign(LabelAlign.Right)
+                                    .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                    .TypeAhead(true)
+                                    .QueryMode(DataLoadMode.Local)
+                                    //.ForceSelection(true)
+                                    // .Value(ViewBag.MagasinReception)
+                                    .Value(-1)
+                                    //.SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "{Tous}" }); })
+                                    .Store(X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                                X.Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                               new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                               new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                    )
+                                    .Proxy
+                                    (
+                                        X.AjaxProxy()
+                                        .Url(Url.Action("LoadActiveMagasinAll", "Magasin"))
+                                        .Reader(X.JsonReader().RootProperty("data"))
+                                    )
+                            )
+                        )
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("ok")
+            .ID("f_BtnFinalizeWeight")
+            .MaxWidth(120)
+            .Width(120)
+            .Hidden(false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("PrintSituationLotEcart");
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+                //de.Click.EventMask.ShowMask = true;
+                //de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeBL.getRowsValues({selectedOnly : false})" });
+            }),
+        X.Button()
+            .Text("Fermer")
+            .Handler("App.FormCritSitationEcart.doClose();")
+            .Cls("btncancel")
+    )
+)
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>

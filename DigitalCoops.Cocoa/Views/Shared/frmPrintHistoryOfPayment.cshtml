@@ -1,0 +1,278 @@
+﻿@model Tms.Classes.Business.Fournisseur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(
+
+                        //X.FormPanel()
+                        //.Items
+                        //(
+                        X.Window()
+                        .ID("frmSupplierPrintHystoryOfPayment")
+                        .Width(500)
+                        .Resizable(false)
+                        .Height(220)
+                        .Modal(true)
+                        //.Listeners
+                        //(
+                        //    l =>
+                        //    {
+                        //        l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                        //    }
+                        //)
+                        //.X(300)
+                        .Y(100)
+                        .Title(ViewData["Titre"] + " : Criteria")
+                        //.Title("Report")
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+
+                                        X.ComboBox()
+                                      .ID("cmbDetCrop")
+                                      .FieldLabel("Campagne")
+                                      .LabelWidth(110)
+                                      .DisplayField("Designation")
+                                      .ValueField("Designation")
+                                      .LabelAlign(LabelAlign.Right)
+                                      .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                      .TypeAhead(true)
+                                      .QueryMode(DataLoadMode.Local)
+                                      .ForceSelection(true)
+                                      .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "{Tous}" }); })
+                                      .Store(X.Store()
+                                      .AutoLoad(true)
+                                      .Model
+                                      (
+                                              Html.X().Model()
+                                              .IDProperty("Designation")
+                                              .Fields
+                                              (
+                                                  new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                              )
+                                      )
+                                      .Proxy
+                                      (
+                                          Html.X().AjaxProxy()
+                                          .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                          .Reader(Html.X().JsonReader().RootProperty("data"))
+                                      )
+                                    )
+                                     //,
+
+                                     //X.ComboBox().ID("cmbSite")
+                                     //.AllowBlank(false)
+                                     //.IndicatorCls("IndicatorRedStar")
+                                     //.IndicatorText("*")
+                                     //.TypeAhead(true)
+                                     //.QueryMode(DataLoadMode.Local)
+                                     //.ForceSelection(true)
+                                     //.FieldLabel("Site").DisplayField("Nom").ValueField("ID")
+                                     //.LabelWidth(90).LabelAlign(LabelAlign.Right)
+                                     //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                     //.Select(0)
+                                     //.Width(310)
+                                     ////.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Site.ID : (int?)null)
+                                     //.Store
+                                     //(
+                                     //        X.Store()
+                                     //        .AutoLoad(true)
+                                     //        .Model
+                                     //        (
+                                     //                Html.X().Model()
+                                     //                .IDProperty("ID")
+                                     //                .Fields
+                                     //                (
+                                     //                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                     //                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                     //                )
+                                     //        )
+                                     //        .Proxy
+                                     //        (
+                                     //            Html.X().AjaxProxy()
+                                     //            .Url(Url.Action("LoadSite", "Site"))
+                                     //            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                     //        )
+
+                                     //   )
+
+                                     ,
+
+
+                                     X.ComboBox()
+                                    .ID("cmbPayementType")
+                                    .FieldLabel("Payment type")
+                                    .DisplayField("Designation")
+                                    .ValueField("ID")
+                                    .LabelWidth(110)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                    .TypeAhead(true)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .ForceSelection(true)
+                                     .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                     //.Listeners
+                                     //(
+                                     //   li =>
+                                     //   {
+                                     //       li.Select.Handler = "App.cmbDetSupplier.clearValue(); App.cmbDetSupplier.getStore().load()";
+
+                                     //       li.Change.Handler = "App.cmbDetSupplier.clearValue(); App.cmbDetSupplier.getStore().load()";
+                                     //   }
+                                     //)
+                                     .Store
+                                     (
+                                             X.Store()
+                                             .AutoLoad(true)
+                                             .Model
+                                             (
+                                                     Html.X()
+                                                     .Model()
+                                                     .IDProperty("ID")
+                                                     .Fields
+                                                     (
+                                                         new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                         new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                     )
+                                             )
+                                             .Proxy
+                                             (
+                                                 Html.X()
+                                                 .AjaxProxy()
+                                                 .Url(Url.Action("LoadAll", "PayementType"))
+                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                             )
+                                     )
+
+                                    ,
+
+                                    X.ComboBox()
+                                    .ID("cmbDetSupplier")
+                                    .FieldLabel("Fournisseur")
+                                    .DisplayField("FournisseurNameAndCode")
+                                    .ValueField("ID")
+                                    .LabelWidth(110)
+                                    .Width(410)
+                                    .TypeAhead(true)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .ForceSelection(true)
+                                    .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(Model.ID.ToString())
+                                    //.SelectedItems(se => { se.Add(new ListItem { Text = Model.FournisseurNameAndCode, Value = Model.ID.ToString() }); })
+                                    .Store
+                                    (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                    Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("FournisseurNameAndCode", ModelFieldType.String) { Mapping = "FournisseurNameAndCode" }
+                                                    )
+                                            )
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadFournisseursApproved", "Fournisseur"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                            .Listeners(li => li.Load.Handler = "var combo = App.cmbDetSupplier; if(records.length > 0) {combo.setValue(" + Model.ID.ToString() + ");} ")
+                                            
+                                    )
+
+                                    //,
+
+                                    //X.ComboBox()
+                                    //.ID("cmbDeliveryStatus")
+                                    //.FieldLabel("Delivery status")
+                                    //.LabelAlign(LabelAlign.Right)
+                                    //.AllowBlank(false)
+                                    //.IndicatorCls("IndicatorRedStar")
+                                    //.IndicatorText("*")
+                                    //.Items
+                                    //(
+                                    //        new ListItem("All", "-1"),
+                                    //        new ListItem("At Gate", "1"),
+                                    //        new ListItem("Accepted", "2"),
+                                    //        new ListItem("Rejected", "3")
+                                    //)
+
+                                    //,
+
+                                    //X.ComboBox()
+                                    //.ID("cmbReportType")
+                                    //.FieldLabel("Report type")
+                                    //.LabelAlign(LabelAlign.Right)
+                                    //.AllowBlank(false)
+                                    //.IndicatorCls("IndicatorRedStar")
+                                    //.IndicatorText("*")
+                                    //.Items
+                                    //(
+                                    //        new ListItem("Detailed", "1"),
+                                    //        new ListItem("Cumulatve", "2")
+                                    //)
+
+                                    ,
+
+                                    X.FieldContainer()
+                                    .FieldLabel("Debut/Fin")
+                                    .LabelAlign(LabelAlign.Right)
+                                    //.LabelWidth(110)
+                                    .Layout(LayoutType.HBox)
+                                    .Width(500)
+                                    .Items
+                                    (
+                                        X.DateField()
+                                        .ID("dtfDetStartDate")
+                                        .Width(190)
+                                        .SelectedDate(DateTime.Now.AddDays(-1))
+                                        .MarginSpec("0 5 0 0")
+                                        ,
+
+                                        X.DateField()
+                                        .ID("dtfDetEndDate")
+                                        .Width(200)
+                                        //.MarginSpec("5 5 0 5")
+                                        .SelectedDate(DateTime.Now)
+                                   )
+                        )
+                        .Buttons
+                        (
+                                X.Button()
+                                .Text("OK")
+                                .ID("BtnOk")
+                                .DirectEvents
+                                (
+                                    d =>
+                                    {
+                                        d.Click.Url = Url.Action(ViewData["actionToDo"].ToString(), ViewData["ControllerName"].ToString());
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "cropYear", Value = "#{cmbDetCrop}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        // d.Click.ExtraParams.Add(new Parameter { Name = "site", Value = "#{cmbSite}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "payementType", Value = "#{cmbPayementType}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "supplier", Value = "#{cmbDetSupplier}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        //d.Click.ExtraParams.Add(new Parameter { Name = "deliveryStatus", Value = "#{cmbDeliveryStatus}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        //d.Click.ExtraParams.Add(new Parameter { Name = "reportType", Value = "#{cmbReportType}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "startDate", Value = "#{dtfDetStartDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "endDate", Value = "#{dtfDetEndDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "supplierName", Value = "#{cmbDetSupplier}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                                        d.Click.ExtraParams.Add(new Parameter { Name = "payementTypeDesignation", Value = "#{cmbPayementType}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                                    }
+                                )
+                                ,
+                                X.Button()
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                .Handler("App.frmSupplierPrintHystoryOfPayment.doClose()")
+                                .Cls("btncancel")
+                    )
+//)
+)
+//)
+
+
+

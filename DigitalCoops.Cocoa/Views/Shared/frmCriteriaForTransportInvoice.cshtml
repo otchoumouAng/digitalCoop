@@ -1,0 +1,133 @@
+﻿@model Tms.Classes.Business.Fournisseur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 90px !important;
+}
+</style>
+@(
+
+    X.Window()
+        .ID("frmCriteriaForTransportInvoice")
+        .Width(580)
+        .Resizable(false)
+        .Height(160)
+        .Modal(true)
+        .Y(100)
+        .Title(ViewData["Titre"] + " : Criteria")
+        .Layout(LayoutType.HBox)
+        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+        .Items
+        (
+
+           
+                            X.Panel().Layout(LayoutType.Form)                            
+                            .Flex(3)
+                            .Items(
+                                X.ComboBox()
+                                .ID("cmbDetCropYear")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store(
+                                        X.Store()
+                                            .AutoLoad(true)
+                                            .Listeners(l => l.Load.Handler = "App.cmbDetCropYear.setValue(App.cmbDetCropYear.getStore().getAt(0));")
+                                            .Model(
+                                                    Html.X().Model()
+                                                        .IDProperty("Designation")
+                                                        .Fields(
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                    )
+                                            .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                    .Url(
+                                                            Url.Action("LoadCampagneAll", "Campagne")
+                                                    )
+                                            .Reader(
+                                                        Html.X().JsonReader().RootProperty("data")
+                                                        )
+                                            )
+                                            ),
+                            X.ComboBox()
+                                .ID("cmbDetTransporter")
+                                .FieldLabel("Transporteur")
+                                //.MatchFieldWidth(false)
+                                //.ListConfig(new BoundList { MinWidth = 350 })
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(false)
+                                .ForceSelection(true)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                .Store(
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model(
+                                                Html.X().Model()
+                                                    .IDProperty("ID")
+                                                        .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                )
+                                        .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadTransporteurAll", "Transporteur"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        )
+                            
+            ),
+            X.Panel()
+                .Layout(LayoutType.Form)
+                .Flex(2)
+                .Items(
+                        X.DateField().ID("dtfDetStartDate").FieldLabel("Date Debut").LabelAlign(LabelAlign.Right).SelectedDate(DateTime.Now.AddDays(-1))
+                        ,
+                        X.DateField().ID("dtfDetEndDate").FieldLabel("Date Fin").LabelAlign(LabelAlign.Right).SelectedDate(DateTime.Now)
+                        
+                )
+        )
+        .Buttons
+        (
+            X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .DirectEvents
+                (
+                    d =>
+                    {
+                        d.Click.Url = Url.Action(ViewData["actionToDo"].ToString(), ViewData["ControllerName"].ToString());
+                        d.Click.ExtraParams.Add(new Parameter { Name = "cropyear", Value = "#{cmbDetCropYear}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "transporteur", Value = "#{cmbDetTransporter}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "transporteurText", Value = "#{cmbDetTransporter}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "startDate", Value = "#{dtfDetStartDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "endDate", Value = "#{dtfDetEndDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                    }
+                ),
+            X.Button()
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.frmCriteriaForTransportInvoice.doClose()")
+                .Cls("btncancel")
+        )
+
+)
+
+
+
+
+
+
+
+
+

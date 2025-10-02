@@ -1,0 +1,369 @@
+﻿@model Tms.Classes.Business.DeplacementPaletteViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+<style>
+    .global-scroll-container {
+        overflow-y: auto;
+        padding: 15px 20px;
+        height: calc(100% - 50px);
+    }
+
+    .form-container {
+        display: flex;
+        gap: 30px;
+        min-height: min-content;
+    }
+
+    .zone-header {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eaeff2;
+        font-size: 14px;
+    }
+
+    .x-form-item {
+        margin-bottom: 16px;
+    }
+
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 180px !important;
+        color: #546e7a;
+        font-weight: 500;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 15px 20px;
+        background: #f8fafc;
+        border-top: 1px solid #eef2f6;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+
+    .x-form-trigger {
+        background-color: #f0f4f8 !important;
+    }
+
+    .x-window-footer {
+        padding: 0 !important;
+        border-top: none !important;
+    }
+
+    .x-window-body {
+        overflow: hidden !important;
+    }
+</style>
+
+@(
+    X.Window()
+    .ID("FormDeplacementPaletteWindow")
+    .Title("DÉPLACER MANUELLEMENT UNE PALETTE")
+    .Width(800)
+    .Height(550)
+    .Resizable(false)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Layout(LayoutType.Fit)
+    .Items(
+        X.Container()
+        .Cls("global-scroll-container")
+        .Items(
+            X.FormPanel()
+            .ID("FormDeplacementPanel")
+            .Layout(LayoutType.Auto)
+            .Cls("form-container")
+            .FieldDefaults(fd =>
+            {
+                fd.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult;
+            })
+            .Items(
+                X.Container()
+                .Cls("form-zone")
+                .Layout(LayoutType.Form)
+                .Items(
+                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                    X.Hidden().ID("TxtTransfertID").Value(Model._DeplacementPalette != null ? Model._DeplacementPalette.ID.ToString() : ""),
+
+                    // Combo box pour l'ordre de production
+                    X.ComboBox()
+                    .ID("cmbProduction")
+                    .DisplayField("NumeroProduction")
+                    .ValueField("ID")
+                    .FieldLabel("Ordre de Production")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .QueryMode(DataLoadMode.Local)
+                    .ForceSelection(true)
+                    .TypeAhead(false)
+                    .Editable(true)
+                    .Store(
+                        X.Store()
+                        .AutoLoad(true)
+                        .Model(
+                            X.Model()
+                            .IDProperty("ID")
+                            .Fields(
+                                new ModelField("ID", ModelFieldType.String),
+                                new ModelField("NumeroProduction", ModelFieldType.String)
+                            )
+                        )
+                        .Proxy(
+                            X.AjaxProxy()
+                            .Url(Url.Action("LoadOrdreFabrication", "OrdreFabrication"))
+                            .Reader(X.JsonReader().RootProperty("data"))
+                        )
+                    )
+                    .Listeners(l =>
+                    {
+                        l.Change.Handler = @"
+                            var ordreId = this.getValue();
+                            var cmbPalette = App.cmbPalette;
+                            var store = cmbPalette.getStore();
+
+                            cmbPalette.setDisabled(!ordreId);
+                            cmbPalette.setValue('');
+
+                            store.getProxy().setExtraParam('idOrdreFabrication', ordreId || '');
+                            store.load();
+                        ";
+                    }),
+
+                    // Combo box pour les palettes (dépend de l'ordre de production)
+                    X.ComboBox()
+                    .ID("cmbPalette")
+                    .FieldLabel("Palette")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .DisplayField("Numero")
+                    .ValueField("ID")
+                    .ForceSelection(true)
+                    .QueryMode(DataLoadMode.Remote)
+                    .TriggerAction(TriggerAction.All)
+                    .Editable(false)
+                    .Disabled(true) // Désactivé initialement jusqu'à ce qu'un ordre de production soit sélectionné
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .Store(
+                        X.Store()
+                        .AutoLoad(false)
+                        .Model(
+                            X.Model()
+                            .IDProperty("ID")
+                            .Fields(
+                                new ModelField("ID", ModelFieldType.String),
+                                new ModelField("Numero", ModelFieldType.Int),
+                                new ModelField("MagasinId", ModelFieldType.Int) // Nous allons également récupérer le magasin actuel de la palette
+                            )
+                        )
+                        .Proxy(
+                            X.AjaxProxy()
+                            .Url(Url.Action("GetPaletteNum", "Palette"))
+                            .Reader(X.JsonReader().RootProperty("data"))
+                        )
+                    )
+                    .Listeners(l =>
+                    {
+                        l.Select.Handler = @"
+                            var paletteId = this.getValue();
+                            var record = this.getStore().findRecord('ID', paletteId);
+                            if (record) {
+                                // Mettre à jour le magasin source avec le magasin de la palette
+                                App.cmbMagasinSource.setValue(record.get('MagasinId'));
+                            }
+                        ";
+                    }),
+
+                    X.ComboBox()
+                    .ID("cmbMagasinSource")
+                    .FieldLabel("Magasin Source")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .DisplayField("Designation")
+                    .ValueField("ID")
+                    .ForceSelection(true)
+                    .QueryMode(DataLoadMode.Local)
+                    .TriggerAction(TriggerAction.All)
+                    .Editable(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .Store(
+                        X.Store()
+                        .AutoLoad(true)
+                        .Model(
+                            X.Model()
+                            .IDProperty("ID")
+                            .Fields(
+                                new ModelField("ID", ModelFieldType.Int),
+                                new ModelField("Designation", ModelFieldType.String)
+                            )
+                        )
+                        .Proxy(
+                            X.AjaxProxy()
+                            .Url(Url.Action("LoadMagasin", "Magasin"))
+                            .Reader(X.JsonReader().RootProperty("data"))
+                        )
+                    ),
+
+                    X.DateField()
+                    .ID("DateDepart")
+                    .FieldLabel("Date Départ")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .Value(DateTime.Now)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*"),
+
+                    X.ComboBox()
+                    .ID("cmbMagasinDest")
+                    .FieldLabel("Magasin Destination")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .DisplayField("Designation")
+                    .ValueField("ID")
+                    .ForceSelection(true)
+                    .QueryMode(DataLoadMode.Local)
+                    .TriggerAction(TriggerAction.All)
+                    .Editable(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .Store(
+                        X.Store()
+                        .AutoLoad(true)
+                        .Model(
+                            X.Model()
+                            .IDProperty("ID")
+                            .Fields(
+                                new ModelField("ID", ModelFieldType.Int),
+                                new ModelField("Designation", ModelFieldType.String)
+                            )
+                        )
+                        .Proxy(
+                            X.AjaxProxy()
+                            .Url(Url.Action("LoadMagasin", "Magasin"))
+                            .Reader(X.JsonReader().RootProperty("data"))
+                        )
+                    ),
+
+                    X.TextField()
+                    .ID("TxtEmplacementDest")
+                    .FieldLabel("Emplacement Destination")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*"),
+
+                    X.DateField()
+                    .ID("DateArrivee")
+                    .FieldLabel("Date Arrivée")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120),
+
+                    X.TextField()
+                    .ID("TxtOperateur")
+                    .FieldLabel("Opérateur")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .Value((string)Session["userName"])
+                    .ReadOnly(true),
+
+                    X.ComboBox()
+                    .ID("cmbModeTransfert")
+                    .FieldLabel("Mode de Transfert")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .ForceSelection(true)
+                    .QueryMode(DataLoadMode.Local)
+                    .TriggerAction(TriggerAction.All)
+                    .Editable(false)
+                    .Items(
+                        new ListItem("Manuel", "Manuel"),
+                        new ListItem("Chariot élévateur", "Chariot"),
+                        new ListItem("Convoyeur", "Convoyeur"),
+                        new ListItem("Automatique", "Automatique")
+                    )
+                    .Value("Manuel"),
+
+                    X.TextArea()
+                    .ID("TxtDescription")
+                    .FieldLabel("Description")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .Height(80)
+                )
+            )
+        )
+    )
+    .FooterBar(
+        X.Toolbar()
+        .Cls("button-container")
+        .Items(
+            X.Button()
+            .ID("BtnSubmit")
+            .Text("Enregistrer")
+            .Cls("x-btn-primary")
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("SubmitFormMethod", "DeplacementPalette");
+                de.Click.Before = "return validDeplacementForm(App.FormDeplacementPaletteWindow.id);";
+                de.Click.EventMask.ShowMask = true;
+                de.Click.Success = @"
+                    console.log('Réponse du serveur:', result);
+                    if(result && result.success) { 
+                        console.log('Succès - Fermeture de la fenêtre');
+                        App.FormDeplacementPaletteWindow.close(); 
+                        if(App.storeListeForwardContract) {
+                            App.storeListeForwardContract.reload();
+                        }
+                    } else {
+                        console.log('Échec:', result);
+                        Ext.Msg.alert('Information', result.message || 'Opération non réussie');
+                    }
+                ";
+                de.Click.Failure = "console.log('Erreur:', result); Ext.Msg.alert('Erreur', result.errorMessage || 'Une erreur est survenue');";
+            }),
+
+            X.Button()
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormDeplacementPaletteWindow.close()")
+            .Cls("btncancel")
+        )
+    )
+)
+
+<script type="text/javascript">
+    var validDeplacementForm = function (winId) {
+        var form = Ext.getCmp(winId).down('form');
+
+        if (!form.isValid()) {
+            Ext.Msg.show({
+                title: 'Validation',
+                icon: Ext.MessageBox.WARNING,
+                msg: 'Veuillez remplir tous les champs obligatoires.',
+                buttons: Ext.Msg.OK
+            });
+            return false;
+        }
+
+        return true;
+    };
+</script>

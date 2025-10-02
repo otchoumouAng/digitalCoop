@@ -1,0 +1,197 @@
+﻿
+@model Tms.Classes.Business.stock.LotViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    //string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    /*.x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px !important;
+    }*/
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+@(
+        X.Window()
+        .ID("ListOfLots")
+        .Width(1000)
+        .Resizable(false)
+        .Height(500)
+        .Modal(true)
+        .CloseAction(Ext.Net.CloseAction.Destroy)
+        .Y(10)
+        .Title("Available lots")
+        .Layout(LayoutType.VBox)
+        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+        .Listeners(ls=> ls.AfterRender.Handler = "App.btnSearchLot.fireEvent('click', App.btnSearchLot);")
+        .Items(
+                    //X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+                    X.Hidden().ID("HCampagne").Value((string)ViewData["Campagne"]),
+                    X.Hidden().ID("HExportateur").Value((string)ViewData["Exportateur"]),
+                    X.Hidden().ID("HCertification").Value((string)ViewData["Certification"]),
+                    X.Hidden().ID("HEmbarquement").Value((string)ViewData["Embarquement"]),
+                    X.Hidden().ID("HExecMode").Value(Model._ExecMode),
+                    X.Hidden().ID("HCollectID").Value((string)ViewData["collectID"]),
+
+
+                X.Panel()
+                .Frame(false)
+                .Border(false)
+                .ID("pnlFlexEvenLot")
+                .Layout(LayoutType.VBox)
+                .PaddingSpec("0 5 0 5")
+                .Flex(1)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                .Items
+                (
+                    X.Button()
+                        .ID("btnSearchLot")
+                        .Hidden(true)
+                        .DirectEvents
+                        (
+                            de =>
+                            {
+                                de.Click.Url = Url.Action("OnRefreshForAvaibleLot");
+                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiCampagne}.getValue()" });
+                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemExportateurID", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiExportateurID}.getValue()" });
+                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCertificationID", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiCertificationID}.getValue()" });
+                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmbarquementID", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiEmbarquementID}.getValue()" });
+                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{HiExecMode}.getValue()" });
+                                de.Click.ExtraParams.Add(new Parameter { Name = "rowsInList", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpDetailLot2.getRowsValues({selectedOnly : false})" });
+                                de.Click.EventMask.ShowMask = true;
+                            }
+                        ),
+                    X.GridPanel()
+                    .Layout(LayoutType.Fit)
+                    .ID("grpListAvailableLots")
+                    .MarginSpec("5 0 0 0")
+                    //.MinHeight(130)
+                    .Frame(true)
+                    .Height(400)
+                    .AllowDeselect(true)
+                    .Store
+                        (
+                            X.StoreFor<Tms.Classes.Business.stock.Lot>()
+                            .ID("storeListAvailableLots")
+                            .AutoLoad(false)
+                            .Proxy
+                            (
+                            Html.X().AjaxProxy()
+
+                                .Url( Url.Action("LoadListAvailableLots"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                            .Parameters(
+                                 ps =>
+                                 {
+                                     ps.Add(new StoreParameter("ItemCampagne", "#{HCampagne}.getValue()", ParameterMode.Raw));
+                                     ps.Add(new StoreParameter("ItemExportateurID", "#{HExportateur}.getValue()", ParameterMode.Raw));
+                                     ps.Add(new StoreParameter("ItemCertificationID", "#{HCertification}.getValue()", ParameterMode.Raw));
+                                     ps.Add(new StoreParameter("ItemEmbarquementID", "#{HEmbarquement}.getValue()", ParameterMode.Raw));
+                                     ps.Add(new StoreParameter("ItemExecMode", "#{HExecMode}.getValue()", ParameterMode.Raw));
+
+                                 }
+                            )
+
+
+                        )
+                    .ColumnModel
+                    (
+
+                        Html.X().Column().Text("Numero").DataIndex("NumeroLot").Width(100),
+                        Html.X().Column().Text("Poids Net (kg)").DataIndex("PoidsNetNAsString").Flex(2),
+                        Html.X().Column().Text("Poids Brut (kg)").DataIndex("PoidsBrutNAsString").Flex(2),
+                        Html.X().Column().Text("Lot Of Type").DataIndex("LotTypeAsString").Flex(1),
+                        Html.X().Column().Text("Number Of Bags").DataIndex("NombreSacs").Flex(1),
+                        Html.X().Column().Text("Std. Poids Brut (Kg)").DataIndex("PoidsBrutAsString").Flex(2),
+                        Html.X().Column().Text("Std. Poids Net (kg)").DataIndex("PoidsNetAsString").Flex(2)
+
+
+                    )
+
+
+
+                    .BottomBar(
+                        Html.X().PagingToolbar()
+                        .HideRefresh(true)
+                        .Plugins(Html.X().ProgressBarPager())
+                        )
+                    .Plugins(X.FilterHeader())
+                    .SelectionModel(
+                                X.CheckboxSelectionModel()
+                                    .ID("rowSelectionListAvailableLots")
+                                    .Mode(SelectionMode.Multi)
+                                    .AllowDeselect(true)
+                            )
+
+
+                )
+
+
+        // En Panel
+
+        )
+        .Buttons
+              (
+                    X.Button()
+                    .Text("Valider")
+                    .ID("BtnSend")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitSelectLot", "Embarquement");
+                            de.Click.Before = "return validNewList(App.ListOfLots.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListAvailableLots.getRowsValues({selectedOnly : true})" });
+                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = true,  Value = "App.HExecMode.getValue()" });
+                        }
+                    ),
+
+                    X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.ListOfLots.doClose()")
+                    .Cls("btncancel")
+               )
+
+
+)
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+
+    var validNewList = function (winId) {
+        /*console.log(App.grpListAvailableLots.getRowsValues({ selectedOnly: true }));*/
+        /**Verifiaction d'articles**/
+        if (App.grpListAvailableLots.getRowsValues({ selectedOnly: true }).length <= 0) {
+            
+            Ext.Msg.show({ title: 'Select Available Of Lot : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please choose lots for this shipment.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

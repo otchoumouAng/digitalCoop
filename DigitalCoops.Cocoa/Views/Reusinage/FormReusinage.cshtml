@@ -1,0 +1,220 @@
+﻿@model Tms.Classes.Business.stock.ReusinageViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+        
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+</head>
+@(
+X.Window()
+    .ID("FormReusinage")
+    .Width(400)
+    .Resizable(false)
+    .Height(280)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title("Re-Cleaning : Nouveau")
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+            .Items
+            (
+                X.Hidden().ID("TxtReusinageID").Value(Model._Reusinage.ID),
+                X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                X.Hidden().ID("txtLotID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Reusinage.Lot.ID : (Guid?)null),
+    #region firstLineScnW
+
+                        X.FormPanel()
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                            .Flex(2)
+                            .Items(
+                                    X.ComboBox()
+                                        .ID("cmbCampagne")
+                                        .FieldLabel("Campagne")
+                                        .DisplayField("Designation")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .ValueField("Designation")
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Reusinage.Campagne.Designation : ViewData["DefaultCampagne"])
+                                        .Store
+                                        (
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                    .IDProperty("Designation")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                                )
+                                                .Proxy
+                                                (
+                                                    X.AjaxProxy().Url(Url.Action("LoadCampagne", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                        ),
+                                    X.ComboBox()
+                                        .ID("cmbLot")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Lot N°")
+                                        .DisplayField("NumeroLot")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(true)
+                                        .HideTrigger(true)
+                                        .MinChars(4)
+                                        .QueryMode(DataLoadMode.Remote)
+                                        .TriggerAction(TriggerAction.All)
+                                        .SelectOnFocus(true)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Reusinage.Lot.ID : (Guid?)null)
+                                        .Store
+                                        (
+                                            X.Store()
+                                                .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                .Model
+                                                (
+                                                    Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                        new ModelField("NumeroLot", ModelFieldType.String) { Mapping = "NumeroLot" }
+                                                    )
+                                                )
+                                                .Proxy
+                                                (
+                                                    X.AjaxProxy()
+                                                        .Url(
+                                                                Url.Action("LoadLotsForReCleaning", "LotProduction")
+                                                                )
+                                                        .ActionMethods(am => am.Read = HttpMethod.POST)
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                .Parameters(
+                                                //ps => ps.Add(new StoreParameter("query", "#{cmbLot}.getRawValue()", ParameterMode.Raw))
+                                                ps => ps.Add(new StoreParameter("query", (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Reusinage.Lot.NumeroLot : "#{cmbLot}.getRawValue()"), ParameterMode.Raw))
+                                                )
+                                        ),
+                                        X.DateField()
+                                            .ID("txtDateReusinage")
+                                            .FieldLabel("Date")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Reusinage.DateReusinage.ToShortDateString() : DateTime.Now.ToShortDateString())
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*"),
+                                        X.TextArea()
+                                            .FieldLabel("Reason")
+                                            .MarginSpec("0 8 0 0")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ID("TxtRaison")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Reusinage.Raison : string.Empty)
+
+
+                                    )
+    #endregion
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOkSecondWeight")
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("SubmitFormMethod");
+                de.Click.Before = "return validNew(App.FormReusinage.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }),
+        X.Button()
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormReusinage.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+  
+</script>
+
+
+
+
+
+
+
+
