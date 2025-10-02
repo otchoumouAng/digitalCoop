@@ -346,16 +346,15 @@ namespace Tms.Classes.Business
                 {
                     // Appel de la procédure de création
                     mCommande = db().CreateStoredProcCommand("pp_transfert_new");
-                    // Le nouvel ID sera généré par la procédure ou par le défaut de la table
                     db().AddOutParameter(mCommande, "@ID", SqlDbType.UniqueIdentifier, 0);
-                    db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, _UtilisateurCreation);
+                    db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, _UtilisateurCreation, 255);
                 }
                 else
                 {
                     // Appel de la procédure de modification
                     mCommande = db().CreateStoredProcCommand("pp_transfert_modify");
                     db().AddInParameter(mCommande, "@ID", SqlDbType.UniqueIdentifier, _ID);
-                    db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification);
+                    db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification, 255);
                     db().AddParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0, _RowVersionKey, ParameterDirection.InputOutput);
                 }
 
@@ -364,9 +363,8 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@MagasinSourceId", SqlDbType.Int, _MagasinSource.ID);
                 db().AddInParameter(mCommande, "@DateDeDepart", SqlDbType.DateTime, _DateDepart);
                 db().AddInParameter(mCommande, "@MagasinDestinationId", SqlDbType.Int, _MagasinDestination.ID);
-                db().AddInParameter(mCommande, "@EmplacementDestination", SqlDbType.VarChar, _EmplacementDestination);
-                //db().AddInParameter(mCommande, "@DateArrivee", SqlDbType.DateTime, _DateArrivee);
-                // Fichier: /Classes/Business/DeplacementPalette.cs (CORRIGÉ)
+                db().AddInParameter(mCommande, "@EmplacementDestination", SqlDbType.VarChar, _EmplacementDestination, 255);
+
                 if (_DateArrivee > DateTime.MinValue)
                 {
                     db().AddInParameter(mCommande, "@DateArrivee", SqlDbType.DateTime, _DateArrivee);
@@ -375,10 +373,18 @@ namespace Tms.Classes.Business
                 {
                     db().AddInParameter(mCommande, "@DateArrivee", SqlDbType.DateTime, DBNull.Value);
                 }
-                db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, string.IsNullOrEmpty(_Description) ? (object)DBNull.Value : _Description);
-                db().AddInParameter(mCommande, "@Operateur", SqlDbType.VarChar, _Operateur);
-                db().AddInParameter(mCommande, "@ModeDeTransfert", SqlDbType.VarChar, _ModeDeTransfert);
-                // Note : Le champ trTypeDeplacement n'a pas été inclus pour l'instant pour simplifier.
+
+                if (!string.IsNullOrEmpty(_Description))
+                {
+                    db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, _Description, 500);
+                }
+                else
+                {
+                    db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, DBNull.Value, 500);
+                }
+
+                db().AddInParameter(mCommande, "@Operateur", SqlDbType.VarChar, _Operateur, 255);
+                db().AddInParameter(mCommande, "@ModeDeTransfert", SqlDbType.VarChar, _ModeDeTransfert, 50);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
                 db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);
