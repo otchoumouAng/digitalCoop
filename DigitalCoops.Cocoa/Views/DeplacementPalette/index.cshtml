@@ -347,6 +347,7 @@
                         .DirectEvents( de =>{
                             de.Click.Url = Url.Action("OnDeplacerManuellement");
                             de.Click.EventMask.ShowMask = true;
+                            de.Click.Success = "Ext.net.append(document.body, result.responseText);";
                         } ),
 
                         X.SplitButton()
