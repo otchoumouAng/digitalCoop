@@ -707,52 +707,41 @@ namespace Tms2017.MVC.Controllers
 
                 if (result)
                 {
-                    Store store = X.GetCmp<Store>("storeListeForwardContract");
-                    if (formExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew)
-                    {
-                        store.Insert(0, mClass);
-                    }
-                    else
-                    {
-                        ModelProxy mProxy = store.GetById(mClass.ID);
-                        if (mProxy != null)
-                        {
-                            mProxy.Set(mClass);
-                            mProxy.Commit();
-                        }
-                    }
-                    
-                    // Fermer la fenêtre et recharger le store
+                    // Construction de la réponse en cas de succès
+                    DirectResult directResult = new DirectResult();
+
+                    // Commande 1 : Fermer la fenêtre modale
                     X.GetCmp<Window>("FormDeplacementPaletteWindow").Close();
-                    
-                    // Retourner un succès explicite pour le callback JavaScript
-                    return this.Direct(new { success = true, message = "Déplacement de palette enregistré avec succès." });
+
+                    // Commande 2 : Afficher une notification de succès en haut à droite
+                    X.Msg.Notify("Opération réussie", "Le déplacement de la palette a été enregistré avec succès.").Show();
+
+                    // Commande 3 : Recharger le store principal pour voir la nouvelle ligne
+                    // Assurez-vous que "storeListeForwardContract" est bien l'ID de votre grille principale
+                    var mainStore = X.GetCmp<Store>("storeListeForwardContract");
+                    if (mainStore != null)
+                    {
+                        mainStore.Reload();
+                    }
+
+                    return directResult;
                 }
                 else
                 {
-                    // Si l'enregistrement a échoué
-                    X.MessageBox.Show(new MessageBoxConfig
-                    {
-                        Title = "Erreur lors de l'enregistrement",
-                        Message = "L'enregistrement du déplacement de palette a échoué. Veuillez vérifier les données saisies.",
-                        Buttons = MessageBox.Button.OK,
-                        Icon = MessageBox.Icon.ERROR
-                    });
-                    return this.Direct(new { success = false, message = "Échec de l'enregistrement." });
+                    // Gère le cas où fnUpdate() retourne false sans lever d'exception
+                    X.Msg.Alert("Échec", "L'enregistrement du déplacement a échoué. Veuillez contacter un administrateur.").Show();
+                    return this.Direct();
                 }
             }
             catch (Exception ex)
             {
-                X.MessageBox.Show(new MessageBoxConfig
-                {
-                    Title = "Erreur lors de l'enregistrement",
-                    Message = ex.Message,
-                    Buttons = MessageBox.Button.OK,
-                    Icon = MessageBox.Icon.ERROR
-                });
-                return this.Direct(new { success = false, message = ex.Message });
+                // Gère toutes les exceptions (validation, connexion BD, etc.)
+                // et les affiche clairement à l'utilisateur.
+                X.Msg.Alert("Erreur", "Une erreur est survenue : " + ex.Message).Show();
+                return this.Direct();
             }
         }
+
 
         //public ActionResult SubmitExtendFormMethod()
         //{

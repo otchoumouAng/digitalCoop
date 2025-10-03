@@ -347,14 +347,14 @@ namespace Tms.Classes.Business
                     // Appel de la procédure de création
                     mCommande = db().CreateStoredProcCommand("pp_transfert_new");
                     db().AddOutParameter(mCommande, "@ID", SqlDbType.UniqueIdentifier, 0);
-                    db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, _UtilisateurCreation, 255);
+                    db().AddInParameter(mCommande, "@CreationUser", SqlDbType.VarChar, 255,_UtilisateurCreation);
                 }
                 else
                 {
                     // Appel de la procédure de modification
                     mCommande = db().CreateStoredProcCommand("pp_transfert_modify");
                     db().AddInParameter(mCommande, "@ID", SqlDbType.UniqueIdentifier, _ID);
-                    db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, _UtilisateurModification, 255);
+                    db().AddInParameter(mCommande, "@ModificationUser", SqlDbType.VarChar, 255, _UtilisateurModification);
                     db().AddParameter(mCommande, "@RowVersion", SqlDbType.Timestamp, 0, _RowVersionKey, ParameterDirection.InputOutput);
                 }
 
@@ -363,7 +363,7 @@ namespace Tms.Classes.Business
                 db().AddInParameter(mCommande, "@MagasinSourceId", SqlDbType.Int, _MagasinSource.ID);
                 db().AddInParameter(mCommande, "@DateDeDepart", SqlDbType.DateTime, _DateDepart);
                 db().AddInParameter(mCommande, "@MagasinDestinationId", SqlDbType.Int, _MagasinDestination.ID);
-                db().AddInParameter(mCommande, "@EmplacementDestination", SqlDbType.VarChar, _EmplacementDestination, 255);
+                db().AddInParameter(mCommande, "@EmplacementDestination", SqlDbType.VarChar, 255, _EmplacementDestination);
 
                 if (_DateArrivee > DateTime.MinValue)
                 {
@@ -376,15 +376,15 @@ namespace Tms.Classes.Business
 
                 if (!string.IsNullOrEmpty(_Description))
                 {
-                    db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, _Description, 500);
+                    db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, 500, _Description);
                 }
                 else
                 {
-                    db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, DBNull.Value, 500);
+                    db().AddInParameter(mCommande, "@Description", SqlDbType.VarChar, 500, DBNull.Value);
                 }
 
-                db().AddInParameter(mCommande, "@Operateur", SqlDbType.VarChar, _Operateur, 255);
-                db().AddInParameter(mCommande, "@ModeDeTransfert", SqlDbType.VarChar, _ModeDeTransfert, 50);
+                db().AddInParameter(mCommande, "@Operateur", SqlDbType.VarChar, 255, _Operateur);
+                db().AddInParameter(mCommande, "@ModeDeTransfert", SqlDbType.VarChar, 50, _ModeDeTransfert);
 
                 db().AddParameter(mCommande, "ReturnValue", SqlDbType.Int, 0, null, ParameterDirection.ReturnValue);
                 db().AddOutParameter(mCommande, "@ErrorMessage", SqlDbType.VarChar, 1000);

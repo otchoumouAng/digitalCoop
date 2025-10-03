@@ -327,20 +327,7 @@
                 de.Click.FormID = "FormDeplacementPanel";
                 de.Click.Before = "return validDeplacementForm(App.FormDeplacementPaletteWindow.id);";
                 de.Click.EventMask.ShowMask = true;
-                de.Click.Success = @"
-                    console.log('Réponse du serveur:', result);
-                    if(result && result.success) { 
-                        console.log('Succès - Fermeture de la fenêtre');
-                        App.FormDeplacementPaletteWindow.close(); 
-                        if(App.storeListeForwardContract) {
-                            App.storeListeForwardContract.reload();
-                        }
-                    } else {
-                        console.log('Échec:', result);
-                        Ext.Msg.alert('Information', result.message || 'Opération non réussie');
-                    }
-                ";
-                de.Click.Failure = "console.log('Erreur:', result); Ext.Msg.alert('Erreur', result.errorMessage || 'Une erreur est survenue');";
+                de.Click.EventMask.Msg = "Enregistrement en cours...";
             }),
 
             X.Button()
