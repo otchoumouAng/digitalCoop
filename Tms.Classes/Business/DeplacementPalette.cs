@@ -645,6 +645,69 @@ namespace Tms.Classes.Business
             return Result;
         }
 
+        public List<Palette> fnGetPalettesByCriteria(int annee, int semaine, int produitId, int typeProduitId)
+        {
+            List<Palette> mList = new List<Palette>();
+            IDataReader mDataReader = null;
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("pp_palette_select_by_criteria");
+                db().AddInParameter(mCommande, "@Annee", SqlDbType.Int, annee);
+                db().AddInParameter(mCommande, "@Semaine", SqlDbType.Int, semaine);
+                db().AddInParameter(mCommande, "@ProduitId", SqlDbType.Int, produitId);
+                db().AddInParameter(mCommande, "@TypeProduitId", SqlDbType.Int, typeProduitId);
+                mDataReader = db().ExecuteReader(mCommande);
+                while (mDataReader.Read())
+                {
+                    mList.Add(new Palette
+                    {
+                        ID = (Guid)mDataReader["ID"],
+                        Numero = (int)mDataReader["Numero"]
+                    });
+                }
+                return mList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnGetPalettesByCriteria");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
+
+        public PaletteStockInfo fnGetPaletteStockInfo(Guid paletteId)
+        {
+            PaletteStockInfo stockInfo = null;
+            IDataReader mDataReader = null;
+            try
+            {
+                DataCommand mCommande = db().CreateStoredProcCommand("pp_palette_stock_info_get");
+                db().AddInParameter(mCommande, "@PaletteId", SqlDbType.UniqueIdentifier, paletteId);
+                mDataReader = db().ExecuteReader(mCommande);
+                if (mDataReader.Read())
+                {
+                    stockInfo = new PaletteStockInfo
+                    {
+                        MagasinSource = mDataReader["MagasinSource"] as string,
+                        EmplacementSource = mDataReader["EmplacementSource"] as string,
+                        PoidsBrut = (decimal)mDataReader["PoidsBrut"],
+                        PoidsNet = (decimal)mDataReader["PoidsNet"],
+                        TareUnitaire = (decimal)mDataReader["TareUnitaire"]
+                    };
+                }
+                return stockInfo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + "\n" + this.GetType().FullName + ":fnGetPaletteStockInfo");
+            }
+            finally
+            {
+                if (mDataReader != null) mDataReader.Close();
+            }
+        }
         #endregion
 
         #region "Private Members"
@@ -734,5 +797,14 @@ namespace Tms.Classes.Business
     public partial class TypeDeplacementPaletteReport
     {
         public string Designation { get; set; }
+    }
+
+    public class PaletteStockInfo
+    {
+        public string MagasinSource { get; set; }
+        public string EmplacementSource { get; set; }
+        public decimal PoidsBrut { get; set; }
+        public decimal PoidsNet { get; set; }
+        public decimal TareUnitaire { get; set; }
     }
 }

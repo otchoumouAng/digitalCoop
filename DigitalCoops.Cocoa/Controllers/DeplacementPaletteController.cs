@@ -482,36 +482,37 @@ namespace Tms2017.MVC.Controllers
 
         public ActionResult OnDeplacerManuellement()
         {
-            DeplacementPaletteViewModel mclass = new DeplacementPaletteViewModel();
+            var model = new DeplacementPaletteViewModel
+            {
+                _DeplacementPalette = new DeplacementPalette(),
+                _ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew
+            };
 
-            mclass._DeplacementPalette = new DeplacementPalette();
-            mclass._DeplacementPalette.Palette = new Palette();
-            mclass._DeplacementPalette.MagasinSource = new Magasin();
-            mclass._DeplacementPalette.MagasinDestination = new Magasin();
-            mclass._ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew;
+            ViewBag.Annee = DateTime.Now.Year;
+            ViewBag.Semaine = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+                DateTime.Now,
+                CalendarWeekRule.FirstFourDayWeek,
+                DayOfWeek.Monday
+            );
 
-            return new Ext.Net.MVC.PartialViewResult { ViewName = "FormDeplacementPalette", Model = mclass };
+            return new Ext.Net.MVC.PartialViewResult
+            {
+                ViewName = "FormDeplacementPalette",
+                Model = model,
+                ViewData = ViewData
+            };
         }
 
-
-        public ActionResult GetPalettesByOrdreFabrication(string idOrdreFabrication)
+        public ActionResult GetPalettesByCriteria(int annee, int semaine, int produitId, int typeProduitId)
         {
-            if (string.IsNullOrEmpty(idOrdreFabrication))
-            {
-                return this.Store(new List<Palette>());
-            }
-
-            Guid ordreId;
-            if (!Guid.TryParse(idOrdreFabrication, out ordreId))
-            {
-                return this.Store(new List<Palette>());
-            }
-
-            // Ici, vous devez appeler une méthode qui récupère les palettes pour cet ordre de fabrication
-            // Par exemple : 
-            var palettes = (new Palette()).fnPaletteByOf_Get(ordreId);
-
+            var palettes = new DeplacementPalette().fnGetPalettesByCriteria(annee, semaine, produitId, typeProduitId);
             return this.Store(palettes);
+        }
+
+        public ActionResult GetPaletteStockInfo(Guid paletteId)
+        {
+            var stockInfo = new DeplacementPalette().fnGetPaletteStockInfo(paletteId);
+            return this.Direct(stockInfo);
         }
 
 
@@ -1306,89 +1307,17 @@ namespace Tms2017.MVC.Controllers
 
         private DeplacementPalette MapFormToObject(DeplacementPalette mClass)
         {
-            try
-            {
-                // --- Palette
-                string paletteValue = GetFormValue("cmbPalette");
-                if (!string.IsNullOrEmpty(paletteValue))
-                {
-                    mClass.Palette = new Palette { ID = Guid.Parse(paletteValue) };
-                }
-                else
-                {
-                    throw new Exception("Veuillez sélectionner une palette.");
-                }
+            // Récupération des informations de la palette et de son déplacement
+            mClass.Palette = new Palette { ID = Guid.Parse(GetFormValue("CmbPalette")) };
+            mClass.DateDepart = DateTime.Parse(GetFormValue("DateDepart"));
+            mClass.MagasinDestination = new Magasin { ID = int.Parse(GetFormValue("CmbMagasinArrivee")) };
+            mClass.EmplacementDestination = GetFormValue("TxtEmplacementArrivee");
+            mClass.DateArrivee = DateTime.Parse(GetFormValue("DateArrivee"));
 
-                // --- Magasin Source
-                string magasinSourceValue = GetFormValue("cmbMagasinSource");
-                if (!string.IsNullOrEmpty(magasinSourceValue))
-                {
-                    mClass.MagasinSource = new Magasin { ID = int.Parse(magasinSourceValue) };
-                }
-                else
-                {
-                    throw new Exception("Veuillez sélectionner le magasin source.");
-                }
+            // L'opérateur est récupéré de la session
+            mClass.Operateur = (string)Session["userName"];
 
-                // --- Magasin Destination
-                string magasinDestValue = GetFormValue("cmbMagasinDest");
-                if (!string.IsNullOrEmpty(magasinDestValue))
-                {
-                    mClass.MagasinDestination = new Magasin { ID = int.Parse(magasinDestValue) };
-                }
-                else
-                {
-                    throw new Exception("Veuillez sélectionner le magasin de destination.");
-                }
-
-                // --- Date de départ (obligatoire)
-                string dateDepartValue = GetFormValue("DateDepart");
-                if (!string.IsNullOrEmpty(dateDepartValue))
-                {
-                    mClass.DateDepart = DateTime.Parse(dateDepartValue);
-                }
-                else
-                {
-                    throw new Exception("Veuillez saisir la date de départ.");
-                }
-
-                // --- Date d'arrivée (optionnelle)
-                string dateArriveeValue = GetFormValue("DateArrivee");
-                if (!string.IsNullOrEmpty(dateArriveeValue))
-                {
-                    mClass.DateArrivee = DateTime.Parse(dateArriveeValue);
-                }
-                else
-                {
-                    mClass.DateArrivee = DateTime.MinValue;
-                }
-
-                // --- Emplacement destination (obligatoire)
-                string emplacementDest = GetFormValue("TxtEmplacementDest");
-                if (!string.IsNullOrEmpty(emplacementDest))
-                {
-                    mClass.EmplacementDestination = emplacementDest;
-                }
-                else
-                {
-                    throw new Exception("Veuillez saisir l'emplacement de destination.");
-                }
-
-                // --- Champs optionnels
-                mClass.ModeDeTransfert = GetFormValue("cmbModeTransfert") ?? "Manuel";
-                mClass.Operateur = GetFormValue("TxtOperateur") ?? "";
-                mClass.Description = GetFormValue("TxtDescription") ?? "";
-
-                return mClass;
-            }
-            catch (FormatException ex)
-            {
-                throw new Exception($"Erreur de format dans les données saisies: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erreur lors de la validation des données: {ex.Message}");
-            }
+            return mClass;
         }
 
 
