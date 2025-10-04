@@ -488,18 +488,12 @@ namespace Tms2017.MVC.Controllers
                 _ExecMode = Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew
             };
 
-            ViewBag.Annee = DateTime.Now.Year;
-            ViewBag.Semaine = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
-                DateTime.Now,
-                CalendarWeekRule.FirstFourDayWeek,
-                DayOfWeek.Monday
-            );
-
             return new Ext.Net.MVC.PartialViewResult
             {
                 ViewName = "FormDeplacementPalette",
                 Model = model,
-                ViewData = ViewData
+                RenderMode = RenderMode.AddTo,
+                ContainerId = "TmsViewPort"
             };
         }
 
