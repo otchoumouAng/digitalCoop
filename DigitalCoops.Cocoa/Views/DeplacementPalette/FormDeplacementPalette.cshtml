@@ -23,15 +23,6 @@
         min-height: min-content;
     }
 
-    .zone-header {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #eaeff2;
-        font-size: 14px;
-    }
-
     .x-form-item {
         margin-bottom: 16px;
     }
@@ -51,15 +42,6 @@
         border-top: 1px solid #eef2f6;
     }
 
-    .x-form-text-default.x-form-textarea {
-        line-height: 17px;
-        min-height: 50px !important;
-    }
-
-    .x-form-trigger {
-        background-color: #f0f4f8 !important;
-    }
-
     .x-window-footer {
         padding: 0 !important;
         border-top: none !important;
@@ -73,243 +55,241 @@
 @(
     X.Window()
     .ID("FormDeplacementPaletteWindow")
-    .Title("DÉPLACER MANUELLEMENT UNE PALETTE")
+    .Title("SÉLECTIONNER UNE PALETTE")
     .Width(800)
-    .Height(550)
+    .Height(450) // Hauteur réduite car moins de champs
     .Resizable(false)
     .Modal(true)
     .CloseAction(Ext.Net.CloseAction.Destroy)
     .Layout(LayoutType.Fit)
     .Items(
-        X.Container()
+        X.FormPanel()
+        .ID("FormDeplacementPanel")
         .Cls("global-scroll-container")
+        .Layout(LayoutType.Form)
         .Items(
-            X.FormPanel()
-            .ID("FormDeplacementPanel")
-            .Layout(LayoutType.Auto)
-            .Cls("form-container")
-            .FieldDefaults(fd =>
-            {
-                fd.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult;
-            })
-            .Items(
-                X.Container()
-                .Cls("form-zone")
-                .Layout(LayoutType.Form)
-                .Items(
-                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
-                    X.Hidden().ID("TxtTransfertID").Value(Model._DeplacementPalette != null ? Model._DeplacementPalette.ID.ToString() : ""),
+            // ComboBox pour les années (toujours actif)
+            X.ComboBox()
+                .ID("cmbAnnee")
+                .FieldLabel("Année")
+                .LabelAlign(LabelAlign.Right)
+                .LabelWidth(120)
+                .QueryMode(DataLoadMode.Local)
+                .Editable(false)
+                .DisplayField("text")
+                .ValueField("value")
+                .Store(X.Store().Model(X.Model().Fields(
+                    new ModelField("value", ModelFieldType.Int),
+                    new ModelField("text", ModelFieldType.String)
+                )))
+                .Listeners(l =>
+                {
+                    l.AfterRender.Handler = @"
+                        var store = this.getStore();
+                        var currentYear = new Date().getFullYear();
+                        var years = [];
+                        for (var i = 0; i < 5; i++) {
+                            var year = currentYear - i;
+                            years.push({ text: year.toString(), value: year });
+                        }
+                        store.loadData(years);
+                        this.setValue(currentYear);
+                    ";
+                    // Active le champ suivant et désactive les autres en cascade
+                    l.Change.Handler = @"
+                        var hasValue = this.getValue() !== null && this.getValue() !== '';
+                        App.cmbSemaine.setDisabled(!hasValue);
+                        App.cmbSemaine.clearValue();
+                        App.cmbProduit.setDisabled(true);
+                        App.cmbProduit.clearValue();
+                        App.cmbProduitType.setDisabled(true);
+                        App.cmbProduitType.clearValue();
+                        App.cmbPalette.setDisabled(true);
+                        App.cmbPalette.clearValue();
+                    ";
+                }),
 
-                    // Combo box pour l'ordre de production
-                    X.ComboBox()
-                    .ID("cmbProduction")
-                    .DisplayField("NumeroProduction")
-                    .ValueField("ID")
-                    .FieldLabel("Ordre de Production")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .AllowBlank(false)
-                    .IndicatorCls("IndicatorRedStar")
-                    .IndicatorText("*")
-                    .QueryMode(DataLoadMode.Local)
-                    .ForceSelection(true)
-                    .TypeAhead(false)
-                    .Editable(true)
-                    .Store(
-                        X.Store()
-                        .AutoLoad(true)
-                        .Model(
-                            X.Model()
-                            .IDProperty("ID")
-                            .Fields(
-                                new ModelField("ID", ModelFieldType.String),
-                                new ModelField("NumeroProduction", ModelFieldType.String)
-                            )
-                        )
-                        .Proxy(
-                            X.AjaxProxy()
-                            .Url(Url.Action("LoadOrdreFabrication", "OrdreFabrication"))
-                            .Reader(X.JsonReader().RootProperty("data"))
-                        )
+            // ComboBox pour les semaines (désactivé par défaut)
+            X.ComboBox()
+                .ID("cmbSemaine")
+                .FieldLabel("Semaine")
+                .Disabled(true)
+                .LabelAlign(LabelAlign.Right)
+                .LabelWidth(120)
+                .QueryMode(DataLoadMode.Local)
+                .Editable(false)
+                .DisplayField("text")
+                .ValueField("value")
+                .Store(X.Store().Model(X.Model().Fields(
+                    new ModelField("value", ModelFieldType.Int),
+                    new ModelField("text", ModelFieldType.String)
+                )))
+                .Listeners(l =>
+                {
+                    l.AfterRender.Handler = @"
+                        var store = this.getStore();
+                        var weeks = [];
+                        for (var i = 1; i <= 52; i++) {
+                            weeks.push({ text: i.toString(), value: i });
+                        }
+                        store.loadData(weeks);
+                        var today = new Date();
+                        var firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+                        var pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+                        var currentWeekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+                        this.setValue(currentWeekNumber);
+                    ";
+                    l.Change.Handler = @"
+                        var hasValue = this.getValue() !== null && this.getValue() !== '';
+                        App.cmbProduit.setDisabled(!hasValue);
+                        App.cmbProduit.clearValue();
+                        App.cmbProduitType.setDisabled(true);
+                        App.cmbProduitType.clearValue();
+                        App.cmbPalette.setDisabled(true);
+                        App.cmbPalette.clearValue();
+                    ";
+                }),
+
+            // ComboBox pour le Produit (désactivé par défaut)
+            X.ComboBox()
+                .ID("cmbProduit")
+                .FieldLabel("Produit")
+                .Disabled(true)
+                .LabelAlign(LabelAlign.Right)
+                .LabelWidth(120)
+                .DisplayField("Designation")
+                .ValueField("ID")
+                .ForceSelection(true)
+                .QueryMode(DataLoadMode.Local)
+                .Store(
+                    X.Store()
+                    .AutoLoad(true)
+                    .Model(X.Model().IDProperty("ID").Fields(
+                        new ModelField("ID", ModelFieldType.Int),
+                        new ModelField("Designation", ModelFieldType.String)
+                    ))
+                    .Proxy(X.AjaxProxy()
+                        .Url(Url.Action("LoadProduitFini", "ProduitFini"))
+                        .Reader(X.JsonReader().RootProperty("data"))
                     )
-                    .Listeners(l =>
-                    {
-                        l.Change.Handler = @"
-                            var ordreId = this.getValue();
-                            var cmbPalette = App.cmbPalette;
-                            var store = cmbPalette.getStore();
-
-                            cmbPalette.setDisabled(!ordreId);
-                            cmbPalette.setValue('');
-
-                            store.getProxy().setExtraParam('idOrdreFabrication', ordreId || '');
-                            store.load();
-                        ";
-                    }),
-
-                    // Combo box pour les palettes (dépend de l'ordre de production)
-                    X.ComboBox()
-                    .ID("cmbPalette")
-                    .FieldLabel("Palette")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .DisplayField("Numero")
-                    .ValueField("ID")
-                    .ForceSelection(true)
-                    .QueryMode(DataLoadMode.Remote)
-                    .TriggerAction(TriggerAction.All)
-                    .Editable(false)
-                    .Disabled(true) // Désactivé initialement jusqu'à ce qu'un ordre de production soit sélectionné
-                    .IndicatorCls("IndicatorRedStar")
-                    .IndicatorText("*")
-                    .Store(
-                        X.Store()
-                        .AutoLoad(false)
-                        .Model(
-                            X.Model()
-                            .IDProperty("ID")
-                            .Fields(
-                                new ModelField("ID", ModelFieldType.String),
-                                new ModelField("Numero", ModelFieldType.Int),
-                                new ModelField("MagasinId", ModelFieldType.Int) // Nous allons également récupérer le magasin actuel de la palette
-                            )
-                        )
-                        .Proxy(
-                            X.AjaxProxy()
-                            .Url(Url.Action("GetPaletteNum", "Palette"))
-                            .Reader(X.JsonReader().RootProperty("data"))
-                        )
-                    )
-                    .Listeners(l =>
-                    {
-                        l.Select.Handler = @"
-                            var paletteId = this.getValue();
-                            var record = this.getStore().findRecord('ID', paletteId);
-                            if (record) {
-                                // Mettre à jour le magasin source avec le magasin de la palette
-                                App.cmbMagasinSource.setValue(record.get('MagasinId'));
-                            }
-                        ";
-                    }),
-
-                    X.ComboBox()
-                    .ID("cmbMagasinSource")
-                    .FieldLabel("Magasin Source")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .DisplayField("Designation")
-                    .ValueField("ID")
-                    .ForceSelection(true)
-                    .QueryMode(DataLoadMode.Local)
-                    .TriggerAction(TriggerAction.All)
-                    .Editable(false)
-                    .IndicatorCls("IndicatorRedStar")
-                    .IndicatorText("*")
-                    .Store(
-                        X.Store()
-                        .AutoLoad(true)
-                        .Model(
-                            X.Model()
-                            .IDProperty("ID")
-                            .Fields(
-                                new ModelField("ID", ModelFieldType.Int),
-                                new ModelField("Designation", ModelFieldType.String)
-                            )
-                        )
-                        .Proxy(
-                            X.AjaxProxy()
-                            .Url(Url.Action("LoadMagasin", "Magasin"))
-                            .Reader(X.JsonReader().RootProperty("data"))
-                        )
-                    ),
-
-                    X.DateField()
-                    .ID("DateDepart")
-                    .FieldLabel("Date Départ")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .Value(DateTime.Now)
-                    .IndicatorCls("IndicatorRedStar")
-                    .IndicatorText("*"),
-
-                    X.ComboBox()
-                    .ID("cmbMagasinDest")
-                    .FieldLabel("Magasin Destination")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .DisplayField("Designation")
-                    .ValueField("ID")
-                    .ForceSelection(true)
-                    .QueryMode(DataLoadMode.Local)
-                    .TriggerAction(TriggerAction.All)
-                    .Editable(false)
-                    .IndicatorCls("IndicatorRedStar")
-                    .IndicatorText("*")
-                    .Store(
-                        X.Store()
-                        .AutoLoad(true)
-                        .Model(
-                            X.Model()
-                            .IDProperty("ID")
-                            .Fields(
-                                new ModelField("ID", ModelFieldType.Int),
-                                new ModelField("Designation", ModelFieldType.String)
-                            )
-                        )
-                        .Proxy(
-                            X.AjaxProxy()
-                            .Url(Url.Action("LoadMagasin", "Magasin"))
-                            .Reader(X.JsonReader().RootProperty("data"))
-                        )
-                    ),
-
-                    X.TextField()
-                    .ID("TxtEmplacementDest")
-                    .FieldLabel("Emplacement Destination")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .IndicatorCls("IndicatorRedStar")
-                    .IndicatorText("*"),
-
-                    X.DateField()
-                    .ID("DateArrivee")
-                    .FieldLabel("Date Arrivée")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120),
-
-                    X.TextField()
-                    .ID("TxtOperateur")
-                    .FieldLabel("Opérateur")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .Value((string)Session["userName"])
-                    .ReadOnly(true),
-
-                    X.ComboBox()
-                    .ID("cmbModeTransfert")
-                    .FieldLabel("Mode de Transfert")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .ForceSelection(true)
-                    .QueryMode(DataLoadMode.Local)
-                    .TriggerAction(TriggerAction.All)
-                    .Editable(false)
-                    .Items(
-                        new ListItem("Manuel", "Manuel"),
-                        new ListItem("Chariot élévateur", "Chariot"),
-                        new ListItem("Convoyeur", "Convoyeur"),
-                        new ListItem("Automatique", "Automatique")
-                    )
-                    .Value("Manuel"),
-
-                    X.TextArea()
-                    .ID("TxtDescription")
-                    .FieldLabel("Description")
-                    .LabelAlign(LabelAlign.Right)
-                    .LabelWidth(120)
-                    .Height(80)
                 )
+                 .Listeners(l =>
+                 {
+                     l.Change.Handler = @"
+                        var hasValue = this.getValue() !== null && this.getValue() !== '';
+                        App.cmbProduitType.setDisabled(!hasValue);
+                        App.cmbProduitType.clearValue();
+                        App.cmbPalette.setDisabled(true);
+                        App.cmbPalette.clearValue();
+                    ";
+                 }),
+
+
+    // ComboBox pour le Type de Produit (avec débogage ajouté)
+    X.ComboBox()
+        .ID("cmbProduitType")
+        .FieldLabel("Type de produit")
+        .Disabled(true)
+        .LabelAlign(LabelAlign.Right)
+        .LabelWidth(120)
+        .DisplayField("Designation")
+        .ValueField("ID")
+        .ForceSelection(true)
+        .QueryMode(DataLoadMode.Local)
+        .Store(
+            X.Store()
+            .AutoLoad(true)
+            .Model(X.Model().IDProperty("ID").Fields(
+                new ModelField("ID", ModelFieldType.Int),
+                new ModelField("Designation", ModelFieldType.String)
+            ))
+            .Proxy(X.AjaxProxy()
+                .Url(Url.Action("LoadProduitType", "ProduitType"))
+                .Reader(X.JsonReader().RootProperty("data"))
             )
+        )
+        .Listeners(l =>
+        {
+            l.Change.Handler = @"
+                console.log('--- Début du Change Event pour Type de Produit ---');
+                var typeProduitId = this.getValue();
+                console.log('Type Produit ID sélectionné :', typeProduitId);
+
+                var paletteCombo = App.cmbPalette;
+                var paletteStore = paletteCombo.getStore();
+
+                paletteCombo.clearValue();
+                paletteStore.removeAll();
+
+                if (typeProduitId) {
+                    // On vérifie que les combos précédents existent bien
+                    if (!App.cmbAnnee || !App.cmbSemaine || !App.cmbProduit) {
+                        console.error('Erreur : Un ou plusieurs ComboBox parents sont introuvables !');
+                        return; // Stoppe l'exécution
+                    }
+
+                    var annee = App.cmbAnnee.getValue();
+                    var semaine = App.cmbSemaine.getValue();
+                    var produitId = App.cmbProduit.getValue();
+                
+                    console.log('Valeurs récupérées :', { annee: annee, semaine: semaine, produitId: produitId, typeProduitId: typeProduitId });
+
+                    if (!annee || !semaine || !produitId) {
+                        console.warn('Attention : Un des champs parents est vide. La requête ne sera pas envoyée.');
+                        paletteCombo.setDisabled(true);
+                        return; // Stoppe si une valeur manque
+                    }
+
+                    var proxy = paletteStore.getProxy();
+                    proxy.setExtraParam('ItemAnnee', annee);
+                    proxy.setExtraParam('ItemSemaine', semaine);
+                    proxy.setExtraParam('ItemProduit', produitId);
+                    proxy.setExtraParam('ItemProduitType', typeProduitId);
+
+                    console.log('Paramètres envoyés au proxy :', proxy.getExtraParams());
+                    console.log('Lancement de la requête vers le serveur...');
+                
+                    paletteStore.load(); // Appel au serveur
+                    paletteCombo.setDisabled(false);
+
+                } else {
+                    console.log('Champ Type de Produit vidé. Désactivation de la palette.');
+                    paletteCombo.setDisabled(true);
+                }
+                console.log('--- Fin du Change Event ---');
+            ";
+        }),
+
+            // ComboBox pour les palettes (désactivé par défaut, chargement manuel)
+            X.ComboBox()
+                .ID("cmbPalette")
+                .FieldLabel("Palette")
+                .Disabled(true)
+                .LabelAlign(LabelAlign.Right)
+                .LabelWidth(120)
+                .DisplayField("Numero") // Affichage du numéro
+                .ValueField("ID")       // La valeur sera l'ID
+                .ForceSelection(true)
+                .QueryMode(DataLoadMode.Local)
+                .IndicatorCls("IndicatorRedStar")
+                .IndicatorText("*")
+                .Store(
+                    X.Store()
+                    .AutoLoad(false) // Très important : pas de chargement automatique
+                    .Model(
+                        X.Model()
+                        .IDProperty("ID")
+                        .Fields(
+                            new ModelField("ID", ModelFieldType.String),
+                            new ModelField("Numero", ModelFieldType.Int)
+                        )
+                    )
+                    .Proxy(
+                        X.AjaxProxy()
+                        .Url(Url.Action("SelectByModalFilter", "DeplacementPalette"))
+                        .Reader(X.JsonReader().RootProperty("data"))
+                    )
+                )
         )
     )
     .FooterBar(
@@ -317,41 +297,22 @@
         .Cls("button-container")
         .Items(
             X.Button()
-            .ID("BtnSubmit")
-            .Text("Enregistrer")
-            .Cls("x-btn-primary")
-            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
-            .DirectEvents(de =>
-            {
-                de.Click.Url = Url.Action("SubmitFormMethod", "DeplacementPalette");
-                de.Click.FormID = "FormDeplacementPanel";
-                de.Click.Before = "return validDeplacementForm(App.FormDeplacementPaletteWindow.id);";
-                de.Click.EventMask.ShowMask = true;
-                de.Click.EventMask.Msg = "Enregistrement en cours...";
-            }),
+                .ID("BtnSubmit")
+                .Text("Enregistrer")
+                .Cls("x-btn-primary")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod", "DeplacementPalette");
+                    de.Click.FormID = "FormDeplacementPanel";
+                    // de.Click.Before = "return validDeplacementForm(App.FormDeplacementPaletteWindow.id);";
+                    de.Click.EventMask.ShowMask = true;
+                    de.Click.EventMask.Msg = "Enregistrement en cours...";
+                }),
 
             X.Button()
-            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
-            .Handler("App.FormDeplacementPaletteWindow.close()")
-            .Cls("btncancel")
+                .Text("Annuler")
+                .Handler("App.FormDeplacementPaletteWindow.close()")
+                .Cls("btncancel")
         )
     )
 )
-
-<script type="text/javascript">
-    var validDeplacementForm = function (winId) {
-        var form = Ext.getCmp(winId).down('form');
-
-        if (!form.isValid()) {
-            Ext.Msg.show({
-                title: 'Validation',
-                icon: Ext.MessageBox.WARNING,
-                msg: 'Veuillez remplir tous les champs obligatoires.',
-                buttons: Ext.Msg.OK
-            });
-            return false;
-        }
-
-        return true;
-    };
-</script>

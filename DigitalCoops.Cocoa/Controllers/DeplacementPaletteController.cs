@@ -461,6 +461,52 @@ namespace Tms2017.MVC.Controllers
 
         }
 
+        public ActionResult SelectByModalFilter(StoreRequestParameters parameters, string ItemStatus, string ItemAnnee, string ItemSemaine, string ItemProduit, string ItemProduitType, string ItemProduction)
+        {
+            string status = "-1";
+            if (!string.IsNullOrEmpty(ItemStatus) && ItemStatus == "false")
+            {
+                status = "-1";
+            }
+            else if (ItemStatus == "true")
+            {
+                status = "1";
+            }
+
+            int Annee = -1;
+            if (!string.IsNullOrEmpty(ItemAnnee))
+                Annee = int.Parse(ItemAnnee);
+
+            int Semaine = -1;
+            if (!string.IsNullOrEmpty(ItemSemaine))
+                Semaine = int.Parse(ItemSemaine);
+
+            int Produit = -1;
+            if (!string.IsNullOrEmpty(ItemProduit))
+                Produit = int.Parse(ItemProduit);
+
+            int ProduitType = -1;
+            if (!string.IsNullOrEmpty(ItemProduitType))
+                ProduitType = int.Parse(ItemProduitType);
+
+            // string Production = "{Tous}";
+            string Production = null;
+            if (!string.IsNullOrEmpty(ItemProduction) && ItemProduction == "{Tous}")
+                Production = null;
+            else if (!string.IsNullOrEmpty(ItemProduction))
+            {
+                Production = ItemProduction;
+            }
+
+
+
+            var liste = new Palette().fnSelect(status, Annee, Semaine, Produit, ProduitType, Production);
+            //var pagning = GridStorePaging.SetRangePlants(parameters, liste);
+            return this.Store(liste);
+        }
+
+
+
         //public ActionResult onApprove(string ItemSelected)
         //{
         //    DeplacementPalette mclass = JSON.Deserialize<DeplacementPalette>(ItemSelected, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Ignore });
