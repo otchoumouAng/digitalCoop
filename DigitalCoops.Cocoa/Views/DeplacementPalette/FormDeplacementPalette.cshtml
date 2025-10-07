@@ -210,7 +210,7 @@
         )
         .Listeners(l =>
         {
-            l.Change.Handler = @"
+            l.Select.Handler = @"
                 console.log('--- Début du Change Event pour Type de Produit ---');
                 var typeProduitId = this.getValue();
                 console.log('Type Produit ID sélectionné :', typeProduitId);
