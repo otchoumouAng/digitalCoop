@@ -1,0 +1,375 @@
+﻿@model Tms.Classes.Business.DeplacementPaletteViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+<script type="text/javascript">
+    // Fonction JavaScript pour appeler la méthode du contrôleur
+    var callOnPaletteSelected = function (paletteId) {
+        Ext.net.directRequest({
+            url: '@Url.Action("OnPaletteSelected", "DeplacementPalette")',
+            cleanRequest: true,
+            extraParams: {
+                SelectedPaletteID: paletteId
+            },
+            eventMask: {
+                showMask: true,
+                msg: 'Chargement des détails...'
+            }
+        });
+    };
+</script>
+
+<style>
+    .global-scroll-container {
+        overflow-y: auto;
+        padding: 15px 20px;
+        height: calc(100% - 50px);
+    }
+
+    .form-container {
+        display: flex;
+        gap: 30px;
+        min-height: min-content;
+    }
+
+    .x-form-item {
+        margin-bottom: 16px;
+    }
+
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 180px !important;
+        color: #546e7a;
+        font-weight: 500;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 15px 20px;
+        background: #f8fafc;
+        border-top: 1px solid #eef2f6;
+    }
+
+    .x-window-footer {
+        padding: 0 !important;
+        border-top: none !important;
+    }
+
+    .x-window-body {
+        overflow: hidden !important;
+    }
+</style>
+
+@(
+    X.Window()
+    .ID("FormDeplacementPaletteWindow")
+    .Title("DÉPLACEMENT MANUEL DE PALETTE")
+    .Width(800)
+    .Height(450) // La hauteur sera ajustée dynamiquement
+    .Resizable(false)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Layout(LayoutType.Fit)
+    .Items(
+        X.FormPanel()
+        .ID("FormDeplacementPanel")
+        .Cls("global-scroll-container")
+        .Layout(LayoutType.Form)
+        .Items(
+            // --- SECTION 1: SÉLECTION DE LA PALETTE ---
+            X.FieldSet()
+                .Title("1. Sélection de la Palette")
+                .Collapsible(false)
+                .Items(
+                    X.ComboBox()
+                        .ID("cmbAnnee")
+                        .FieldLabel("Année")
+                        .LabelAlign(LabelAlign.Right)
+                        .LabelWidth(120)
+                        .QueryMode(DataLoadMode.Local)
+                        .Editable(false)
+                        .DisplayField("text")
+                        .ValueField("value")
+                        .Store(X.Store().Model(X.Model().Fields(
+                            new ModelField("value", ModelFieldType.Int),
+                            new ModelField("text", ModelFieldType.String)
+                        )))
+                        .Listeners(l =>
+                        {
+                            l.AfterRender.Handler = @"
+                                var store = this.getStore();
+                                var currentYear = new Date().getFullYear();
+                                var years = [];
+                                for (var i = 0; i < 5; i++) {
+                                    var year = currentYear - i;
+                                    years.push({ text: year.toString(), value: year });
+                                }
+                                store.loadData(years);
+                                this.setValue(currentYear);
+                            ";
+                            l.Change.Handler = @"
+                                var hasValue = this.getValue() !== null && this.getValue() !== '';
+                                App.cmbSemaine.setDisabled(!hasValue);
+                                App.cmbSemaine.clearValue();
+                                App.cmbProduit.setDisabled(true);
+                                App.cmbProduit.clearValue();
+                                App.cmbProduitType.setDisabled(true);
+                                App.cmbProduitType.clearValue();
+                                App.cmbPalette.setDisabled(true);
+                                App.cmbPalette.clearValue();
+                                App.PaletteInfoContainer.hide();
+                                App.DestinationFormContainer.hide();
+                            ";
+                        }),
+                    X.ComboBox()
+                        .ID("cmbSemaine")
+                        .FieldLabel("Semaine")
+                        .Disabled(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .LabelWidth(120)
+                        .QueryMode(DataLoadMode.Local)
+                        .Editable(false)
+                        .DisplayField("text")
+                        .ValueField("value")
+                        .Store(X.Store().Model(X.Model().Fields(
+                            new ModelField("value", ModelFieldType.Int),
+                            new ModelField("text", ModelFieldType.String)
+                        )))
+                        .Listeners(l =>
+                        {
+                            l.AfterRender.Handler = @"
+                                var store = this.getStore();
+                                var weeks = [];
+                                for (var i = 1; i <= 52; i++) {
+                                    weeks.push({ text: i.toString(), value: i });
+                                }
+                                store.loadData(weeks);
+                                var today = new Date();
+                                var firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+                                var pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+                                var currentWeekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+                                this.setValue(currentWeekNumber);
+                            ";
+                            l.Change.Handler = @"
+                                var hasValue = this.getValue() !== null && this.getValue() !== '';
+                                App.cmbProduit.setDisabled(!hasValue);
+                                App.cmbProduit.clearValue();
+                                App.cmbProduitType.setDisabled(true);
+                                App.cmbProduitType.clearValue();
+                                App.cmbPalette.setDisabled(true);
+                                App.cmbPalette.clearValue();
+                                App.PaletteInfoContainer.hide();
+                                App.DestinationFormContainer.hide();
+                            ";
+                        }),
+                    X.ComboBox()
+                        .ID("cmbProduit")
+                        .FieldLabel("Produit")
+                        .Disabled(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .LabelWidth(120)
+                        .DisplayField("Designation")
+                        .ValueField("ID")
+                        .ForceSelection(true)
+                        .QueryMode(DataLoadMode.Local)
+                        .Store(
+                            X.Store()
+                            .AutoLoad(true)
+                            .Model(X.Model().IDProperty("ID").Fields(
+                                new ModelField("ID", ModelFieldType.Int),
+                                new ModelField("Designation", ModelFieldType.String)
+                            ))
+                            .Proxy(X.AjaxProxy()
+                                .Url(Url.Action("LoadProduitFini", "ProduitFini"))
+                                .Reader(X.JsonReader().RootProperty("data"))
+                            )
+                        )
+                         .Listeners(l =>
+                         {
+                             l.Change.Handler = @"
+                                var hasValue = this.getValue() !== null && this.getValue() !== '';
+                                App.cmbProduitType.setDisabled(!hasValue);
+                                App.cmbProduitType.clearValue();
+                                App.cmbPalette.setDisabled(true);
+                                App.cmbPalette.clearValue();
+                                App.PaletteInfoContainer.hide();
+                                App.DestinationFormContainer.hide();
+                            ";
+                         }),
+                    X.ComboBox()
+                        .ID("cmbProduitType")
+                        .FieldLabel("Type de produit")
+                        .Disabled(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .LabelWidth(120)
+                        .DisplayField("Designation")
+                        .ValueField("ID")
+                        .ForceSelection(true)
+                        .QueryMode(DataLoadMode.Local)
+                        .Store(
+                            X.Store()
+                            .AutoLoad(true)
+                            .Model(X.Model().IDProperty("ID").Fields(
+                                new ModelField("ID", ModelFieldType.Int),
+                                new ModelField("Designation", ModelFieldType.String)
+                            ))
+                            .Proxy(X.AjaxProxy()
+                                .Url(Url.Action("LoadProduitType", "ProduitType"))
+                                .Reader(X.JsonReader().RootProperty("data"))
+                            )
+                        )
+                        .Listeners(l =>
+                        {
+                            l.Change.Handler = @"
+                                var typeProduitId = this.getValue();
+                                var paletteCombo = App.cmbPalette;
+                                var paletteStore = paletteCombo.getStore();
+                                paletteCombo.clearValue();
+                                paletteStore.removeAll();
+                                App.PaletteInfoContainer.hide();
+                                App.DestinationFormContainer.hide();
+                                if (typeProduitId) {
+                                    var annee = App.cmbAnnee.getValue();
+                                    var semaine = App.cmbSemaine.getValue();
+                                    var produitId = App.cmbProduit.getValue();
+                                    if (!annee || !semaine || !produitId) {
+                                        paletteCombo.setDisabled(true);
+                                        return;
+                                    }
+                                    var proxy = paletteStore.getProxy();
+                                    proxy.setExtraParam('ItemAnnee', annee);
+                                    proxy.setExtraParam('ItemSemaine', semaine);
+                                    proxy.setExtraParam('ItemProduit', produitId);
+                                    proxy.setExtraParam('ItemProduitType', typeProduitId);
+                                    paletteStore.load();
+                                    paletteCombo.setDisabled(false);
+                                } else {
+                                    paletteCombo.setDisabled(true);
+                                }
+                            ";
+                        }),
+                    X.ComboBox()
+                        .ID("cmbPalette")
+                        .FieldLabel("Palette N°")
+                        .Disabled(true)
+                        .LabelAlign(LabelAlign.Right)
+                        .LabelWidth(120)
+                        .DisplayField("Numero")
+                        .ValueField("ID")
+                        .ForceSelection(true)
+                        .QueryMode(DataLoadMode.Remote)
+                        .Store(
+                            X.Store()
+                            .AutoLoad(false)
+                            .Model(
+                                X.Model()
+                                .IDProperty("ID")
+                                .Fields(
+                                    new ModelField("ID", ModelFieldType.String),
+                                    new ModelField("Numero", ModelFieldType.Int)
+                                )
+                            )
+                            .Proxy(
+                                X.AjaxProxy()
+                                .Url(Url.Action("SelectByModalFilter", "DeplacementPalette"))
+                                .Reader(X.JsonReader().RootProperty("data"))
+                            )
+                        )
+                        .Listeners(l =>
+                        {
+                            l.Select.Handler = "callOnPaletteSelected(records[0].id);";
+                        })
+                ),
+
+            // --- SECTION 2: INFORMATIONS DE LA PALETTE (initialement cachée) ---
+            X.FieldSet()
+                .ID("PaletteInfoContainer")
+                .Title("2. Informations de Départ")
+                .Hidden(true)
+                .Collapsible(true)
+                .Items(
+                    X.Hidden().ID("hiddenMagasinSourceID"),
+                    X.DisplayField().ID("dfMagasinDepart").FieldLabel("Magasin de départ"),
+                    X.DisplayField().ID("dfEmplacementDepart").FieldLabel("Emplacement de départ"),
+                    X.DisplayField().ID("dfPoidsBrut").FieldLabel("Poids Brut (kg)"),
+                    X.DisplayField().ID("dfPoidsNet").FieldLabel("Poids Net (kg)")
+                ),
+
+            // --- SECTION 3: INFORMATIONS DE DESTINATION (initialement cachée) ---
+            X.FieldSet()
+                .ID("DestinationFormContainer")
+                .Title("3. Informations de Destination")
+                .Hidden(true)
+                .Collapsible(true)
+                .Items(
+                    X.DateField()
+                        .ID("DateDepart")
+                        .FieldLabel("Date de départ")
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*"),
+                    X.ComboBox()
+                        .ID("cmbMagasinDest")
+                        .FieldLabel("Magasin d'arrivée")
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*")
+                        .DisplayField("Designation")
+                        .ValueField("ID")
+                        .Store(
+                            X.Store()
+                            .AutoLoad(true)
+                            .Model(X.Model().IDProperty("ID").Fields(
+                                new ModelField("ID", ModelFieldType.Int),
+                                new ModelField("Designation", ModelFieldType.String)
+                            ))
+                            .Proxy(X.AjaxProxy()
+                                .Url(Url.Action("LoadAll", "Magasin")) // Assurez-vous que cette action existe
+                                .Reader(X.JsonReader().RootProperty("data"))
+                            )
+                        ),
+                    X.TextField()
+                        .ID("TxtEmplacementDest")
+                        .FieldLabel("Emplacement d'arrivée")
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*"),
+                    X.DateField()
+                        .ID("DateArrivee")
+                        .FieldLabel("Date d'arrivée")
+                )
+        )
+    )
+    .FooterBar(
+        X.Toolbar()
+        .Cls("button-container")
+        .Items(
+            X.Button()
+                .ID("BtnSubmit")
+                .Text("Déplacer la palette") // Texte du bouton mis à jour
+                .Cls("x-btn-primary")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod", "DeplacementPalette");
+                    de.Click.FormID = "FormDeplacementPanel";
+                    de.Click.EventMask.ShowMask = true;
+                    de.Click.EventMask.Msg = "Déplacement en cours...";
+                }),
+
+            X.Button()
+                .Text("Annuler")
+                .Handler("App.FormDeplacementPaletteWindow.close()")
+                .Cls("btncancel")
+        )
+    )
+)
+

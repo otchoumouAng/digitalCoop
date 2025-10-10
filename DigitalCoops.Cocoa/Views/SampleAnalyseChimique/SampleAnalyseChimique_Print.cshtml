@@ -1,0 +1,209 @@
+﻿@model Tms.Classes.Business.stock.Lot
+
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+
+</head>
+@(
+X.Window()
+    .ID("SampleAnalyseChimique_Print")
+    .Width(700)
+    .Resizable(false)
+    .Height(220)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title("Sample Chemical Analysis : Print")
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Items
+            (
+                X.Container()
+                    .Flex(1)
+                    .Layout(LayoutType.VBox)
+                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items(
+                                X.ComboBox()
+                                    .ID("cmbCampagne")
+                                    .FieldLabel("Campagne")
+                                    .DisplayField("Designation")
+                                    .ValueField("Designation")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(ViewData["Campagne"])
+                                    .Store
+                                    (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                    ),
+                                X.ComboBox()
+                                    .ID("cmbExportateur")
+                                    .FieldLabel("Exportateur")
+                                    .DisplayField("Nom")
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(ViewData["Exportateur"])
+                                    .Store
+                                    (
+                                        X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                            )
+                                            .SelectedItems
+                                            (
+                                            it =>
+                                            {
+                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                            }
+                                            )
+
+                                ),
+                     X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.VBox)
+                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items(
+                                X.DateField().ID("TxtPeriodStart").FieldLabel("Date Debut").LabelAlign(LabelAlign.Right).Text(DateTime.Now.AddDays(-30).ToString()),
+                                X.DateField().ID("TxtPeriodEnd").FieldLabel("Date Fin").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToString()),
+                                X.ComboBox()
+                                    .ID("CmbStatut")
+                                    .ForceSelection(true)
+                                    .FieldLabel("Statut")
+                                    .TypeAhead(true)
+                                    .ForceSelection(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items(
+                                            new ListItem("{Tous}", "-1"),
+                                            new ListItem("Active", "0"),
+                                            new ListItem("Inactive", "1")
+                                        )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Active", Value = "0" }); })
+                                )
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("")
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("PrintListOfSample");
+                de.Click.Before = "return validNew(App.SampleAnalyseChimique_Print.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.SampleAnalyseChimique_Print.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Sample Analysis ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };    
+</script>
+
+
+
+
+
+
+
+
+

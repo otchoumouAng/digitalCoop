@@ -1,0 +1,327 @@
+﻿
+@model Tms.Classes.Business.Sales.RedevanceValeurViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+</style>
+
+@(
+
+      X.Window()
+            .ID("RedevanceValeur_Detail")
+            .Width(500)
+            .Modal(true)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(270)
+            .BodyPadding(5)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Title("Fee")
+            .Items
+            (
+
+
+                X.FormPanel()
+
+                .Items(
+
+                 X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+
+
+                    X.Panel()
+                        .Frame(false)
+                        .Border(false)
+                        .FrameHeader(false)
+                        .ID("pnlFlexEvenFee")
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("0 0 5 0")
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                        (
+                            X.Hidden()
+                                            .ID("hiddenExecModeFee")
+                                            .Value(Model._ExecMode)
+                                            ,
+                                            X.Hidden()
+                                                .ID("hiddenRowversionFee")
+                                                .Value(Model._RedevanceValeur.RowVersionKey)
+                                                ,
+
+                                            X.Hidden()
+                                                .ID("txtRedevanceValeurID")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceValeur.ID : Guid.Empty)
+                                                ,
+
+                                                X.Panel()
+                                                 .ID("firstColFee")
+                                                 .Layout(LayoutType.Form)
+                                                 .Flex(1)
+                                                 .Items
+                                                 (
+
+
+                                                    X.ComboBox()
+                                                     .ID("_cmbRedevanceType")
+                                                     .TypeAhead(true)
+                                                     .QueryMode(DataLoadMode.Local)
+                                                     .TriggerAction(TriggerAction.All)
+                                                     .AllowBlank(true)
+                                                     .IndicatorCls("IndicatorRedStar")
+                                                     .IndicatorText("*")
+                                                     .FieldLabel("Type Of Fee")
+                                                     .DisplayField("Designation")
+                                                     .ListConfig(new BoundList { MinWidth = 300 })
+                                                     .ValueField("ID")
+                                                     .LabelAlign(LabelAlign.Right)
+                                                     .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew && Model._RedevanceValeur.RedevanceType != null ? Model._RedevanceValeur.RedevanceType.ID : (int?)null)
+                                                     .Store
+                                                     (
+                                                        X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                             X.Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                              new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                              new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                              new ModelField("Taux", ModelFieldType.Float) { Mapping = "Taux" }
+                                                            )
+                                                         )
+                                                        .Proxy
+                                                        (
+                                                           X.AjaxProxy()
+                                                           .Url(Url.Action("LoadRedevanceTypeActiveNotAuto", "RedevanceType"))
+                                                           .Reader(X.JsonReader().RootProperty("data"))
+                                                        )
+
+                                                    )
+                                                     .Listeners
+                                                     (
+
+                                                       ls =>
+                                                       {
+                                                           //ls.Change.Handler = "App.txtRate.setValue(0)";
+                                                           ls.Select.Handler = "SetRate();";
+                                                       }
+
+                                                    )
+                                                    ,
+
+
+                                                    X.TextField()
+                                                    .FieldLabel("Taux")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .ID("txtRate")
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowBlank(false)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceValeur.Taux : (decimal?)null)
+                                                    .Listeners
+                                                     (
+                                                       ls =>
+                                                       {
+                                                           ls.Change.Fn = "CalculAmount";
+                                                           ls.Blur.Handler = "if (App.txtRate.value && !App.txtRate.readOnly) {#{txtRate}.setValue(formatNumber(#{txtRate}.getValue()))}";
+                                                           ls.Focus.Handler = "if (App.txtRate.value && !App.txtRate.readOnly) { #{txtRate}.setRawValue(unformatNumber(#{txtRate}.getValue()));}";
+
+                                                       }
+
+                                                    ),
+                                                    X.TextField()
+                                                    .FieldLabel("Quantité (Kg)")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ID("txtQuantityFee")
+                                                    .AllowBlank(false)
+                                                    .ReadOnly(true)
+                                                    .Value((string)ViewData["Quantity"])
+                                                    .Listeners
+                                                     (
+                                                       ls =>
+                                                       {
+
+                                                           ls.AfterRender.Handler = "if (App.txtQuantityFee.value && App.txtQuantityFee.readOnly) {#{txtQuantityFee}.setValue(formatNumber(#{txtQuantityFee}.getValue()))}";
+
+                                                       }
+
+                                                    ),
+                                                     X.TextField()
+                                                    .FieldLabel("Number Of Container")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .HideTrigger(true)
+                                                    .ID("txtNumberContainerFee")
+                                                    .ReadOnly(true)
+                                                    .AllowBlank(false)
+                                                    .Value(ViewData["NbrContainer"])
+                                                    ,
+                                                     X.TextField()
+                                                    .FieldLabel("Montant (CFA)")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ReadOnly(true)
+                                                    .ID("txtAmountFee")
+                                                    .AllowBlank(false)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._RedevanceValeur.Montant : (decimal?)null)
+
+
+                                     //1stCol
+                                     )
+
+                                  //End first panel
+                                  )
+                    //End formPanel
+                    )
+            //End Windows
+            )
+            .Buttons
+                (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOkAdd")
+                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Validate" : "Ok")
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitOnAddFee");
+                            de.Click.Before = "return validAdd(App.RedevanceValeur_Detail.id); ";
+
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemRedevanceValeurID", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtRedevanceValeurID}.getValue()" });
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenExecModeFee}.getValue()" });
+
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemRedevanceTypeID", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbRedevanceType}.getValue()" });
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemMontant", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtAmountFee}.getRawValue()" });
+                            //de.Click.ExtraParams.Add(new Parameter { Name = "ItemTaux", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtRateFee}.getValue()" });
+                            de.Click.Confirmation.ConfirmRequest = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false;
+                            de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Fee : Edit Fee'; config.confirmation.message = 'Do you want to edit this item? ';";
+
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.RedevanceValeur_Detail.doClose()")
+                    .Cls("btncancel")
+
+                //End Button
+                )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var SetRate = function () {
+        var _taux = parseFloat(App._cmbRedevanceType.getSelectedRecord().data.Taux || 0);
+        App.txtRate.setValue(_taux);
+        CalculAmount();
+        if (_taux > 0 )
+            App.txtRate.setReadOnly(true);
+        else App.txtRate.setReadOnly(false);
+    };
+
+    var validAdd = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Fee : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = Number(App.txtAmountFee.value);
+
+        if (Ext.isNumeric(Amount) && parseFloat(Amount) < 0 ) {
+            Ext.Msg.show({ title: 'Fee : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+
+    };
+
+    var CalculAmount = function () {
+        console.log('ok');
+        var taux = unformatNumber(App.txtRate.value) || '';
+        var val = App._cmbRedevanceType.value;
+
+        if (!val || val == undefined || val == "") {
+
+            Ext.Msg.show({ title: 'Fee : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Select a type, please.', buttons: Ext.Msg.OK });
+            App.txtRate.setValue('');
+            return false;
+        }
+        else
+        {
+            var type = App._cmbRedevanceType.lastSelection[0].data.CalculType;
+
+            if(isNumeric(taux) && taux >= 0)
+            {
+                var Amount = 0;
+                if (type == "Kg") {
+                    var item = unformatNumber(App.txtQuantityFee.value);
+                    Amount = item * taux;
+                }
+                else if (type == "Tc") {
+                    var item = unformatNumber(App.txtNumberContainerFee.value);
+                    Amount = item * taux;
+                }
+                else if (type == "Do") {
+                    Amount = taux;
+                }
+                else {
+
+                }
+                App.txtAmountFee.setValue(formatNumber(Amount));
+            }
+            else
+            {
+                App.txtAmountFee.setValue('');
+
+            }
+        }
+
+
+
+    };
+
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+
+</script>
+
+

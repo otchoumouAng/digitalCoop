@@ -1,0 +1,230 @@
+﻿@model Tms.Classes.Business.Sales.EnregistrementDetailViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 25px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormDetailEnregistrement")
+    .Modal(true)
+    .Width(370)
+    .Resizable(false)
+    .AutoScroll(true)    
+    .Height(220)
+    .BodyPadding(5)
+    .Y(20)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Title("Registration Detail")
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Layout(LayoutType.Form)
+            .Items(                                           
+                    X.Hidden()
+                        .ID("txtEnregistrementDetailID")
+                        .Value(Model._EnregistrementDetail.ID),                                                                                                            
+                    X.TextField()
+                        .ID("txtDetNumber")
+                        .FieldLabel("Number")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._EnregistrementDetail.Numero : string.Empty)                        
+                        .LabelAlign(LabelAlign.Right),                                                                                                                                                                                                               
+                    X.FieldContainer()
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                        .FieldLabel("Tonnage(q) / Price(Euro)")
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*")
+                        .LabelAlign(LabelAlign.Right)
+                        .Items(
+                                X.TextField()
+                                    .ID("txtDetTonnage")
+                                    .Width(90)
+                                    .AllowBlank(false)
+                                    .MarginSpec("0 10 0 0")
+                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._EnregistrementDetail.TonnageAsString : string.Empty)
+                                    .Listeners(ls =>
+                                    {
+                                        ls.Change.Fn = "CalculDetAmountTonnage";
+                                        ls.Blur.Handler = "if (App.txtDetTonnage.value && !App.txtDetTonnage.readOnly) {#{txtDetTonnage}.setValue(formatNumber(#{txtDetTonnage}.getValue()))}";
+                                        ls.Focus.Handler = "if (App.txtDetTonnage.value && !App.txtDetTonnage.readOnly) { #{txtDetTonnage}.setRawValue(unformatNumber(#{txtDetTonnage}.getValue()));}";
+
+                                    }) ,
+                                X.TextField()
+                                    .ID("txtDetPrice")
+                                    .AllowBlank(false)
+                                    .Width(90)
+                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._EnregistrementDetail.PrixAsString : string.Empty)
+                                    .Listeners(ls =>
+                                    {
+                                        ls.Change.Fn = "CalculDetAmountPrice";
+                                        ls.Blur.Handler = "if (App.txtDetPrice.value && !App.txtDetPrice.readOnly) {#{txtDetPrice}.setValue(formatNumber(#{txtDetPrice}.getValue()))}";
+                                        ls.Focus.Handler = "if (App.txtDetPrice.value && !App.txtDetPrice.readOnly) { #{txtDetPrice}.setRawValue(unformatNumber(#{txtDetPrice}.getValue()));}";
+
+                                    })
+                        ),
+                    X.TextField()
+                        .ID("txtDetAmount")
+                        .FieldLabel("Amount(Euro)")
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._EnregistrementDetail.MontantAsString : string.Empty)
+                        .AllowBlank(false)                        
+                     
+                                       
+                    )                                                          
+            )
+            .Buttons
+            (
+                X.Button()
+                .Text("OK")
+                .ID("BtnDetOk")
+                .TabIndex(12)
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents
+                (
+
+                    de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitDetail");
+                        de.Click.Before = "return validDet(App.FormDetailEnregistrement.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                    }
+                ),
+
+
+                X.Button()
+                .TabIndex(13)                
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.FormDetailEnregistrement.doClose()")
+                .Cls("btncancel")
+
+            )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+<script type="text/javascript">
+
+    var validDet = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var AllFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!AllFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Sales Registration : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = Number(unformatNumber(App.txtDetAmount.value));
+
+        if(!Ext.isNumeric(Amount) && parseFloat(Amount) < 0 ) {
+            Ext.Msg.show({ title: 'Sales Registration : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+    var CalculDetAmountTonnage = function () {
+
+        var Tonnage = unformatNumber(App.txtDetTonnage.value) || '';
+
+        if (isNumeric(Tonnage) && Tonnage > 0)
+        {
+            var Price = unformatNumber(App.txtDetPrice.value) || '';
+
+            if(isNumeric(Price) && Price > 0)
+            {
+                var Amount = RoundDetInt(Tonnage * Price);
+
+                App.txtDetAmount.setValue(formatNumber(Amount));
+            }
+        }
+        else
+        {
+            App.txtDetTonnage.setValue('');
+            App.txtDetAmount.setValue('');
+        }
+
+    };
+
+    var CalculDetAmountPrice = function () {
+
+        var Price = unformatNumber(App.txtDetPrice.value) || '';
+
+        if (isNumeric(Price) && Price >= 0) {
+            var Tonnage = unformatNumber(App.txtDetTonnage.value) || '';
+
+            if (isNumeric(Tonnage) && Tonnage > 0) {
+                var Amount = RoundDetInt(Tonnage * Price);
+                App.txtDetAmount.setValue(formatNumber(Amount));
+            }
+            else
+            {
+                App.txtDetTonnage.setValue('');
+                App.txtDetAmount.setValue('');
+            }
+        }
+        else
+        {
+            App.txtDetPrice.setValue('');
+            App.txtDetAmount.setValue('');
+        }
+
+
+    };
+
+    var RoundDetInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var RoundIntDetSup = function (v) {
+        try {
+                if (v < 1000)
+                {
+                    var valeur = (v / 100);
+                    return RoundDetInt(valeur)*100;
+                }
+                else
+                {
+                    var valeur = (v / 1000);
+                    return RoundDetInt(valeur)*1000;
+                }
+        } catch (err) {
+            return 0;
+        }
+    };
+</script>
+
+

@@ -1,0 +1,627 @@
+﻿@model Tms.Classes.Business.Sales.RedevanceViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 25px;
+        min-height: 40px !important;
+    }
+
+    #txtAmountTotal-labelTextEl {
+        font-weight: bold;
+    }
+
+    #txtAmountTotal-inputEl {
+        text-align: left !important;
+        font-weight: bold !important;
+    }
+</style>
+<script type="text/javascript">
+
+
+    var Detail =
+    {
+        resetButtons: function () {
+
+            App.btnEditFee.disable();
+            App.btnRemoveFee.disable();
+
+            if (App.rowSelectionShipFees.hasSelection()) {
+
+
+                if (App.RedevancePermissionEdit.value == 'true' && App.rowSelectionShipFees.lastSelected.data.Auto == false && App.rowSelectionShipFees.lastSelected.data.Desactive == false )
+                    App.btnEditFee.enable();
+                else
+                    App.btnEditFee.disable();
+
+
+
+
+                if (App.RedevancePermissionRemove.value == 'true' && App.rowSelectionShipFees.lastSelected.data.Auto == false)
+                {
+                    if (App.rowSelectionShipFees.lastSelected.data.Desactive == false) {
+                        App.btnRemoveFee.setText("Remove");
+                        App.btnRemoveFee.setIconCls('glyphicon glyphicon-minus-sign red');
+                        App.btnRemoveFee.enable();
+                    } else {
+                        App.btnRemoveFee.setText("Reset");
+                        App.btnRemoveFee.setIconCls('glyphicon glyphicon-ok-sign green');
+                        App.btnRemoveFee.enable();
+                    }
+                }
+                else
+                {
+                    if (App.rowSelectionShipFees.lastSelected.data.Desactive == false) {
+                        App.btnRemoveFee.setText("Remove");
+                        App.btnRemoveFee.setIconCls('glyphicon glyphicon-minus-sign red');
+                        App.btnRemoveFee.disable();
+                    } else {
+                        App.btnRemoveFee.setText("Reset");
+                        App.btnRemoveFee.setIconCls('glyphicon glyphicon-ok-sign green');
+                        App.btnRemoveFee.disable();
+                    }
+                }
+
+
+
+
+            }
+            else {
+                App.btnRemoveFee.setText("Remove");
+                App.btnRemoveFee.setIconCls('glyphicon glyphicon-minus-sign red');
+                App.btnRemoveFee.disable();
+            }
+        }
+    }
+
+</script>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+           X.Window()
+            .ID("Redevance_Detail")
+            .Width(600)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(570)
+            .BodyPadding(20)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Modal(true)
+            .Y(5)
+            .Title("Redevance")
+            .Items
+            (
+                X.FormPanel()
+                           .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+                .Items(
+    #region "first panel"
+                        X.Panel()
+                            .Frame(false)
+                            .Border(false)
+                            .FrameHeader(false)
+                            .ID("pnlFlexEven1")
+                            .Layout(LayoutType.HBox)
+                            .MarginSpec("0 0 5 0")
+                            .Width(840)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items
+                            (
+                                X.Hidden()
+                                                .ID("hiddenExecMode")
+                                                .Value(Model._ExecMode)
+                                                ,
+                                                X.Hidden()
+                                                    .ID("hiddenRowversion")
+                                                    .Value(Model._Redevance.RowVersionKey)
+                                                    ,
+                                                X.Hidden()
+                                                    .ID("hiddenRtcTaux")
+                                                    .Value(Model._Redevance.TauxRtc),
+                                                X.Hidden()
+                                                    .ID("hiddenNumero")
+                                                    .Value(Model._Redevance.Numero)
+                                                    ,
+                                                X.Hidden()
+                                                    .ID("txtRedevanceID")
+                                                    .Value(Model._Redevance.ID)
+                                                    ,
+                                                X.Hidden()
+                                                    .ID("txtContratNumeroHidden")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.ContratNumero : string.Empty)
+                                                    ,
+                                                    X.Hidden().ID("RedevancePermissionRemove").Value(ViewData["RedevancePermissionRemove"]).ReadOnly(true),
+                                                    X.Hidden().ID("RedevancePermissionEdit").Value(ViewData["RedevancePermissionEdit"]).ReadOnly(true),
+
+                                                    X.Panel()
+                                                     .ID("firstColSF")
+                                                     .Layout(LayoutType.Form)
+                                                     //.Region(Region.East)
+                                                     //.Width(500)
+                                                     .Border(false)
+                                                     .MarginSpec("0 0 0 -300")
+                                                     .Items
+                                                     (
+                                                      X.FieldContainer().Layout(LayoutType.HBox)
+                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                        //.FieldLabel("Number")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Items(
+                                                                     X.Hidden()
+                                                                    .ID("txtNumber")
+                                                                    .Width(300)
+                                                                    .ReadOnly(true)
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.Numero : string.Empty)
+
+
+
+
+
+                                                        ),
+                                                         X.FieldContainer().Layout(LayoutType.HBox)
+                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                        .FieldLabel("Shipment Number")
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Items(
+                                                                     X.TextField()
+                                                                    .ID("txtShipmentNumber")
+                                                                    .Width(300)
+                                                                    .ReadOnly(true)
+                                                                    .MarginSpec("0 20 0 0")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.Embarquement.Numero : string.Empty)
+                                                                    ,
+                                                                     X.TextField()
+                                                                    .ID("txtEmbarquementID")
+                                                                    .Hidden(true)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.Embarquement.ID :Guid.Empty)
+                                                                    ,
+                                                                     X.TextField()
+                                                                    .ID("txtExportateurID")
+                                                                    .Hidden(true)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.Embarquement.Exportateur.ID : (int?)null)
+                                                                    ,
+                                                                     X.TextField()
+                                                                    .ID("txtExportateurNom")
+                                                                    .Hidden(true)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew  ? Model._Redevance.Embarquement.ExportateurNameAndCode : string.Empty)
+                                                                    ,
+                                                                    X.TextField()
+                                                                    .ID("txtQuantity")
+                                                                    .Hidden(true)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew  ? Model._Redevance.Embarquement.Quantite : (decimal?)null)
+                                                                    ,
+
+                                                                    X.TextField()
+                                                                    .ID("txtNbrContainer")
+                                                                    .Hidden(true)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.Embarquement.NbreConteneur : (int?)null)
+                                                                    ,
+
+                                                                    X.Button()
+
+                                                                        .Text("...")
+                                                                        .Height(20)
+                                                                        .Width(40)
+                                                                        .Disabled(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                                        .ID("btnSelectShipment")
+                                                                        .DirectEvents
+                                                                        (
+                                                                            de =>
+                                                                            {
+                                                                                de.Click.Url = Url.Action("OnSelectShipment");
+                                                                                de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available shipment')";
+                                                                                de.Click.EventMask.ShowMask = true;
+                                                                            }
+                                                                         )
+
+                                                        )
+
+
+
+                                         //1stCol
+                                         )
+
+
+                                      //End first panel
+                                      ),
+    #endregion
+
+                        X.Panel()
+
+                            .Frame(false)
+                            .Border(false)
+                            .ID("pnlFlexEven2")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Width(555)
+                                .Items(
+                                    X.Panel()
+                                    .Height(39)
+                                    //.Width(515)
+                                    .Layout(LayoutType.Fit)
+                                    .TopBar
+                                     (
+                                        new Toolbar()
+                                        {
+                                            Items =
+                                        {
+
+
+
+
+                                            X.Button()
+                                            .ID("btnAddFee")
+                                            .IconCls("glyphicon-plus red")
+                                            .Text("Ajouter")
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (bool)ViewData["RedevancePermissionAdd"] == false )? true : false)
+                                            .Disable(true)
+                                            .DirectEvents
+                                            (
+                                              de =>
+                                              {
+                                                de.Click.Url = Url.Action("OnAddFee");
+                                                de.Click.Success = "App.RedevanceValeur_Detail.setTitle('Fee : Add')";
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemQuantity", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtQuantity}.getValue()" });
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemNbrContainer", Mode = ParameterMode.Raw,Encode = false, Value = "#{txtNbrContainer}.getValue()" });
+                                                de.Click.EventMask.ShowMask = true;
+
+
+                                              }
+                                            )
+                                            ,
+
+                                            X.ToolbarSeparator(),
+
+
+                                            X.Button()
+                                            .ID("btnEditFee")
+                                             .IconCls("action_modify_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                            .Disabled(true)
+                                            .DirectEvents
+                                            (
+                                              de =>
+                                              {
+                                                de.Click.Url = Url.Action("OnEditFee");
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemQuantity", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtQuantity}.getValue()" });
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemNbrContainer", Mode = ParameterMode.Raw,Encode = false, Value = "#{txtNbrContainer}.getValue()" });
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailShipFees}.getSelectionModel().getSelection()[0].data" });
+                                                de.Click.Success = "App.Fee_Detail.setTitle('Fee : Edit')";
+                                                de.Click.EventMask.ShowMask = true;
+
+                                              }
+                                            ),
+
+                                             X.ToolbarSeparator(),
+
+                                             X.Button()
+                                            .ID("btnRemoveFee")
+                                            .IconCls("glyphicon glyphicon-minus-sign red")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text("Retirer")
+                                            .Disabled(true)
+                                            .DirectEvents
+                                            (
+                                              de =>
+                                              {
+                                                de.Click.Url = Url.Action("OnRemoveFee");
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailShipFees}.getSelectionModel().getSelection()[0].data" });
+                                                de.Click.EventMask.ShowMask = true;
+                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                de.Click.Confirmation.BeforeConfirm  = "config.confirmation.title = 'Fee  : Retirer'; config.confirmation.message = 'Do you want to remove this item? ';";
+                                              }
+                                            )
+
+                                            ,
+                                            X.ToolbarFill(),
+
+                                            X.Button()
+                                            .ID("btnRefreshFee")
+                                             .IconCls("action_refresh_01")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Hidden(true)
+                                            .Text("Recalculate")
+                                            .Disabled((Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (bool)ViewData["RedevancePermissionRefresh"] == false )|| (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew || (bool)ViewData["RedevancePermissionRefresh"] == false ) ? true : false)
+                                            .DirectEvents
+                                            (
+                                              de =>
+                                              {
+                                                de.Click.Url = Url.Action("OnRefreshFee");
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "storeListFees", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDetailShipFees.getRowsValues({selectedOnly : false})" });
+                                                 de.Click.ExtraParams.Add(new Parameter { Name = "ItemQuantity", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtQuantity}.getValue()" });
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemNbrContainer", Mode = ParameterMode.Raw,Encode = false, Value = "#{txtNbrContainer}.getValue()" });
+
+                                                de.Click.EventMask.ShowMask = true;
+                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                de.Click.Confirmation.BeforeConfirm  = "config.confirmation.title = 'Fee  : Refresh'; config.confirmation.message = 'Do you want to recalculate ? ';";
+                                              }
+                                            )
+
+
+
+
+                                         }
+                                        }
+
+                                     ),
+
+                                      X.GridPanel()
+                                      .Layout(LayoutType.Fit)
+                                      .ID("grpDetailShipFees")
+                                      .Frame(true)
+                                      .Height(190)
+                                      .AllowDeselect(true)
+                                      .Store
+                                      (
+                                        X.StoreFor<Tms.Classes.Business.Sales.RedevanceValeur>()
+                                        .ID("storeListShipFees")
+                                        .Proxy
+                                         (
+                                           Html.X().AjaxProxy()
+                                           .Url(Url.Action("LoadListOfFees"))
+                                           .Reader(Html.X().JsonReader().RootProperty("data"))
+                                         )
+                                          .Parameters
+                                         (
+                                            ps =>
+                                            {
+                                                ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecMode}.getValue()", ParameterMode.Raw));
+                                                ps.Add(new StoreParameter("ItemRedevanceID", "#{txtRedevanceID}.getValue()", ParameterMode.Raw));
+                                            }
+                                         )
+                                        .Listeners
+                                            (
+                                                l =>
+                                                {
+                                                    l.Add.Fn = "ChargeShipment";
+                                                    l.Load.Fn = "ChargeShipment";
+                                                    l.Update.Fn = "ChargeShipment";
+                                                    l.Remove.Fn = "ChargeShipment";
+                                                }
+                                            )
+                                       )
+
+                                       .ColumnModel
+                                       (
+                                           Html.X().Column().Text("Tax").DataIndex("RedevanceTypeAsString").Flex(2),
+                                           Html.X().Column().Text("Taux").DataIndex("TauxAsString").Flex(1),
+                                           Html.X().Column().Text("Montant (CFA)").DataIndex("MontantAsString").Flex(2)
+
+
+                                       )
+                                       .SelectionModel
+                                       (
+                                            X.RowSelectionModel()
+                                            .ID("rowSelectionShipFees")
+                                            .Mode(SelectionMode.Single)
+                                            .AllowDeselect(true)
+                                       )
+                                       .Listeners(l =>
+                                       {
+                                           if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                           {
+                                               l.Select.Fn = "Detail.resetButtons";
+                                               l.Deselect.Fn = "Detail.resetButtons";
+
+
+                                           }
+
+                                       })
+                                )
+
+
+            //End Panel
+            ,
+             X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    //.FrameHeader(false)
+                    .ID("pnlFlexEvenSw2")
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.End })
+                    .Items
+                    (
+
+                        X.Container()
+                            .Layout(LayoutType.VBox)
+                            .MarginSpec("5 0 0 0")
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Right, Pack = BoxPack.End })
+                            .Items(
+                                        X.TextField()
+                                            .ID("txtAmount")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .FieldLabel("Amount")
+                                            .ReadOnly(true)
+                                            .LabelWidth(140)
+                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsNetAsString : string.Empty)
+                                                .Listeners(ls =>
+                                                {
+                                                    //ls..Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) {#{txtAmount}.setValue(formatNumber(#{txtAmount}.getValue()))}";
+                                                    ls.Blur.Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) {#{txtAmount}.setValue(formatNumber(#{txtAmount}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtAmount.value && !App.txtAmount.readOnly) { #{txtAmount}.setRawValue(unformatNumber(#{txtAmount}.getValue()));}";
+                                                }),
+                                        X.TextField()
+                                            .ID("txtTaxeRtc")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .FieldLabel("VAT RTC")
+                                            .ReadOnly(true)
+                                            .LabelWidth(140)
+                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsNetAsString : string.Empty)
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Blur.Handler = "if (App.txtTaxeRtc.value && !App.txtTaxeRtc.readOnly) {#{txtTaxeRtc}.setValue(formatNumber(#{txtTaxeRtc}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtTaxeRtc.value && !App.txtTaxeRtc.readOnly) { #{txtTaxeRtc}.setRawValue(unformatNumber(#{txtTaxeRtc}.getValue()));}";
+                                                }),
+                                        X.TextField()
+                                            .ID("txtAmountTotal")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .AllowBlank(false)
+                                            .FieldLabel("Total Montant (CFA)")
+                                            .ReadOnly(true)
+                                            .LabelWidth(140)
+                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Embarquement.PoidsNetAsString : string.Empty)
+                                                .Listeners(ls =>
+                                                {
+
+                                                    ls.Blur.Handler = "if (App.txtAmountTotal.value && !App.txtAmountTotal.readOnly) {#{txtAmountTotal}.setValue(formatNumber(#{txtAmountTotal}.getValue()))}";
+                                                    ls.Focus.Handler = "if (App.txtAmountTotal.value && !App.txtAmountTotal.readOnly) { #{txtAmountTotal}.setRawValue(unformatNumber(#{txtAmountTotal}.getValue()));}";
+
+                                                })
+                                )
+
+
+
+
+                    //Second Panel
+                    ),
+            X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEven3")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("10 0 0 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+
+                            X.Panel()
+                                .ID("ColShipmentFees3")
+                                .Layout(LayoutType.Form)
+                                .Width(450)
+                                .MarginSpec("0 0 0 -100")
+                                .Items
+                                (
+
+                                X.TextArea()
+                                .ID("txtComment")
+                                .FieldLabel("Commentaire")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Redevance.Commentaire : string.Empty)
+                                 //1stCol
+                                 )
+
+
+                      //End first panel
+                      )
+
+
+             //End form panel
+
+             )
+            //End Windows
+            )
+            .Buttons
+            (
+                    X.Button()
+                    .Text("OK")
+                    .ID("BtnOk")
+                    .TabIndex(12)
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents
+                    (
+
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitFormMethod");
+                            de.Click.Before = "return validNew(App.Redevance_Detail.id);";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "storeListFees", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpDetailShipFees.getRowsValues({selectedOnly : false})" });
+
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                        }
+                    ),
+
+
+                    X.Button()
+                    .TabIndex(13)
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Redevance_Detail.doClose()")
+                    .Cls("btncancel")
+
+            )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Redevance : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        if (App.grpDetailShipFees.getRowsValues().lenght <= 0) {
+
+            Ext.Msg.show({ title: 'Redevance : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'No fee added.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+    var ChargeShipment = function () {
+        var el = App.grpDetailShipFees.getRowsValues();
+
+        var amount = parseFloat(App.storeListShipFees.sum('Montant')) || 0;
+        var _taux = parseFloat(App.hiddenRtcTaux.value) || 0;
+        var _nbConteneur = App.txtNbrContainer.value;
+        /*var _taxeRtc = amount * parseFloat(_nbConteneur) * _taux;*/
+        var _taxeRtc = amount * _taux;
+        var _totalAmount = amount + _taxeRtc;
+        App.txtAmount.setValue(formatNumber(amount));
+        App.txtTaxeRtc.setValue(formatNumber(_taxeRtc));
+        App.txtAmountTotal.setValue(formatNumber(_totalAmount));
+
+    };
+
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+
+
+</script>
+

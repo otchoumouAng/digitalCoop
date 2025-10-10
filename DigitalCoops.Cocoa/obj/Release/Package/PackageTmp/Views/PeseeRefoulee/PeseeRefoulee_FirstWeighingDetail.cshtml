@@ -1,0 +1,504 @@
+﻿@model Tms.Classes.Business.PeseeRefouleeViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">        
+        .header_style {
+            background-color: white;            
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        #txtFirstGrossWeight-inputEl{
+            font-size:30px !important;
+            font-weight: bold !important;
+            height: 40px !important;
+            text-align:center !important;
+            line-height: 30px !important;
+        }
+        .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 100px !important;
+}
+       
+    </style>
+    <script type="text/javascript">
+        
+        var setCtrlIsRequired = function (field, value)
+        {
+            field.allowBlank = !value;
+
+            field.setIndicator("");
+            field.setIndicatorCls('');
+            field.showIndicator();
+
+            if (value == true)
+            {
+
+                field.setIndicator("*");
+                field.setIndicatorCls('IndicatorRedStar');
+                field.showIndicator();
+            }
+        };
+             
+        var calculerNbrSacsAcceptes = function ()
+        {
+            if (App.txtUnloadledBags.value != '' && App.txtRejectedBags.value != '')
+            {
+                var sacsDecharges = parseInt(App.txtUnloadledBags.value, 10)||0;
+                var sacsRejetes = parseInt(App.txtRejectedBags.value, 10)||0;
+
+                App.txtAcceptedBags.setValue(sacsDecharges - sacsRejetes);
+            }
+        };
+        
+        var calculerTareSacsAcceptes = function ()
+        {
+            if (App.txtAcceptedBags.value != '' )
+            {
+                var sacsAcceptes = parseInt(App.txtAcceptedBags.value, 10) || 0;
+                var tareSacsUnitaire = parseInt(App.hiddenTareSacsLivraison.value, 10) || 0;
+
+                App.txtTareOfBags.setValue(sacsAcceptes * tareSacsUnitaire);
+
+                calculerPoidsBrut();
+            }
+        };
+        
+        var calculerPoidsNet = function ()
+        {
+            if (App.txtDeliveryGrossWeight.value != '' && App.txtTareOfBags.value != '' && App.txtTareOfPallets.value != '')
+            {
+
+                var grossWeight = parseInt(App.txtDeliveryGrossWeight.value, 10) || 0;
+                var tareBags = parseInt(App.txtTareOfBags.value, 10) || 0;
+                var tarePallets = parseInt(App.txtTareOfPallets.value, 10) || 0;
+                var netWeight = grossWeight - tareBags - tarePallets;
+
+                console.log(App.txtDeliveryNetWeight.value);
+
+                App.txtDeliveryNetWeight.setValue(netWeight);
+
+            }
+        };
+
+        var calculerPoidsBrut = function () {
+            if (App.txtFirstGrossWeight.value != '' && App.txtSecondGrossWeight.value != '') {
+
+                var firstWeight = parseInt(App.txtFirstGrossWeight.value, 10) || 0;
+                var secondWeight = parseInt(App.txtSecondGrossWeight.value, 10) || 0;
+
+                var poidsBrut = Math.abs(firstWeight - secondWeight);
+                /*var tarePalletes = parseInt(App.txtTareOfPallets.value, 10);
+                var tareSacs = parseInt(App.txtTareOfBags.value, 10);*/
+
+                App.txtDeliveryGrossWeight.setValue(poidsBrut);
+
+
+                calculerPoidsNet();
+            }
+        };
+
+
+        /*var getUnWeighingDeliveryByNumber = function (object, evt) {
+            if (evt.keyCode == 13) {
+                App.txtDeliveryNumber.fireEvent('blur');
+            }
+        };*/
+    </script>
+</head>
+@(X.FormPanel()
+                    .Items
+                    (
+
+
+                                X.Window()
+                                .ID("frmPesee")
+                                .Width(720)
+                                .Resizable(false)
+                                .Height(440)
+                                .CloseAction(Ext.Net.CloseAction.Destroy)
+                                .Listeners(l =>
+                                {
+                                    l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                                    l.Close.Handler = "App.TmsViewPort.unmask();";
+
+                                    // disable order controls
+                                    l.Show.Handler = "Ext.onReady(function() { "
+                                                                + "  "
+                                                                + "}); ";
+
+                                })
+                                //.X(200)
+                                .Y(20)
+                                .Title("1ère Pesée : Nouveau")
+                                .Layout(LayoutType.VBox)
+                                .BodyPadding(5)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                .Items
+                                (
+                                        X.Panel()
+                                            .ID("pnlFlexEven")
+                                            .Layout(LayoutType.VBox)
+                                                //.HeaderConfig(new PanelHeader { Cls = "header_style" })
+                                                //.TitleConfig(new PanelTitle { MaxHeight = 5, Text = "Info Livraison", Cls = "title_style" })
+                                                .Frame(true)
+                                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                            .MarginSpec("0 0 5 0")
+                                            .Items
+                                            (
+
+                                                X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+
+                                                X.Hidden().ID("hiddenID").Value(Model._Pesee.ID),
+
+                                                X.Hidden().ID("hiddenIsManual").Value(!Model.IsScaleWeighing),
+
+                                                X.Hidden().ID("hiddenIsFirstWeighing").Value(Model.IsFirstWeighing),
+
+                                                X.Hidden().ID("hiddenLivraisonID"),
+
+                                                X.Hidden().ID("hiddenDestinationID"),
+
+                                                X.Hidden().ID("hiddenCampagne"),
+
+                                                X.Hidden().ID("hiddenLivraisonTypeID"),
+
+                                                X.Hidden().ID("hiddenBasculeID").Value(Model._Bascule.ID),
+
+                                                 X.Hidden().ID("hiddenTareSacsLivraison"),
+
+                                                X.Hidden().ID("hiddenRowversion").Value(Model._Pesee.RowVersionKey),
+                                                X.Label().Text("Info Livraison").Margin(5),
+                                                X.Container()
+                                                    .Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .Items(
+                                                X.Container()
+                                                .ID("firstLine")
+                                                .Flex(1)
+                                                .Layout(LayoutType.Form)
+                                                .Items
+                                                (
+                                                    X.TextField()
+                                                                  .FieldLabel("Liv N°")
+                                                                  .LabelAlign(LabelAlign.Right)
+                                                                  .ID("txtDeliveryNumber")
+                                                                  .AllowBlank(false)
+                                                                   .IndicatorCls("IndicatorRedStar")
+                                                                   .IndicatorText("*")
+                                                                  .ReadOnly(!Model.IsFirstWeighing)
+                                                                  .Listeners
+                                                                  (
+                                                                    li =>
+                                                                    {
+                                                                        li.SpecialKey.Fn = "getUnWeighingDeliveryByNumber";
+                                                                    }
+                                                                  )
+                                                                  //.DirectEvents
+                                                                  //(
+                                                                  //  de =>
+                                                                  //  {
+                                                                  //      de.Blur.Url = 
+                                                                  //      de.Blur.ExtraParams.Add(new Parameter { Name = "ItemDeliveryNumber", Value = "#{txtDeliveryNumber}.getValue()", Mode = ParameterMode.Raw, Encode = false });
+                                                                  //      de.Blur.EventMask.ShowMask = true;
+                                                                  //  }
+                                                                  //)
+                                                                  ,
+                                                    X.Button().ID("BtnSearchRejDeliveryInfo").Text("OK").Hidden(true)
+                                                            .DirectEvents(de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("GetFirstWeighingByDeliveryNumber", "PeseeRefoulee");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemDeliveryNumber", Mode = ParameterMode.Raw, Value = "#{txtDeliveryNumber}.getValue()" });
+                                                                de.Blur.EventMask.ShowMask = true;
+
+                                                            }),
+                                                    X.TextField()
+                                                                  .FieldLabel("Type de livraison")
+                                                                  .LabelAlign(LabelAlign.Right)
+                                                                  .ID("txtDeliveryType")
+                                                                  .ReadOnly(true)
+                                                                  ,
+                                                    X.TextField()
+                                                                    .FieldLabel("Immatriculation")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ID("txtTruckID")
+                                                                    .ReadOnly(true)
+
+                                                                  ,
+                                                    X.TextField()
+                                                                  .FieldLabel("Fournisseur")
+                                                                  .LabelAlign(LabelAlign.Right)
+                                                                  .ID("txtSupplierName")
+                                                                  .ReadOnly(true)
+
+                                                    ),
+                                            X.Container()
+                                            .ID("")
+                                            .Layout(LayoutType.Form)
+                                            .Flex(1)
+                                            .Items
+                                            (
+                                                     X.TextField()
+                                                            .FieldLabel("Chauffeur")
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .ID("txtDriverName")
+                                                            .ReadOnly(true)
+                                                            ,
+                                                             X.TextField()
+                                                             .FieldLabel("Type de Sacs")
+                                                             .LabelAlign(LabelAlign.Right)
+                                                             .ID("txtTypeOfBags")
+                                                             .ReadOnly(true)
+                                                              ,
+                                                               X.NumberField()
+                                                              .FieldLabel("Ton. est. (kg)")
+                                                              .LabelAlign(LabelAlign.Right)
+                                                              .HideTrigger(true)
+                                                              .ID("txtEstimatedTonnage")
+                                                              .ReadOnly(true)
+
+                                            )
+                                            )
+                                        ) ,
+
+                                                X.Container()
+                                                .ID("secondLine")
+                                                .Layout(LayoutType.HBox)
+                                                .MarginSpec("5 0 0 0")
+                                                //Frame(true)
+                                                //.Border(true)                                                
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch,Pack = BoxPack.Center })
+                                                .Items
+                                                (
+                                                    X.Panel()
+                                                    .Layout(LayoutType.VBox)
+                                                    .Flex(1)
+                                                    .Frame(true)
+                                                    .MarginSpec("0 2 0 0")
+                                                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                                                    .Items(
+                                                        X.Label().Text("Previous Weighing infos").Margin(5),
+                                                    X.Panel()
+                                                        .ID("firstWeighingCol")
+                                                        .Layout(LayoutType.Form)
+                                                        .Flex(1)
+                                                        //.MarginSpec("0 2 0 0")
+                                                        //.Border(true)                                                        
+                                                        .PaddingSpec("0 30 0 30")
+                                                        //.HeaderConfig(new PanelHeader { Cls = "header_style" })
+                                                        //.TitleConfig(new PanelTitle { MaxHeight = 5, Text = "Previous Weighing infos", Cls = "title_style" })
+                                                        //.Width(318)
+                                                        .Items
+                                                        (
+
+                                                                  X.Component()
+                                                                  .Height(20)
+                                                                  ,
+
+                                                                  X.TextField()
+                                                                  .FieldLabel("Nbr Bags Kept")
+                                                                  .LabelAlign(LabelAlign.Right)
+                                                                  .ID("txtNbrBagsKept")
+                                                                  .ReadOnly(true) ,
+
+                                                                   X.TextField()
+                                                                  .FieldLabel("Poids Brut")
+                                                                  .LabelAlign(LabelAlign.Right)
+                                                                  .ID("txtPreviousGrossWeight")
+                                                                  .ReadOnly(true)
+                                                        )
+                                                        )
+                                                        ,
+                                                    X.Panel()
+                                                    .Layout(LayoutType.VBox)
+                                                    .Flex(1)
+                                                    .Frame(true)
+                                                    .MarginSpec("0 0 0 2")
+                                                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                                                    .Items(
+                                                        X.Label().Text("1ere Pesée").Margin(5),
+                                                         X.Panel()
+                                                        .ID("secondWeighingCol")
+                                                        .Layout(LayoutType.Form)
+                                                        //.MarginSpec("0 0 0 2")
+                                                        .Flex(1)
+                                                        //.MaxWidth(320)                                                        
+                                                        //.FrameHeader(false)
+                                                        .PaddingSpec("0 10 0 20")
+                                                        //.HeaderConfig(new PanelHeader { Cls = "header_style" })
+                                                        //.TitleConfig(new PanelTitle { MaxHeight = 5, Text = "1ere Pesée", Cls = "title_style" })
+                                                        //.Border(true)
+                                                        //.Height(210)
+                                                        //.Width(355)
+                                                        .Items
+                                                        (
+                                                                         X.NumberField()
+                                                                          .FieldLabel("Pesée N°")
+                                                                          .LabelAlign(LabelAlign.Right)
+                                                                          .HideTrigger(true)
+                                                                          .ID("txtFirstWeighingNumber")
+                                                                          .ReadOnly(true)
+
+                                                                          ,
+
+                                                                          X.FieldContainer()
+                                                                         .FieldLabel("Date / Heure")
+                                                                         .LabelAlign(LabelAlign.Right)
+                                                                         .Layout(LayoutType.HBox)
+                                                                         .Items
+                                                                         (
+                                                                                X.DateField()
+                                                                                .ID("dtfFirstWeighingDate")
+                                                                                .Width(110)
+                                                                                .ReadOnly(!Model.IsFirstWeighing || Model.IsScaleWeighing)
+                                                                                .SelectedDate(DateTime.Now)
+
+                                                                                ,
+
+                                                                                X.TimeField()
+                                                                                .ID("tmfFirstWeighing")
+                                                                                .ReadOnly(!Model.IsFirstWeighing || Model.IsScaleWeighing)
+                                                                                .SelectedTime(TimeSpan.FromTicks(DateTime.Now.Ticks))
+                                                                                .Width(90)
+                                                                                .MarginSpec("0 0 0 5")
+                                                                         )
+
+                                                                         ,
+
+                                                                    X.NumberField()
+                                                                        .ReadOnly(!Model.IsDevelopmentEnvironment)
+                                                                        .FieldLabel("Weighing (Kg)")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .FieldCls("weighingCapture")
+                                                                        .ID("txtFirstGrossWeight")
+                                                                        .MinValue(0)
+                                                                        .HideTrigger(true)
+                                                                        .AllowBlank(false)
+                                                                        .IndicatorCls("IndicatorRedStar")
+                                                                        .IndicatorText("*")
+
+
+                                                                        ,
+                                                                    X.FieldContainer()
+                                                                        .Layout(LayoutType.VBox)
+                                                                        .Width(150)
+                                                                        .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Center })
+                                                                        .Items(
+                                                                                X.Button()
+                                                                                    .Text("Lire")
+                                                                                    .ID("btnFirstWeightRead")
+                                                                                    .Hidden(!Model.IsFirstWeighing)
+                                                                                    //.Height(40)
+                                                                                    .Width(100)
+                                                                                    .DirectEvents
+                                                                                    (
+                                                                                        de =>
+                                                                                        {
+                                                                                            de.Click.Url = Url.Action("OnCaptureFirstWeight");
+                                                                                            de.Click.EventMask.ShowMask = true;
+                                                                                        }
+                                                                                    )
+                                                                )
+                                                            )
+                                            )
+                                        )
+
+                            )
+                            .Buttons
+                            (
+                                X.Button().Text("OK").ID("BtnOk")
+                                .DirectEvents(de =>
+                                {
+                                    de.Click.Url = Url.Action("SubmitFormFirstMethod");
+                                    de.Click.Before = "return validNew(App.frmPesee.id);";
+                                })
+                                    ,
+                                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.frmPesee.doClose()").Cls("btncancel")
+                            )
+     )
+
+)
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{frmPesee}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+
+
+    var getUnWeighingDeliveryByNumber = function (f, e) {
+        if (e.getKey() == e.ENTER || e.getKey() === 9) {
+            /*Ext.net.DirectMethod.request({ url: "/DeliveryCoding/SelectDeliveryInfo"});*/
+            App.BtnSearchRejDeliveryInfo.fireEvent('click', App.BtnSearchRejDeliveryInfo);
+            e.stopEvent();
+        }
+    };
+
+
+
+
+    var setExecMode = function (winId) {
+
+
+        var TextFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textfield') || [];
+        var ComboBoxArray = Ext.ComponentQuery.query('window[id="' + winId + '"] combobox') || [];
+        var DateFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] datefield') || [];
+        var TextAreaArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textarea') || [];
+
+        /*Ensuite nous concatenons tous les tableaux obtenus obtenus
+        */
+        var allCustomComponentsOnWindowArray = TextFieldArray.concat(ComboBoxArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(DateFieldArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(TextAreaArray);
+
+        if (allCustomComponentsOnWindowArray.length > 0)
+        {
+
+            var flag = Ext.each(allCustomComponentsOnWindowArray,
+                            function (item, index, objectItSelf)
+                            {
+                                item.setReadOnly(false);
+
+                                if (App.hiddenExecMode.value == 'Consult')
+                                    item.setReadOnly(true);
+
+                            }
+                     );
+
+            return (flag === true);
+        }
+
+
+    };
+</script>
+
+
+
+
+

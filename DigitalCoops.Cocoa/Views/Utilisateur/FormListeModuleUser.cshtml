@@ -1,0 +1,114 @@
+﻿
+@model Tms.Classes.Security.Utilisateur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+    .Items(
+            X.Window()
+            .ID("FormListeModuleUser")
+            .Width(700)
+            .Resizable(false)
+            .Height(500)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            //.Listeners(l =>
+            //{
+            //    l.Close.Handler = "App.TmsViewPort.unmask();";
+            //})
+            .X(450)
+            .Y(30)
+            .Title("User : Select Modules")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+            .Items(
+                    X.Hidden().ID("TxtIDUserToModule").Value(Model.IDUtilisateur),
+                    X.Panel()
+                        .Layout(LayoutType.Fit)                        
+                        .ID("grpListeModuleToUserContainer")
+                    .TopBar(new Toolbar()
+                    {
+                        Items = {
+                                    X.Button()
+                                        .ID("BtnRefreshListUserModule")
+                                        .IconCls("action_new_02")
+                                        .Border(false)
+                                        .Cls("ButtonStyle")
+                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                        .Disable(false)
+                                        .DirectEvents( de =>{
+                                            de.Click.Url  = Url.Action("AddRolToUser");
+                                            de.Click.EventMask.ShowMask = true;
+                                        } )
+                                }
+                    })
+                    .Items(                            
+                            X.GridPanel()
+                            .ID("grpListeModuleToUser")
+                            .Region(Region.Center)
+                            .ForceFit(false)        
+                            .Height(360)                    
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Security.Module>().ID("storeListeModuleToUser")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectToUser", "Module"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(
+                                            ps => ps.Add(new StoreParameter("ItemUser", "#{TxtIDUserToModule}.getRawValue()", ParameterMode.Raw))
+                                        )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("Application").DataIndex("ApplicationAsString").Flex(1),
+                                        Html.X().Column().Text("Module").DataIndex("ModuleAsString").Flex(1),
+                                        Html.X().Column().Text("Description").DataIndex("Description").Flex(1)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )                                        
+
+                            )
+    
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitListModuleToUser")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListeModule");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeModuleToUser.getRowsValues({selectedOnly : true})" });
+
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormListeModuleUser.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+
+
+
+
+

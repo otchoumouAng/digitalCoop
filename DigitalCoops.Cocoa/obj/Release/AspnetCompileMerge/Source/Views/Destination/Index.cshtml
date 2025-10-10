@@ -1,0 +1,418 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 100px !important;
+}
+</style>
+<script type="text/javascript" src="~/Scripts/renderers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeDestination.columnManager.getColumns(), App.grpListeDestination.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var GetNbrStoreRows = function () {
+        var nbr = App.grpListeDestination.getRowsValues().length;
+        App.LblResumeDestination.setText(nbr + ' Destination(s)');        
+    };
+
+    var SetCriteriaTitle = function (status, type) {
+
+        App.DestinationCriteriaPanel.title = "";
+        var texttitle = "";        
+        if (type) texttitle += "Type : " + type;
+        if (status) texttitle += " | Show only active Destination : YES ";
+        else texttitle += " | Show only active Destination : NO ";
+        
+
+        App.DestinationCriteriaPanel.setTitle(texttitle);
+    };
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        //console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red'; // glyphicon glyphicon-remove red
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue'; // glyphicon glyphicon-file blue
+            }
+        },
+        resetButtons: function () {
+
+            if (App.rowSelectionDestination.hasSelection()) {
+
+                if (App.DsthiddenPermModifier.value == 'true')
+                    App.btnModifyDestination.enable();
+
+                if (App.DsthiddenPermDesactiver.value == 'true')
+                    App.mnuCancelDestination.enable();
+
+                var isDisabled = App.rowSelectionDestination.selected.items[0].data.Desactive;
+
+                if (isDisabled === true) {
+                    App.mnuCancelDestination.setText('Activer');
+                    App.btnModifyDestination.disable();
+
+                    if (App.DsthiddenPermActiver.value == 'true')
+                        App.mnuCancelDestination.enable();
+
+                    App.mnuCancelDestination.setIconCls('glyphicon glyphicon-ok green');
+                }
+                else {
+                    if (App.DsthiddenPermModifier.value == 'true')
+                        App.btnModifyDestination.enable();
+
+                    App.mnuCancelDestination.setText('Annuler');
+                    App.mnuCancelDestination.setIconCls('glyphicon glyphicon-remove red');
+                }
+
+            } else {
+
+                App.btnModifyDestination.disable();                
+                App.mnuCancelDestination.disable();
+
+            }
+        }
+    }
+
+
+</script>
+
+
+@model Tms.Classes.Shared.Destination
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                            .Layout(LayoutType.Border)
+                            .ID("TmsViewPort")
+                            .Items(
+                                X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+                            X.Hidden().ID("DsthiddenPermCreer").ReadOnly(true),
+                            X.Hidden().ID("DsthiddenPermModifier").ReadOnly(true),
+                            X.Hidden().ID("DsthiddenPermDesactiver").ReadOnly(true),
+                            X.Hidden().ID("DsthiddenPermActiver").ReadOnly(true),
+                            X.Hidden().ID("DsthiddenPermExporterExcel").ReadOnly(true),
+                            X.Hidden().ID("DsthiddenPermOverview").ReadOnly(true),
+
+                                X.Panel()
+                                    .ID("pnlNorth")
+                                    .Region(Region.North)
+                                    .Layout(LayoutType.Border)
+                                    .TopBar(new Toolbar()
+                                    {
+                                        Items = { X.Button()
+                            .ID("btnFilterDestination")
+                            .IconCls("action_filter_02")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                            .Disabled(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("OnFilter");
+                                de.Click.EventMask.ShowMask = true;
+                                } ),
+
+                            X.Button()
+                            .ID("btnRefreshDestination")
+                            .IconCls("action_refresh_01")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("onRefresh");
+
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Value= "#{TxtStatus}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemDestinationType", Value= "#{CmbDestinationType}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.Success = "SetCriteriaTitle(App.TxtStatus.value, App.CmbDestinationType.rawValue);";
+                                de.Click.EventMask.ShowMask = true;
+
+
+                            } ),
+
+                                 X.Button()
+                                .ID("btnNewDestination")
+                                .IconCls("action_new_02")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents( de =>{
+                de.Click.Url  = Url.Action("OnAdd");
+                                    de.Click.Success = "App.FormDestination.setTitle('Destination : Nouveau')";
+                de.Click.EventMask.ShowMask = true;
+            } ),
+
+                             X.Button()
+                            .ID("btnModifyDestination")
+                            .IconCls("action_modify_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disabled(true)
+                            .DirectEvents( de =>{
+                de.Click.Url  = Url.Action("OnEdit");
+                                de.Click.Success = "App.FormDestination.setTitle('Destination : Modifier')";
+                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeDestination}.getSelectionModel().getSelection()[0].data"});
+                de.Click.EventMask.ShowMask = true;
+            } ),
+
+
+                         //        X.SplitButton()
+                         //       .ID("btnPrint")
+                         //       .IconCls("action_print_02")
+                         //       .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                         //       .Disable(false)
+                         //       .Cls("ButtonStyle")
+                         //       .Border(false)
+                         //       .Menu(new Menu()
+                         //       {
+                         //           Items =
+                         //           {
+
+                                        
+                         //}
+
+                         //       })
+                         //       ,
+
+                                X.ToolbarFill(),
+
+                                 X.Button()
+                                .ID("btnActions")
+                                .Text("Actions")
+                                .Border(false)
+                                .Cls("ButtonStyle")
+                                .IconCls("menu_04")
+                                .Disable(false)
+                                 .Menu(new Menu()
+                                 {
+                                     Items = {
+                                         X.MenuItem()
+                                            .ID("mnuExportListDestination")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Icon(Icon.PageExcel)
+                                            .Handler("SetExcelList();"),
+                                                X.MenuItem()
+                                                .ID("mnuCancelDestination")
+                                                .IconCls("glyphicon glyphicon-remove red")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                                .Cls("ButtonStyle")
+                                                .Border(false)
+                                                .Disabled(true)
+                                                .DirectEvents(de =>
+                                                {
+                                                    de.Click.Url = Url.Action("OnActivateDeactivate");
+                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeDestination}.getSelectionModel().getSelection()[0].data" });
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.Title = "Destination";
+                                                    de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeDestination}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                                    de.Click.Success = "Overview.resetButtons();";
+                                                })
+
+                                                }
+                                        })
+                                            }
+                                    })
+
+                                        ,
+                                        X.FormPanel()
+                                        .ID("DestinationCriteriaPanel")
+                                        .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Destination - overview" })
+                                        .Region(Region.North)
+                                        .Floatable(false)
+                                       .Border(false)
+                                       .Collapsed(true)
+                                       .Collapsible(true)
+                                       //.CollapsedCls("panelcollapse")
+                                       .BodyPadding(5)
+                                       .Frame(true)
+                                       .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+                                        .Items(
+
+                                            X.Panel()
+                                                .Border(false)
+                                                //.Frame(true)
+                                                //.Margin(10)
+                                                .Width(500)
+                                                //.DefaultAnchor("100%")
+                                                .Height(80)
+                                                //.FieldDefaults(d =>
+                                                //{
+                                                //    d.LabelWidth = 200;
+                                                //})
+                                                //.Title("Criteria")
+                                                .Layout(LayoutType.Form)
+                                                //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                                //.BodyPadding(6)
+                                                .Items(
+                                                          X.Checkbox().ID("TxtStatus").FieldLabel("Show only active Destination").LabelAlign(LabelAlign.Right),
+                                                          X.ComboBox().ID("CmbDestinationType").ForceSelection(true).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*").FieldLabel("Destination Type").DisplayField("Designation").ValueField("ID").LabelAlign(LabelAlign.Right)
+                                                                .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                                                    .Store(X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadDestinationTypeAll", "DestinationType"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                            ).SelectedItems(new ListItem("{Tous}", "-1"))
+                                                        ),
+                                            X.Container()
+                                            .ID("")
+                                            .Height(80)
+                                            .Flex(1)
+                                            .Layout(LayoutType.VBox)
+                                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("LblResumeDestination").Text("Resume ici").EmptyText(""))
+                        //X.Panel()
+                        //    .ID("formOverviewDestination")
+                        //    .Margin(10)
+                        //    .Flex(1)
+                        //    .Frame(true)
+                        //    .Height(120)
+                        //    .TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                        //    .Border(false)
+                        //    .BodyPadding(6)
+                        //    .Layout(LayoutType.HBox)
+                        //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        //    .Items(
+                        //        )
+                        ),
+
+
+                        X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeDestination")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .AllowDeselect(false)
+                        .Store(
+                            X.StoreFor<Tms.Classes.Shared.Destination>()
+                            .ID("storeListeDestination")
+                            .PageSize(100)
+                            .RemotePaging(false)
+                            .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("Select"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                                    .Listeners(ls =>
+                                    {
+                                        ls.Load.Handler = "GetNbrStoreRows();";
+                                        ls.Add.Handler = "GetNbrStoreRows();";
+                                    })
+                            )
+                    .ColumnModel
+                    (
+                        Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Width(40).Hideable(false).Filterable(false),
+                        Html.X().Column().Text("Nom").DataIndex("Nom").Flex(1),
+                        Html.X().Column().Text("Type").DataIndex("DestinationTypeAsString").Flex(1),
+                        X.Column().Text("Utilisation Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                        X.DateColumn().Text("Date Creation").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                        X.Column().Text("Utilisation Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                        X.DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+
+                    ).BottomBar(
+                        Html.X().PagingToolbar()
+                        .HideRefresh(true)
+                .Plugins(Html.X().ProgressBarPager())
+                )
+                .Plugins(
+                    X.FilterHeader()
+                )
+                .SelectionModel(
+                    X.RowSelectionModel()
+                        .ID("rowSelectionDestination")
+                        .Mode(SelectionMode.Single)
+                        .AllowDeselect(false)
+                ).Listeners(l =>
+                {
+                    l.Select.Fn = "Overview.resetButtons";
+                    l.Deselect.Fn = "Overview.resetButtons";
+
+                }
+                )
+                .DirectEvents(de =>
+                {
+                    de.RowDblClick.Url = Url.Action("OnConsult");
+                    de.RowDblClick.CleanRequest = true;
+                    de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionDestination}.getSelected().items[0].data" });
+                    de.RowDblClick.EventMask.ShowMask = true;
+                }
+                )
+
+    )
+    )
+
+</form>

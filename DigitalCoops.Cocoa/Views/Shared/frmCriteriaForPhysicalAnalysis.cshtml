@@ -1,0 +1,115 @@
+﻿@model Tms.Classes.Business.Fournisseur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(
+
+X.Window()
+    .ID("frmCriteriaForPhysicalAnalysis")
+    .Width(320)
+    .Resizable(false)
+    .Height(220)
+    .Modal(true)
+    .Y(100)
+    .BodyPadding(5)
+    .Title(ViewData["Titre"] + " : Criteria")
+    .Layout(LayoutType.Form)
+    .Items
+    (
+        X.FormPanel()
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                        X.ComboBox()
+                                        .ID("CpcmbSite")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        //.ReadOnly(true)
+                                        .Value((int)ViewData["SiteParDefaut"])
+                                        .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action(ViewData["UrlSite"].ToString(), "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ),
+            X.DateField()
+                .FieldLabel("Date Debut")
+                .LabelAlign(LabelAlign.Right)
+                .ID("dtfDetStartDate")
+                .SelectedDate(DateTime.Now.AddDays(-1))
+                ,
+            X.DateField()
+                .FieldLabel("Date Fin")
+                .LabelAlign(LabelAlign.Right)
+                .ID("dtfDetEndDate")
+                .SelectedDate(DateTime.Now)
+                ,
+            X.ComboBox()
+                .ID("CmbDetStatutAnalyse")
+                .ForceSelection(true)
+                .FieldLabel("Statut")
+                .LabelWidth(110)
+                .TypeAhead(true)
+                .ForceSelection(true)
+                .LabelAlign(LabelAlign.Right)
+                .Items(
+                        new ListItem("{Tous}", "-1"),
+                        new ListItem("Saisi", "0"),
+                        new ListItem("Confirmé", "1")
+                    )
+                .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                )
+        )
+        .Buttons
+        (
+            X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .DirectEvents
+                (
+                    d =>
+                    {
+                        d.Click.Url = Url.Action(ViewData["actionToDo"].ToString(), ViewData["ControllerName"].ToString());
+                        d.Click.FormID = "#(return this.up('window').down('form');)";
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "startDate", Value = "#{dtfDetStartDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "endDate", Value = "#{dtfDetEndDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "statut", Value = "#{CmbDetStatutAnalyse}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        //d.Click.ExtraParams.Add(new Parameter { Name = "statutText", Value = "#{CmbDetStatutAnalyse}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+
+                    }
+                ),
+            X.Button()
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.frmCriteriaForPhysicalAnalysis.doClose()")
+                .Cls("btncancel")
+        )
+
+)
+
+
+
+
+

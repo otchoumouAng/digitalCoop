@@ -1,0 +1,156 @@
+﻿
+@model Imprimante
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <script type="text/javascript">
+
+        
+
+    </script>
+</head>
+
+
+@(          
+
+            X
+            .FormPanel()
+            .Items
+            (
+                X.Window()
+                .ID("frmImprimante")
+                .Width(1100)
+                .Resizable(false)
+                .Height(473)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Listeners
+                (
+                    l =>
+                    {
+                        l.BeforeClose.Handler = "App.TmsViewPort.unmask();Overview.resetButtons();";
+                        l.Close.Handler = "App.TmsViewPort.unmask();Overview.resetButtons();";
+                    }
+                )
+                .X(200)
+                .Y(20)
+                .Title("Printers")
+                .Items
+                (
+                    X.Hidden().ID("HiddenIpAddress").Value(ViewData["HiddenIpAddress"]),
+                                X.Panel()
+                                .ID("pnlFlexEven")
+                                .Layout(LayoutType.Fit)
+                                .PaddingSpec("5 5 5 5")
+                                .Height(510)
+                                .Items
+                                (
+
+                                        X.GridPanel()
+                                        .Layout(LayoutType.Fit)
+                                        .ID("grpListeImprimante")
+                                        .Region(Region.Center)
+                                        .ForceFit(false)
+                                        .AllowDeselect(true)
+                                        .Store
+                                        (
+                                            X.StoreFor<Imprimante>().ID("storeListeImprimante")
+                                            .AutoLoad(true)
+                                            .PageSize(5)
+                                            .SorterFor(Model, m => m.NomImprimante, Ext.Net.SortDirection.DESC)                                            
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                .Url(Url.Action("Select", "Imprimante"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                        )
+                                        .ColumnModel
+                                        (
+                                            Html.X().Column().Text("").DataIndex("mIcon").Width(35).Renderer("renderIcon"),
+                                            Html.X().Column().Text("Printer Name").DataIndex("NomImprimante").Flex(1),
+                                            Html.X().CheckColumn().Flex(1)
+                                            .Text("")
+                                            .DataIndex("IsSelected")
+                                            .StopSelection(false)
+                                            .Editable(false)
+
+                                        )
+                                        .BottomBar
+                                        (
+                                            Html.X().PagingToolbar()
+                                        .HideRefresh(false)
+                                        .Plugins(Html.X().ProgressBarPager())
+                                        )
+                                        .Plugins
+                                        (
+                                            X.FilterHeader()
+                                            ,
+                                            X.CellEditing().ClicksToEdit(1)
+                                        )
+                                        .SelectionModel
+                                        (
+                                        //X.CellSelectionModel()
+                                        X.RowSelectionModel()
+                                        .ID("rowSelectionListe")
+                                        .Mode(SelectionMode.Single)
+                                        .AllowDeselect(true)
+                                        )
+                           )
+                    )
+                .Buttons
+                        (
+                            X.Button()
+                            .Text("OK")
+                            .ID("BtnOk")
+                            .DirectEvents
+                            (
+                                de =>
+                                {
+                                    de.Click.Url = Url.Action("SelectPrinter");
+                                    de.Click.ExtraParams.Add(new Parameter { Name = "selectedPrinter", Mode = ParameterMode.Raw, Encode = true, Value = "Printers.getSelectedItem()" });
+                                    
+                                }
+                            )
+                            ,
+                            X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.frmImprimante.doClose()")
+                            .Cls("btncancel")
+                        )
+                    )
+
+)
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+
+    var Printers =
+                    {
+                        getSelectedItem : function() {
+
+                            var selected = App.grpListeImprimante.getRowsValues({ selectedOnly: true });
+
+                            console.log(selected);
+
+                            if (selected.length == 0)
+                                return '';
+                            else
+                                return selected[0];
+
+
+                        }
+
+                    };
+    
+</script>
+
+
+
+

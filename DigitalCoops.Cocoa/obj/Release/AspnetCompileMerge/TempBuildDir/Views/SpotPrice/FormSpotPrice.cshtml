@@ -1,0 +1,506 @@
+﻿@model Tms.Classes.Business.PrixNegocieViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormSpotPrice")
+    .Width(910)
+    .Resizable(false)
+    .Height(420)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Listeners(l =>
+    {
+        if (Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+        {
+            l.Show.Handler = "App.grpDetailDeliveries.getStore().load(); App.btnNewDelivery.setDisabled(true);";
+        }
+        else
+        {
+            l.Show.Handler = "App.grpDetailDeliveries.getStore().load(); showdate(App.ModeApplicationID.value); checkList();";
+        }
+    })
+    //.X(400)
+    .Y(60)
+    .Title("Prix Negocié : Detail")
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Items(
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("currentcampagneCP").Value(Model._PrixNegocie.Campagne.Designation),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._PrixNegocie.RowVersionKey),
+                                    X.Hidden().ID("hiddenDefaultSite").Value(Model._Parametres.Site),
+                                    X.Hidden().ID("hiddenNumeroPrice").Value(Model._PrixNegocie.Numero),
+                                    X.Hidden().ID("TxtSpotPriceID").Value(Model._PrixNegocie.ID),
+                                    X.Hidden().ID("TxtSpotPriceDeliverieID").Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocieLivraison.ID : Guid.Empty),
+                                    X.Hidden().ID("TxtTolerancePrixNegocie").Value(Model._PrixNegocieParam.TolerancePrixNegocie),
+                                    X.ComboBox()
+                                        .ID("_cmbSite")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        .ReadOnly(true)
+                                        .Value(Model._PrixNegocie.Site.ID)
+                                        .Store(
+                                                X.Store()
+                                                //.Listeners(l => l.Load.Handler = "App.cmbSite.setValue(App.cmbSite.getStore().getAt(0));")
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadSite", "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                    ),
+                                     X.ComboBox()
+                                        .ID("CropYearID")
+                                        .Value(Model._PrixNegocie.Campagne.Designation)
+                                        .ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Extend ? false : true)
+                                        .FieldLabel("Campagne")
+                                        //.AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        .DisplayField("Designation")
+                                        .ValueField("Designation")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                        .Fields(
+                                                                            new ModelField("Designation", ModelFieldType.Int) { Mapping = "Designation" },
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                            )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    ).Listeners(ls =>
+                                                    {
+                                                        ls.Load.Handler = "#{CropYearID}.setValue(#{currentcampagneCP}.value)";
+                                                    })
+                                                ),
+                                    X.ComboBox()
+                                        .ID("FournisseurID")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Fournisseur")
+                                        .DisplayField("NameAndCode")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 350 })
+                                        .ForceSelection(true)
+                                        //.TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Fournisseur.ID : (int?)null)
+                                        .Store(
+                                                X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            Html.X()
+                                                                .Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                                                    )
+                                                        )
+                                                .Proxy(
+                                                        X.AjaxProxy()
+                                                            .Url(Url.Action("LoadFournisseursApproved", "Fournisseur"))
+                                                            .Reader(
+                                                                    Html.X().JsonReader().RootProperty("data")
+                                                                    )
+                                                )
+                                                .Parameters
+                                                (
+                                                    ps => { ps.Add(new StoreParameter("siteID", "App._cmbSite.getValue()", ParameterMode.Raw)); }
+                                                )
+                                        )
+                                        .Listeners(ls =>
+                                        {
+                                            ls.Select.Handler = "App.grpDetailDeliveries.getStore().load(); checkList()";
+                                        }),
+                                    X.DateField()
+                                        .ID("TxtPriceDate")
+                                        .FieldLabel("Date")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.DatePrix.ToString() : DateTime.Now.ToString())
+                                        .LabelAlign(LabelAlign.Right)
+                                        .MarginSpec("0 6 10 0")
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Change.Url = Url.Action("OnSelectEntryDate");
+                                            de.Change.ExtraParams.Add(new Parameter { Name = "ItemDatePrix", Value = "#{TxtPriceDate}.getRawValue()", Mode = ParameterMode.Raw });
+                                            de.Change.ExtraParams.Add(new Parameter { Name = "ItemSite", Value = "#{_cmbSite}.getValue()", Mode = ParameterMode.Raw });
+                                        }),
+                                    X.TextField()
+                                        .ID("LabelPrixJournalier")
+                                        .MarginSpec("0 6 10 0")
+                                        .FieldLabel("Prix Journalier")
+                                        .Text(Model._PrixNegocieParam.PrixJournalierAsString)
+                                        .LabelAlign(LabelAlign.Right)
+                                        //.Listeners(ls =>
+                                        //{
+                                        //    ls.AfterRender.Handler = "if (App.LabelPrixJournalier.value) { App.LabelPrixJournalier.setRawValue(formatNumber(App.LabelPrixJournalier.getValue()));}";
+                                        //})
+                                        .ReadOnly(true),
+                                    X.TextField()
+                                        //.HideTrigger(true)
+                                        .ID("TxtPrice")
+                                        .FieldLabel("Prix (CFA)")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false)
+                                        .MaskRe("[0123456789]")
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Listeners(ls =>
+                                        {
+                                            ls.Blur.Handler = "#{TxtPrice}.setValue(formatNumber(#{TxtPrice}.getValue())); CheckPriceRange();";
+                                            ls.Focus.Handler = "if (App.TxtPrice.value) { #{TxtPrice}.setRawValue(unformatNumber(#{TxtPrice}.getValue()));}";
+                                        })
+                                        //.AllowDecimals(false).MinValue(0)
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Prix.ToString() : string.Empty),
+                                    X.ComboBox()
+                                        .ID("ModeApplicationID")
+                                        .ForceSelection(true)
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .FieldLabel("Mode Application")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .ReadOnly(true)
+                                        .LabelAlign(LabelAlign.Right)
+                                        .Value(Model._PrixNegocie.ModeApplication.ID)
+                                        //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.ModeApplication.ID : Model._Parametres.PrixNegocieModeApplication.ID)
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .Store(
+                                                X.Store()
+                                                    .ID("storeModeApplication")
+                                                    .AutoLoad(true)
+                                                    .Model(
+                                                            X.Model()
+                                                                .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                        )
+                                                    .Proxy(
+                                                            X.AjaxProxy()
+                                                                .Url(Url.Action("LoadModeApplication", "PrixNegocieModeApplication"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                    .Listeners
+                                                    (
+                                                        ls =>
+                                                        {
+                                                            ls.Load.Handler = "checkList();";                                                                                                                                                                        
+                                                        }
+                                                    )
+                                            )
+                                            .Listeners(ls =>
+                                            {
+                                                //ls.AfterRender.Handler = "checkList();";
+                                                //ls.Select.Handler = "showdate(App.ModeApplicationID.value); App.grpDetailDeliveries.getStore().load();";
+                                                ls.Select.Handler = "showdate(App.ModeApplicationID.value); checkList(); App.grpDetailDeliveries.getStore().load();";
+                                                //ls.Select.Handler = "showdate(App.ModeApplicationID.value); App.DeliveryNumber.clearValue(); App.DeliveryNumber.getStore().load();";
+                                            }
+                                        )
+                                        ,
+                                    X.DateField()
+                                        .ID("TxtStartDate")
+                                        .ReadOnly(true)
+                                        .FieldLabel("Date Debut")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.DateDebut.ToString() : DateTime.Now.ToString())
+                                        .LabelAlign(LabelAlign.Right)
+                                            ,
+                                    X.DateField()
+                                        .ID("TxtDueDate")
+                                        .ReadOnly(true)
+                                        .FieldLabel("Date Fin")
+                                        .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.DateEcheance.ToString() : DateTime.Now.ToString())
+                                        .LabelAlign(LabelAlign.Right)
+                                    ,
+                                X.TextArea()
+                                    .ID("TxtCommentaireSpotPrice")
+                                    .FieldLabel("Commentaire")
+                                    .AllowBlank(false)
+                                    .IndicatorCls("IndicatorRedStar")
+                                    .IndicatorText("*")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Commentaire.ToString() : string.Empty)
+                                    .ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Extend ? false : true)
+                            ),
+                    X.Panel()
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items(
+                                X.Panel()
+                                    .Layout(LayoutType.Fit)
+                                    .TopBar(new Toolbar()
+                                    {
+                                        Items = { X.Button()
+                                                        .ID("btnNewDelivery")
+                                                        .IconCls("action_new_02")
+                                                        .Text("Ajouter Livraison")
+                                                        .Cls("ButtonStyle")
+                                                        .Border(false)
+                                                        .Disabled(false)
+                                                        .DirectEvents( de =>{
+                                                            de.Click.Url  = Url.Action("OnAddDelivery", "SpotPrice");
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemFournisseur", Mode = ParameterMode.Raw, Encode = true, Value = "#{FournisseurID}.getValue()" });
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemExecMode", Mode = ParameterMode.Raw, Value = "#{hiddenExecMode}.getValue()" });
+                                                            de.Click.EventMask.ShowMask = true;
+                                                        } ),
+                                                    X.Button()
+                                                        .ID("BtnRemoveDelivery")
+                                                        //.IconCls("action_filter_02")
+                                                        .Icon(Icon.Delete)
+                                                        .Border(false)
+                                                        .Cls("ButtonStyle")
+                                                        .Text("Retirer")
+                                                        .Disabled(true)
+                                                        .DirectEvents(de =>
+                                                        {
+                                                            de.Click.Url = Url.Action("OnRemoveDelivery", "SpotPrice");
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemDelivery", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailDeliveries}.getSelectionModel().getSelection()[0].data" });
+                                                            de.Click.ExtraParams.Add(new Parameter { Name = "ItemPrixNegocie", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailDeliveries}.getSelectionModel().getSelection()[0].data" });
+                                                            de.Click.EventMask.ShowMask = true;
+                                                            de.Click.Confirmation.ConfirmRequest = true;
+                                                            de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Livraison : Retirer'; config.confirmation.message = 'Voulez-vous retirer cette livraison ? ';";
+                                                        })
+                                                }
+                                    }
+
+                    ),
+            X.GridPanel()
+                .Layout(LayoutType.Fit)
+                .ID("grpDetailDeliveries")
+                .ForceFit(true)
+                .Border(true)
+                .Height(200)
+                .AllowDeselect(true)
+                .Store(
+                        //X.Store().ID("storeDetailDeliveriesListe").AutoLoad(false)
+                        X.StoreFor<Tms.Classes.Business.Livraison>().ID("storeDetailDeliveriesListe").AutoLoad(false)
+                                .Proxy(Html.X().AjaxProxy()
+                                                //.Url(Url.Action("LoadDeliveriesDetailByNumbers", "Livraison"))
+                                                .Url(Url.Action("LoadDeliveryBySupplierAll", "Livraison"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                .Parameters(ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemFournisseur", "#{FournisseurID}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemMode", "#{ModeApplicationID}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemExecMode", "#{hiddenExecMode}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemSpotPrice", "#{TxtSpotPriceID}.getValue()", ParameterMode.Raw));
+                                    //ps.Add(new StoreParameter("ItemNumbers", "#{DeliveryNumber}.getRawValue()", ParameterMode.Raw));
+                                }
+                            )
+                        )
+                        .ColumnModel
+                        (
+                            Html.X().Column().Text("Date Livraison").DataIndex("DateLivraisonAsShortDateString").Flex(1),
+                            Html.X().Column().Text("Livraison N°").DataIndex("Numero").Flex(1),
+                            Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1)
+                        )
+                        .SelectionModel
+                        (
+                            X.RowSelectionModel()
+                                .Mode(SelectionMode.Single)
+                                .AllowDeselect(true)
+                        )
+                        .Listeners(l =>
+                        {
+                            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                            {
+                                l.Select.Handler = "App.BtnRemoveDelivery.enable();";
+                                l.Deselect.Handler = "App.BtnRemoveDelivery.disable();";
+                            }
+
+                        }
+                        )
+
+                )
+                )
+            )
+            .Buttons(
+                        X.Button()
+                            .Text("OK")
+                            .ID("BtnSubmitSpotPrice")
+                            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Url.Action("SubmitFormMethod");
+                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpDetailDeliveries.getRowsValues({selectedOnly : false})" });
+                                de.Click.Before = "return validNew(App.FormSpotPrice.id);";
+                                de.Click.EventMask.ShowMask = true;
+                            })
+
+                            //.DirectClickUrl( Url.Action("SubmitFormMethod")).Handler("validNew(App.FormFournisseur.id)")
+                            ,
+                        X.Button().Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler").Handler("App.FormSpotPrice.doClose()").Cls("btncancel")
+
+                        )
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {               
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if (!areAllrequiredFieldsFilled) {
+                    console.log('error fileds');
+                    Ext.Msg.show({ title: 'Prix Negocié : Data Validation ',icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+                }
+                /*else {
+                    var prixnegocie = App.LabelPrixJournalier.value;
+                    var tolerance = App.TxtTolerancePrixNegocie.value;
+                    var margeInf = prixnegocie - ((prixnegocie * tolerance) / 100);
+                    var margeSup = (parseFloat(prixnegocie) + ((parseFloat(prixnegocie) * tolerance) / 100));
+
+                    if ((val < margeInf) || (val > margeSup)) {
+                        Ext.Msg.show({ title: 'Prix Negocié : Price ', msg: 'Price must be in ' + tolerance + '% range of daily price', icon: Ext.MessageBox.WARNING, buttons: Ext.Msg.OK });
+                        return false;
+                    } 
+
+                }*/
+                /*if (App.ModeApplicationID.value != 2) {
+
+                    var startdate = App.TxtStartDate.rawValue;
+                    var duedate = App.TxtDueDate.rawValue;
+
+                    var arrStartDate = startdate.split("/");
+                    var datebegin = new Date(arrStartDate[2], arrStartDate[1], arrStartDate[0]);
+                    var arrEndDate = duedate.split("/");
+                    var dateend = new Date(arrEndDate[2], arrEndDate[1], arrEndDate[0]);
+
+                    if (dateend < datebegin) {
+                        Ext.Msg.show({ title: 'Prix Negocié : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Date Fin must be equal/Higher to start date !', buttons: Ext.Msg.OK });
+                        return false;
+                    }
+                }*/
+            };
+
+            /*var checkfield = function (mode, fournisseur) {
+                if (!mode || !fournisseur) {
+                    Ext.Msg.show({ title: 'Prix Negocié : Price ', msg: 'Please choose Mode Application and one supplier.', icon: Ext.MessageBox.WARNING, buttons: Ext.Msg.OK });
+                    return false;
+                }
+                else if (mode && fournisseur) return true;
+                else return false;
+            };*/
+
+            var showdate = function (item) {
+                if (item) {
+                    if (item == "1") {
+                        App.TxtStartDate.setReadOnly(false);
+                        App.TxtStartDate.allowBlank = (false);
+                        App.TxtStartDate.validate();
+                        App.TxtStartDate.setIndicator("*");
+                        App.TxtDueDate.setReadOnly(false);
+                        App.TxtDueDate.allowBlank = (false);
+                        App.TxtDueDate.validate();
+                        App.TxtDueDate.setIndicator("*");
+                        /*App.DeliveryNumber.setReadOnly(true);*/
+                    } else if (item == "2") {
+                        /*App.DeliveryNumber.setReadOnly(false);*/
+                        App.TxtStartDate.setReadOnly(true);
+                        App.TxtStartDate.allowBlank = (true);
+                        App.TxtStartDate.setValue(" ");
+                        App.TxtStartDate.validate();
+                        App.TxtStartDate.setIndicator("");
+                        App.TxtDueDate.setReadOnly(true);
+                        App.TxtDueDate.allowBlank = (true);
+                        App.TxtDueDate.setValue(" ");
+                        App.TxtDueDate.validate();
+                        App.TxtDueDate.setIndicator("");
+                    }
+                }
+            };
+
+            var checkList = function () {                
+                if ((App.FournisseurID.value) && (App.ModeApplicationID.value == 2)) {                    
+                        App.btnNewDelivery.enable();
+                } else {                    
+                        App.btnNewDelivery.disable();
+                    }
+                
+            };
+
+            var CheckPriceRange = function () {
+                var prixnegocie = parseFloat(unformatNumber(App.LabelPrixJournalier.value)) || 0;
+                var tolerance = parseFloat(App.TxtTolerancePrixNegocie.value) || 0;
+                var margeInf = prixnegocie - ((prixnegocie * tolerance) / 100);
+                var margeSup = (parseFloat(prixnegocie) + ((parseFloat(prixnegocie) * tolerance) / 100));
+                var val = parseFloat(unformatNumber(App.TxtPrice.value)) || 0;
+                if ((val < margeInf) || (val > margeSup)) {
+                    Ext.Msg.show({ title: 'Prix Negocié : Price ', msg: 'Price must be in ' + tolerance + '% range of daily price', icon: Ext.MessageBox.WARNING, buttons: Ext.Msg.OK });
+                    /*return false;*/
+                }
+            };
+</script>
+
+
+
+

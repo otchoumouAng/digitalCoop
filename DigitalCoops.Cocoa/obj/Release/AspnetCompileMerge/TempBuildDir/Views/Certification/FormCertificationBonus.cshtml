@@ -1,0 +1,88 @@
+﻿
+@model Tms.Classes.Shared.CertificationViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+        X.Window()
+                .ID("FormCertificationBonus")
+                .Width(500)
+                .Resizable(false)
+                .Height(150)
+                .Modal(true)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Y(20)
+                .Title("Certification (Sales)")
+                .BodyPadding(10)
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+        X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Items(
+                
+                                                                          
+                            X.NumberField()
+                                .ID("txtBonus")
+                                .FieldLabel("Bonus")
+                                .HideTrigger(true)
+                                .Value(Model._BonusCertification)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                    )
+                )
+            .Buttons(
+                X.Button()
+                .Text("OK")
+                .ID("BtnSubmitCertification")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("UpdateCertification");
+                    de.Click.Before = "return validNew(App.FormCertificationBonus.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormCertificationBonus.doClose()").Cls("btncancel")
+
+                )
+            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {            
+            Ext.Msg.show({ title: 'Certification : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+

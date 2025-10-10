@@ -1,0 +1,314 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+<script type="text/javascript">
+    var renderObject =  function(value)
+    {
+        if (!Ext.isEmpty(value)) {
+            if (value.Nom)
+                return value.Nom;
+            else
+                return value.Designation;
+        }
+
+        return value;
+    }
+</script>
+
+@model Tms.Classes.Business.PrixNegocie
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                .Layout(LayoutType.Border)
+                .ID("TmsViewPort")
+                .Items(
+                    X.Panel()
+                        .ID("pnlNorth")
+                        .Region(Region.North)
+                        .Layout(LayoutType.Border)
+                        .TopBar(new Toolbar()
+                        {
+                            Items = { X.Button()
+                            .ID("btnFilter")
+                            .IconCls("action_filter_02")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("OnFilterSpotPrice");
+                                de.Click.EventMask.ShowMask = true;
+                                } ),
+
+                            X.Button()
+                            .ID("btnRefresh")
+                            .IconCls("action_refresh_01")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("OnRefreshSpotPrice");
+
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemFournisseur", Encode=true, Value= "#{cmbFournisseur}.getValue()", Mode=ParameterMode.Raw});
+
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{TxtPeriodStart}.getRawValue()",   Mode=ParameterMode.Raw});
+
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{TxtPeriodEnd}.getRawValue()",     Mode=ParameterMode.Raw});
+
+                                //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Encode=true, Value= "#{TxtSpotPriceStatus}.getValue()",     Mode=ParameterMode.Raw});
+
+                                de.Click.EventMask.ShowMask = true;
+            } ),
+
+                                 X.Button()
+                                .ID("btnNew")
+                                .IconCls("action_new_02")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents( de =>{
+                                    de.Click.Url  = Url.Action("OnAddSpotPrice");
+                                    de.Click.Success = "App.FormSpotPrice.setTitle('Prix Negocié : Nouveau')";
+                                    de.Click.EventMask.ShowMask = true;
+                                } ),
+
+                             X.Button()
+                            .ID("btnModify")
+                            .IconCls("action_modify_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                de.Click.Url  = Url.Action("OnEditSpotPrice");
+                                de.Click.Success = "App.FormSpotPrice.setTitle('Prix Negocié : Modifier')";
+                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListe}.getSelectionModel().getSelection()[0].data"});
+                de.Click.EventMask.ShowMask = true;
+            } ),
+
+                                 X.Button()
+                                .ID("btnApprove")
+                                .IconCls("action_approve_02")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents( de =>{
+                de.Click.Url  = Url.Action("OnApproveSpotPrice");
+                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true,Value="#{grpListe}.getSelectionModel().getSelection()[0].data"});
+                de.Click.EventMask.ShowMask = true;
+            } ),
+
+
+                                 X.Button()
+                                .ID("btnCancel")
+                                .Icon(Icon.Cancel)
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents( de =>{
+                de.Click.Url  = Url.Action("OnCancelSpotPrice");
+                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true,Value="#{grpListe}.getSelectionModel().getSelection()[0].data"});
+                de.Click.EventMask.ShowMask = true;
+            } ),
+                    X.Button()
+                                .ID("btnExtend")
+                                .IconCls("action_approve_02")
+                                .Text("Show pending deliveries")
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents( de =>{
+                de.Click.Url  = Url.Action("OnExtendSpotPrice");
+                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true,Value="#{grpListe}.getSelectionModel().getSelection()[0].data"});
+                de.Click.EventMask.ShowMask = true;
+            } ),
+                                 X.SplitButton()
+                                .ID("btnPrint")
+                                .IconCls("action_print_02")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                .Disable(false)
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Menu(new Menu() {
+                Items =
+                                    {
+
+                    X.MenuItem()
+                    .ID("mnuHistorique")
+                    .Text("Overview")
+                    .OnClientClick("#{grpListe}.print();"),
+
+                    X.MenuItem()
+                    .ID("mnuPrintCard")
+                    .Text("Print farmer card")
+                    .DirectEvents( de=>
+                        {
+                                de.Click.Url = Url.Action("OnPrintSpotPrice");
+
+                                de.Click.ExtraParams.Add(new Parameter {  Name = "id_SpotPrice" , Mode= ParameterMode.Raw, Encode = true, Value = "#{grpListe}.getSelectionModel().getSelection()[0].data.ID" });
+
+                            })
+                         }
+
+            })
+                                ,
+
+                                X.ToolbarFill(),
+
+                                 X.Button()
+                                .ID("btnActions")
+                                .Text("Actions")
+                                .Border(false)
+                                .Cls("ButtonStyle")
+                                .IconCls("menu_04")
+                                .Disable(false)
+                                 .Menu(new Menu() {
+                Items = {
+                    X.MenuItem()
+                    .ID("mnuCancel")
+                    .Icon(Icon.Cancel)
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .OnClientClick("#{grpListe}.print();"),
+                                                X.MenuItem()
+                                                .ID("mnuOthers1")
+                                                .Text("Others")
+                                                .OnClientClick("#{grpListe}.print();")
+                                                }
+            })
+                                      }
+                        })
+
+                            ,
+                            X.FormPanel()
+                            .ID("filterpanel")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Prix Negocié - overview" })
+                            .Region(Region.North)
+                           .Border(false)
+                           .Collapsed(true)
+                           .Collapsible(true)
+                           //.CollapsedCls("panelcollapse")
+                           .BodyPadding(5)
+                           .Frame(true)
+                           .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                            .Items(
+
+                                X.Panel()
+                                    .Border(false)
+                                    .Frame(true)
+                                    .Margin(10)
+                                    .Width(400)
+                                    .Height(150)
+                                    //.Title("Criteria")
+                                    .Layout(LayoutType.Form)
+                                    .BodyPadding(6)
+                                    .Items(
+                                      X.ComboBox()
+                                      .ID("cmbFournisseur")
+                                      .FieldLabel("Fournisseur")
+                                      .LabelWidth(110)
+                                      .DisplayField("Nom")
+                                      .ValueField("ID")
+                                      .LabelAlign(LabelAlign.Right)
+                                      .TypeAhead(true)
+                                      .ForceSelection(true)
+                                      .Store(X.Store()
+                                          .AutoLoad(false)
+                                          .Model(Html.X().Model()
+                                          .IDProperty("ID")
+                                                  .Fields(
+                                                      new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                      new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                  )
+                                              )
+                                          .Proxy(Html.X().AjaxProxy()
+                                              .Url(Url.Action("LoadFournisseurAll", "Fournisseur"))
+                                              .Reader(Html.X().JsonReader().RootProperty("data"))
+                                          )
+                                          )
+                                 ,
+
+                                 X.DateField().ID("TxtPeriodStart").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text("")
+                            ,
+                                  X.DateField().ID("TxtPeriodEnd").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text("")
+
+                            ),
+
+                        X.Panel()
+                            .ID("formOverview")
+                            .Width(400)
+                            .Margin(10)
+                            .Frame(true)
+                            .Height(150)
+                            .TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                            .Border(false)
+                            .BodyPadding(6)
+                            .Layout(LayoutType.HBox)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items(X.Container()
+                                .ID("")
+                                .Layout(LayoutType.VBox)
+                                .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                .Items(X.Label().ID("").Text("Tonnage").EmptyText(""))
+                                )
+                    ),
+
+                    X.GridPanel()
+                   .Layout(LayoutType.Fit)
+                   .ID("grpListe")
+                   .Region(Region.Center)
+                   .ForceFit(true)
+                   .AllowDeselect(true)
+                    .Store(
+                        X.StoreFor<Tms.Classes.Business.PrixNegocie>().ID("storeListe")
+                    )
+                    .ColumnModel
+                    (
+                        Html.X().DateColumn().Text("Date").DataIndex("DatePrix").Width(100),
+                        Html.X().Column().Text("Numero Prix").DataIndex("Numero").Width(100),
+                        Html.X().Column().Text("Fournisseur").DataIndex("Fournisseur").Width(100).Renderer("renderObject"),
+                        Html.X().Column().Text("Prix").DataIndex("Prix").Width(100),
+                        Html.X().DateColumn().Text("Date Debut").DataIndex("DateDebut").Width(100),
+                        Html.X().DateColumn().Text("Date Fin").DataIndex("DateEcheance").Width(100),
+                        Html.X().Column().Text("Delivery N°").DataIndex("Prix")
+                    ).BottomBar(
+                        Html.X().PagingToolbar()
+                        .HideRefresh(false)
+                //.Items(
+                //    Html.X().Label("Page size:"),
+                //    Html.X().ToolbarSpacer(10)
+                //    //Html.X().ComboBox()
+                //    //    .Width(80)
+                //    //    .Items("1", "2", "10", "20")
+                //    //    .SelectedItems("10")
+                //    //    .Listeners(l =>
+                //    //    {
+                //    //        l.Select.Fn = "onComboBoxSelect";
+                //    //    })
+                //)
+                .Plugins(Html.X().ProgressBarPager())
+                )
+                .Plugins(
+                    X.FilterHeader()
+                )
+                .SelectionModel(
+                    X.RowSelectionModel()
+                        .Mode(SelectionMode.Multi).AllowDeselect(true)
+                ).View(Html.X().GridView().StripeRows(false))
+
+        )
+    )
+
+</form>

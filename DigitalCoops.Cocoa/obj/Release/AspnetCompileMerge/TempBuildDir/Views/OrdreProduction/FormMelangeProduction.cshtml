@@ -1,0 +1,553 @@
+﻿@model Tms.Classes.Business.stock.CompositionUsinageViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 300px !important;
+    }
+    .x-btn-icon > .x-btn-icon-el {        
+        font-family: "Glyphicons Halflings";
+}
+</style>
+<script type="text/javascript">
+
+
+    var OverviewCode =
+    {
+        SetButtons: function () {
+
+            if (App.rowCode.hasSelection()) {
+                if (App.CdhiddenPermRemove.value == 'true')
+                    App.BtnRemoveCode.enable();
+
+                if (App.CdhiddenPermPrintCode.value == 'true')
+                    App.BtnPrintCode.enable();
+
+            } else {
+
+                App.BtnRemoveCode.disable();
+                App.BtnPrintCode.disable();
+
+            }
+        }
+    };
+    
+</script>
+@(
+X.Window()
+    .ID("FormMelangeProduction")
+    .Width(950).Resizable(false)
+    .Height(550).CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    //.X(400)
+    .Y(10)
+    .Title(@ViewData["Title"].ToString())
+    .Items(
+            X.Hidden().ID("baseUrlVal").Value(@BaseUrl),
+            X.FormPanel()
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Items(
+    #region Zone Top
+                        X.Panel()
+                            .Layout(LayoutType.HBox)
+                            .Margin(5)
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items(
+                                    X.Hidden().ID("txtCompositionID").ReadOnly(true).Value(Model._CompositionUsinage.ID),
+                                    X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                                    X.Hidden().ID("txtOrdreProductionID").ReadOnly(true).Value(Model._CompositionUsinage.OrdreProduction.ID),
+
+    #region Zone A
+                                    X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.TextField()
+                                                    .ID("cmbCampagne")
+                                                    .FieldLabel("Campagne")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Text(Model._CompositionUsinage.OrdreProduction.Campagne.Designation),
+                                                X.ComboBox()
+                                                    .ID("cmbLaboratoire")
+                                                    .FieldLabel("Laboratoire")
+                                                    .DisplayField("Designation")
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .ValueField("ID")
+                                                    .AllowBlank(false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CompositionUsinage.Laboratoire.ID : (int?)null)
+                                                    .Store
+                                                    (
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                                X.Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                            )
+                                                            .Proxy
+                                                            (
+                                                                X.AjaxProxy()
+                                                                    .Url(Url.Action("LoadLaboratoire", "Laboratoire"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+
+                                                    ),
+                                                X.TextField()
+                                                    .ID("cmbExportateur")
+                                                    .FieldLabel("Exportateur")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ReadOnly(true)
+                                                    .Text(Model._CompositionUsinage.OrdreProduction.Exportateur.Nom)
+                                        ),
+    #endregion
+    #region Zone B
+                                         X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                X.TextField()
+                                                    .ID("cmbQuart")
+                                                    .FieldLabel("Shift")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ReadOnly(true)
+                                                    .Text(Model._CompositionUsinage.OrdreProduction.Quart.Nom),
+                                                X.TextField()
+                                                    .ID("cmbMelangeur")
+                                                    .FieldLabel("Blending Agent")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ReadOnly(true)
+                                                    .Text(Model._CompositionUsinage.OrdreProduction.Melangeur.Nom),
+                                                X.TextField()
+                                                    .ID("cmbChefQuart")
+                                                    .FieldLabel("Chief Of Shift")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ReadOnly(true)
+                                                    .Text(Model._CompositionUsinage.OrdreProduction.ChefQuart.Nom)
+                                        ),
+    #endregion
+    #region Zone C
+                                         X.Container()
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .Items(
+                                                    X.TextField()
+                                                        .ID("txtNumeroProduction")
+                                                        .FieldLabel("Production N°")
+                                                        .ReadOnly(true)
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Text(Model._CompositionUsinage.OrdreProduction.NumeroProduction),
+                                                    X.DateField()
+                                                        .ID("txtDateProduction")
+                                                        .FieldLabel("Production Date")
+                                                        .ReadOnly(true)
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Text(Model._CompositionUsinage.OrdreProduction.DateProduction.ToShortDateString()),
+                                                    X.DateField()
+                                                        .ID("txtDateComposition")
+                                                        .FieldLabel("Blending Date")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .AllowBlank(false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?Model._CompositionUsinage.DateComposition.ToShortDateString() : DateTime.Now.ToShortDateString())
+
+                                        )
+    #endregion
+
+                            ),
+    #endregion
+
+    #region Zone Melanges
+                        X.Panel()
+                            .Layout(LayoutType.VBox)
+                            .Margin(5)
+                            .Frame(true)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .TopBar(
+                                        new Toolbar()
+                                        {
+                                            Items =
+                                            {
+                                                X.Label().Text("Blending Result"),
+                                                X.ToolbarSeparator(),
+                                                X.Button()
+                                                    .ID("")
+                                                    .IconCls("action_new_02")
+                                                    .Border(false)
+                                                    .Hidden(true)
+                                                    .Cls("ButtonStyle").Text("Hour").Disable(false)
+                                                    .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                    .DirectEvents
+                                                    (
+                                                        de =>
+                                                            {
+                                                                de.Click.Url  = Url.Action("GenerateCode");
+                                                                de.Click.ExtraParams.Add( new Parameter { Name = "StoreNbrOfRows", Mode = ParameterMode.Raw, Value = "#{storeDeliveryCodeListe}.getCount()" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                    )
+
+                                            }
+                                        }
+                            )
+                            .Items(
+    #region Grid
+                             X.Button().ID("BtnLoadCumul").Text("OK").Hidden(true)
+                                            .DirectEvents(de =>
+                                            {
+                                                de.Click.Url = Url.Action("LoadCumulMelanges");
+                                                de.Click.FormID = "#(return this.up('window').down('form');)";
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "rowsLivraisons", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+
+                                            }),
+                                    X.GridPanel()
+                                        .Layout(LayoutType.Fit)
+                                        .ID("grpListeMelange")
+                                        .Region(Region.Center)
+                                        .ForceFit(true)
+                                        .Frame(true)
+                                        .Height(100)
+                                        .AllowDeselect(true)
+                                        .Store(
+                                                    X.StoreFor<Tms.Classes.Business.stock.CompositionUsinageLivraison>()
+                                                        .ID("storeListeMelange")
+                                                        .AutoLoad(false)
+                                                        .Proxy(
+                                                                X.AjaxProxy()
+                                                                    .Url(Url.Action("kgg"))
+                                                                    .Reader(
+                                                                             X.JsonReader().RootProperty("data")
+                                                                    )
+                                                        )
+                                        //.Parameters
+                                        //(
+                                        //    ps =>
+                                        //    {
+                                        //        ps.Add(new StoreParameter("rowsLivraisons", "App.grpListeLivraisons.getRowsValues({selectedOnly : false})", ParameterMode.Raw, true));
+                                        //    }
+                                        //)
+                                        )
+                                        .ColumnModel
+                                        (
+                                            Html.X().Column().Text("Blending").DataIndex("MelangeAsString").Hideable(false),
+                                            Html.X().Column().Text("Nbr Of Beans").DataIndex("NombreSacs").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Humidite").DataIndex("Humidite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Moisie").DataIndex("Moisi").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Beans Count").DataIndex("Grainage").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Weevil").DataIndex("Mite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Slaty").DataIndex("Ardoisee").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Foreign Matter").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Tamis").DataIndex("Sievings").Flex(1).Hideable(false)
+                                        //Html.X().Column().Text("Heure").DataIndex("DateCodeAsString").Hideable(false)
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowCode")
+                                                            .Mode(SelectionMode.Single)
+                                                            .AllowDeselect(true)
+                                        )
+                                        .Listeners
+                                        (
+                                            l =>
+                                            {
+                                                if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                                {
+                                                    l.Select.Fn = "OverviewCode.SetButtons";
+                                                    l.Deselect.Fn = "OverviewCode.SetButtons";
+                                                }
+
+
+                                            }
+                                        )
+    #endregion
+
+                            ),
+    #endregion
+
+    #region Zone Livraisons
+                        X.Panel()
+                            .Layout(LayoutType.VBox)
+                            .Padding(5)
+                            .Border(true)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })                            
+                            .Items(
+    #region Grid
+                                    X.GridPanel()
+                                        .Layout(LayoutType.Fit)
+                                        .ID("grpListeLivraisons")
+                                        .Height(200)
+                                        //.Border(true)
+                                        .Frame(true)
+                                        .FrameHeader(false)
+                                        .AllowDeselect(true)
+                                        .Store
+                                        (
+                                            X.StoreFor<Tms.Classes.Business.stock.CompositionUsinageLivraison>()
+                                                .ID("storeListeLivraisons")
+                                                .AutoLoad(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                .Proxy
+                                                (
+                                                    X.AjaxProxy()
+                                                        .Url(Url.Action("GetDeliveries"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                //.Listeners(
+                                                //    ls => ls.Load.Handler = "SetAvailableDeliveriesInfos();"
+                                                //)
+                                                .Parameters
+                                                (
+                                                    ps =>
+                                                    {
+                                                        ps.Add(new StoreParameter("ItemComposition", "#{txtCompositionID}.getValue()", ParameterMode.Raw));
+                                                    }
+                                                )
+                                                .Listeners(
+                                                    ls => {
+                                                        ls.Add.Handler = "App.BtnLoadCumul.fireEvent('click', App.BtnLoadCumul);";
+                                                        ls.Load.Handler = "GetCumulMelanges();";
+                                                    }
+                                                )
+                                        )
+                                        .ColumnModel
+                                        (
+                                            Html.X().Column().Text("Blend").DataIndex("MelangeAsString").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Date Liv").DataIndex("DateLivraisonAstring").Flex(2).Hideable(false),
+                                            Html.X().Column().Text("Del ID").DataIndex("LivraisonID").Flex(2).Hideable(false),
+                                            Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(true).Hidden(true),
+                                            Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacs").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Type Liv").DataIndex("LibelleTypeDeLivraison").Flex(2).Hideable(false),
+                                            Html.X().Column().Text("Certif.").DataIndex("LibelleCertification").Flex(2).Hideable(true),
+                                            Html.X().Column().Text("Mois").DataIndex("Humidite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Moisie").DataIndex("Moisi").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("B.C").DataIndex("Grainage").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("W.v").DataIndex("Mite").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Slaty").DataIndex("Ardoisee").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("FFA").DataIndex("Ffa").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("F.M").DataIndex("MatiereEtrangere").Flex(1).Hideable(false),
+                                            Html.X().Column().Text("Siev.").DataIndex("Sievings").Flex(1).Hideable(false)
+                                        )
+                                        .SelectionModel(
+                                                        X.RowSelectionModel()
+                                                            .ID("rowMelanges")
+                                                            .Mode(SelectionMode.Single)
+                                                            .Listeners(
+                                                                ls =>  {
+                                                                    ls.Select.Handler = "App.BtnRemoveDelivery.enable();";
+                                                                    ls.Deselect.Handler = "App.BtnRemoveDelivery.disable();";
+                                                                }   
+                                                            )
+                                        )
+                                        .Plugins(
+                                                X.FilterHeader()
+                                        )
+                                        .DockedItems(
+                                            X.Toolbar()
+                                                .Dock(Dock.Top)
+                                                .Items(
+                                                        X.Label().Text("Delivery (ies)"),
+                                                        X.ToolbarSeparator(),
+                                                        X.Button()
+                                                            .ID("BtnGenerateCbode")
+                                                            .IconCls("glyphicon-plus green")
+                                                            .Border(false)
+                                                            .Cls("ButtonStyle")
+                                                            .Text("Ajouter")
+                                                            //.Disable(false)
+                                                            .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                                            .DirectEvents(
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("onAddDelivery");
+                                                                    de.Click.ExtraParams.Add( new Parameter { Name = "rowsDeliveriesInListe", Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            ),
+                                                        X.ToolbarSeparator(),
+                                                        X.Button()
+                                                            .ID("")
+                                                            .IconCls("glyphicon-pencil green")
+                                                            .Border(false)
+                                                            .Cls("ButtonStyle").Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                                                            //.Disable(false)
+                                                            .Hidden(true)
+                                                            .Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                            .DirectEvents(
+                                                            de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("GenerateCode");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "StoreNbrOfRows", Mode = ParameterMode.Raw, Value = "#{storeListeLivraisons}.getCount()" });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                            ),
+                                                        X.ToolbarSeparator(),
+                                                        X.Button()
+                                                            .ID("BtnRemoveDelivery")
+                                                            .IconCls("action_new_02")
+                                                            .Border(false)
+                                                            .IconCls("glyphicon-minus red")
+                                                            .Cls("ButtonStyle").Text("Retirer")
+                                                            .Disabled(true)
+                                                            //.Disabled(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                            .DirectEvents
+                                                            (
+                                                                de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("RemoveDeliveryToBlending");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Value = "#{grpListeLivraisons}.getSelectionModel().getSelection()[0].data" });
+                                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                                    de.Click.Confirmation.Title = "'Production - Blending";
+                                                                    de.Click.Confirmation.Message = "Do you want to Remove this Delivery ?";
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }
+                                                            ),
+                                                        X.ComboBox()
+                                                            .ID("cmbMelange")
+                                                            .FieldLabel("Blending")
+                                                            .DisplayField("Designation")
+                                                            .ValueField("ID")
+                                                            .QueryMode(DataLoadMode.Local)
+                                                            .TriggerAction(TriggerAction.All)
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .Store
+                                                            (
+                                                                X.Store()
+                                                                    .AutoLoad(true)
+                                                                    .Model
+                                                                    (
+                                                                        X.Model()
+                                                                             .IDProperty("ID")
+                                                                             .Fields
+                                                                             (
+                                                                               new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                               new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                             )
+                                                                    )
+                                                                    .Proxy
+                                                                    (
+                                                                        Html.X().AjaxProxy()
+                                                                        .Url(Url.Action("LoadActiveMelangeAll", "Melange"))
+                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                    )
+                                                            )
+                                                            .Listeners(
+                                                                ls =>
+                                                                {
+                                                                    ls.Select.Handler = "loadFilter(this.up('grid').filterHeader);";
+                                                                    //ls.Change.Handler = "GetValueByMelange();";
+                                                                }
+                                                            )
+                                                            .SelectedItems
+                                                            (
+                                                                it =>
+                                                                {
+                                                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                                }
+                                                            ),
+                                                            X.Button()
+                                                                .ID("BtnClearFilter")
+                                                                .Hidden(true)
+                                                                .Handler("this.up('grid').filterHeader.clearFilter();")
+                                                )
+                                        )
+    #endregion
+
+                            )
+    #endregion
+
+                )
+
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSaveCode")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("SubmitComposition");
+                            //de.Click.Success = "ShowNotifaction();";
+                            de.Click.Before = "return validNew(App.FormMelangeProduction.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+                        }
+                    ),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                    .ID("btnApproveBlending")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? false : true)
+                    .DirectEvents
+                    (
+                        de =>
+                        {
+                            de.Click.Url = Url.Action("ApproveComposition");                            
+                            de.Click.Before = "return validNew(App.FormMelangeProduction.id);";
+                            de.Click.FormID = "#(return this.up('window').down('form');)";
+                            de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeLivraisons.getRowsValues({selectedOnly : false})" });
+                        }
+                    ),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormMelangeProduction.doClose()").Cls("btncancel")
+
+    )
+)
+@Scripts.Render("~/bundles/validation")
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+    };
+
+    var GetCumulMelanges = function() {
+        /*var liste = App.grpListeLivraisons.getRowsValues({ selectedOnly: false });*/
+        var baseurl = App.baseUrlVal.value;
+        var liste = App.grpListeLivraisons.getRowsValues({ selectedOnly: false });
+        App.BtnLoadCumul.fireEvent('click', App.BtnLoadCumul);        
+        /*Ext.net.DirectMethod.request({ url: baseurl + "/OrdreProduction/LoadCumulMelanges" });*/
+    };
+
+    var loadFilter = function (plugin) {
+        var filterRawValue = App.cmbMelange.getRawValue();
+        var filtervalue = App.cmbMelange.getValue();
+        if (filtervalue != '-1') {            
+            plugin.setValue({
+                MelangeAsString: filterRawValue
+            });
+        } else {
+            App.BtnClearFilter.fireHandler();
+        }
+    };
+
+</script>

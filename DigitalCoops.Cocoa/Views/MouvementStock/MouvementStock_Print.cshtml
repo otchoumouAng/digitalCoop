@@ -1,0 +1,480 @@
+﻿@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-60).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+
+</head>
+@(
+X.Window()
+    .ID("MouvementStock_Print")
+    .Width(900)
+    .Resizable(false)
+    .Height(240)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title("Stock Transaction : Print")
+    //.Layout(LayoutType.HBox)
+    //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Items
+            (
+    #region Zone A
+                            X.Container()
+                                    .Border(false)
+                                    .Frame(false)
+                                    .Margin(0)
+                                    .Flex(1)
+                                    .Layout(LayoutType.Form)
+                                    //.BodyPadding(0)
+                                    .Items
+                                    (
+                                    X.ComboBox()
+                                        .ID("cmbDetSite")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        //.ReadOnly(true)
+                                        .Value((int)ViewData["SiteParDefaut"])
+                                        .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action(ViewData["UrlSite"].ToString(), "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ),
+                                            X.ComboBox()
+                                                .ID("cmbCampagne")
+                                                .FieldLabel("Campagne")
+                                                .DisplayField("Designation")
+                                                .ValueField("Designation")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(ViewData["Campagne"])
+                                                .Store
+                                                    (
+                                                        X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                                Html.X().Model()
+                                                                    .IDProperty("Designation")
+                                                                    .Fields
+                                                                    (
+                                                                      new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                      new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                             )
+                                                             .Proxy
+                                                             (
+                                                                 Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                             )
+
+                                                         )
+                                                         ,
+
+
+                                                         X.ComboBox()
+                                                            .ID("cmbMagasin")
+                                                            .FieldLabel("Magasin")
+                                                            .DisplayField("Designation")
+                                                            .ValueField("ID")
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .QueryMode(DataLoadMode.Local)
+                                                            .TriggerAction(TriggerAction.All)
+                                                            //.MatchFieldWidth(false)
+                                                            //.ListConfig(new BoundList { MinWidth = 300 })
+                                                            .Value(int.Parse(ViewData["magasinID"].ToString()))
+                                                            .Store
+                                                            (
+                                                                   X.Store()
+                                                                   .AutoLoad(true)
+                                                                   .Model
+                                                                   (
+                                                                       Html.X().Model()
+                                                                      .IDProperty("ID")
+                                                                      .Fields
+                                                                      (
+                                                                         new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                         new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                      )
+                                                                   )
+                                                                  .Proxy
+                                                                  (
+                                                                     Html.X().AjaxProxy()
+                                                                    .Url(Url.Action(ViewData["LoadMagasin"].ToString(), "Magasin"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                  )
+                                                                .Listeners
+                                                            (
+                                                                 li =>
+                                                                 {
+                                                                     li.Load.Handler = "if (App.cmbEmplacement.value) {App.cmbEmplacement.clearValue()}; App.cmbEmplacement.getStore().load();";
+                                                                 }
+                                                            )
+                                                            )
+                                                            .Listeners(
+                                                                    ls =>
+                                                                    {
+                                                                        ls.Select.Handler = "if (App.cmbEmplacement.value) {App.cmbEmplacement.clearValue()}; App.cmbEmplacement.getStore().load();";
+                                                                        ls.Change.Handler = "if (App.cmbEmplacement.value) {App.cmbEmplacement.clearValue()}; App.cmbEmplacement.getStore().load();";
+                                                                        ls.Select.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                                                        //ls.AfterRender.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+
+                                                                    }
+                                                             )
+                                                            ,
+
+                                                      X.ComboBox()
+                                                        .ID("cmbExportateur")
+                                                        .FieldLabel("Exportateur")
+                                                        .DisplayField("Nom")
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .ValueField("ID")
+                                                        .Value(int.Parse(ViewData["Exportateur"].ToString()))
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+
+                                                          )
+
+                                         ),
+    #endregion
+    #region Zone B
+                                         X.Container()
+                                            .Border(false)
+                                            .Frame(false)
+                                            //.Margin(0)
+                                            .Flex(1)
+                                            .Layout(LayoutType.Form)
+                                            //.BodyPadding(0)
+                                            .Items
+                                            (
+                                             X.ComboBox()
+                                                          .ID("cmbCertification")
+                                                          .FieldLabel("Certification")
+                                                          .DisplayField("Designation")
+                                                          .ValueField("ID")
+                                                          .QueryMode(DataLoadMode.Local)
+                                                          .TriggerAction(TriggerAction.All)
+                                                          .LabelAlign(LabelAlign.Right)
+                                                          .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+
+                                                          )
+                                                          .SelectedItems
+                                                          (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                          ),
+                                                     X.DateField().ID("dtpStartDate").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(@StartDate),
+
+                                                     X.DateField().ID("dtpEndDate").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(@EndDate)
+
+
+                                             ),
+    #endregion
+    #region Zone C
+                                         X.Container()
+                                            .Border(false)
+                                            .Frame(false)
+                                            //.Margin(0)
+                                            .Flex(1)
+                                            .Layout(LayoutType.Form)
+                                            //.BodyPadding(0)
+                                            .Items
+                                            (
+                                                     X.ComboBox()
+                                                      .ID("cmbDirection")
+                                                      .FieldLabel("Direction")
+                                                      .DisplayField("Designation")
+                                                      .ValueField("ID")
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .Items
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "{Tous}", Value = "-2" });
+                                                             it.Add(new ListItem { Text = "Input", Value = "1" });
+                                                             it.Add(new ListItem { Text = "OutPut", Value = "-1" });
+                                                         }
+                                                      )
+                                                      .Listeners
+                                                            (li =>
+                                                            {
+                                                                li.Select.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                                                li.AfterRender.Handler = "if (App.cmbMouvementType.value) {App.cmbMouvementType.clearValue()}; App.cmbMouvementType.getStore().load();";
+                                                                //li.Change.Handler = "App.cmbMouvementType.getStore().load();";
+                                                            }
+                                                            )
+                                                      .SelectedItems
+                                                     (
+                                                        it =>
+                                                        {
+                                                            it.Add(new ListItem { Text = "{Tous}", Value = "-2" });
+                                                        }
+                                                     ),
+                                                     X.ComboBox()
+                                                      .ID("cmbMouvementType")
+                                                      .FieldLabel("Type Of Movement")
+                                                      .DisplayField("Designation")
+                                                      .ValueField("ID")
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .MatchFieldWidth(false)
+                                                      .ListConfig(new BoundList { MinWidth = 320 })
+                                                      .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(false)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadActiveMouvementStockTypeAll", "MouvementStockType"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+                                                              .Parameters
+                                                                (
+                                                                    ps =>
+                                                                    {
+                                                                        ps.Add(new StoreParameter("SensMouvement", "App.cmbDirection.getValue()", ParameterMode.Raw));
+                                                                        ps.Add(new StoreParameter("ItemMagasin", "App.cmbMagasin.getValue()", ParameterMode.Raw));
+                                                                    }
+
+                                                                )
+                                                              .Listeners(li =>
+                                                              {
+                                                                  li.Load.Handler = "var combo = App.cmbMouvementType; combo.setValue(records.length > 0 ? records[0].data.ID : -2);";
+                                                              })
+
+
+                                                          )
+                                             .SelectedItems
+                                             (
+                                                it =>
+                                                {
+                                                    it.Add(new ListItem { Text = "{Tous}", Value = "-2" });
+                                                }
+                                             ),
+                                X.ComboBox()
+                                    .ID("cmbEmplacement")
+                                    .FieldLabel("Position")
+                                    .DisplayField("Designation")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Store
+                                    (
+                                            X.Store()
+                                                .AutoLoad(false)
+                                                .Model
+                                                (
+                                                    Html.X().Model().IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                        )
+                                                    )
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadActiveEmplacement", "Emplacement"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                            .Parameters
+                                            (
+                                                ps =>
+                                                {
+                                                    ps.Add(new StoreParameter("ItemMagasin", "#{cmbMagasin}.getValue()", ParameterMode.Raw));
+                                                }
+                                            )
+                                            .Listeners
+                                            (
+                                                    li =>
+                                                    {
+                                                        li.Load.Handler = "var combo = App.cmbEmplacement; combo.setValue(records.length > 0 ? records[0].data.ID : 0);";
+                                                    }
+                                            )
+                                    ),
+                                X.ComboBox()
+                                    .ID("CmbStatut")
+                                    .ForceSelection(true)
+                                    .FieldLabel("Statut")
+                                    .TypeAhead(true)
+                                    .ForceSelection(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items(
+                                            new ListItem("{Tous}", "-1"),
+                                            new ListItem("Approuvé", "AP"),
+                                            new ListItem("Annulé", "CA")
+                                    )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Approuvé", Value = "AP" }); })
+
+                            )
+    #endregion
+
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("")
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("PrintList");
+                de.Click.Before = "return validNew(App.MouvementStock_Print.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.MouvementStock_Print.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    
+</script>
+
+
+
+
+
+
+
+
+

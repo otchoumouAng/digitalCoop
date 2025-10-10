@@ -1,0 +1,640 @@
+﻿
+@model Tms.Classes.Business.Sales.EnregistrementViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 25px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+               X.Window()
+                .ID("Enregistrement_Detail")
+                .Modal(true)
+                .Width(900)
+                .Resizable(false)
+                .AutoScroll(true)
+                .Scrollable(ScrollableOption.Vertical)
+                .Height(450)
+                .BodyPadding(5)
+                .Y(20)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Title("Sales Registration")
+                .Items
+                (
+                    X.FormPanel()
+                     .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+                .Items(
+                    X.Panel()
+                        .Frame(false)
+                        .Border(false)
+                        .FrameHeader(false)
+                        .ID("pnlFlexEvenEnr1")
+                        .Layout(LayoutType.HBox)
+                        .MarginSpec("0 0 5 0")
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                        (
+                            X.Hidden()
+                                            .ID("hiddenExecMode")
+                                            .Value(Model._ExecMode)
+                                            ,
+                                            X.Hidden()
+                                                .ID("hiddenRowversion")
+                                                .Value(Model._Enregistrement.RowVersionKey)
+                                                ,
+
+                                            X.Hidden().ID("DefaultMode").Value(Model._ModeEnregistrement),
+                                            X.Hidden()
+                                                .ID("txtEnregistrementID")
+                                                .Value(Model._Enregistrement.ID)
+                                                ,
+                                                X.Panel()
+                                                 .ID("firstColEnr")
+                                                 .Layout(LayoutType.Form)
+                                                 .Flex(1)
+                                                 .Items
+                                                 (
+                                                     X.TextField()
+                                                    .ID("txtNumber")
+                                                    .FieldLabel("Number")
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Numero : string.Empty)
+                                                    .ReadOnly(true)
+                                                    .LabelAlign(LabelAlign.Right),
+                                                     X.TextField()
+                                                    .ID("txtNumeroGuichet")
+                                                    .FieldLabel("EP N°")
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.NumeroGuichet : string.Empty)
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right),
+                                                X.TextField()
+                                                    .ID("txtONCC")
+                                                    .FieldLabel("ONCC Number")
+                                                    //.IndicatorCls("IndicatorRedStar")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.NumeroONCC : string.Empty)
+                                                    //.IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right),
+                                                 X.TextField()
+                                                    .ID("txtContractExport")
+                                                    .FieldLabel("Contract Export")
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.ContratExport : Model._PrefixeContratExport)
+                                                    .AllowBlank(false)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right),
+                                                   X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Tonnage(q) / Price(Euro)")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                            X.TextField()
+                                                             .ID("txtTonnage")
+                                                             .Width(120)
+                                                             .AllowBlank(false)
+                                                             .MaskRe(@"/[\d,]/")
+                                                             .MarginSpec("0 10 0 0")
+                                                             .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.TonnageAsString : string.Empty)
+                                                             .Listeners(ls =>
+                                                             {
+                                                                 ls.Change.Fn = "CalculAmountTonnage";
+                                                                 ls.Blur.Handler = "if (App.txtTonnage.value && !App.txtTonnage.readOnly) {#{txtTonnage}.setValue(formatNumberDecimal(#{txtTonnage}.getValue()))}";
+                                                                 ls.Focus.Handler = "if (App.txtTonnage.value && !App.txtTonnage.readOnly) { #{txtTonnage}.setRawValue(unformatNumberDecimal(#{txtTonnage}.getValue()));}";
+
+                                                             })
+                                                             ,
+                                                             X.TextField()
+                                                             .ID("txtPrice")
+                                                             .AllowBlank(false)
+                                                             .Width(120)
+                                                             .MaskRe(@"/[\d]/")
+                                                             .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.PrixAsString : string.Empty)
+                                                             .Listeners(ls =>
+                                                             {
+                                                                 ls.Change.Fn = "CalculAmountTonnage";
+                                                                 ls.Blur.Handler = "if (App.txtPrice.value && !App.txtPrice.readOnly) {#{txtPrice}.setValue(formatNumber(#{txtPrice}.getValue()))}";
+                                                                 ls.Focus.Handler = "if (App.txtPrice.value && !App.txtPrice.readOnly) { #{txtPrice}.setRawValue(unformatNumber(#{txtPrice}.getValue()));}";
+
+                                                             })
+                                                ),
+                                                    X.ComboBox()
+                                                     .ID("_cmbCampagne")
+                                                     .AllowBlank(false)
+                                                     .IndicatorCls("IndicatorRedStar")
+                                                     .IndicatorText("*")
+                                                     .FieldLabel("Campagne")
+                                                     .DisplayField("Designation")
+                                                     .ValueField("Designation")
+                                                     .ReadOnly(true)
+                                                     .LabelAlign(LabelAlign.Right)
+                                                     .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Campagne : Model._DefaultCampagne)
+                                                     .Store
+                                                     (
+                                                        X.Store()
+                                                       .AutoLoad(false)
+                                                       .Model
+                                                       (
+                                                           Html.X().Model()
+                                                          .IDProperty("Designation")
+                                                          .Fields
+                                                          (
+                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                          )
+                                                       )
+                                                       .Proxy
+                                                       (
+                                                         Html.X().AjaxProxy()
+                                                         .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                         .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                       )
+                                                    ),
+
+                                                    X.ComboBox()
+                                                     .ID("_cmbExportateur")
+                                                     .TypeAhead(true)
+                                                     .QueryMode(DataLoadMode.Local)
+                                                     .TriggerAction(TriggerAction.All)
+                                                     .AllowBlank(false)
+                                                     .IndicatorCls("IndicatorRedStar")
+                                                     .IndicatorText("*")
+                                                     .FieldLabel("Exportateur")
+                                                     .DisplayField("Nom")
+                                                     .ListConfig(new BoundList { MinWidth = 300 })
+                                                     .ValueField("ID")
+                                                     .ReadOnly(true)
+                                                     .LabelAlign(LabelAlign.Right)
+                                                     .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Exportateur.ID : Model._DefaultExportateur)
+                                                     .Store
+                                                     (
+                                                        X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                             Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                              new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                              new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" },
+                                                              new ModelField("PrefixeFacture", ModelFieldType.String) { Mapping = "PrefixeFacture" }
+                                                            )
+                                                         )
+                                                        .Proxy
+                                                        (
+                                                           Html.X().AjaxProxy()
+                                                           .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                           .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+
+                                                    ).Listeners(
+                                                        ls =>
+                                                        {
+                                                            ls.Change.Handler = "SetContratField();";
+                                                            ls.Select.Handler = "SetContratField();";
+                                                        }
+                                                    )
+                                                    ,
+                                                    X.FieldContainer().Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                    .FieldLabel("Date")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Items(
+
+                                                                  X.DateField()
+                                                                    .ID("txtDate")
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                                    .AllowBlank(false)
+                                                                    .Width(140)
+                                                                    .ReadOnly(true)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+
+
+
+                                                    ),
+
+                                                    X.FieldContainer().Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                    .FieldLabel("Period Shipement")
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Items(
+
+                                                            X.DateField()
+                                                                 .ID("txtPeriod")
+                                                                  .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Periode.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                                  .Format("MM-Y")
+                                                                  .Type(DatePickerType.Month)
+                                                                  .AllowBlank(false)
+                                                                  .Width(140)
+                                                                  .ReadOnly(true)
+                                                                  .IndicatorCls("IndicatorRedStar")
+                                                                   .IndicatorText("*")
+                                                    //,
+                                                    //X.DateField()
+                                                    //.ID("txtDateEnd")
+                                                    //.Text(DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                    //.AllowBlank(false)
+                                                    //.Width(130)
+
+
+                                                    )
+                                                    ,
+                                                   
+                                                X.ComboBox()
+                                                     .ID("_cmbModeEnregistrement")
+                                                     .TypeAhead(true)
+                                                     .QueryMode(DataLoadMode.Local)
+                                                     .TriggerAction(TriggerAction.All)
+                                                     .AllowBlank(false)
+                                                     .IndicatorCls("IndicatorRedStar")
+                                                     .IndicatorText("*")
+                                                     .FieldLabel("Mode")
+                                                     .ReadOnly(true)
+                                                     .DisplayField("Designation")
+                                                     .ListConfig(new BoundList { MinWidth = 300 })
+                                                     .ValueField("ID")
+                                                     .LabelAlign(LabelAlign.Right)
+                                                     .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.EnregistrementMode.ID : Model._ModeEnregistrement)
+                                                     .Store
+                                                     (
+                                                        X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                             Html.X().Model()
+                                                            .IDProperty("ID")
+                                                            .Fields
+                                                            (
+                                                              new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                              new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                         )
+                                                        .Proxy
+                                                        (
+                                                           Html.X().AjaxProxy()
+                                                           .Url(Url.Action("Load", "EnregistrementMode"))
+                                                           .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                        .Listeners(
+                                                            ls => ls.Load.Handler = "checkMode();"
+                                                    )
+                                                )
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Select.Handler = "checkMode();";
+                                                }
+                                                ),
+                                          
+                                                 X.TextField()
+                                                .ID("txtAmount")
+                                                .FieldLabel("Amount(Euro)")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.MontantAsString : string.Empty)
+
+                                                .AllowBlank(false)
+                                                .ReadOnly(true)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+
+
+                                 //1stCol
+                                 ),
+                                 X.Panel()
+                                 .ID("secondColEnr")
+                                 .Layout(LayoutType.Form)
+                                 .Flex(1)
+                                 .Items
+                                 (
+
+                                 X.GridPanel()
+                                    .Layout(LayoutType.Fit)
+                                    .Region(Region.Center)
+                                    .ID("grpDetailEnregistrement")
+                                    .ForceFit(true)
+                                    .Border(true)
+                                    .Height(200)
+                                    .Disabled(true)
+                                    .AllowDeselect(true)
+                                    .Store(
+                                            //X.Store().ID("storeDetailEnregistrement").AutoLoad(false)
+                                            X.StoreFor<Tms.Classes.Business.Sales.EnregistrementDetail>()
+                                                .ID("storeDetailEnregistrement")
+                                                .AutoLoad(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? false : true)
+                                                .Proxy(
+                                                        X.AjaxProxy()
+                                                            .Url(Url.Action("LoadDetailEnregistrement", "Enregistrement"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                .Parameters(ps =>
+                                                {
+                                                    ps.Add(new StoreParameter("ItemEnregistrement", "#{txtEnregistrementID}.getValue()", ParameterMode.Raw));
+                                                }
+                                                )
+                                                .Listeners
+                                                (
+                                                    ls =>
+                                                    {
+                                                        ls.Add.Handler = "CalculateDetailValues();";
+                                                        ls.Remove.Handler = "CalculateDetailValues();";
+                                                    }
+                                                )
+                                            )
+                                            .ColumnModel
+                                            (
+                                                Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1),
+                                                Html.X().Column().Text("Tons.").DataIndex("TonnageAsString").Flex(1),
+                                                Html.X().Column().Text("Prix").DataIndex("PrixAsString").Flex(1),
+                                                Html.X().Column().Text("Montant").DataIndex("MontantAsString").Flex(1)
+                                            )
+                                            .DockedItems(
+                                            X.Toolbar()
+                                                .Dock(Dock.Top)
+                                                .Items(
+                                                            X.Label().Text("Details"),
+                                                            X.ToolbarSpacer(10),
+                                                            X.Button()
+                                                                .ID("BtnAddDetail")
+                                                                .IconCls("action_new_02")
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Ajouter")
+                                                                .Disable(false)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("onAddDetail");
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                }),
+                                                            X.Button()
+                                                                .ID("BtnRemoveDetail")
+                                                                //.IconCls("action_filter_02")
+                                                                .Icon(Icon.Delete)
+                                                                .Border(false)
+                                                                .Cls("ButtonStyle")
+                                                                .Text("Retirer")
+                                                                .Disabled(true)
+                                                                .DirectEvents(de =>
+                                                                {
+                                                                    de.Click.Url = Url.Action("onRemoveDetail");
+                                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpDetailEnregistrement}.getSelectionModel().getSelection()[0].data" });
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                                    de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Registration : Retirer'; config.confirmation.message = 'Do you want to remove this Detail ? ';";
+                                                                })
+                                                        )
+                                        )
+                                        .SelectionModel
+                                        (
+                                            X.RowSelectionModel()
+                                                .Mode(SelectionMode.Single)
+                                                .ID("rowDetailEnregistrement")
+                                                .AllowDeselect(true)
+                                        )
+                                        .Listeners(l =>
+                                        {
+                                            if (Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult)
+                                            {
+                                                l.Select.Handler = "App.BtnRemoveDetail.enable();";
+                                                l.Deselect.Handler = "App.BtnRemoveDetail.disable();";
+                                            }
+                                        }
+                                        ),
+                                        X.Panel()
+                                            .Layout(LayoutType.Form)
+                                            .Flex(1)
+                                             .Items(
+                                                X.TextArea()
+                                                    .ID("txtTerms")
+                                                    .FieldLabel("Terms")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Terme : string.Empty),
+                                                X.TextArea()
+                                                   .ID("txtDescription")
+                                                   .FieldLabel("Description")
+                                                   .LabelAlign(LabelAlign.Right)
+                                                  .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Enregistrement.Description : string.Empty)
+    )
+
+
+                                 //2ndCol
+                                 )
+
+
+                              //End first panel
+                              )
+                  //End form panel
+                  )
+
+            //End Windows
+            )
+            .Buttons
+            (
+                X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .TabIndex(12)
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents
+                (
+
+                    de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.Before = "return validNew(App.Enregistrement_Detail.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.ExtraParams.Add(new Parameter { Name = "storerows", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpDetailEnregistrement.getRowsValues({selectedOnly : false})" });
+                    }
+                ),
+
+
+                X.Button()
+                .TabIndex(13)
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.Enregistrement_Detail.doClose()")
+                .Cls("btncancel")
+
+            )
+
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Sales Registration : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Amount = Number(unformatNumber(App.txtAmount.value));
+
+
+        if(!Ext.isNumeric(Amount) && parseFloat(Amount) < 0 ) {
+            Ext.Msg.show({ title: 'Sales Registration : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Amount invalid', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    
+    };
+
+    var CalculAmountTonnage = function () {
+
+        /*var Tonnage = unformatNumberDecimal(App.txtTonnage.value) || '';*/
+        var Tonnage = unformatNumberDecimal(App.txtTonnage.value.replace(",", ".")) || '';
+        var Price = unformatNumber(App.txtPrice.value) || '';        
+        if (isNumeric(Price) && Price > 0) {            
+            var Amount = parseFloat(Tonnage) * parseFloat(Price);            
+            App.txtAmount.setValue(formatNumber(Amount));
+        }
+
+        
+        /*if (isNumeric(Tonnage) && Tonnage > 0)
+        {
+ 
+            var Price = unformatNumber(App.txtPrice.value) || '';
+
+            if(isNumeric(Price) && Price > 0)
+            {
+                var Amount = RoundInt(Tonnage * Price);
+
+                App.txtAmount.setValue(formatNumber(Amount));
+            }
+        }
+        else
+        {
+            App.txtTonnage.setValue('');
+            App.txtAmount.setValue('');
+        }*/
+
+
+    };
+
+    var CalculAmountPrice = function () {
+
+        var Price = unformatNumber(App.txtPrice.value) || '';
+
+        var Tonnage = unformatNumberDecimal(App.txtTonnage.value) || '';
+        console.log(Tonnage);
+        var Amount = RoundInt(Tonnage * Price);
+        App.txtAmount.setValue(formatNumber(Amount));
+
+
+    };
+
+
+
+    var RoundInt = function (v) {
+        try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    };
+
+    var RoundIntSup = function (v) {
+        try {
+                if (v < 1000)
+                {
+                    var valeur = (v / 100);
+                    return RoundInt(valeur)*100;
+                }
+                else
+                {
+                    var valeur = (v / 1000);
+                    return RoundInt(valeur)*1000;
+
+                }
+
+        } catch (err) {
+            return 0;
+        }
+    };
+
+
+    var checkMode = function () {
+        if (App._cmbModeEnregistrement.value == App.DefaultMode.value) {
+            App.grpDetailEnregistrement.disable();
+        } else {
+            App.grpDetailEnregistrement.enable();
+        }
+
+    };
+
+    var CalculateDetailValues = function () {
+        var totalTon = App.storeDetailEnregistrement.sum('Tonnage') || 0;
+        var totalDetAmount = App.storeDetailEnregistrement.sum('Montant') || 0;        
+
+        App.txtTonnage.setValue(formatNumber(totalTon));
+        App.txtAmount.setValue(formatNumber(totalDetAmount));
+    };
+
+    var SetContratField = function () {
+        var prefixe = App._cmbExportateur.getSelectedRecord().data.PrefixeFacture || '';
+        var oldText = App.txtContractExport.value;
+        var newText = '';
+        if (oldText.length > 3) {            
+            newText = oldText.replace(oldText.substring(0, 3), prefixe);
+            App.txtContractExport.setValue(newText);
+        } else
+            App.txtContractExport.setValue(prefixe + '/');
+    };
+
+    function formatNumberDecimal(amount) {
+        amount = thousands_separators(amount.replace(".", ","));
+        formatted = amount.replace(".", ",");
+
+        return formatted;
+    };
+
+    function unformatNumberDecimal(amount) {
+        formatted = amount.replace(" ", "");
+
+        return formatted;
+    };
+
+    function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return num_parts.join(".");
+    };
+</script>
+

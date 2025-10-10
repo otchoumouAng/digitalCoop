@@ -1,0 +1,112 @@
+﻿
+@model Tms.Classes.Security.Utilisateur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+            //X.FormPanel()
+            //    .Items(
+            X.Window()
+            .ID("FormListeUserRoles")
+            .Width(700)
+            .Resizable(false)
+            .Height(400)
+            .Modal(true)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            //.Listeners(l =>
+            //{
+            //    l.Close.Handler = "App.TmsViewPort.unmask();";
+            //})
+            .X(450)
+            .Y(30)
+            .Title("Utlisateur : Roles")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+            .Items(
+                    X.Hidden().ID("TxtIDUser").Value(Model.IDUtilisateur),
+                    X.Panel().Layout(LayoutType.Fit)
+                    //.TopBar(new Toolbar()
+                    //{
+                    //    Items = {
+                    //                X.Button()
+                    //                    .ID("BtnRefreshListUserRoles")
+                    //                    .IconCls("action_new_02")
+                    //                    .Border(false)
+                    //                    .Cls("ButtonStyle")
+                    //                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                    //                    .Disable(false)
+                    //                    .DirectEvents( de =>{
+                    //                        de.Click.Url  = Url.Action("AddRolToUser");
+                    //                        de.Click.EventMask.ShowMask = true;
+                    //                    } )
+                    //            }
+                    //})
+                    .Items(
+                            X.GridPanel()
+                            .ID("grpListeRolesToUser")
+                            .Region(Region.Center)
+                            .ForceFit(false)
+                            .Height(300)
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Security.Role>().ID("storeListeRolesToUser")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectToUser", "Role"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(
+                                            ps => ps.Add(new StoreParameter("ItemUser", "#{TxtIDUser}.getRawValue()", ParameterMode.Raw))
+                                        )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("Role").DataIndex("RoleAsString").Flex(1).Hideable(false),
+                                        Html.X().Column().Text("Description").DataIndex("Description").Flex(1).Hideable(false)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )
+
+                            )
+
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitListRoleToUser")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListeRole");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeRolesToUser.getRowsValues({selectedOnly : true})" });
+
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormListeUserRoles.doClose()").Cls("btncancel")
+
+                )
+
+            //)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+
+
+

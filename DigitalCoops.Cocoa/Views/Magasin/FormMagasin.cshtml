@@ -1,0 +1,220 @@
+﻿@model Tms.Classes.Shared.stock.MagasinViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormMagasin")
+    .Width(350)
+    .Resizable(false)
+    .Height(310)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Magasin")
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Layout(LayoutType.VBox)
+            .BodyPadding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+            .Items(
+    #region Zone Gauche
+                                            X.Hidden().ID("TxtMagasinID").ReadOnly(true).Value(Model._Magasin.ID),
+                                            X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                                            X.ComboBox().ID("cmbDetSite")
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .TypeAhead(true)
+                                                //.ReadOnly(true)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .ForceSelection(true)
+                                                .FieldLabel("Site").DisplayField("Nom").ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                                //.Select(0)
+                                                //.Width(310)
+                                                //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.Sites.ID : (int?)null)
+                                                .Store
+                                                (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model(
+                                                                    Html.X().Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                    )
+                                                                    )
+                                                            .Proxy
+                                                            (
+                                                                Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadSite", "Site"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                            //.Listeners(li => li.Load.Handler = "combo.setReadOnly(true);")
+                                                            //.Listeners(li => li.Load.Handler = "var combo = App.cmbDetSite; combo.setValue(records.length > 0 ? records[0].get(combo.valueField): 0);combo.setReadOnly(true);")
+
+
+                                                            ),
+                                            X.TextField()
+                                                .ID("TxtDesignation")
+                                                .FieldLabel("Designation")
+                                                .TabIndex(1)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.Designation : string.Empty)
+                                                .IndicatorText("*"),
+                                            X.TextField()
+                                                .ID("TxtLocalisation")
+                                                .FieldLabel("Localisation")
+                                                .TabIndex(2)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.Localisation : string.Empty)
+                                                .IndicatorText("*"),
+                                            X.ComboBox()
+                                                .ID("cmbTypeStock")
+                                                .TabIndex(3)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Type De Stock")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.StockType.ID : (int?)null)
+                                                .Store
+                                                (
+                                                    X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                            X.Model()
+                                                                .IDProperty("ID")
+                                                                .Fields
+                                                                (
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadActiveStockType", "StockType"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                ),
+                                            X.Checkbox()
+                                                .ID("ChkEstExterne")
+                                                .FieldLabel("Est Externe")
+                                                .TabIndex(4)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.EstExterne : false)
+                                                .LabelAlign(LabelAlign.Right),
+                                             X.Checkbox()
+                                                .ID("ChkPontBascule")
+                                                .FieldLabel("Pont Bascule")
+                                                .TabIndex(5)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.APontBascule : false)
+                                                .LabelAlign(LabelAlign.Right),
+                                            X.Checkbox()
+                                                .ID("ChkEstTransit")
+                                                .FieldLabel("Est TRansit")
+                                                .TabIndex(6)
+                                                .Hidden(true)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.EstTransit : false)
+                                                .LabelAlign(LabelAlign.Right)
+                                           
+                    //    ,
+                    //X.Checkbox().ID("TxtVisibilityOnSite").FieldLabel("Visible on Site")
+                    //    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.VisibleEnAgence : true)
+                    //    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Magasin.VisibleEnAgence : true)
+                    //    .LabelAlign(LabelAlign.Right)
+    #endregion
+
+                    )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(20)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormMagasin.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                }
+            ),
+        X.Button()
+            .TabIndex(21)
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormMagasin.doClose()")
+            .Cls("btncancel")
+    )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Magasin : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        
+
+    };
+
+ </script>
+
+
+

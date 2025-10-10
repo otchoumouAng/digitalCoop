@@ -1,0 +1,386 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+<script type="text/javascript" src="~/Scripts/renderers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeRemboursementMode.columnManager.getColumns(), App.grpListeRemboursementMode.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var GetNbrStoreRows = function () {
+        var nbr = App.grpListeRemboursementMode.getRowsValues().length;
+        App.LblResumeRemboursementMode.setText(nbr + ' Mode(s)');        
+    };
+
+    var SetCriteriaTitle = function (status) {
+
+        App.RemboursementModeCriteriaPanel.title = "";
+        var texttitle = "";
+
+        if (status) texttitle += "Show only active Mode : YES ";
+        else texttitle += "Show only active Mode : NO ";
+
+        App.RemboursementModeCriteriaPanel.setTitle(texttitle);
+    };
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        //console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red'; // glyphicon glyphicon-remove red
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue'; // glyphicon glyphicon-file blue
+            }
+        },
+        resetButtons: function () {
+
+            if (App.rowSelectionRemboursementMode.hasSelection()) {
+                if (App.RfmhiddenPermModifier.value == 'true')
+                    App.btnModifyRemboursementMode.enable();
+
+                if (App.RfmhiddenPermDesactiver.value == 'true')
+                    App.mnuCancelRemboursementMode.enable();
+
+                var isDisabled = App.rowSelectionRemboursementMode.selected.items[0].data.Desactive;
+
+                if (isDisabled === true) {
+                    if (App.RfmhiddenPermActiver.value == 'true')
+                        App.mnuCancelRemboursementMode.enable();
+
+                    App.mnuCancelRemboursementMode.setText('Activer');
+                    App.btnModifyRemboursementMode.disable();
+                    App.mnuCancelRemboursementMode.setIconCls('glyphicon glyphicon-ok green');
+                }
+                else {
+                    if (App.RfmhiddenPermModifier.value == 'true')
+                        App.btnModifyRemboursementMode.enable();
+
+                    App.mnuCancelRemboursementMode.setText('Annuler');
+                    App.mnuCancelRemboursementMode.setIconCls('glyphicon glyphicon-remove red');
+                }
+
+            } else {
+
+                App.btnModifyRemboursementMode.disable();                
+                App.mnuCancelRemboursementMode.disable();
+
+            }
+        }
+    }
+
+
+</script>
+
+
+@model Tms.Classes.Shared.RemboursementMode
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+    @(X.Viewport()
+    .Layout(LayoutType.Border)
+    .ID("TmsViewPort")
+    .Items(
+            X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+            X.Hidden().ID("RfmhiddenPermCreer").ReadOnly(true),
+            X.Hidden().ID("RfmhiddenPermModifier").ReadOnly(true),
+            X.Hidden().ID("RfmhiddenPermDesactiver").ReadOnly(true),
+            X.Hidden().ID("RfmhiddenPermActiver").ReadOnly(true),
+            X.Hidden().ID("RfmhiddenPermExporterExcel").ReadOnly(true),
+            X.Hidden().ID("RfmhiddenPermOverview").ReadOnly(true),
+
+            X.Panel()
+                .ID("pnlNorth")
+                .Region(Region.North)
+                .Layout(LayoutType.Border)
+                .TopBar(new Toolbar()
+                {
+                    Items =
+                    {
+                        X.Button()
+                            .ID("btnFilterRemboursementMode")
+                            .IconCls("action_filter_02")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                            .Disabled(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("OnFilter");
+                                de.Click.EventMask.ShowMask = true;
+                            } ),
+                        X.Button()
+                            .ID("btnRefreshRemboursementMode")
+                            .IconCls("action_refresh_01")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("onRefresh");
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Value= "#{TxtStatus}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.Success = "SetCriteriaTitle(App.TxtStatus.value);";
+                                de.Click.EventMask.ShowMask = true;
+                            } ),
+
+                        X.Button()
+                            .ID("btnNewRemboursementMode")
+                            .IconCls("action_new_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("OnAdd");
+                                de.Click.Success = "App.FormRemboursementMode.setTitle('Refund Mode : Nouveau')";
+                                de.Click.EventMask.ShowMask = true;
+                            } ),
+
+                        X.Button()
+                            .ID("btnModifyRemboursementMode")
+                            .IconCls("action_modify_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disabled(true)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("OnEdit");
+                                de.Click.Success = "App.FormRemboursementMode.setTitle('Refund Mode : Modifier')";
+                                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeRemboursementMode}.getSelectionModel().getSelection()[0].data"});
+                                de.Click.EventMask.ShowMask = true;
+                            } ),
+                        //X.SplitButton()
+                        //    .ID("btnPrint")
+                        //    .IconCls("action_print_02")
+                        //    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                        //    .Disable(false)
+                        //    .Cls("ButtonStyle")
+                        //    .Border(false)
+                        //    .Menu(
+                        //            new Menu()
+                        //            {
+                        //                Items =
+                        //                {
+                                            
+                        //                }
+                        //            }),
+                        X.ToolbarFill(),
+                        X.Button()
+                            .ID("btnActions")
+                            .Text("Actions")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .IconCls("menu_04")
+                            .Disable(false)
+                            .Menu(
+                                    new Menu()
+                                    {
+                                        Items =
+                                        {
+                                            X.MenuItem()
+                                                .ID("mnuExportRefundModeList")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                .Icon(Icon.PageExcel)
+                                                .Handler("SetExcelList();"),
+                                            X.MenuItem()
+                                            .ID("mnuCancelRemboursementMode")
+                                            .IconCls("glyphicon glyphicon-remove red")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(true)
+                                            .DirectEvents(de =>
+                                            {
+                                                de.Click.Url = Url.Action("OnActivateDeactivate");
+                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeRemboursementMode}.getSelectionModel().getSelection()[0].data" });
+                                                de.Click.EventMask.ShowMask = true;
+                                                de.Click.Confirmation.ConfirmRequest = true;
+                                                de.Click.Confirmation.Title = "Refund Mode";
+                                                de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeRemboursementMode}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                                de.Click.Success = "Overview.resetButtons();";
+                                            })
+
+                                        }
+                                    })
+                            }
+                }),
+        X.FormPanel()
+            .ID("RemboursementModeCriteriaPanel")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Refund Mode - overview" })
+            .Region(Region.North)
+            .Floatable(false)
+            .Border(false)
+            .Collapsed(true)
+            .Collapsible(true)
+            //.CollapsedCls("panelcollapse")
+            .BodyPadding(5)
+            .Frame(true)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Start })
+            .Items(
+
+                    X.Panel()
+                        .Border(false)
+                        //.Frame(true)
+                        //.Margin(10)
+                        .Width(400)
+                        .Height(40)
+                        //.Title("Criteria")
+                        .Layout(LayoutType.Form)
+                        //.BodyPadding(6)
+                        .Items(
+                                    X.Checkbox().ID("TxtStatus").FieldLabel("Show only active Mode").LabelAlign(LabelAlign.Right)
+                                ),
+                    X.Container()
+                                    .ID("")
+                                    .Height(40)
+                                    .Flex(1)
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("LblResumeRemboursementMode").Text("Resume ici").EmptyText(""))
+                        //X.Panel()
+                        //    .ID("formOverviewRemboursementMode")
+                        //    .Margin(10)
+                        //    .Flex(1)
+                        //    .Frame(true)
+                        //    .Height(100)
+                        //    .TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+                        //    .Border(false)
+                        //    .BodyPadding(6)
+                        //            .Layout(LayoutType.HBox)
+                        //            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        //            .Items(
+                        //                )
+                        ),
+                    X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeRemboursementMode")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .AllowDeselect(false)
+                       .Store(
+                                X.StoreFor<Tms.Classes.Shared.RemboursementMode>()
+                                    .ID("storeListeRemboursementMode")
+                                    .PageSize(20)
+                                    .RemotePaging(false)
+                                    .Proxy(
+                                            Html.X()
+                                            .AjaxProxy()
+                                            .Url(
+                                                    Url.Action("Select")
+                                                )
+                                            .Reader(
+                                                        Html.X()
+                                                        .JsonReader()
+                                                        .RootProperty("data")
+                                                    )
+                                            )
+                                    .Listeners(ls =>
+                                    {
+                                        ls.Load.Fn = "GetNbrStoreRows";
+                                        ls.Add.Fn = "GetNbrStoreRows";
+                                    })
+                            )
+                        .ColumnModel
+                        (
+                            X.Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Hideable(false).Width(40).Filterable(false),
+                            X.Column().Text("Nom").DataIndex("Designation").Flex(1),
+                            X.Column().Text("Utilisation Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                                X.DateColumn().Text("Date Creation").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                                X.Column().Text("Utilisation Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                                X.DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+                        )
+                        .BottomBar(
+                                    X.PagingToolbar()
+                                        .HideRefresh(true)
+                        .Plugins(
+                                    X.ProgressBarPager()
+                                )
+                        )
+                        .Plugins(
+                                    X.FilterHeader()
+                        )
+                        .SelectionModel(
+                                        X.RowSelectionModel()
+                                            .ID("rowSelectionRemboursementMode")
+                                            .Mode(SelectionMode.Single)
+                                            .AllowDeselect(false)
+                        )
+                        .Listeners(l =>
+                        {
+                            l.Select.Fn = "Overview.resetButtons";
+                            l.Deselect.Fn = "Overview.resetButtons";
+
+                        }
+                        )
+                        .DirectEvents(de =>
+                        {
+                            de.RowDblClick.Url = Url.Action("OnConsult");
+                            de.RowDblClick.CleanRequest = true;
+                            de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionRemboursementMode}.getSelected().items[0].data" });
+                            de.RowDblClick.EventMask.ShowMask = true;
+                        }
+                )
+
+    )
+    )
+
+</form>

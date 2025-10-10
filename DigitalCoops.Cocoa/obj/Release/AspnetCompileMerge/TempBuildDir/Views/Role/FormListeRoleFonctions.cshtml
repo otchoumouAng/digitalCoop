@@ -1,0 +1,112 @@
+﻿
+@model Tms.Classes.Security.Role
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+            //    X.FormPanel()
+            //.Items(
+            X.Window()
+            .ID("FormListeRoleFonctions")
+            .Width(740)
+            .Resizable(false)
+            .Height(470)
+            .Modal(true)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            //.Listeners(l =>
+            //{
+            //    l.Close.Handler = "App.TmsViewPort.unmask();";
+            //})
+            .X(450)
+            .Y(30)
+            .Title("Role : Select Functions")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+            .Items(
+                    X.Hidden().ID("TxtIDRole").Value(Model.ID),
+                    X.Panel().Layout(LayoutType.Fit)
+                    //.TopBar(new Toolbar()
+                    //{
+                    //    Items = {
+                    //                X.Button()
+                    //                    .ID("BtnRefreshListRoleFonction")
+                    //                    .IconCls("action_new_02")
+                    //                    .Border(false)
+                    //                    .Cls("ButtonStyle")
+                    //                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                    //                    .Disable(false)
+                    //                    .DirectEvents( de =>{
+                    //                        de.Click.Url  = Url.Action("AddFunctionToRole");
+                    //                        de.Click.EventMask.ShowMask = true;
+                    //                    } )
+                    //            }
+                    //})
+                    .Items(
+                            X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListeFonctionToRole")
+                            .Region(Region.Center)
+                            .ForceFit(false)
+                            .Height(370)
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Security.Fonction>().ID("storeListeFonctionToRole")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectToRole", "Fonction"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(
+                                            ps => ps.Add(new StoreParameter("ItemRole", "#{TxtIDRole}.getRawValue()", ParameterMode.Raw))
+                                        )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Width(40).Hideable(false).Filterable(false),
+                                        Html.X().Column().Text("Module").DataIndex("ModuleAsString").Flex(1).Hideable(false),
+                                        Html.X().Column().Text("Function").DataIndex("FonctionAsString").Flex(2).Hideable(false)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )
+
+                            )
+
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitListFonctionsToRole")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListeFonctions");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeFonctionToRole.getRowsValues({selectedOnly : true})" });
+
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormListeRoleFonctions.doClose()").Cls("btncancel")
+
+                )
+
+            //)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+

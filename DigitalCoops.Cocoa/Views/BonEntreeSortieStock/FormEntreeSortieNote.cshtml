@@ -1,0 +1,445 @@
+﻿
+@model Tms.Classes.Business.BonDeLivraisonViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+
+<style type="text/css">
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 95px;
+    }
+
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+</style>
+@(X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+        .Items(
+                X.Window()
+                    .ID("FormEntreeSortieNote")
+                    .Width(700)
+                    .Resizable(false)
+                    .Height(370)
+                    .CloseAction(Ext.Net.CloseAction.Destroy)
+                    .Listeners(l =>
+                    {
+                        l.Close.Handler = "App.TmsViewPort.unmask();";
+
+                    })
+                    //.X(400)
+                    .Y(20)
+                    .Title("Input/Output Note")
+                    .Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Top, Pack = BoxPack.Center })
+                    .Items(
+
+                                        X.Panel()
+                                            .Layout(LayoutType.Form)
+                                            .Flex(1)
+                                            .Items(
+                                                X.Hidden()
+                                                    .ID("hiddenExecMode"),
+                                                //.Value(Model._ExecMode),
+                                                X.Hidden()
+                                                    .ID("hiddenRowversion"),
+                                                //.Value(Model._AnalysePhysique.RowVersionKey),
+                                                X.Hidden()
+                                                    .ID("TxtAnalysePhysiqueID"),
+                                                //.Value(Model._AnalysePhysique.ID),
+                                                X.ComboBox()
+                                                                    .ID("CmbCodeAnalyse")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .FieldLabel("Campagne")
+                                                                    .DisplayField("Code")
+                                                                    .ValueField("ID")
+                                                                    .LabelWidth(110)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ForceSelection(true)
+                                                                    .TypeAhead(true)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .TabIndex(1)
+                                                                    //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                                                    //.RawText(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.AnalyseCode.Code : string.Empty)
+                                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.AnalyseCode.ID : (Guid?)null)
+                                                                    .Store(
+                                                                            X.Store()
+                                                                                .AutoLoad(false)
+                                                                                .Model(Html.X().Model()
+                                                                                .IDProperty("ID")
+                                                                                        .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Object) { Mapping = "ID" },
+                                                                                            new ModelField("Code", ModelFieldType.String) { Mapping = "Code" }
+                                                                                        )
+                                                                                    )
+                                                                                .Proxy(Html.X().AjaxProxy()
+                                                                                    .Url(Url.Action("SelectCodeForAnalyse", "DeliveryCoding"))
+                                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                    )
+                                                                                .Parameters(ps => ps.Add(new StoreParameter("ItemCodeAnalyseID", "#{HiddenCodeAnalyseID}.getValue()", ParameterMode.Raw)))
+                                                                                )
+
+                                                                    ,
+                                                                X.TextField()
+                                                                    .ID("TxtDateAnalysePhysique")
+                                                                    .FieldLabel("Note N°")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .TabIndex(3)
+                                                                    .Text("")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                ,
+                                                            X.ComboBox()
+                                                                .ID("CmbSupervisenr")
+                                                                .FieldLabel("Direction")
+                                                                .DisplayField("Nom")
+                                                                .ValueField("ID")
+                                                                .LabelWidth(110)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .TabIndex(5)
+                                                                .ForceSelection(true)
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .MatchFieldWidth(false)
+                                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Model._AnalysePhysique.Verificateur != null ? Model._AnalysePhysique.Verificateur.ID : (int?)null) : (int?)null)
+                                                                .Store(
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadAnalyseur", "Analyseur"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                            ),
+                                                                X.ComboBox()
+                                                                    .ID("CmbLaboratoire")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .FieldLabel("Exportateur")
+                                                                    .DisplayField("Designation")
+                                                                    .ValueField("ID")
+                                                                    .LabelWidth(110)
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    //.Value(Model._AnalysePhysique.Laboratoire.ID).ReadOnly(true).TabIndex(2)
+                                                                    .ForceSelection(true)
+                                                                    .TypeAhead(true)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .MatchFieldWidth(false)
+                                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false)
+                                                                    .Store(
+                                                                            X.Store()
+                                                                                .AutoLoad(true)
+                                                                                .Model(Html.X().Model()
+                                                                                .IDProperty("ID")
+                                                                                        .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                        )
+                                                                                    )
+                                                                                .Proxy(Html.X().AjaxProxy()
+                                                                                    .Url(Url.Action("LoadLaboratoire", "Laboratoire"))
+                                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                    ),
+
+                                                                
+                                                                X.ComboBox()
+                                                                .ID("CmbAnalyseur")
+                                                                //.AllowBlank(false)
+                                                                //.IndicatorCls("IndicatorRedStar")
+                                                                //.IndicatorText("*")
+                                                                .FieldLabel("Provenance")
+                                                                .DisplayField("Nom")
+                                                                .ValueField("ID")
+                                                                .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                                .LabelWidth(110)
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.Analyseur.ID : (int?)null)
+                                                                .TabIndex(4)
+                                                                .ForceSelection(true)
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .MatchFieldWidth(false)
+                                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                                .Store(
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadAnalyseur", "Analyseur"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                    ),
+                                                            X.ComboBox()
+                                                                .ID("CmbSuperviseur")
+                                                                .FieldLabel("Destination")
+                                                                .DisplayField("Nom")
+                                                                .ValueField("ID")
+                                                                .LabelWidth(110)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .TabIndex(5)
+                                                                .ForceSelection(true)
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .MatchFieldWidth(false)
+                                                                .ListConfig(new BoundList { MinWidth = 300 })
+                                                                //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Model._AnalysePhysique.Verificateur != null ? Model._AnalysePhysique.Verificateur.ID : (int?)null) : (int?)null)
+                                                                .Store(
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadAnalyseur", "Analyseur"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                            ),
+                                                            X.TextField()
+                                                                .ID("TxtSheetNumber")
+                                                                .FieldLabel("Lot N°")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .Text("")
+                                                                .TabIndex(6),
+                                                            X.TextField()
+                                                                    .ID("")
+                                                                    .FieldLabel("Transfer N°")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    .TabIndex(3)
+                                                                    .Text("")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                            
+
+
+
+
+                                             ),
+                            X.Panel()
+                                .Flex(1)
+                                .Layout(LayoutType.Form)
+                                    //.Width(300)
+                                    .Items(
+                                            X.DateField()
+                                                    .ID("TxtNbrOfBeans")
+                                                    .FieldLabel("Date/Heure")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .TabIndex(7),
+                                                X.ComboBox()
+                                                    .ID("CmbSupervseur")
+                                                    .FieldLabel("Type de sac")
+                                                    .DisplayField("Nom")
+                                                    .ValueField("ID")
+                                                    .LabelWidth(110)
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .TabIndex(5)
+                                                    .ForceSelection(true)
+                                                    .TypeAhead(true)
+                                                    .QueryMode(DataLoadMode.Local)
+                                                    .TriggerAction(TriggerAction.All)
+                                                    .MatchFieldWidth(false)
+                                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Model._AnalysePhysique.Verificateur != null ? Model._AnalysePhysique.Verificateur.ID : (int?)null) : (int?)null)
+                                                    .Store(
+                                                                        X.Store()
+                                                                            .AutoLoad(true)
+                                                                            .Model(Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                                    .Fields(
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                    )
+                                                                                )
+                                                                            .Proxy(Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadAnalyseur", "Analyseur"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                            ),
+                                                X.NumberField()
+                                                    .ID("TxtBeansCountPc")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Quantité")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(false)
+                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFevesPc : (double?)null)
+                                                    .TabIndex(9),
+                                                X.NumberField()
+                                                    .ID("Gross")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Poids Brut")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(false)
+                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFevesPc : (double?)null)
+                                                    .TabIndex(9)
+                                            ,
+
+                                            X.NumberField()
+                                                    .ID("Tare")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Tare Des Sacs")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(false)
+                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFevesPc : (double?)null)
+                                                    .TabIndex(9),
+                                                X.NumberField()
+                                                    .ID("TarePallets")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Tare des palettes")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(false)
+                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFevesPc : (double?)null)
+                                                    .TabIndex(9),
+                                                X.NumberField()
+                                                    .ID("NetWeight")
+                                                    .HideTrigger(true)
+                                                    .FieldLabel("Poids Net")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .AllowBlank(false)
+                                                    .IndicatorCls("IndicatorRedStar")
+                                                    .IndicatorText("*")
+                                                    .AllowDecimals(false)
+                                                    //.Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._AnalysePhysique.NombreFevesPc : (double?)null)
+                                                    .TabIndex(9),
+                                                X.TextArea()
+                                                    .ID("")
+                                                    .FieldLabel("Commentaire")                                                    
+                                                    .TabIndex(3)
+                                                    .Text("")
+                                                    .LabelAlign(LabelAlign.Right)
+                                        )
+
+
+
+            )
+            .Buttons(
+                        X.Button()
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? "OK" : "Approve")
+                            .ID("BtnSubmitAnalyse")
+                            .TabIndex(24)
+                            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                            .DirectEvents(de =>
+                            {
+                                de.Click.Url = Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? Url.Action("SubmitFormMethod") : Url.Action("SubmitAnalyeApprove");
+                                de.Click.Before = "return validNew(App.FormEntreeSortieNote.id);";
+                                de.Click.Confirmation.ConfirmRequest = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve ? true : false;
+                                de.Click.Confirmation.BeforeConfirm = "config.confirmation.title = 'Analyse Physique : Approuver'; config.confirmation.message = 'Voulez-vous approuver cette analyse ?'";
+                            }),
+                        X.Button()
+                        .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                        .Handler("App.FormEntreeSortieNote.doClose()")
+                        .Cls("btncancel")
+                        .TabIndex(25)
+                    )
+
+            )
+)
+@Scripts.Render("~/bundles/validation")
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Analyse Physique : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+        /*Ext.onReady(function() {
+         #{BtnOk}.on(#{BtnOk}.clickEvent,validNew );
+        //})*/
+</script>
+<script type="text/javascript">
+
+
+
+
+</script>
+<script type="text/javascript">
+
+
+    var numInput;
+    window.onload = function () {
+        numInput = document.ge('input.number');
+        numInput.onkeypress = numInput.onkeydown = numInput.onblur = numInput.onkeyup = function () {
+            numInput.value = numInput.value.replace(/[^0-9]+/, "");
+        }
+    }
+</script>
+
+
+
+
+
+
+
+

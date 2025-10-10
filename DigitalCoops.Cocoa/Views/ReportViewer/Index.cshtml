@@ -1,0 +1,162 @@
+﻿@using Tms2017.MVC.Models;
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+<style type="text/css">
+    .x-fieldset-default {
+    border: 1px solid #d0d0d0 !important;
+    padding: 5px 15px 10px 15px !important;
+    margin: 0 0 10px !important;
+}
+    .HeaderTextFont{
+        color : black;        
+    }
+    .Header_color, .VolumeTodayHeader_color .x-tool-tool-el{
+        background-color : #ECEFF1 !important;
+        border: 1px solid transparent;
+    }    
+    .x-grid-body {
+        background: #F5F5F5;
+        /* border-width: 2px 1px 1px; */
+        border-style: none;         
+    }
+
+    .x-autowidth-table .x-grid-item {       
+        background-color: transparent;
+    }
+    .PanelColor{
+        background-color: #FAFAFA;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script type="text/javascript" src="~/Scripts/renderers.js"></script>
+<script type="text/javascript">
+    var showFonction = function(id) {        
+
+        var pathArray = location.href.split('/');
+        var protocol = pathArray[0];
+        var host = pathArray[2];
+        var baseurl = protocol + '//' + host;
+        $.ajax({
+            'url': baseurl+'/ReportViewer/RenderPartialListReportItems/?moduleID=' + id,
+            'content-type': 'application/html; charset=utf-8',
+            'type': 'GET',
+            'dataType': 'html'
+        }).success(function (result) {
+
+            $('#PanelMenuReport').html(result);
+
+        })
+                .error(function (xhr, status) {
+
+                    alert(status);
+                })
+
+    };
+</script>
+
+
+@model Tms.Classes.Security.Utilisateur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+
+    @(X.Viewport()
+        .Layout(LayoutType.Border)
+        .ID("TmsViewPort")
+        .Items(
+            X.Panel()
+                .ID("pnlNorth")
+                .Region(Region.North)
+                .TitleConfig(new PanelTitle { Text = "Report" , Cls = "HeaderTextFont" })
+                .HeaderConfig(new PanelHeader { Cls = "Header_color" })
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                .BodyPadding(5)
+                .Items(
+                        X.Panel()
+                            .Height(560)
+                            .Split(true)
+                            .Resizable(false)
+                            .Layout(LayoutType.Border)
+                            .Items(
+                                    X.Panel()
+                                        .Flex(1)
+                                        .Resizable(false)
+                                        .Region(Region.West)
+                                        .Items(
+                                                X.TreePanel()
+                                                    //.TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Module" })
+                                                    //.Icon(Icon.Anchor)
+                                                    .RootVisible(false)
+                                                    .Height(560)
+                                                    .Resizable(false)
+                                                    .Layout(LayoutType.Fit)
+                                                    .Scrollable(ScrollableOption.Vertical)
+                                                    //.BodyPaddingSummary("0 0 0 10")
+                                                    .Root(r =>
+                                                    {
+                                                        List<Module> mItems = Module.GetItemsForUser(ViewBag.UserID, -1,1);
+                                                        var nd = new Ext.Net.Node();
+
+                                                        foreach (var Appli in mItems)
+                                                        {
+                                                            var e = X.Node().Text(Appli.Title);
+
+                                                            foreach (var item in Appli.Items)
+                                                            {
+                                                                var ChildrenNode = new Ext.Net.Node
+                                                                {
+                                                                    Text = item.Title,
+                                                                    NodeID = item.ID.ToString(),
+                                                                    Icon = Icon.Folder,
+                                                                    Expandable = false
+                                                                };
+                                                                //e.Children = ChildrenNode;
+
+                                                                e.Children(ch => { ch.Add(ChildrenNode); });
+                                                            }
+                                                            nd.Children.Add(e);
+                                                        }
+                                                        r.Add(nd);
+                                                    })
+                                                    .Listeners(l =>
+                                                    {
+                                                        l.AfterRender.Handler = "this.getRootNode().expand(true);";
+                                                        //l.ItemClick.Handler = "if (!record.data.children) { showFonction(record.data.id); };";
+
+                                                    })
+                                                    .DirectEvents(de =>
+                                                    {
+                                                        de.ItemClick.Url = Url.Action("RenderPartialListReportItems");
+                                                        de.ItemClick.ExtraParams.Add(new Parameter { Name = "moduleId", Mode = ParameterMode.Raw, Value = "record.data.id" });
+                                                        de.ItemClick.Before = "if (record.data.children) return false";
+                                                        de.ItemClick.EventMask.ShowMask = true;
+                                                    })
+                                        )
+                                        ,
+                                    X.Panel()
+                                        //.Width(200)
+                                        //.Height(490)
+                                        .Flex(3)
+                                        .BodyCls("PanelColor")
+                                        .ID("PanelMenuReport")
+                                        .Resizable(false)
+                                        .Region(Region.Center)
+                                        .Layout(LayoutType.HBox)
+                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                            )
+
+                )
+        )
+    )
+
+</form>

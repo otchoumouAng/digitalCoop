@@ -1,0 +1,130 @@
+﻿@model Tms.Classes.Business.stock.Lot_GestionStockViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Importer Lot</title>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+</head>
+<body>
+    @(
+        X.Window()
+            .ID("FormImport_Lot")
+            .Width(280)
+            .Resizable(false)
+            .Height(180)
+            .Modal(true)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Y(20)
+            .Title("Importer Lot")
+            .Items(
+                X.FormPanel()
+                    .Layout(LayoutType.Form)
+                    .ID("FormPanelImport")
+                    .Items(
+                        X.DateField()
+                            .ID("TxtDateDebut")
+                            .Name("debut")
+                            .TabIndex(1)
+                            .FieldLabel("Date Debut")
+                            .Text(DateTime.Now.ToString("yyyy-MM-dd"))
+                            .Format("Y-m-d")
+                            .SubmitFormat("Y-m-d")
+                            .LabelAlign(LabelAlign.Right)
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*"),
+                        X.DateField()
+                            .ID("TxtDateFin")
+                            .Name("fin")
+                            .TabIndex(2)
+                            .FieldLabel("Date Fin")
+                            .Text(DateTime.Now.ToString("yyyy-MM-dd"))
+                            .Format("Y-m-d")
+                            .SubmitFormat("Y-m-d")
+                            .LabelAlign(LabelAlign.Right)
+                            .AllowBlank(false)
+                            .IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                    )
+            )
+            .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnOk")
+                    .TabIndex(14)
+                    .DirectEvents(de =>
+                    {
+                        // Specify a URL for the DirectEvent request:
+                        de.Click.Url = Url.Action("FetchFromApi_New", "Lot_GestionStock");
+                        de.Click.ExtraParams.AddRange(new Parameter[]
+                        {
+                            new Parameter
+                            {
+                                Name = "debut",
+                                Value = "Ext.util.Format.date(App.TxtDateDebut.getValue(), 'Y-m-d')",
+                                Mode = ParameterMode.Raw
+                            },
+                            new Parameter
+                            {
+                                Name = "fin",
+                                Value = "Ext.util.Format.date(App.TxtDateFin.getValue(), 'Y-m-d')",
+                                Mode = ParameterMode.Raw
+                            }
+                        });
+                        // Uncomment the line below if you want to perform client-side validation before the API call:
+                        // de.Click.Before = "return validNew(App.FormImport_Lot.id);";
+                    }),
+                X.Button()
+                    .Text("Fermer")
+                    .TabIndex(15)
+                    .Handler("App.FormImport_Lot.doClose()")
+                    .Cls("btncancel")
+            )
+    )
+
+    @Scripts.Render("~/bundles/validation")
+
+    <script type="text/javascript">
+        var validNew = function(winId) {
+            var areAllrequiredFieldsFilled = isFormValid(winId);
+            if (!areAllrequiredFieldsFilled) {
+                Ext.Msg.show({
+                    title: 'Production - Lot_GestionStock : Data Validation',
+                    icon: Ext.MessageBox.WARNING,
+                    msg: 'Veuillez remplir les champs requis.',
+                    buttons: Ext.Msg.OK
+                });
+                return false;
+            }
+            return true;
+        };
+
+        function handleSuccess(response) {
+            var result = response.result;
+            if (result.success) {
+                Ext.Msg.alert("Success",
+                    "Processed " + result.records + " records\n" +
+                    result.message,
+                    function () {
+                        /* Optional: Refresh grid or update UI*/
+                    });
+            } else {
+                Ext.Msg.alert("Error", result.error || "Unknown error occurred");
+            }
+        }
+
+        function handleFailure(response) {
+            Ext.Msg.alert("Error",
+                "Server request failed: " + response.statusText + "\n" +
+                "Status code: " + response.status);
+        }
+    </script>
+</body>
+</html>

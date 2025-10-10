@@ -1,0 +1,284 @@
+﻿
+
+@model Tms.Classes.Business.PrixNegocieViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+@(X.FormPanel()
+                .Items(
+                    X.Window()
+                    .ID("FormSpotPrice")
+                    .Width(800)
+                    .Resizable(true)
+                    .Height(350)
+                    .CloseAction(CloseAction.Destroy)
+                    .Listeners(l =>
+                    {
+                        l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                    })
+                    .X(400)
+                    .Y(20)
+                    .Title("Prix Negocié")
+                    .Layout(LayoutType.Form)
+                    .Items(
+                        X.Panel()
+                        .ID("pnlFlexEven")
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                        .Items(
+                              X.Panel().Layout(LayoutType.Form).Items(
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._PrixNegocie.RowVersionKey),
+                            X.Hidden().ID("hiddenNumeroPrice").Value(Model._PrixNegocie.Numero),
+                            X.Hidden().ID("TxtSpotPriceID").Value(Model._PrixNegocie.ID),
+                            //X.ComboBox().ID("LocationID").FieldLabel("Location").DisplayField("Nom").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                            //    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixJournalier.Site.ID : -1).EmptyValue("")
+                            //        .Store(X.Store()
+                            //                .AutoLoad(true)
+                            //                .Model(Html.X().Model()
+                            //                .IDProperty("ID")
+                            //                        .Fields(
+                            //                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                            //                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                            //                        )
+                            //                    )
+                            //                .Proxy(Html.X().AjaxProxy()
+                            //                    .Url(Url.Action("LoadSite", "Site"))
+                            //                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                            //                )
+                            //                )
+                            //    ,
+                            X.ComboBox().ID("FournisseurID").EmptyText("Select Supplier").ForceSelection(true).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*").FieldLabel("Fournisseur").DisplayField("Nom").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Fournisseur.ID : (int?)null)
+                                .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model(Html.X().Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                            )
+                                        .Proxy(Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadFournisseur", "Fournisseur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        ),
+                        X.TextField().ID("TxtPrice").FieldLabel("Prix").LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Prix.ToString() : string.Empty),
+                        X.DateField().ID("TxtPriceDate").FieldLabel("Date").Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.DatePrix.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                ,
+
+                        X.ComboBox().ID("ModeApplicationID").ForceSelection(true).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*").EmptyText("Select Mode").FieldLabel("Mode Application").DisplayField("Designation").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.ModeApplication.ID : (int?)null)
+                        .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model(Html.X().Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                            )
+                                        .Proxy(Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadModeApplication", "PrixNegocieModeApplication"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        ).Listeners(ls =>
+            ls.Select.Handler = "showdate(App.ModeApplicationID.value)"
+        ),
+            X.DateField().ID("TxtStartDate").ReadOnly(true).FieldLabel("Date Debut").AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.DateDebut.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                .MinDate(DateTime.Now)
+                        ,
+                        X.DateField().ID("TxtDueDate").ReadOnly(true).FieldLabel("Date Fin").AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.DateEcheance.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                            .MinDate(DateTime.Now)
+
+)
+
+
+                        ,
+                    X.Panel().Layout(LayoutType.Form).Items(
+                        X.ComboBox().ID("DeliveryNumber").FieldLabel("N° Livraison").DisplayField("Designation").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.ModeApplication.ID : (int?)null)
+                                .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model(Html.X().Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                            )
+                                        .Proxy(Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadModeApplication", "PrixNegocieModeApplication"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        ),
+                        X.TextField().ID("TxtDeliveryDate").FieldLabel("Date Livraison").LabelAlign(LabelAlign.Right).ReadOnly(true)
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Prix.ToString() : string.Empty),
+                        X.TextField().ID("TxtTruckID").FieldLabel("Immatriculation").LabelAlign(LabelAlign.Right).ReadOnly(true)
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Prix.ToString() : string.Empty),
+                        X.TextField().ID("TxtEstimatedTonnage").FieldLabel("Tonnage Estimé").LabelAlign(LabelAlign.Right).ReadOnly(true)
+                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._PrixNegocie.Prix.ToString() : string.Empty)
+
+                        )
+
+            )
+
+            )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnOk")
+                //.Handler("validNew(App.FormFournisseur.id)")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitSpotPriceMethod");
+                    de.Click.Before = "return validNew(App.FormSpotPrice.id, App.TxtPrice.value);";
+                })
+
+                    //.DirectClickUrl( Url.Action("SubmitFormMethod")).Handler("validNew(App.FormFournisseur.id)")
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormSpotPrice.doClose()")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId, val) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Erreur : Collection ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        } else {
+            /*alert(val);*/
+            if (val >= 10 && val <= 100) {
+                Ext.Msg.show({ title: 'Erreur : Collection ', msg: 'Please Check Price.', buttons: Ext.Msg.OK });
+                return true;
+            } else {
+                Ext.Msg.show({ title: 'Erreur : Price ', msg: 'Please Check Price.', buttons: Ext.Msg.OK });
+                return false;
+            }
+
+        }
+    };
+
+    var showdate = function (item) {        
+        if (item == "1") {
+            App.TxtStartDate.setReadOnly(false);
+            App.TxtStartDate.allowBlank = (false);
+            App.TxtStartDate.validate();
+            App.TxtStartDate.setIndicator("*");
+            App.TxtDueDate.setReadOnly(false);
+            App.TxtDueDate.allowBlank = (false);
+            App.TxtDueDate.validate();
+            App.TxtDueDate.setIndicator("*");
+        } else {
+            App.TxtStartDate.setReadOnly(true);
+            App.TxtStartDate.allowBlank = (true);
+            App.TxtStartDate.validate();
+            App.TxtStartDate.setIndicator("");
+            App.TxtDueDate.setReadOnly(true);
+            App.TxtDueDate.allowBlank = (true);
+            App.TxtDueDate.validate();
+            App.TxtDueDate.setIndicator("");
+        }
+    };
+        /*Ext.onReady(function() {
+         #{BtnOk}.on(#{BtnOk}.clickEvent,validNew );
+        //})*/
+</script>
+<script type="text/javascript">
+
+    Ext.form.TextField.override({
+        initComponent : function()
+        {
+            if(this.allowBlank!==undefined && !this.allowBlank)
+            {
+                if(!this.IndicatorText)
+                {
+                    this.IndicatorText = "";
+                }
+                this.IndicatorText += '<span style="color:yellow">*</span>';
+            }
+            this.callParent(arguments);
+        }
+        /*initComponent: function () {
+
+
+            //var me = this,
+            //    data = me.callParent(),
+            //    IndicatorText = me.IndicatorText;
+
+
+            //if (!me.allowBlank) {
+            //    data.IndicatorText += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">**</span>';
+            //}
+
+
+            //return data;
+
+            /*this.on('beforeadd', function (me, field) {
+                if (!field.allowBlank)
+                    field.labelSeparator += '<span style="color: rgb(255, 0, 0); padding-left: 2px;">**</span>';
+            });
+            this.callParent(arguments);*/
+        /*}*/
+    });
+</script>
+@*<ext:XScript ID="mScript">
+        <script>
+
+        </script>
+        <script type="text/javascript">
+            var validNew = function(event) {
+
+                var winId = #{FormFournisseur}.id;
+                var areAllrequiredFieldsFilled = isFormValid(winId);
+
+                /*
+               *   Vérification de la saisie des champs obligatoires
+               */
+                if(!areAllrequiredFieldsFilled) {
+                    Ext.Msg.show({ title: 'Erreur : Collection ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+                    return false;
+                }
+
+                /*
+                *   Vérification de la validité des données
+                */
+                try {
+                    var estValide = FormFournisseur.isDataValid();
+                    return estValide;
+                    //if(!estValide) {
+                    //    Ext.Msg.show({ title: 'Erreur : winLbcCollection : Details', msg: 'data are not valid', buttons: Ext.Msg.OK });
+                    //    return false;
+                    //}
+                } catch (e) {
+                    Ext.Msg.show({ title: 'Error : winLbcCollection : Details', msg: e.message +':'+e.name, buttons: Ext.Msg.OK });
+                }
+            }
+
+            Ext.onReady(function() {
+              #{BtnOk}.on(#{BtnOk}.clickEvent,validNew );
+            });
+        </script>
+    </ext:XScript>*@

@@ -1,0 +1,185 @@
+﻿@model Tms.Classes.Business.SuiviLivraison
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(
+
+            X.FormPanel()
+            .FieldDefaults(f => f.ReadOnly= true)
+            .Items
+            (
+                        X.Window()
+                        .ID("frmSuiviLivraison_Detail")
+                        .Width(700)
+                        .Resizable(false)
+                        .Height(375)
+                        .Listeners
+                        (
+                            l =>
+                            {
+                                l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                            }
+                        )
+                        .X(300)
+                        .Y(0)
+                        .Title("Delivery monitoring : Detail")
+                        .Layout(LayoutType.Table)
+                        .LayoutConfig(new TableLayoutConfig { Columns = 2} )
+                        .Items
+                        (
+                            X.Container()
+                            .ID("firstColumn")
+                            .Layout(LayoutType.Form)
+                            .Width(300)
+                            .Items
+                            (
+                                X.TextField()
+                                .FieldLabel("Delivery date")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtDateDeliveryDate")
+                                .Text(Model.DateLivraison.ToShortDateString() +" "+Model.DateLivraison.ToShortTimeString())
+                                ,
+                                X.TextField()
+                                .FieldLabel("Type de Livraison")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtDeliveryType")
+                                .Text(Model.LivraisonType.Designation)
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Livraison N°")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtDeliveryID")
+                                .Text(Model.NumeroLivraison)
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Fournisseur")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtSupplier")
+                                .Text(Model.Fournisseur.Nom)
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Immatriculation")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtTruckID")
+                                .Text(Model.Immatriculation)
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Statut Livraison")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtDeliveryStatus")
+                                .Text(Model.Status)
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Nbr Sacs Est.")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtEstimatedNbrBags")
+                                .Text(Model.SacsDeclares.ToString())
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Tonnage Est.")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtEstimatedTonnage")
+                                .Text(Model.PoidsDeclare.ToString())
+                           )
+                            ,
+                            X.Container()
+                            .ID("secondColumn")
+                            .Layout(LayoutType.Form)
+                            .Width(300)
+                            .Items
+                            (
+                                X.TextField()
+                                .FieldLabel("Humidite (%)")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtMoisture")
+                                .Text(Model.Moisture.ToString())
+                                ,
+                                X.TextField()
+                                .FieldLabel("Grainage")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtBeanCount")
+                                .Text(Model.BeanCount.ToString())
+                                ,
+                                X.TextField()
+                                .FieldLabel("Matiere Etrangere")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtForeignMatter")
+                                .Text(Model.ForeignMatter.ToString())
+                                 ,
+                                X.TextField()
+                                .FieldLabel("Sacs acceptés")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtAcceptedBags")
+                                .Text(Model.AcceptedBags.ToString())
+                                ,
+                                X.TextField()
+                                .FieldLabel("Poids Brut")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtGrossWeight")
+                                .Text(Model.GrossWeight.ToString())
+                                ,
+                                X.TextField()
+                                .FieldLabel("Ret Qualité")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_twtQualityRetention")
+                                .Text(Model.QualityRetention.ToString())
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Tare")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtTare")
+                                .Text(Model.Tare.ToString())
+                                ,
+                                 X.TextField()
+                                .FieldLabel("Tonnage accepté")
+                                .LabelAlign(LabelAlign.Right)
+                                .LabelWidth(150)
+                                .Width(410)
+                                .ID("_txtAcceptedTonnage")
+                                .Text(Model.AcceptedTonnage.ToString())
+                            )
+                        )
+                        .Buttons
+                        (
+                                X.Button()
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                .Handler("App.frmSuiviLivraison_Detail.doClose()")
+                                .Cls("btncancel")
+                        )
+    )
+)
+)
+
+

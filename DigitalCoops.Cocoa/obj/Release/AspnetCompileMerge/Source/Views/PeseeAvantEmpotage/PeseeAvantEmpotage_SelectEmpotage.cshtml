@@ -1,0 +1,307 @@
+﻿@model Tms.Classes.Shared.Parametres
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px;
+    }
+</style>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script>
+    var SummaryEmpotage = function () {
+        var nbrOfrows = App.grpListeSelectEmpotage.getStore().getCount();
+    
+        App.lblSummaryEmpotage.setHtml("Nbr Of Stuffing : " + nbrOfrows);
+    };
+
+    var SetValidBtnOK = function () {
+        if (App.rowSelectEmpotage.hasSelection())
+            App.BtnSendOrder.enable();
+        else
+            App.BtnSendOrder.disable();
+    };
+</script>
+@(
+X.Window()
+    .ID("PeseeAvantEmpotage_SelectEmpotage")
+    .Width(940)
+    .Resizable(false)
+    .Height(500)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(200)
+    .Y(22)
+    .Title("Available Stuffing")
+    .Layout(LayoutType.VBox)
+    .BodyPadding(5)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items
+    (
+        X.FormPanel()
+            .ID("SelectStuffingCP")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Stuffing", Height = 20 })
+            .Region(Region.North)
+            .Border(false)
+            .Collapsed(false)
+            .Collapsible(true)
+            .BodyPadding(5)
+            .Frame(true)
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Height(150)
+            .HeaderConfig(new PanelHeader
+            {
+                Items = {
+                            X.Button()
+                                .ID("")
+                                .IconCls("action_refresh_01")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                .Border(false)
+                                .Cls("ButtonStyle")
+                                .Disable(false)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url  = Url.Action("OnRefreshStuffing");
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=true, Value= "#{cmbFiltreCampagne}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExportateur", Encode=false, Value= "#{cmbFiltreExportateur}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtFiltreDateDebut}.getRawValue()",   Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtFiltreDateFin}.getRawValue()",     Mode=ParameterMode.Raw});
+                                        de.Click.Success = "App.SelectStuffingCP.setTitle('Campagne : '+ App.cmbFiltreCampagne.rawValue + ' , Exportateur = ' + App.cmbFiltreExportateur.rawValue +  ' , du  '+ App.txtFiltreDateDebut.rawValue  + ' au  '+ App.txtFiltreDateFin.rawValue )";
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                )
+                    }
+            }
+            )
+            .Items
+                (
+
+    #region A
+                    X.Container()
+                        .Flex(2)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbFiltreCampagne")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(ViewData["Campagne"].ToString())
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                                .IDProperty("Designation")
+                                                .Fields
+                                                (
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ),
+
+                            X.ComboBox()
+                                .ID("cmbFiltreExportateur")
+                                .FieldLabel("Exportateur")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .Value(int.Parse(ViewData["Exportateur"].ToString()))
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Store
+                                    (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                    )
+                                .SelectedItems
+                                (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                                )
+
+                        ),
+    #endregion
+    #region B
+                    X.Container()
+                        .Flex(2)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.DateField().ID("txtFiltreDateDebut").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(@StartDate),
+                            X.DateField().ID("txtFiltreDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(@EndDate)
+                        ),
+    #endregion
+    #region Zone C
+
+                    X.Container()
+                        .Flex(1)
+                        .Border(false)
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                            (
+                                X.Container()
+                                .Layout(LayoutType.VBox)
+                                .Flex(1)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Start })
+                                    .Items(
+                                        X.Label().ID("lblSummaryEmpotage").Text("Resume").EmptyText("")
+                                        )
+                            )
+    #endregion
+
+                ),
+    #region gridPanel
+                    X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeSelectEmpotage")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .Height(300)
+                       .AllowDeselect(true)
+                       .Store
+                       (
+                          X.StoreFor<Tms.Classes.Business.Sales.Empotage>()
+                           .ID("storeListeSelectEmpotage")
+                           .PageSize(100)
+                           .RemotePaging(false)
+                           .AutoLoad(true)
+                           .Proxy
+                            (
+                                 Html.X().AjaxProxy().Timeout(480000)
+                                .Url(Url.Action("LoadListOfStuffing"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                            .Parameters
+                              (
+                                ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemCampagne", "#{cmbFiltreCampagne}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemExportateur", "#{cmbFiltreExportateur}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriodStart", "#{txtFiltreDateDebut}.getRawValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriodEnd", "#{txtFiltreDateFin}.getRawValue()", ParameterMode.Raw));
+                                }
+                            )
+                            .Listeners
+                            (
+                             ls =>
+                             {
+                                 ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                 ls.Load.Handler = "SummaryEmpotage(); Ext.net.Mask.hide();";
+                             }
+                          )
+                       )
+                       .ColumnModel
+                       (
+                            Html.X().DateColumn().Text("Date").DataIndex("Date").Format("dd/MM/Y").Flex(1), 
+                            Html.X().Column().Text("N° Shipment").DataIndex("EmbarquementAsString").Flex(1),
+                            Html.X().Column().Text("Contrat N°").DataIndex("NumeroContrat").Flex(1),
+                            Html.X().Column().Text("Stuffing Station").DataIndex("StationEmpotageAsString").Flex(1),
+                            Html.X().Column().Text("Number of containers").DataIndex("NbreConteneursAsString").Flex(1).EmptyCellText("0"),
+                            Html.X().Column().Text("Number of lots").DataIndex("NbreLotsAsString").Flex(1).EmptyCellText("0")
+
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowSelectEmpotage")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(true)
+                           .Listeners(
+                                ls =>
+                                {
+                                    ls.Select.Handler = "SetValidBtnOK();";
+                                    ls.Deselect.Handler = "SetValidBtnOK();";
+                                }
+                              )
+                        )
+                        .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+
+    #endregion
+    )
+
+    .Buttons
+    (
+        X.Button()
+            .Text("Selectionner")
+            .ID("BtnSendOrder")
+            .Disabled(true)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitEmpotage");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeSelectEmpotage}.getSelectionModel().getSelection()[0].data" });
+                }
+            ),
+
+        X.Button()
+        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+        .Handler("App.PeseeAvantEmpotage_SelectEmpotage.doClose()")
+        .Cls("btncancel")
+
+        )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

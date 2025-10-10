@@ -1,0 +1,390 @@
+﻿@model Tms.Classes.Business.BonDeLivraisonViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {   
+    padding: 2px 7px 2px 7px !important;   
+}
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+    var SetAvailableDeliveriesInfos = function () {
+        var TotalPoidsLivre = App.storeListDeliveries.sum('PoidsLivre') || 0;
+
+        var mChaine = Ext.String.format('Total Livré : {0} (Kg)', formatNumber(TotalPoidsLivre));
+        App.LblResumeAvlbDelivries.setText(mChaine);
+      
+    };
+
+    var SetBtnOK = function () {
+        if (App.rowSelectBLPendingDeliveries.hasSelection())
+            App.BtnSendDelivery.enable();
+        else
+            App.BtnSendDelivery.disable();
+    };
+</script>
+@(                        
+X.Window()
+    .ID("BonDeLivraison_Available")
+    .Width(1200)
+    .Resizable(false)
+    .Height(470)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(200)
+    .Y(20)
+    //.BodyPadding(5)
+    .Title("List of available BL")
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items(
+                    X.Hidden()
+                        .ID("TxtExecMode")
+                        .ReadOnly(true)
+                        .Value(Model._ExecMode),
+                    X.Panel()
+                        .Border(false)
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                        (
+                            X.Panel()
+                                .Layout(LayoutType.Form)
+                                .Flex(3)
+                                .Items
+                                (
+                                X.ComboBox()
+                                    .ID("cmbSiteFD")
+                                    .FieldLabel("Site")
+                                    .DisplayField("Nom")
+                                    .ValueField("ID")
+                                    .MatchFieldWidth(false)
+                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                    .LabelAlign(LabelAlign.Right)
+                                    .TypeAhead(false)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .ForceSelection(true)
+                                    .ReadOnly(true)
+                                    .Value(int.Parse(ViewData["SiteParDefaut"].ToString()))
+                                    .Store(
+                                            X.Store()
+                                            .AutoLoad(true)
+                                            .Model(
+                                                    Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                            )
+                                                )
+                                            .Proxy(
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadSiteAll", "Site"))
+                                            .Reader(
+                                                        Html.X().JsonReader().RootProperty("data")
+                                                        )
+                                            )
+                                    ).Listeners(
+                                            ls =>
+                                            {
+                                                ls.Select.Handler = "if (App.cmbSite.value) { App.cmbFournisseurFD.clearValue(); App.cmbFournisseurFD.getStore().load(); };";
+                                            }
+                                        ),
+                                X.ComboBox()
+                                                    .ID("cmbCampagneFD")
+                                                    .FieldLabel("Campagne")
+                                                    .LabelWidth(10)
+                                                    .DisplayField("Designation")
+                                                    .ValueField("Designation")
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .Value(ViewData["Campagne"].ToString())
+                                                    //.TypeAhead(true)
+                                                    //.ForceSelection(true)
+                                                    .Store
+                                                     (
+                                                        X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                            Html.X().Model()
+                                                                .IDProperty("Designation")
+                                                                .Fields
+                                                                (
+                                                                  new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                  new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                         )
+                                                         .Proxy
+                                                         (
+                                                             Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                         )
+
+                                                     ),
+                                X.ComboBox()
+                                    .ID("cmbFournisseurFD")
+                                    .FieldLabel("Fournisseur")
+                                    .DisplayField("Nom")
+                                    .ValueField("ID")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .TypeAhead(true)
+                                    .ForceSelection(true)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .Store
+                                    (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadAllCocoaBeansSuppliers", "Fournisseur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        .Parameters
+                                        (
+                                            ps => {
+                                                ps.Add(new StoreParameter("siteID", "App.cmbSiteFD.getValue()", ParameterMode.Raw));
+                                                ps.Add(new StoreParameter("Extend", "1", ParameterMode.Value));
+                                            }
+                                        )
+                                    )
+                                    .SelectedItems
+                                        (
+                                        it =>
+                                        {
+                                            it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                        }
+                                    ),
+                                X.ComboBox()
+                                                        .ID("cmbTypeFD")
+                                                        .FieldLabel("Type de livraison")
+                                                        .LabelWidth(110)
+                                                        .DisplayField("Designation")
+                                                        .ValueField("ID")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .TypeAhead(true)
+                                                        .ForceSelection(true)
+                                                        .Value(1)
+                                                        .Store
+                                                        (
+                                                            X.Store()
+                                                            .AutoLoad(true)
+                                                            .Model
+                                                            (
+                                                               Html.X().Model()
+                                                               .IDProperty("ID")
+                                                               .Fields
+                                                               (
+                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                 new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                              )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                 .Url(Url.Action("LoadLivraisonTypeAll", "LivraisonType"))
+                                                                 .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+
+                                                          )
+                                                          .SelectedItems
+                                                          (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                          )
+                                ),
+
+                            X.Panel()
+                                .Flex(2)
+                                .Layout(LayoutType.Form)
+                                .Items
+                                (
+                                    X.DateField().ID("dtpStartDateFD").Text(@StartDate),
+                                    X.DateField().ID("dtpEndDateFD").Text(@EndDate)
+                                ),
+
+                            X.Panel()
+                                .Flex(2)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("LblResumeAvlbDelivries").Text("").EmptyText(""))
+                                 )
+
+                        )
+
+                ,
+                    X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListDeliveries")
+                            .Height(300)
+                            .Margin(5)
+                            //.Border(true)
+                            .Frame(true)
+                            .FrameHeader(false)
+                            .AllowDeselect(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.BonDeLivraison>()
+                                .ID("storeListDeliveries")
+                                .AutoLoad(true)
+                             .Proxy
+                             (
+                              Html.X().AjaxProxy()
+                                  //.Url(Url.Action("LoadListOfAvailableDeliveries", "Livraison"))
+                                  .Url(Url.Action("LoadListOfAvailableBL"))
+                                  .Reader(Html.X().JsonReader().RootProperty("data"))
+                             )
+                             .Listeners(
+                                   ls => ls.Load.Handler = "SetAvailableDeliveriesInfos();"
+                                   )
+                             .Parameters
+                             (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemFournisseur", "#{cmbFournisseurFD}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemCampagne", "#{cmbCampagneFD}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemSite", "#{cmbSiteFD}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDateFD}.getRawValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDateFD}.getRawValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemType", "#{cmbTypeFD}.getValue()", ParameterMode.Raw));
+                               }
+                             )
+                             )
+                             .ColumnModel
+                             (
+                                //Html.X().Column().Text("").DataIndex("mIcon").Width(40).Hideable(false).Renderer("renderIcon").Filterable(false),
+                            Html.X().Column().Text("Date Livraison").Hidden(true).DataIndex("DateLivraisonLongAstring").Flex(1),
+                            Html.X().Column().Text("Date Bordereau").DataIndex("DateBonDeLivraisonLongAsSrtring").Flex(1),
+                            Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1),
+                            Html.X().Column().Text("Site").DataIndex("SiteAsString").Flex(1),
+                            Html.X().Column().Text("Type De Livraison").DataIndex("LibelleTypeDeLivraison").Flex(2),
+                            Html.X().Column().Text("Livraison N°").DataIndex("LivraisonID").Flex(1),
+                            Html.X().Column().Text("Num Externe").DataIndex("LivraisonNumeroExterne").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Fournisseur").DataIndex("FournisseurNom").Flex(3),
+                            Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1),
+                            Html.X().Column().Text("Transporteur").DataIndex("NomTransporteur").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Provenance").DataIndex("LibelleProvenance").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Certification").DataIndex("LibelleCertification").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Nb Sacs").DataIndex("NbreSacsAsString").Flex(1),
+                            Html.X().Column().Text("Grainage").DataIndex("BeanCount").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Humidite. %").DataIndex("Humidite").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Mat. Etrangere %").DataIndex("MatieresEtrangeres").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Brisure %").DataIndex("Brisures").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Moisie %").DataIndex("Moisie").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Tamis %").DataIndex("Slaty").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Defectueuse %").DataIndex("Defectueuse").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(1).Hidden(false),
+                            Html.X().Column().Text("Taux").DataIndex("Tare").Flex(1),
+                            Html.X().Column().Text("Poids Est").DataIndex("LivraisonPoidsDeclare").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Net Livré").DataIndex("PoidsLivreAsString").Flex(1),
+                            Html.X().Column().Text("Tamis").DataIndex("Sievings").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Ret. Humidite").DataIndex("RefactionHumidite").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Ret. Mat. Etra").DataIndex("RefactionMatieresEtg").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Ret. Brisure").DataIndex("RefactionBrisures").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Retention").DataIndex("TotalRetentionAsString").Flex(1),
+                            Html.X().Column().Text("Poids Net").DataIndex("PoidsNetAccepteAsString").Flex(1),
+                            Html.X().Column().Text("Analyse Code").DataIndex("Code").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Type de sac").DataIndex("LibelleTypeDeSac").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Tare Des Sacs").DataIndex("TareSacs").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Tare Des Palettes").DataIndex("TarePalettes").Flex(1).Hidden(true),
+                            Html.X().Column().Text("Commentaire").DataIndex("Commentaire").Flex(1).Hidden(true)
+                             )
+                            .DockedItems(
+                                             X.Toolbar()
+                                             .Dock(Dock.Top)
+                                             .Items(
+                                                 X.Button()
+                                                        .ID("btnRefreshDelivery")
+                                                        .IconCls("action_refresh_01")
+                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                        .Border(false)
+                                                        .Disable(false)
+                                                        .DirectEvents
+                                                        (
+                                                            de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("OnRefreshForAvailableDeliveries");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSite", Encode = true, Value = "#{cmbSiteFD}.getValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCampagne", Encode = false, Value = "#{cmbCampagneFD}.getValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemFournisseur", Encode = true, Value = "#{cmbFournisseurFD}.getValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodStart", Value = "#{dtpStartDateFD}.getRawValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemPeriodEnd", Value = "#{dtpEndDateFD}.getRawValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemType", Value = "#{cmbTypeFD}.getValue()", Mode = ParameterMode.Raw });
+                                                                de.Click.Success = "App.CriteriaPanelFDel.setTitle('Campagne: ' + App.cmbCampagneFD.rawValue + ', Fournisseur : ' + App.cmbFournisseurFD.rawValue + ' , du  '+ App.dtpStartDateFD.rawValue  + ' au  '+ App.dtpEndDateFD.rawValue )";
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                        )
+                                )
+
+                            )
+                            .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )                            
+                       )
+
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+            .ID("BtnSendDelivery")
+            .Disabled(false)
+            //.Handler("validNew(App.FormFournisseur.id)")
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitDelivery", "BonDeLivraisonValide");
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListDeliveries}.getRowsValues({selectedOnly : true})" });
+                }
+            ),
+
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.BonDeLivraison_Available.doClose()")
+            .Cls("btncancel")
+
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+

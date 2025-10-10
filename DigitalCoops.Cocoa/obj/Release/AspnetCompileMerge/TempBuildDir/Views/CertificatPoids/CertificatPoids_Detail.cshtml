@@ -1,0 +1,306 @@
+﻿
+@model Tms.Classes.Business.Sales.CertificatPoidsViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 25px;
+        min-height: 80px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+           X.Window()
+            .ID("CertificatPoids_Detail")
+            .Width(900)
+            .Resizable(false)
+            .AutoScroll(true)
+            .Scrollable(ScrollableOption.Vertical)
+            .Height(300)
+            .BodyPadding(20)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Modal(true)
+            .Y(80)
+            .Title("Weighing Certificate")
+            .Items
+            (
+            X.FormPanel()
+                           .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+
+    .Items(
+                X.Panel()
+                    .Frame(false)
+                    .Border(false)
+                    .FrameHeader(false)
+                    .ID("pnlFlexEvenWC1")
+                    .Layout(LayoutType.HBox)
+                    .MarginSpec("0 0 5 0")
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items
+                    (
+                        X.Hidden()
+                                        .ID("hiddenExecMode")
+                                        .Value(Model._ExecMode)
+                                        ,
+                                        X.Hidden()
+                                            .ID("hiddenRowversion")
+                                            .Value(Model._CertificatPoids.RowVersionKey)
+                                            ,
+                                        X.Hidden()
+                                            .ID("txtCertificatPoidsID")
+                                            .Value(Model._CertificatPoids.ID)
+                                            ,
+                                        X.Hidden()
+                                            .ID("txtNumeroContratHid")
+                                            .Value(string.Empty)
+                                            ,
+                                            X.Panel()
+                                             .ID("firstColWeighingCertificate")
+                                             .Layout(LayoutType.Form)
+                                             .Flex(1)
+                                             .Items
+                                             (
+
+
+                                                 //X.TextField()
+                                                 //            .ID("txtNumber")
+                                                 //            .FieldLabel("Number")
+                                                 //            .LabelAlign(LabelAlign.Right)
+                                                 //            .ReadOnly(true)
+                                                 //            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.Numero : string.Empty)
+                                                 //,
+                                                 X.FieldContainer().Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                                .FieldLabel("Shipment Number")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Items(
+                                                             X.TextField()
+                                                            .ID("txtShipmentNumber")
+                                                            .Width(200)
+                                                            .ReadOnly(true)
+                                                            .MarginSpec("0 20 0 0")
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.Embarquement.Numero : string.Empty)
+                                                            ,
+                                                             X.TextField()
+                                                            .ID("txtEmbarquementID")
+                                                            .Hidden(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.Embarquement.ID : Guid.Empty),
+
+
+                                                            X.Button()
+                                                                .Text("...")
+                                                                .Height(20)
+                                                                .Width(40)
+                                                                .ID("btnSelectShipment")
+                                                                .DirectEvents
+                                                                (
+                                                                    de =>
+                                                                    {
+                                                                        de.Click.Url = Url.Action("OnSelectShipment", "CertificatPoids");
+                                                                        de.Click.Success = "App.ListOfShipments.setTitle('Shipment : Available shipment')";
+                                                                        de.Click.EventMask.ShowMask = true;
+                                                                    }
+                                                                )
+                                                ),
+                                                X.DateField()
+                                                        .ID("txtDate")
+                                                        .FieldLabel("Date")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.Date.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                        .AllowBlank(false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+
+                                                ,
+                                                 X.DateField()
+                                                        .ID("txtDateArrived")
+                                                        .FieldLabel("Date Arrived")
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.DateArrivee.ToString() : DateTime.Now.ToString()).LabelAlign(LabelAlign.Right)
+                                                        .AllowBlank(false)
+                                                        .Width(150)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .IndicatorText("*")
+                                                   ,
+                                                   X.TextField()
+                                                .ID("txtWeight")
+                                                .AllowBlank(false)
+                                                .FieldLabel("Weight Arrived (kg)")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.PoidsArriveeAsString : string.Empty)
+                                                        .Listeners(ls =>
+                                                        {
+                                                            ls.Blur.Handler = "if (App.txtWeight.value && !App.txtWeight.readOnly) {#{txtWeight}.setValue(formatNumber(#{txtWeight}.getValue()))}";
+                                                            ls.Focus.Handler = "if (App.txtWeight.value && !App.txtWeight.readOnly) { #{txtWeight}.setRawValue(unformatNumber(#{txtWeight}.getValue()));}";
+
+                                                        }),
+                                                   X.DateField()
+                                                        .ID("txtDateDepotage")
+                                                        .FieldLabel("Date Arrived")
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.DateDepotage.ToString() : string.Empty)
+                                                            .LabelAlign(LabelAlign.Right)                                                        
+                                                        .Width(150)
+                                                   
+
+
+
+
+
+
+                                 //1stCol
+                                 ),
+                                 X.Panel()
+                                 .ID("secondColSH")
+                                 .Layout(LayoutType.Form)
+                                 .Flex(1)
+                                 .Items
+                                 (
+
+
+
+                                         X.TextField()
+                                                .ID("txtSampleWeight")
+                                                .AllowBlank(false)
+                                                .FieldLabel("Sample Weight Arrived (kg)")
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.PoidsEchantillonArriveeAsString : string.Empty)
+                                                        .Listeners(ls =>
+                                                        {
+                                                            ls.Blur.Handler = "if (App.txtSampleWeight.value && !App.txtSampleWeight.readOnly) {#{txtSampleWeight}.setValue(formatNumber(#{txtSampleWeight}.getValue()))}";
+                                                            ls.Focus.Handler = "if (App.txtSampleWeight.value && !App.txtSampleWeight.readOnly) { #{txtSampleWeight}.setRawValue(unformatNumber(#{txtSampleWeight}.getValue()));}";
+
+                                                        })
+
+                                                ,
+
+                                                X.ComboBox()
+                                                 .ID("_cmbBodyCertification")
+                                                 .TypeAhead(true)
+                                                 .QueryMode(DataLoadMode.Local)
+                                                 .TriggerAction(TriggerAction.All)
+                                                 .AllowBlank(false)
+                                                 .IndicatorCls("IndicatorRedStar")
+                                                 .IndicatorText("*")
+                                                 .FieldLabel("Certification Body")
+                                                 .DisplayField("Nom")
+                                                 .ListConfig(new BoundList { MinWidth = 300 })
+                                                 .ValueField("ID")
+                                                 .LabelAlign(LabelAlign.Right)
+                                                 .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.OrganismeCertification.ID : (int?)null)
+                                                 .Store
+                                                 (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                .Proxy
+                                                (
+                                                   Html.X().AjaxProxy()
+                                                   .Url(Url.Action("LoadActive", "OrganismeCertification"))
+                                                   .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                                )
+
+                                                ,
+                                             X.TextArea()
+                                              .ID("txtComment")
+                                              .FieldLabel("Commentaire")
+                                              .LabelAlign(LabelAlign.Right)
+                                              .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._CertificatPoids.Commentaire : string.Empty)
+
+
+                                 //2ndCol
+                                 )
+
+
+                              //End first panel
+                              )
+
+                  //End form panel
+                  )
+
+            //End Windows
+            )
+            .Buttons
+                             (
+                                X.Button()
+                                .Text("OK")
+                                .ID("BtnOk")
+                                .TabIndex(12)
+                                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .DirectEvents
+                                (
+
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("SubmitFormMethod");
+                                        de.Click.Before = "return validNew(App.CertificatPoids_Detail.id);";
+                                        de.Click.FormID = "#(return this.up('window').down('form');)";
+
+                                    }
+                               ),
+
+
+                                X.Button()
+                                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                .Handler("App.CertificatPoids_Detail.doClose()")
+                                .Cls("btncancel")
+
+                             )
+
+
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'weighing Certificate : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+ 
+    };
+
+</script>
+

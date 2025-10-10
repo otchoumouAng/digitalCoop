@@ -1,0 +1,433 @@
+﻿@model Tms.Classes.Shared.PaletteViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+<style>
+    /* Header vert clair */
+    /*.x-window-header {
+        background-color: #2ecc71 !important;
+        background-image: none !important;
+        border-bottom: 1px solid #2ecc71 !important;
+    }*/
+
+    /* Conteneur principal avec défilement global */
+    .global-scroll-container {
+        overflow-y: auto;
+        padding: 15px 20px;
+        height: calc(100% - 50px);
+    }
+
+    /* Conteneur des zones */
+    .form-container {
+        display: flex;
+        gap: 30px;
+        min-height: min-content;
+    }
+
+    /* Zones de formulaire */
+
+
+    /* En-têtes de zone */
+    .zone-header {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eaeff2;
+        font-size: 14px;
+    }
+
+    /* Éléments de formulaire */
+    .x-form-item {
+        margin-bottom: 16px;
+    }
+
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 180px !important;
+        color: #546e7a;
+        font-weight: 500;
+    }
+
+    /* Boutons */
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 15px 20px;
+        background: #f8fafc;
+        border-top: 1px solid #eef2f6;
+    }
+
+    /* Optimisations */
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+
+    .x-form-trigger {
+        background-color: #f0f4f8 !important;
+    }
+
+    .x-window-footer {
+        padding: 0 !important;
+        border-top: none !important;
+    }
+
+    /* Ajustement hauteur fenêtre */
+    .x-window-body {
+        overflow: hidden !important;
+    }
+</style>
+
+@using System.Globalization
+
+@{
+    // date courante
+    var now = DateTime.Now;
+    var currentYear = now.Year;
+
+    var years = Enumerable
+        .Range(DateTime.Now.Year - 4, 5)
+        .Select(y => new { Year = y })
+        .ToList();
+
+    // Calendrier ISO (semaine commençant le lundi, règle des 4 jours)
+    var cal = CultureInfo.InvariantCulture.Calendar;
+    var currentWeek = cal.GetWeekOfYear(now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+    // Calcul du nombre de semaines de l'année courante (52 ou 53)
+    var weekOfDec31 = cal.GetWeekOfYear(new DateTime(currentYear, 12, 31),
+                                        CalendarWeekRule.FirstFourDayWeek,
+                                        DayOfWeek.Monday);
+    var weeksCount = (weekOfDec31 == 1) ? 52 : weekOfDec31;
+
+    var weeks = Enumerable.Range(1, weeksCount)
+                          .Select(w => new { Week = w })
+                          .ToList();
+
+}
+
+@(
+    X.Window()
+    .ID("FormDeclarationPalette")
+    .Title("DECLARER UNE PALETTE")
+    .Width(450)
+    .Height(400)
+    .Resizable(false)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Layout(LayoutType.Fit)
+    .Items(
+        X.Container()
+        .Cls("global-scroll-container")
+        .Items(
+            X.FormPanel()
+            .ID("FormDeclarationPanel")
+            .Layout(LayoutType.Auto)
+            .Cls("form-container")
+            .FieldDefaults(fd =>
+            {
+                fd.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult;
+            })
+            .Items(
+                X.Container()
+                .Cls("form-zone")
+                .Layout(LayoutType.Form)
+
+                .Items(
+                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+
+                            X.ComboBox()
+                           .ID("cmbAnnee")
+                           .FieldLabel("Année")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .DisplayField("Year")
+                           .ValueField("Year")
+                           .Value(currentYear)
+                           .IndicatorCls("IndicatorRedStar")
+                           .IndicatorText("*")
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .DataSource(years)
+                                .Model(Html.X().Model().IDProperty("Year").Fields(new ModelField("Year", ModelFieldType.Int)))
+                           ),
+
+                         X.ComboBox()
+                           .ID("cmbSemaine")
+                           .FieldLabel("Semaine")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .DisplayField("Week")
+                           .ValueField("Week")
+                           .Value(currentWeek)
+                           .IndicatorCls("IndicatorRedStar")
+                           .IndicatorText("*")
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .DataSource(weeks)
+                                .Model(Html.X().Model().IDProperty("Week").Fields(new ModelField("Week")))
+                           ),
+
+                         X.ComboBox()
+                           .ID("cmbProduit")
+                           .FieldLabel("Produit")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .DisplayField("Designation")
+                           .ValueField("ID")
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .Value(ViewBag.SiteParDefaut)
+                           .IndicatorCls("IndicatorRedStar")
+                           .IndicatorText("*")
+                           .MarginSpec("0 0 8 8")
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .Model(
+                                  Html.X().Model()
+                                       .IDProperty("ID")
+                                       .Fields(
+                                          new ModelField("ID", ModelFieldType.Int),
+                                          new ModelField("Designation", ModelFieldType.String)
+                                       )
+                                )
+                                .Proxy(
+                                   Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadProduitFini", "ProduitFini"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Listeners(ls =>
+                                {
+                                    ls.Load.Handler = "if (store.getCount() > 0) { App.cmbProduit.setValue(store.getAt(0).get('ID')); }";
+                                })
+                           ),
+                                                    X.ComboBox()
+                           .ID("cmbProduitType")
+                           .FieldLabel("Produit Type")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .DisplayField("Designation")
+                           .ValueField("ID")
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .Value(ViewBag.SiteParDefaut)
+                           .IndicatorCls("IndicatorRedStar")
+                           .IndicatorText("*")
+                           .MarginSpec("0 0 8 8")
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .Model(
+                                  Html.X().Model()
+                                       .IDProperty("ID")
+                                       .Fields(
+                                          new ModelField("ID", ModelFieldType.Int),
+                                          new ModelField("Designation", ModelFieldType.String)
+                                       )
+                                )
+                                .Proxy(
+                                   Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadProduitTypeAll", "ProduitType"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Listeners(ls =>
+                                {
+                                    ls.Load.Handler = "if (store.getCount() > 0) { App.cmbProduitType.setValue(store.getAt(0).get('ID')); }";
+                                })
+                           ),
+                    X.ComboBox()
+                    .ID("cmbProduction")
+                    .DisplayField("NumeroProduction")
+                    .ValueField("ID")
+                    .FieldLabel("Ordre de Production")
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .AllowBlank(false)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .QueryMode(DataLoadMode.Local)
+                    .ForceSelection(true)
+                    .TypeAhead(false)
+                    .Editable(true)
+                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                        Model._Palette.OrdreDeProduction.ID.ToString() : null)
+                    .Store(
+                        X.Store()
+                        .AutoLoad(true)
+                        .Model(
+                            Html.X().Model()
+                            .IDProperty("ID")
+                            .Fields(
+                                new ModelField("ID", ModelFieldType.String),
+                                new ModelField("NumeroProduction", ModelFieldType.String)
+                                )
+                            )
+                        .Proxy(
+                            Html.X().AjaxProxy()
+                            .Url(Url.Action("LoadOrdreFabrication", "OrdreFabrication"))
+                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                        )
+                    .Listeners(l =>
+                    {
+                        l.Change.Handler = @"
+                            var ordreId = this.getValue();
+                            var cmbNumero = App.cmbNumero;
+                            var store = cmbNumero.getStore();
+        
+                            cmbNumero.setDisabled(!ordreId);
+                            cmbNumero.setValue('');
+        
+                            store.getProxy().setExtraParam('idOrdreFabrication', ordreId || '');
+                            store.load();
+                        ";
+                    }),
+
+                    X.ComboBox()
+                    .ID("cmbNumero")
+                    .FieldLabel("Numéro Palette")
+                    .DisplayField("Numero")
+                    .ValueField("ID")
+                    .QueryMode(DataLoadMode.Remote)
+                    .Editable(false)
+                    .Disabled(true)
+                    .LabelAlign(LabelAlign.Right)
+                    .LabelWidth(120)
+                    .IndicatorCls("IndicatorRedStar")
+                    .IndicatorText("*")
+                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ?
+                           Model._Palette.ID.ToString() : null)
+                    .Store(
+                        X.Store()
+                        .AutoLoad(false)
+                        .Model(
+                            Html.X().Model()
+                            .IDProperty("ID")
+                            .Fields(
+                                new ModelField("ID", ModelFieldType.String),
+                                new ModelField("Numero", ModelFieldType.Int)
+                            )
+                        )
+                        .Proxy(
+                            Html.X().AjaxProxy()
+                            .Url(Url.Action("GetPaletteNum", "Palette"))
+                            .ActionMethods(am => am.Read = HttpMethod.POST)
+                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                        )
+                    ),
+                    X.Component().AutoEl(dom => dom.Tag = System.Web.UI.HtmlTextWriterTag.Hr),
+                X.ComboBox()
+                           .ID("cmbMagasin")
+                           .FieldLabel("Magasin de stockage")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(200)
+                           .DisplayField("Designation")
+                           .ValueField("ID")
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .Value(ViewBag.SiteParDefaut)
+                           .MarginSpec("0 0 8 8")
+                           .IndicatorCls("IndicatorRedStar")
+                           .IndicatorText("*")
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .Model(
+                                  Html.X().Model()
+                                       .IDProperty("ID")
+                                       .Fields(
+                                          new ModelField("ID", ModelFieldType.Int),
+                                          new ModelField("Designation", ModelFieldType.String)
+                                       )
+                                )
+                                .Proxy(
+                                   Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadMagasin", "Magasin"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                           )
+                )
+
+            )
+        )
+    )
+    .FooterBar(
+        X.Toolbar()
+        .Cls("button-container")
+        .Items(
+            X.Button()
+            .ID("BtnOk")
+            .Text("OK")
+            .Cls("x-btn-primary")
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult
+                || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Approve)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("DeclarationPalette");
+                de.Click.Before = "return validNew(App.FormDeclarationPalette.id);";
+
+                de.Click.ExtraParams.Add(new Parameter { Name = "Annee", Value = "#{cmbAnnee}.getValue()", Mode = ParameterMode.Raw });
+                de.Click.ExtraParams.Add(new Parameter { Name = "Semaine", Value = "#{cmbSemaine}.getValue()", Mode = ParameterMode.Raw });
+                de.Click.ExtraParams.Add(new Parameter { Name = "Produit", Value = "#{cmbProduit}.getValue()", Mode = ParameterMode.Raw });
+                de.Click.ExtraParams.Add(new Parameter { Name = "ProduitType", Value = "#{cmbProduitType}.getValue()", Mode = ParameterMode.Raw });
+                de.Click.ExtraParams.Add(new Parameter { Name = "Production", Value = "#{cmbProduction}.getValue()", Mode = ParameterMode.Raw });
+                de.Click.ExtraParams.Add(new Parameter { Name = "NumeroPalette", Value = "#{cmbNumero}.getValue()", Mode = ParameterMode.Raw });
+                de.Click.ExtraParams.Add(new Parameter { Name = "Magasin", Value = "#{cmbMagasin}.getValue()", Mode = ParameterMode.Raw });
+
+            }),
+
+
+
+            X.Button()
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult
+                ? "Fermer"
+                : "Annuler")
+            .Handler("App.FormDeclarationPalette.doClose()")
+            .Cls("btncancel")
+        )
+    )
+)
+
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        var areAllRequiredFieldsFilled = isFormValid(winId);
+
+        if (!areAllRequiredFieldsFilled) {
+            Ext.Msg.show({
+                title: 'Production Order : Data Validation',
+                icon: Ext.MessageBox.WARNING,
+                msg: 'Veuillez remplir les champs réquis.',
+                buttons: Ext.Msg.OK
+            });
+            return false;
+        }
+    };
+</script>
+
+

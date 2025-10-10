@@ -1,0 +1,116 @@
+﻿@model Tms.Classes.Shared.Sales.ClientViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+        .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Items(
+                    X.Window()
+                    .ID("FormClient")
+                    .Width(700)
+                    .Resizable(false)
+                    .Height(200)
+                    .CloseAction(Ext.Net.CloseAction.Destroy)
+                    .Listeners(l =>
+                    {
+                        l.Close.Handler = "App.TmsViewPort.unmask();";
+                    })
+                    //.X(400)
+                    .Y(20)
+                    .Title("Customer : Detail")
+                    .Layout(LayoutType.HBox)                    
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle | HBoxAlign.Stretch })
+                        .Items(
+                                X.FormPanel().DefaultAnchor("100%").Flex(1).BodyPadding(6)
+                                .FieldDefaults(d =>
+                                {
+                                    d.LabelWidth = 100;
+                                })
+                                .Items(
+                                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                        X.Hidden().ID("hiddenRowversion").Value(Model._Client.RowVersionKey),
+                                        X.Hidden().ID("TxtClientID").Value(Model._Client.ID),
+                                        X.TextField().ID("TxtNomClient").FieldLabel("Nom")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Client.Nom.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtAdresseClient").FieldLabel("Adresse")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Client.Adresse.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtTelephoneFixeClient").FieldLabel("N° Telephone Fixe")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Client.TelephoneFixe.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        ),
+                                X.FormPanel().DefaultAnchor("100%").Flex(1).BodyPadding(6)
+                                .FieldDefaults(d =>
+                                {
+                                    d.LabelWidth = 110;
+                                })
+                                .Items(
+                                        X.TextField().ID("TxtTelephoneMobileClient").FieldLabel("N° Telephone Mobile").LabelWidth(100)
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Client.TelephoneMobile.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.TextField().ID("TxtFaxClient").FieldLabel("Fax N°")
+                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Client.Fax.ToString() : string.Empty)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                )
+
+
+                    )
+            .Buttons(
+                X.Button()
+                .Text("OK")
+                .ID("BtnSubmitClient")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormClient.id);";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormClient.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Customer : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

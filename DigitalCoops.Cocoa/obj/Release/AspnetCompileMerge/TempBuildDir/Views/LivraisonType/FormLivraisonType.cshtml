@@ -1,0 +1,339 @@
+﻿
+@model Tms.Classes.Shared.LivraisonTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 130px !important;
+}
+</style>
+@(X.Window()
+            .ID("FormLivraisonType")
+            .Width(1020)
+            .Resizable(false)
+            .Height(505)
+            .Modal(true)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            //.X(400)
+            .Y(20)
+            .Title("Type De Livraison : Detail")
+            .Items(
+    X.FormPanel()
+    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+    .Layout(LayoutType.VBox)
+            .BodyPadding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items(
+
+                    X.Panel().Layout(LayoutType.HBox)
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    .Items(
+                            X.Panel().Layout(LayoutType.Form).Flex(1)
+                            .Items(
+                                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                                    X.Hidden().ID("hiddenRowversion").Value(Model._LivraisonType.RowVersionKey),
+                                    X.Hidden().ID("TxtLivraisonTypeID").Value(Model._LivraisonType.ID),
+                                    X.TextField().ID("TxtDesignationLivraisonType").FieldLabel("Designation")
+                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.Designation.ToString() : string.Empty)
+                                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                    X.ComboBox().ID("CmbProduit")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.Produit.ID : (int?)null)
+                                        .FieldLabel("Produit")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                        .ForceSelection(true)
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .MarginSpec("0 6 0 0")
+                                        .Store(X.Store().AutoLoad(true)
+                                                    .Model( Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy( Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadProduitWithBlank", "Produit"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                ),
+                                    X.ComboBox().ID("CmbSensLivraisonType")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.Sens : "E")
+                                        .FieldLabel("Sens")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .Items(
+                                                new ListItem( "Entrée", "E"),
+                                                new ListItem("Sortie","S" )
+                                            ),
+                                    X.ComboBox().ID("CmbFournisseurGroupe")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.FournisseurGroupe.ID : (int?)null)
+                                        .FieldLabel("Groupe Fournisseur")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(X.Store().AutoLoad(true)
+                                                    .Model(Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadGroupeFournisseurWithBlank", "FournisseurGroupe"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                )
+                                    ),
+                            X.Panel().Layout(LayoutType.Form).Flex(1)
+                            .Items(
+                                    X.ComboBox().ID("CmbSacType")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SacType.ID : (int?)null)
+                                        .ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Extend ? false : true)
+                                        .FieldLabel("Type de Sac")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(X.Store().AutoLoad(true)
+                                                    .Model(Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadSacTypeWithBlank", "SacType"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                ),
+                                    X.ComboBox().ID("CmbProvenanceType")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.ProvenanceType.ID : (int?)null)
+                                        .FieldLabel("Type Provenance")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(X.Store().AutoLoad(true)
+                                                    .Model(Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadProvenanceTypeWithBlank", "ProvenanceType"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                ),
+                                    X.ComboBox().ID("CmbDestinationType")
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.DestinationType.ID : (int?)null)
+                                        .FieldLabel("Type Destination")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ForceSelection(true)
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .Store(X.Store().AutoLoad(true)
+                                                    .Model(Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadDestinationTypeWithBlank", "DestinationType"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                            )
+                                                )
+                                        )
+                                ),
+                    X.FieldContainer().FieldLabel("Option").LabelAlign(LabelAlign.Right).Layout(LayoutType.Form)
+                    .Items(
+                                X.Panel().Layout(LayoutType.HBox).Border(true)
+                                .Items(
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkEstAchat").FieldLabel("Est Achat").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.EstAchat : false),
+                                                X.Checkbox().ID("ChkAutoriseCoupage").FieldLabel("Coupage").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.AutoriseCoupage : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkCalculeVGM").FieldLabel("Calcule VGM").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.CalculeVGM : false),
+                                                X.Checkbox().ID("ChkAutoriseRefaction").FieldLabel("Refraction").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.AutoriseRefaction : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkAutoriseAnalyse").FieldLabel("Analyse").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.AutoriseAnalyse : false),
+                                                X.Checkbox().ID("ChkEstEmpotage").FieldLabel("Est Empotage").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.EstEmpotage : false)
+
+                                            //X.Checkbox().ID("ChkGenereMvtSacherie").FieldLabel("Genere Mvt Sacherie").LabelAlign(LabelAlign.Right)
+                                            //.Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.GenereMvtSacherie : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkEstTransfert").FieldLabel("Est Transfert").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumTransfert : false),
+                                                X.Checkbox().ID("ChkEstVisibleSurSite").FieldLabel("Visible Sur Site").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.VisibleEnAgence : false)
+
+                                            //X.Checkbox().ID("ChkGenereMvtSacherie").FieldLabel("Genere Mvt Sacherie").LabelAlign(LabelAlign.Right)
+                                            //.Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.GenereMvtSacherie : false)
+                                            )
+                                        )
+                                ),
+                    X.FieldContainer().FieldLabel("Required Fields").LabelAlign(LabelAlign.Right).Layout(LayoutType.Form)
+                    .Items(
+                                X.Panel().Layout(LayoutType.HBox).Border(true)
+                                .Items(
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkSaisieNumLot").FieldLabel("Lot NUm").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumLot : false),
+                                                X.Checkbox().ID("ChkSaisieNumPlomb").FieldLabel("Num Plomb").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumPlomb : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkSaisieNumExterne").FieldLabel("Num Externe").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumExterne : false),
+                                                X.Checkbox().ID("ChkSaisieNumConteneur").FieldLabel("Conteneur Num").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumConteneur : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkSaisieNumOT").FieldLabel("OT Num").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumOT : false),
+                                                X.Checkbox().ID("ChkSaisieCertification").FieldLabel("Certification").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieCertification : false)
+
+                                            //X.Checkbox().ID("ChkSaisieCentreAchat").FieldLabel("Saisie Centre achat").LabelAlign(LabelAlign.Right)
+                                            //.Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieCentreAchat : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkSaisieNumBS").FieldLabel("BS Num").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumBS : false),
+                                                X.Checkbox().ID("ChkSaisieNumBL").FieldLabel("BL Num").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieNumBL : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkSaisieTransitaire").FieldLabel("Transitaire").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.SaisieTransitaire : false)
+
+                                            )
+                                        )
+                                ),
+                    X.FieldContainer().FieldLabel("Ticket De pesée").LabelAlign(LabelAlign.Right).Layout(LayoutType.Form)
+                    .Items(
+                                X.Panel().Layout(LayoutType.HBox).Border(true)
+                                .Items(
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkAfficheEcartPoids").FieldLabel("Ecart Poids").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.AfficheEcartPoids : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkAffichePoidsMoyenSacs").FieldLabel("Moy Poids").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.AffichePoidsMoyenSacs : false)
+                                            ),
+                                        X.Panel().Layout(LayoutType.Form)
+                                        .Items(
+                                                X.Checkbox().ID("ChkAfficheResultatAnalyse").FieldLabel("Resultat Analyse").LabelAlign(LabelAlign.Right)
+                                                    .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._LivraisonType.AfficheResultatAnalyse : false)
+                                            )
+                                        )
+                               )
+
+                )
+                )
+        .Buttons(
+            X.Button().Text("OK").ID("BtnSubmitLivraisonType")
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("SubmitFormMethod");
+                de.Click.Before = "return validNew(App.FormLivraisonType.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            })
+
+                ,
+            X.Button()
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormLivraisonType.doClose()").Cls("btncancel")
+
+            )
+
+        
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {            
+            Ext.Msg.show({ title: 'Type De Livraison : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+

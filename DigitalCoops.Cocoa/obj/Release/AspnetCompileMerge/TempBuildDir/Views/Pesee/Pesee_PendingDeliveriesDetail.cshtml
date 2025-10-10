@@ -1,0 +1,276 @@
+﻿@model Tms.Classes.Business.Livraison
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+@(                 
+
+                                //X.FormPanel()
+                                //            .Items
+                                //            (
+
+                                X.Window()
+                                .ID("frmPendingDeliveries")
+                                .Width(800)
+                                .Resizable(false)
+                                .Height(430)
+                                .Modal(true)
+                                .CloseAction(Ext.Net.CloseAction.Destroy)
+                                .Listeners(l =>
+                                {
+                                    //l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                                    //l.Close.Handler = "App.TmsViewPort.unmask();";
+
+                                    // disable order controls
+                                    l.Show.Handler = "Ext.onReady(function() { "
+                                                                + "  "
+                                                                + "}); ";
+
+                                })
+                                //.X(250)
+                                .Y(20)
+                                .Title("Pesée : Livraisons en attente")
+                                .Items
+                                (
+                                           X.FormPanel()
+                                           .ID("CriteriaPanelPending")
+                                           .Region(Region.North)
+                                           .Border(false)
+                                           .Collapsed(false)
+                                           .Collapsible(false)
+                                           .FieldDefaults(fd => fd.LabelWidth = 100)
+                                           .BodyPadding(5)
+                                           .Frame(true)
+                                           .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                            .Items
+                                            (
+                                                         X.Button()
+                                                        .ID("btnRefreshPendingDeliveries")
+                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                        .IconCls("action_refresh_01")
+                                                        .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                        .Border(false)
+                                                        //.Cls("ButtonStyle")
+                                                        .Disable(false)
+                                                        .DirectEvents
+                                                        (
+                                                            de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("OnRefreshPendingDeliveries");
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemCropYearID", Value = "App.cmbCampagnePending.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemStartDate", Value = "App.dtfStartDatePending.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                                                de.Click.ExtraParams.Add(new Parameter { Name = "ItemEndDate", Value = " App.dtfEndDatePending.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                        )
+
+
+                                                        ,
+                                                         X.ComboBox()
+                                                        .ID("cmbCampagnePending")
+                                                        .FieldLabel("Campagne")
+                                                        .Flex(1)
+                                                        .LabelWidth(50)
+                                                        .DisplayField("Designation")
+                                                        .ValueField("Designation")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .TypeAhead(true)
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .ForceSelection(true)
+                                                        .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "{Tous}" }); })
+                                                        .Store
+                                                        (
+                                                                X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model
+                                                                (
+                                                                        Html.X()
+                                                                        .Model()
+                                                                        .IDProperty("Designation")
+                                                                        .Fields
+                                                                        (
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                                )
+                                                                .Proxy
+                                                                (
+                                                                    Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                )
+                                                        )
+                                                        ,
+                                                         X.FieldContainer()
+                                                         .Flex(2)
+                                                        .FieldLabel("Debut/Fin").LabelAlign(LabelAlign.Right)
+                                                        .Layout(LayoutType.HBox)
+                                                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                        .Items
+                                                        (
+                                                            X.DateField()
+                                                            .ID("dtfStartDatePending")
+                                                            //.Width(135)
+                                                            .Flex(1)
+                                                            .SelectedDate(DateTime.Now.AddDays(-30))
+                                                            .MarginSpec("0 5 0 0")
+                                                            ,
+
+                                                            X.DateField()
+                                                            .ID("dtfEndDatePending")
+                                                            //.Width(135)
+                                                            .Flex(1)
+                                                            .SelectedDate(DateTime.Now)
+                                                            .MarginSpec("0 0 0 5")
+                                                       )
+
+                                            )
+                                            ,
+
+                                            X.GridPanel()
+                                            .Layout(LayoutType.Fit)
+                                            .ID("grpListePendingDeliveries")
+                                            .Region(Region.Center)
+                                            .ForceFit(false)
+                                            .Height(300)
+                                            .AllowDeselect(true)
+                                            .Store
+                                            (
+                                                    X.StoreFor<Tms.Classes.Business.Livraison>().ID("storeListePendingDeliveries")
+                                                    .AutoLoad(true)
+                                                    .PageSize(8)
+                                                    .SorterFor(Model, m => m.DateLivraison, Ext.Net.SortDirection.DESC)
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("SelectPendingDeliveries", "Pesee"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                                    .Parameters
+                                                    (
+                                                        ps =>
+                                                        {
+                                                            ps.Add(new StoreParameter { Name = "ItemCropYearID", Value = "App.cmbCampagnePending.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                                            ps.Add(new StoreParameter { Name = "ItemStartDate", Value = "App.dtfStartDatePending.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                                            ps.Add(new StoreParameter { Name = "ItemEndDate", Value = " App.dtfEndDatePending.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                                                        }
+                                                    )
+                                            )
+                                            .ColumnModel
+                                            (
+                                                Html.X().Column().Text("").DataIndex("mIcon").Width(40).Renderer("renderIcon").Hideable(false).Filterable(false),
+                                                Html.X().Column().Text("Date").DataIndex("DateLivraisonLongAsString").Flex(1).Hideable(false),
+                                                //Html.X().Column().Text("Type de livraison").DataIndex("LivraisonType").Width(100).Renderer("renderObject").Flex(1),
+                                                Html.X().Column().Text("Livraison N°").DataIndex("Numero").Flex(1).Hideable(false),
+                                                //Html.X().Column().Text("Fournisseur").DataIndex("Fournisseur").Renderer("renderObject").Width(100).Flex(1),
+                                                Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Flex(1).Hideable(false),
+                                                Html.X().Column().Text("Nbr de sacs Est.").DataIndex("SacsDeclares").Flex(1).Hideable(false),
+                                                Html.X().Column().Text("tonnage Estimé").DataIndex("PoidsDeclareAsString").Flex(1).Hideable(false)
+                                            )
+
+                                            .BottomBar
+                                            (
+                                                Html.X().PagingToolbar()
+                                                .HideRefresh(true)
+                                                .Plugins(Html.X().ProgressBarPager())
+                                            )
+                                            .Plugins
+                                            (
+                                                X.FilterHeader()
+                                            )
+                                            .SelectionModel
+                                            (
+                                            X.RowSelectionModel()
+                                            .ID("rowSelectionListePendingDeliveries")
+                                            .Mode(SelectionMode.Single)
+                                            .AllowDeselect(true)
+                                            )
+                                            .Listeners(l =>
+                                            {
+                                                l.Select.Handler = "SetBtnOK();";
+                                                l.Deselect.Handler = "SetBtnOK();";
+                                            })
+
+
+                                    )
+                                    .Buttons
+                                    (
+                                        X.Button().Text("OK").ID("BtnOk").Disabled(true)
+                                        .DirectEvents(de =>
+                                        {
+                                            de.Click.Url = Url.Action("OnSelectPendingDelivery");
+                                            de.Click.ExtraParams.Add(new Parameter { Name = "id_pendingDelivery", Mode = ParameterMode.Raw, Encode = false, Value = "#{grpListePendingDeliveries}.getSelectionModel().getSelection()[0].data.ID" });
+                                            de.Click.Before = "return validNew(App.frmPendingDeliveries.id);";
+                                        })
+                                            ,
+                                        X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.frmPendingDeliveries.doClose()").Cls("btncancel")
+                                    )
+//)
+
+)
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Pesée ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+    var SetBtnOK = function () {
+        if (App.rowSelectionListePendingDeliveries.hasSelection())
+            App.BtnOk.enable();
+        else
+            App.BtnOk.disable();
+    };
+
+    var setExecMode = function (winId) {
+
+
+        var TextFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textfield') || [];
+        var ComboBoxArray = Ext.ComponentQuery.query('window[id="' + winId + '"] combobox') || [];
+        var DateFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] datefield') || [];
+        var TextAreaArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textarea') || [];
+
+        /*Ensuite nous concatenons tous les tableaux obtenus obtenus
+        */
+        var allCustomComponentsOnWindowArray = TextFieldArray.concat(ComboBoxArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(DateFieldArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(TextAreaArray);
+
+        if (allCustomComponentsOnWindowArray.length > 0)
+        {
+
+            var flag = Ext.each(allCustomComponentsOnWindowArray,
+                            function (item, index, objectItSelf)
+                            {
+                                item.setReadOnly(false);
+
+                                if (App.hiddenExecMode.value == 'Consult')
+                                    item.setReadOnly(true);
+
+                            }
+                     );
+
+            return (flag === true);
+        }
+
+
+    };
+</script>

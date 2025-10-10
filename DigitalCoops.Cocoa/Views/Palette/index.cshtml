@@ -1,0 +1,576 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+<script type="text/javascript" src="~/Scripts/renderers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListePalette.columnManager.getColumns(), App.grpListePalette.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return '';
+    };
+
+    var GetNbrStoreRows = function () {
+        var nbr = App.grpListePalette.getRowsValues().length;
+        App.LblResumePalette.setText(nbr + ' Location(s)');
+    };
+
+    var SetCriteriaTitle = function (status) {
+        App.PaletteCriteriaPanel.title = "";
+        var texttitle = "";
+
+        if (status) texttitle += "Show only active Locations : YES ";
+        else texttitle += "Show only active Locations : NO ";
+
+        App.PaletteCriteriaPanel.setTitle(texttitle);
+    };
+
+
+
+    var iconRenderer = function (value, metaData, record) {
+        metaData.css = Overview.getIcons(value);
+    }
+
+    var Overview = {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';
+            }
+            else if (value == 1) {
+                return 'action_approve_02';
+            }
+            else if (value == 2) {
+                return 'action_new_02';
+            }
+            return '';
+        },
+
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red';
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+            return '';
+        },
+        resetButtons: function () {
+            var hasSel = App.rowSelectionPalette.hasSelection();
+
+            // 1) Modifier
+            if (hasSel && App.PalettehiddenPermModifier.value === 'true') {
+                App.btnModifyPalette.enable();
+            } else {
+                App.btnModifyPalette.disable();
+            }
+
+            // 2) Activer / Annuler (mnuCancelPalette)
+            if (hasSel && App.PalettehiddenPermDesactiver.value === 'true') {
+                App.mnuCancelPalette.enable();
+            } else {
+                App.mnuCancelPalette.disable();
+            }
+
+            if (hasSel) {
+                var isDisabled = App.rowSelectionPalette.selected.items[0].data.Desactive;
+                if (isDisabled) {
+                    if (App.PalettehiddenPermActiver.value === 'true') {
+                        App.mnuCancelPalette.enable();
+                    }
+                    App.mnuCancelPalette.setText('Activer');
+                    App.mnuCancelPalette.setIconCls('glyphicon glyphicon-ok green');
+                    App.btnModifyPalette.disable();
+                } else {
+                    App.mnuCancelPalette.setText('Annuler');
+                    App.mnuCancelPalette.setIconCls('glyphicon glyphicon-remove red');
+                    if (App.PalettehiddenPermModifier.value === 'true') {
+                        App.btnModifyPalette.enable();
+                    }
+                }
+            }
+
+            // 3) Fermer
+            if (hasSel && App.PalettehiddenPermFermer.value === 'true') {
+                App.btnClose.enable();
+            } else {
+                App.btnClose.disable();
+            }
+
+            // 4) Ouvrir
+            if (hasSel && App.PalettehiddenPermOuvrir.value === 'true') {
+                App.btnOpen.enable();
+            } else {
+                App.btnOpen.disable();
+            }
+        }
+    };
+
+    //----- CODE À AJOUTER -----
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+        // On utilise directement la 'value' (0 ou 2) sans la convertir
+        var icon_url = Overview.getBootStrapIcons(value);
+        return Ext.String.format(tpl, icon_url);
+    };
+
+
+</script>
+
+@model Tms.Classes.Shared.Palette
+@using System.Globalization
+
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@{
+    // date courante
+    var now = DateTime.Now;
+    var currentYear = now.Year;
+
+    var years = Enumerable
+        .Range(DateTime.Now.Year - 4, 5)
+        .Select(y => new { Year = y })
+        .ToList();
+
+    // Calendrier ISO (semaine commençant le lundi, règle des 4 jours)
+    var cal = CultureInfo.InvariantCulture.Calendar;
+    var currentWeek = cal.GetWeekOfYear(now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+    // Calcul du nombre de semaines de l'année courante (52 ou 53)
+    var weekOfDec31 = cal.GetWeekOfYear(new DateTime(currentYear, 12, 31),
+                                        CalendarWeekRule.FirstFourDayWeek,
+                                        DayOfWeek.Monday);
+    var weeksCount = (weekOfDec31 == 1) ? 52 : weekOfDec31;
+
+    var weeks = Enumerable.Range(1, weeksCount)
+                          .Select(w => new { Week = w })
+                          .ToList();
+    
+}
+
+@(Html.X().ResourceManager())
+
+<form id="tms_form">
+
+    @(X.Viewport()
+        .Layout(LayoutType.Border)
+        .ID("TmsViewPort")
+        .Items(
+            X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+            X.Hidden().ID("PalettehiddenPermCreer").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermModifier").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermDesactiver").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermActiver").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermExporterExcel").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermOverview").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermOuvrir").ReadOnly(true),
+            X.Hidden().ID("PalettehiddenPermFermer").ReadOnly(true),
+
+            X.Panel()
+             .ID("pnlNorth")
+             .Region(Region.North)
+             .Layout(LayoutType.Border)
+             .TopBar(new Toolbar()
+             {
+                 Items = {
+                     X.Button()
+                      .ID("btnFilterPalette")
+                      .IconCls("action_filter_02")
+                      .Border(false)
+                      .Cls("ButtonStyle")
+                      .Text("Filtrer")
+                      .Disabled(false)
+                      .DirectEvents(de =>{
+                          de.Click.Url  = Url.Action("OnFilter");
+                          de.Click.EventMask.ShowMask = true;
+                      }),
+
+                     X.Button()
+                      .ID("btnRefreshPalette")
+                      .IconCls("action_refresh_01")
+                      .Text("Actualiser")
+                      .Border(false)
+                      .Cls("ButtonStyle")
+                      .Disable(false)
+                      .DirectEvents(de =>{
+                          de.Click.Url  = Url.Action("onRefresh");
+                          de.Click.ExtraParams.Add(new Parameter {  Name ="ItemAnnee", Value= "#{cmbAnne}.getValue()",     Mode=ParameterMode.Raw});
+                          de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSemaine", Value= "#{cmbSemaine}.getValue()",     Mode=ParameterMode.Raw});
+                          de.Click.ExtraParams.Add(new Parameter {  Name ="ItemProduit", Value= "#{cmbProduit}.getValue()",     Mode=ParameterMode.Raw});
+                          de.Click.ExtraParams.Add(new Parameter {  Name ="ItemProduitType", Value= "#{cmbProduitType}.getValue()",     Mode=ParameterMode.Raw});
+                          de.Click.ExtraParams.Add(new Parameter {  Name ="ItemProduction", Value= "#{cmbProduction}.getValue()",     Mode=ParameterMode.Raw});
+                          de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Value= "#{TxtStatus}.getValue()", Mode=ParameterMode.Raw});
+
+                          de.Click.Success = "SetCriteriaTitle(App.TxtStatus.value);";
+                          de.Click.EventMask.ShowMask = true;
+                      }),
+
+                     X.Button()
+                      .ID("btnNewPalette")
+                      .Icon(Icon.BrickAdd)
+                      .Text("Déclarer une palette")
+                      .Cls("ButtonStyle")
+                      .Border(false)
+                      .Disable(false)
+                      .DirectEvents(de =>{
+                          de.Click.Url  = Url.Action("OnAdd");
+                          de.Click.EventMask.ShowMask = true;
+                      }),
+
+                     X.Button()
+                      .ID("btnModifyPalette")
+                      .IconCls("action_modify_02")
+                      .Text("Modifier")
+                      .Cls("ButtonStyle")
+                      .Border(false)
+                      .Disabled(true)
+                      .DirectEvents(de =>{
+                          de.Click.Url  = Url.Action("OnEdit");
+                          de.Click.Success = "App.FormPalette.setTitle('Location : Modifier')";
+                          de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListePalette}.getSelectionModel().getSelection()[0].data"});
+                          de.Click.EventMask.ShowMask = true;
+                      }),
+
+                     X.ToolbarFill(),
+
+                     X.Button()
+                      .ID("btnActions")
+                      .Text("Actions")
+                      .Border(false)
+                      .Cls("ButtonStyle")
+                      .IconCls("menu_04")
+                      .Disable(false)
+                      .Menu(new Menu()
+                      {
+                          Items = {
+                              X.MenuItem()
+                                .ID("mnuExportListPalette")
+                                .Text("Exporter")
+                                .Icon(Icon.PageExcel)
+                                .Handler("SetExcelList();"),
+                              X.MenuItem()
+                                .ID("mnuCancelPalette")
+                                .IconCls("glyphicon glyphicon-remove red")
+                                .Text("Annuler")
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disabled(true)
+                                .DirectEvents(de =>
+                                {
+                                    de.Click.Url = Url.Action("OnActivateDeactivate");
+                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListePalette}.getSelectionModel().getSelection()[0].data" });
+                                    de.Click.EventMask.ShowMask = true;
+                                    de.Click.Confirmation.ConfirmRequest = true;
+                                    de.Click.Confirmation.Title = "Location";
+                                    de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListePalette}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                    de.Click.Success = "Overview.resetButtons();";
+                                })
+                          }
+                      })
+                 }
+             }),
+
+            // ----------------- DEBUT DES FILTRES (nouveau layout deux colonnes) -----------------
+            X.FormPanel()
+             .ID("PaletteCriteriaPanel")
+             .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Location - overview" })
+             .Region(Region.North)
+             .Floatable(false)
+             .Border(false)
+             .Collapsed(true)
+             .Collapsible(true)
+             .CollapsedCls("panelcollapse")
+             .BodyPadding(8)
+             .Frame(true)
+             .Layout("VBox")
+             .Items(
+                // Ligne principale : 2 colonnes (HBox)
+                X.Container()
+                 .Layout("HBox")
+                 .Items(
+
+                     // Colonne gauche : 3 éléments verticalement
+                     X.Container()
+                      .Layout("VBox")
+                      .Flex(1)
+                      .Padding(5)
+                      .Items(
+                         X.ComboBox()
+                           .ID("cmbAnne")
+                           .FieldLabel("Année")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .DisplayField("Year")
+                           .ValueField("Year")
+                           .Value(currentYear)
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .DataSource(years)
+                                .Model(Html.X().Model().IDProperty("Year").Fields(new ModelField("Year")))
+                           ),
+
+                         X.ComboBox()
+                           .ID("cmbSemaine")
+                           .FieldLabel("Semaine")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .DisplayField("Week")
+                           .ValueField("Week")
+                           .Value(currentWeek)
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .DataSource(weeks)
+                                .Model(Html.X().Model().IDProperty("Week").Fields(new ModelField("Week")))
+                           ),
+
+                         X.ComboBox()
+                           .ID("cmbProduit")
+                           .FieldLabel("Produit")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .DisplayField("Designation")
+                           .ValueField("ID")
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .Value(ViewBag.SiteParDefaut)
+                           .MarginSpec("0 0 8 8")  // Correction ici : Margins -> MarginSpec
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .Model(
+                                  Html.X().Model()
+                                       .IDProperty("ID")
+                                       .Fields(
+                                          new ModelField("ID", ModelFieldType.Int),
+                                          new ModelField("Designation", ModelFieldType.String)
+                                       )
+                                )
+                                .Proxy(
+                                   Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadProduitFiniAll", "ProduitFini"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Listeners(ls =>
+                                {
+                                    ls.Load.Handler = "if (store.getCount() > 0) { App.cmbProduit.setValue(store.getAt(0).get('ID')); }";
+                                })
+                           )
+                      ), // fin colonne gauche
+
+                     // Colonne droite : 3 éléments verticalement
+                     X.Container()
+                      .Layout("VBox")
+                      .Flex(1)
+                      .Padding(5)
+                      .Items(
+                         X.ComboBox()
+                           .ID("cmbProduitType")
+                           .FieldLabel("Produit Type")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .DisplayField("Designation")
+                           .ValueField("ID")
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .Value(ViewBag.SiteParDefaut)
+                           .MarginSpec("0 0 8 8")
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .Model(
+                                  Html.X().Model()
+                                       .IDProperty("ID")
+                                       .Fields(
+                                          new ModelField("ID", ModelFieldType.Int),
+                                          new ModelField("Designation", ModelFieldType.String)
+                                       )
+                                )
+                                .Proxy(
+                                   Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadProduitTypeAll", "ProduitType"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Listeners(ls =>
+                                {
+                                    ls.Load.Handler = "if (store.getCount() > 0) { App.cmbProduitType.setValue(store.getAt(0).get('ID')); }";
+                                })
+                           ),
+                            X.ComboBox()
+                           .ID("cmbProduction")
+                           .FieldLabel("Ordre de Production")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                           .DisplayField("NumeroProduction")
+                           .ValueField("ID")
+                           .ForceSelection(true)
+                           .TypeAhead(true)
+                           .QueryMode(DataLoadMode.Local)
+                           .TriggerAction(TriggerAction.All)
+                           .Value(ViewBag.SiteParDefaut)
+                           .MarginSpec("0 8 0 0")  // Correction ici : Margins -> MarginSpec
+                           .Store(
+                               X.Store()
+                                .AutoLoad(true)
+                                .Model(
+                                  Html.X().Model()
+                                       .IDProperty("ID")
+                                       .Fields(
+                                          new ModelField("ID", ModelFieldType.String),
+                                          new ModelField("NumeroProduction", ModelFieldType.String)
+                                       )
+                                )
+                                .Proxy(
+                                   Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadOrdreFabricationAll", "OrdreFabrication"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                )
+                                .Listeners(ls =>
+                                {
+                                    ls.Load.Handler = "if (store.getCount() > 0) { App.cmbProduction.setValue(store.getAt(0).get('ID')); }";
+                                })
+                           ),
+
+
+
+
+                         // 2ème élément colonne droite : (si tu souhaites ajouter un autre filtre, insère ici)
+
+                         // 3ème élément : checkbox status
+                         X.Checkbox()
+                           .ID("TxtStatus")
+                           .FieldLabel("Show only active Locations")
+                           .LabelAlign(LabelAlign.Right)
+                           .LabelWidth(120)
+                      ) // fin colonne droite
+                 ), // fin HBox principal
+
+                // Ligne en dessous : résumé (LblResumePalette) + zone droite pour boutons (vide pour l'instant)
+                X.Container()
+                  .Layout("HBox")
+                  .Items(
+                     X.Container()
+                       .Flex(1)
+                       .Layout(LayoutType.VBox)
+                       .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center })
+                       .Items(
+                          X.Label().ID("LblResumePalette").Text("Resume ici").EmptyText("")
+                       ),
+
+                     X.Container()
+                       .Width(200)
+                       .Layout("HBox")
+                       .Items(
+                       // Placeholders pour futurs boutons (Appliquer / Réinitialiser) si besoin
+                       )
+                  )
+             ), // fin FormPanel.Items
+                // ----------------- FIN DES FILTRES -----------------
+                // Correction ici : virgule ajoutée pour séparer les items
+            X.GridPanel()
+             .Layout(LayoutType.Fit)
+             .ID("grpListePalette")
+             .Region(Region.Center)
+             .ForceFit(false)
+             .AllowDeselect(false)
+             .Store(
+                 X.StoreFor<Tms.Classes.Shared.Palette>().ID("storeListePalette")
+                 .PageSize(50)
+                 .RemotePaging(false)
+                 .Proxy(Html.X().AjaxProxy()
+                             .Url(Url.Action("Select"))
+                             .Reader(Html.X().JsonReader().RootProperty("data"))
+                         )
+                 .Listeners(ls =>
+                 {
+                     ls.Load.Fn = "GetNbrStoreRows";
+                     ls.Add.Fn = "GetNbrStoreRows";
+                 })
+             )
+             .ColumnModel
+             (
+                 Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Width(40).Hideable(false).Filterable(false),
+                 Html.X().Column().Text("Annee").DataIndex("Annee"),
+                 Html.X().Column().Text("Semaine").DataIndex("Semaine"),
+                 Html.X().Column().Text("Numero de production").DataIndex("NumeroDeProductionToString"),
+                 Html.X().Column().Text("Numero de palette").DataIndex("Numero"),
+                 Html.X().Column().Text("Nom Article").DataIndex("NomArticle"),
+                 Html.X().Column().Text("Code Interne Art.").DataIndex("CodeInterneArticle").Width(120),
+                 Html.X().Column().Text("Produit").DataIndex("Produit"),
+                 Html.X().Column().Text("Produit Type").DataIndex("TypeDeProduit"),
+                 X.Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                 X.DateColumn().Text("Date Creation").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                 X.Column().Text("Utilisation Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                 X.DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+             )
+             .BottomBar(
+                 Html.X().PagingToolbar()
+                 .HideRefresh(true)
+                 .Plugins(Html.X().ProgressBarPager())
+             )
+             .Plugins(
+                 X.FilterHeader()
+             )
+             .SelectionModel(
+                 X.RowSelectionModel()
+                     .ID("rowSelectionPalette")
+                     .Mode(SelectionMode.Single)
+                     .AllowDeselect(false)
+             ).Listeners(l =>
+             {
+                 l.Select.Fn = "Overview.resetButtons";
+                 l.Deselect.Fn = "Overview.resetButtons";
+             })
+             .DirectEvents(de =>
+             {
+                 de.RowDblClick.Url = Url.Action("OnConsult");
+                 de.RowDblClick.CleanRequest = true;
+                 de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionPalette}.getSelected().items[0].data" });
+                 de.RowDblClick.EventMask.ShowMask = true;
+             })
+
+        ) // fin Viewport.Items
+    )
+</form>         

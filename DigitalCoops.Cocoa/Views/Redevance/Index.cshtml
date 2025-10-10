@@ -1,0 +1,568 @@
+﻿
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+</head>
+
+
+@Scripts.Render("~/bundles/CommonScripts")
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeRedevance.columnManager.getColumns(), App.grpListeRedevance.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        //console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red'; // glyphicon glyphicon-remove red
+            }
+            else if (value == 1) {
+                return 'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue'; // glyphicon glyphicon-file blue
+            }
+            else if (value == 3) {
+                return 'glyphicon-retweet green'; // glyphicon glyphicon-file blue
+            }
+            else if (value == 4) {
+                return 'glyphicon-lock red'; // glyphicon glyphicon-file blue
+            }
+        },
+        SummaryRD: function () {
+            
+          
+            var totalAmount = parseFloat(App.storeListeRedevance.sum('Montant')) || 0;
+            var totalTonnage = parseFloat(App.storeListeRedevance.sum('Quantite')) || 0;
+
+            totalAmount = FormatAmount(totalAmount);
+
+            var mChaine = Ext.String.format('Montant Total : {0} F CFA <br/> Total Quantité : {1} (Kg) ', totalAmount, formatNumber(totalTonnage));
+            App.lblSummarySFI.setHtml(mChaine);
+        },
+        resetButtons: function () {
+
+          /** Permission control**/
+            App.btnModify.disable();
+            App.mnuCancel.disable();
+            App.mnuPrintDebitNote.disable();
+
+            if (App.rowSelectionListeRedevance.hasSelection()) {
+
+                var isDisabled = App.rowSelectionListeRedevance.selected.items[0].data.Desactive;
+                if (isDisabled === false) {
+
+                    if (App.rdhiddenPermModifier.value == 'true')
+                        App.btnModify.enable();
+
+                    if (App.rdhiddenPermDesactive.value == 'true') {
+                        App.mnuCancel.enable();
+                        App.mnuCancel.setText('Desactiver');
+                        App.mnuCancel.setIconCls('glyphicon glyphicon-remove red');
+                    }
+
+                    if (App.rdhiddenPermPrintDebitNote.value == 'true')
+                        App.mnuPrintDebitNote.enable();
+                }
+                else {
+                    App.btnModify.disable();
+
+                    if (App.rdhiddenPermActive.value == 'true') {
+                        App.mnuCancel.enable();
+                        App.mnuCancel.setText('Activer');
+                        App.mnuCancel.setIconCls('glyphicon glyphicon-ok green');
+                    }
+
+                }
+
+
+
+            }
+
+
+        },
+        updateSummaryInfo: function () {
+            var mItemsCount = App.storeListeArticle.totalCount;
+            mItemsCount = Ext.util.Format.number(mItemsCount, '0,0');
+
+            var mChaine = Ext.String.format('{0} Shipment(s) Fees', mItemsCount);
+            App.lblResume.setText(mChaine);
+
+            Overview.resetButtons();
+        }
+    }
+
+
+</script>
+
+
+@model Tms.Classes.Business.Sales.Redevance
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                                    .Layout(LayoutType.Border)
+                                    .ID("TmsViewPort")
+                                    .Items(
+                                        X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+                                        //Permission call
+                                        X.Hidden().ID("rdhiddenPermOverview").ReadOnly(true),
+                                        X.Hidden().ID("rdhiddenPermDesactive").ReadOnly(true),
+                                        X.Hidden().ID("rdhiddenPermActive").ReadOnly(true),
+                                        X.Hidden().ID("rdhiddenPermExporterExcel").ReadOnly(true),
+
+                                        X.Hidden().ID("rdhiddenPermPrintDebitNote").ReadOnly(true),
+                                        X.Hidden().ID("rdhiddenPermPrintHistory").ReadOnly(true),
+
+                                        X.Hidden().ID("rdhiddenPermGenerate").ReadOnly(true),
+                                        X.Hidden().ID("rdhiddenPermModifier").ReadOnly(true),
+
+
+                                        X.Panel()
+                                            .ID("pnlNorth")
+                                            .Region(Region.North)
+                                            .Layout(LayoutType.Border)
+                                            .TopBar(new Toolbar()
+                                            {
+                                                Items = { X.Button()
+                                                .ID("btnFilter")
+                                                .IconCls("action_filter_02")
+                                                .Border(false)
+                                                .Cls("ButtonStyle")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                                                .Disabled(false)
+                                                .DirectEvents( de =>{
+                                                    de.Click.Url  = Url.Action("OnFilter");
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    } )
+
+                                                    ,
+
+                            X.Button()
+                            .ID("btnRefresh")
+                            .IconCls("action_refresh_01")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Disable(false)
+                            .DirectEvents( de =>{
+                                de.Click.Url  = Url.Action("onRefresh");
+
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExporter", Encode=true, Value= "#{cmbExporter}.getValue()", Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Encode=false, Value= "#{cmbStatus}.getValue()", Mode=ParameterMode.Raw});
+                                de.Click.Success = "App.RedevanceCriteriaPanel.setTitle('Exportateur = ' + App.cmbExporter.rawValue +  ', Statut : '+ App.cmbStatus.rawValue + ' , du  '+ App.dtpStartDate.rawValue  + ' au  '+ App.dtpEndDate.rawValue )";
+                                de.Click.EventMask.ShowMask = true;
+
+
+
+
+                            } )
+                            ,
+
+                                 X.Button()
+                                .ID("btnGenerate")
+                                .IconCls("action_new_02")
+                                .Text("Générer")
+                                .Cls("ButtonStyle")
+                                .Border(false)
+                                .Disable(false)
+                                .DirectEvents( de =>{
+                                    de.Click.Url  = Url.Action("OnCreate");
+                                    de.Click.Success = "App.Redevance_Detail.setTitle('Redevance : Générer')";
+                                    de.Click.EventMask.ShowMask = true;
+                                } )
+                                ,
+
+                             X.Button()
+                            .ID("btnModify")
+                            .IconCls("action_modify_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnModify)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disabled(true)
+                            .DirectEvents( de =>{
+                                de.Click.Url = Url.Action("OnEdit");
+                                de.Click.Success = "App.Redevance_Detail.setTitle('Redevance : Edit')";
+                                de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw,Encode = true, Value="#{grpListeRedevance}.getSelectionModel().getSelection()[0].data"});
+                                de.Click.EventMask.ShowMask = true;
+                            } )
+                           ,
+
+
+                            X.SplitButton()
+                                            .ID("btnPrint")
+                                            .IconCls("action_print_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Disabled(false)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Menu
+                                             (
+                                                new Menu()
+                                                {
+                                                    Height = 80,
+                                                    Items =
+                                                    {
+
+                                                        X.MenuItem()
+                                                            .ID("mnuPrintDebitNote")
+                                                            .Text("Debit note")
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                                de=>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnPrintDebitNote");
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.ExtraParams.Add(new Parameter {  Name = "ItemSelected" , Mode= ParameterMode.Raw, Value = "#{grpListeRedevance}.getSelectionModel().getSelection()[0].data.ID" });
+                                                                }
+                                                            ),
+                                                            X.MenuItem()
+                                                            .ID("mnuPrintHistory")
+                                                            .Text("Print History")
+                                                            .Disabled(true)
+                                                            .DirectEvents
+                                                            (
+                                                                 de=>
+                                                                {
+                                                                    de.Click.Url = Url.Action("OnPrintShipmentFees");
+                                                                    de.Click.EventMask.ShowMask = true;
+                                                                    de.Click.Success = "App.FormPrintRedevanceReport.setTitle('Redevance : History')";
+                                                                    de.Click.ExtraParams.Add(new Parameter {  Name = "typeReport" , Mode= ParameterMode.Value, Value = "Hi" });
+                                                                }
+                                                            )
+
+                                                       }
+                                                   }
+                                               ),
+
+                                            X.ToolbarFill(),
+
+
+                                 X.Button()
+                                .ID("btnActions")
+                                .Text("Actions")
+                                .Border(false)
+                                .Cls("ButtonStyle")
+                                .IconCls("menu_04")
+                                .Disable(false)
+                                 .Menu(new Menu()
+                                 {
+                                     Items = {
+                                                X.MenuItem()
+                                                .ID("mnuExport")
+                                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                .Icon(Icon.PageExcel)
+                                                .Handler("SetExcelList();"),
+                                                 X.MenuItem()
+                                                .ID("mnuCancel")
+                                                .IconCls("glyphicon glyphicon-remove red")
+                                                .Text("Desactiver")
+                                                .Cls("ButtonStyle")
+                                                .Border(false)
+                                                .Disabled(true)
+                                                .DirectEvents(de =>
+                                                {
+                                                    de.Click.Url = Url.Action("OnActivateDeactivate");
+                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw,Encode = true, Value = "#{grpListeRedevance}.getSelectionModel().getSelection()[0].data" });
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.Title = "Redevance";
+                                                    de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeRedevance}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                                    de.Click.Success = "Overview.resetButtons();";
+                                                })
+
+                                             }
+                                  })
+                                            }
+
+                                            })
+
+                                                ,
+                                                X.FormPanel()
+                                                .ID("RedevanceCriteriaPanel")
+                                                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Redevance - overview" })
+                                                .Region(Region.North)
+                                                .Floatable(false)
+                                                .Border(false)
+                                                .Collapsed(true)
+                                                .Collapsible(true)
+                                                .BodyPadding(5)
+                                                .Frame(true)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                                                .Items(
+                                                    X.Panel()
+                                                    .Border(false)
+                                                    //.Frame(true)
+                                                    //.MarginSpec("0 0 0 0")
+                                                    .Width(750)
+                                                    .Height(100)
+                                                    .Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                                    //.BodyPadding(0)
+                                                    .Items
+                                                     (
+                                                        X.Panel()
+                                                        .Border(false)
+                                                        .Frame(false)
+                                                        .MarginSpec("0 0 0 0")
+                                                        .Width(450)
+                                                        .Layout(LayoutType.Form)
+                                                        .Margin(0)
+                                                        .BodyPadding(0)
+                                                        .Items
+                                                        (
+
+
+                                                                 X.ComboBox()
+                                                                    .ID("cmbExporter")
+                                                                    .FieldLabel("Exportateur")
+                                                                    .LabelWidth(110)
+                                                                    .DisplayField("Nom")
+                                                                    .ValueField("ID")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .TypeAhead(true)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .TriggerAction(TriggerAction.All)
+                                                                    .ForceSelection(true)
+                                                                    .Width(400)
+                                                                    .MatchFieldWidth(false)
+                                                                    .ListConfig(new BoundList { MinWidth = 350 })
+                                                                    .Store
+                                                                     (
+                                                                           X.Store()
+                                                                           .AutoLoad(true)
+                                                                           .Model
+                                                                           (
+                                                                               Html.X().Model()
+                                                                              .IDProperty("ID")
+                                                                              .Fields
+                                                                              (
+                                                                                 new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                 new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                              )
+                                                                           )
+                                                                          .Proxy
+                                                                          (
+                                                                             Html.X().AjaxProxy()
+                                                                            .Url(Url.Action("LoadExportateurAll", "Exportateur"))
+                                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                          )
+
+                                                                       )
+                                                                     .SelectedItems
+                                                                     (
+                                                                        it =>
+                                                                        {
+                                                                            it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                                        }
+                                                                     )
+                                                                     ,
+
+                                                                        X.ComboBox()
+                                                                        .ID("cmbStatus")
+                                                                        .FieldLabel("Statut")
+                                                                        .LabelWidth(110)
+                                                                        .DisplayField("Description")
+                                                                        .ValueField("ID")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .TypeAhead(true)
+                                                                        .ForceSelection(true)
+                                                                        .Items
+                                                                        (
+                                                                            it =>
+                                                                            {
+                                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                                                it.Add(new ListItem { Text = "Actived", Value = "0" });
+                                                                                it.Add(new ListItem { Text = "Desactived", Value = "1" });
+                                                                            }
+                                                                        )
+                                                                        .SelectedItems
+                                                                        (
+                                                                            it =>
+                                                                            {
+                                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                                            }
+                                                                        )
+                                                     ),
+                                                          X.Panel()
+                                                            .Border(false)
+                                                            .Frame(false)
+                                                            .Margin(0)
+                                                            .Width(300)
+                                                            .Layout(LayoutType.Form)
+                                                            .BodyPadding(0)
+                                                            .Items
+                                                            (
+                                                                        X.DateField().ID("dtpStartDate").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(""),
+
+                                                                        X.DateField().ID("dtpEndDate").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text("")
+                                                                )
+
+
+                                                    ),
+                                                     X.Panel()
+                                                    .ID("RedevanceOverview")
+                                                    .Width(400)
+                                                    .Flex(1)
+                                                    .Height(100)
+                                                    .Border(false)
+                                                    .Layout(LayoutType.HBox)
+                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                                    .Items(
+                                                            X.Container()
+                                                            .ID("")
+                                                            .Layout(LayoutType.VBox)
+                                                            .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                                            .Items(X.Label().ID("lblSummarySFI").Text("Amount").EmptyText(""))
+                                                        )
+
+                                                //End Items
+                                                ),
+
+
+                                        X.GridPanel()
+                                       .Layout(LayoutType.Fit)
+                                       .ID("grpListeRedevance")
+                                       .Region(Region.Center)
+                                       .ForceFit(false)
+                                       .AllowDeselect(false)
+                                        .Store(
+                                            X.StoreFor<Tms.Classes.Business.Sales.Redevance>()
+                                                .ID("storeListeRedevance")
+                                                .PageSize(20)
+                                                .RemotePaging(false)
+                                                .Proxy(
+                                                          Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadListOfShipmentFees"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                        .Listeners(ls =>
+                                                        {
+
+                                                            ls.Load.Handler = "Overview.SummaryRD(); Ext.net.Mask.hide();";
+                                                            ls.Add.Handler = " Overview.SummaryRD();";
+                                                            ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                                            ls.Update.Handler = "Overview.resetButtons();";
+                                                        })
+
+                            .Parameters
+                               (
+                                   ps =>
+                                   {
+                                       ps.Add(new StoreParameter("ItemExporter", "#{cmbExporter}.getValue()", ParameterMode.Raw));
+                                       ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDate}.getRawValue()", ParameterMode.Raw));
+                                       ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDate}.getRawValue()", ParameterMode.Raw));
+                                       ps.Add(new StoreParameter("ItemStatus", "#{cmbStatus}.getValue()", ParameterMode.Raw));
+
+                                   }
+                               )
+                            )
+                    .ColumnModel
+                    (
+                            Html.X().Column().Text("").DataIndex("mIcon").Width(40).Hideable(false).Filterable(false).Renderer("renderIcon"),
+                            //Html.X().Column().Text("Numero").DataIndex("Numero").Flex(1),
+                            Html.X().Column().Text("N° Contrat").DataIndex("ContratNumero").Flex(1),
+                            Html.X().Column().Text("N° Shipment").DataIndex("EmbarquementAsString").Flex(1),
+                            Html.X().Column().Text("Exportateur").DataIndex("ExportateurAsString").Flex(2),
+                            Html.X().Column().Text("Nombre de Cont.").DataIndex("NbreConteneurAsString").Flex(1),
+                            Html.X().Column().Text("Quantité (Kg)").DataIndex("QuantiteAsString").Flex(1),
+                            Html.X().Column().Text("Montant (CFA)").DataIndex("MontantAsString").Flex(1),
+                            Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                            Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                            Html.X().Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                            Html.X().DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+                    ).BottomBar(
+                        Html.X().PagingToolbar()
+                        .HideRefresh(true)
+                .Plugins(Html.X().ProgressBarPager())
+                )
+                .Plugins(
+                    X.FilterHeader()
+                )
+                .SelectionModel(
+                    X.RowSelectionModel()
+                        .ID("rowSelectionListeRedevance")
+                        .Mode(SelectionMode.Single)
+                        .AllowDeselect(false)
+                ).Listeners(l =>
+                {
+                    l.Select.Fn = "Overview.resetButtons";
+                    l.Deselect.Fn = "Overview.resetButtons";
+
+                }
+                )
+    .DirectEvents(de =>
+    {
+        de.RowDblClick.Url = Url.Action("OnConsult");
+        de.RowDblClick.CleanRequest = true;
+        de.RowDblClick.Success = "App.Redevance_Detail.setTitle('Redevance : Detail')";
+        de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListeRedevance}.getSelected().items[0].data" });
+        de.RowDblClick.EventMask.ShowMask = true;
+    }
+        )
+
+    )
+    )
+
+</form>
+

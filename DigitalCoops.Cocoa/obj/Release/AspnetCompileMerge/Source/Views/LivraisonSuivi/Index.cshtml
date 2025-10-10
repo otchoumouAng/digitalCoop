@@ -1,0 +1,1278 @@
+﻿
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/new.bootstrap.theme.css" />
+    <link rel="stylesheet" href="~/Content/new.bootsrap.min.css" />
+</head>
+<style>
+    textarea[readonly="readonly"]
+ {  
+  background-color: white !important;
+}
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 160px !important;
+}
+</style>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListe.columnManager.getColumns(), App.grpListe.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var loadFilter = function (plugin, value) {
+        /*Status: value, Status: 'IN PROCESS',*/
+        /*App.grpListe.getFilterPlugin().getFilter('Status').setValue(['AT GATE', 'IN PROCESS']);*/        
+        plugin.setValue(['Status', 'AT GATE'],['Status', 'IN PROCESS']
+            
+        );
+    };
+
+    // Preserve the original static method (in order to be able to call it)
+    var tmp = Ext.net.FilterHeader.behaviour.boolean[0].getValue;
+
+    // This override will allow filtering by 'yes' and 'no' on the boolean column.
+    Ext.define('Ext.net.FilterHeader.behaviour.boolean_ovr', {
+        override: 'Ext.net.FilterHeader.behaviour.defaultBooleanBehaviour',
+        getValue: function (value, field) {
+            var bool = null;
+            if (value.length > 0 && value.toLowerCase() === "yes".substr(0, value.length)) {
+                bool = true;
+            }
+            else if (value.length > 0 && value.toLowerCase() === "no".substr(0, value.length)) {
+                bool = false;
+            };
+
+            if (bool == null) {
+                // Fall back to original filtering mechanism
+                return this.callSuper(value, field);
+            }
+
+            // filter is always valid. if an invalid input is set, it will filter 0 records
+            return { value: bool, valid: true };
+        }
+    });
+
+    // "Emulate" the this.callSuper behavior (will conflict with other methods inside
+    // FilterHeader.behaviour static block)
+    Ext.net.FilterHeader.behaviour.boolean[0].callSuper = tmp;
+
+    var SetFilterValue = function () {
+        /*if (App.cmbStatutLivraison.value != '-1')
+        {
+            App.CrtDateDebut.setReadOnly(false);
+            App.CrtDateFin.setReadOnly(false);
+            /*App.chkShowAtGate.setValue(false);
+            App.chkShowInProcess.setValue(false);
+        } else {
+            App.CrtDateDebut.setReadOnly(true);
+            App.CrtDateFin.setReadOnly(true);
+          
+        }*/
+    };
+
+    var renderSuiviIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = SuiviRenderers.getBootStrapIcons(value);
+
+        //console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    };
+
+    var iconSuiviRenderer = function (value, metaData, record) {
+        
+        var iconUrl = SuiviRenderers.getIcons(value);
+        metaData.css = Ext.String.format('background:url("{0}") {1};', iconUrl, ' 5px no-repeat');
+        metaData.style = Ext.String.format('background:url("{0}") {1};', iconUrl, ' 5px no-repeat');
+        console.log(metaData);
+        console.log(value);
+        console.log(Ext.String.format('background:url("{0}") {1};', iconUrl, ' 5px no-repeat'));
+    };
+    /* state :  at Gate, 1st weight, 2nd wght, accepted, rejected*/
+    var SuiviRenderers =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+            else if (value == 3) {
+                return Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+            else if (value == 4) {
+                return Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New  glyphicon glyphicon-ok
+            }
+        },
+        getBootStrapIcons: function (value)
+        {
+            if (value === 4) {
+                return 'glyphicon-remove-circle red'; // rejected
+            }
+            else if (value == 3) {
+                return 'glyphicon-ok green';  // accepted
+            }
+            else if (value == 2) {
+                return 'glyphicon-log-out blue'; // In process
+            }            
+            else if (value == 1) {
+                return 'glyphicon-pause black'; // At gate
+            }
+        }
+    };
+
+
+
+
+
+    var Overview =
+    {
+
+        resetButtons: function ()
+        {
+            /*App.btnModify.disable();
+
+            App.mnuPrintCard.disable();
+
+            App.mnuCancel.disable();*/
+
+            if (App.rowSelectionListe.hasSelection())
+            {
+
+
+                /*var isDisabled = App.rowSelectionListe.selected.items[0].data.Desactive;
+
+                if ( !isDisabled)
+                   App.btnModify.enable();
+
+                App.mnuPrintCard.enable();
+
+
+
+                if (isDisabled === true) {
+                    App.mnuCancel.setIconCls("glyphicon glyphicon-ok green");
+                    App.mnuCancel.setText('Activer');
+                }
+
+                else {
+                    App.mnuCancel.setIconCls("glyphicon glyphicon-remove red");
+                    App.mnuCancel.setText('Desactiver');
+                }
+
+                App.mnuCancel.enable();*/
+            }
+        },
+        updateSummary : function()
+        {
+            Ext.util.Format.thousandSeparator = ' ';
+            var stringFormatEntier = '0,0';
+            var stringFormatFlotant = '0,0';
+            var AT_GATE = 1;
+            var IN_PROCESS = 2;
+            var ACCEPTED = 3;
+            var REJECTED = 4;
+            var CONVENTIONAL = 0
+
+            /*At gate*/
+            var nbrDeliveries = Overview.nbrOfDeliveries(AT_GATE);
+            var nbrBags = Overview.nbrOfBags(AT_GATE, 'SacsDeclares');
+            var tonnage = Overview.tonnage(AT_GATE, 'PoidsDeclare') / 1000;
+            var summary = Ext.String.format('{0} livraison(s)\n{1} sac(s)\n{2} tone(s)', Ext.util.Format.number(nbrDeliveries, stringFormatEntier), Ext.util.Format.number(nbrBags, stringFormatEntier), Ext.util.Format.number(tonnage, stringFormatEntier));
+            App.txtAtGateAsString.setValue(summary);
+
+            var nbrDeliveriesStock = nbrDeliveries;
+            var nbrBagsStock = nbrBags;
+            var tonnageStock = tonnage;
+
+
+            /*In Process*/
+            nbrDeliveries = Overview.nbrOfDeliveries(IN_PROCESS);
+            nbrBags = Overview.nbrOfBags(IN_PROCESS, 'AcceptedBags');
+            /*tonnage = Overview.tonnage(IN_PROCESS, 'AcceptedTonnage') / 1000;*/
+            tonnage = Overview.tonnage(IN_PROCESS, 'PoidsDeclare') / 1000;
+            summary = Ext.String.format('{0} livraison(s)\n{1} sac(s)\n{2} tone(s)', Ext.util.Format.number(nbrDeliveries, stringFormatEntier), Ext.util.Format.number(nbrBags, stringFormatEntier), Ext.util.Format.number(tonnage, stringFormatEntier));
+            App.txtInProcessAsString.setValue(summary);
+
+            nbrDeliveriesStock += nbrDeliveries;
+            nbrBagsStock += nbrBags;
+            tonnageStock += tonnage;
+
+
+            /*Accepted*/
+            nbrDeliveries = Overview.nbrOfDeliveries(ACCEPTED);
+            nbrDeliveriesConventional = Overview.nbrOfDeliveries(ACCEPTED, 'CertificationID', CONVENTIONAL);
+            nbrDeliveriesCertified = nbrDeliveries - nbrDeliveriesConventional;
+            console.log(nbrDeliveriesConventional);
+
+            nbrBags = Overview.nbrOfBags(ACCEPTED, 'AcceptedBags');
+            nbrBagsConventional = Overview.nbrOfBags(ACCEPTED, 'AcceptedBags', 'CertificationID', CONVENTIONAL);
+            nbrBagsCertified = nbrBags - nbrBagsConventional;
+
+            tonnage = Overview.tonnage(ACCEPTED, 'AcceptedTonnage') / 1000;
+            tonnageConventional = Overview.tonnage(ACCEPTED, 'AcceptedTonnage', 'CertificationID', CONVENTIONAL) / 1000;
+            tonnageCertified = tonnage - tonnageConventional;
+            summary = Ext.String.format('{0} livraison(s) \n{3} sac(s) \n{6} tone(s)'
+                                       , Ext.util.Format.number(nbrDeliveries, stringFormatEntier)
+                                       , Ext.util.Format.number(nbrDeliveriesCertified, stringFormatEntier)
+                                       , Ext.util.Format.number(nbrDeliveriesConventional, stringFormatEntier)
+                                       , Ext.util.Format.number(nbrBags, stringFormatEntier)
+                                        , Ext.util.Format.number(nbrBagsCertified, stringFormatEntier)
+                                       , Ext.util.Format.number(nbrBagsConventional, stringFormatEntier)
+                                       , Ext.util.Format.number(tonnage, stringFormatEntier)                                    
+                                       , Ext.util.Format.number(tonnageCertified, stringFormatEntier)
+                                       , Ext.util.Format.number(tonnageConventional, stringFormatEntier));
+                                       
+            App.txtAcceptedAsString.setValue(summary);
+
+
+            /*Rejected*/
+            nbrDeliveries = Overview.nbrOfDeliveries(REJECTED);
+            nbrBags = Overview.nbrOfBags(REJECTED, 'AcceptedBags');
+            tonnage = Overview.tonnage(REJECTED, 'AcceptedTonnage') / 1000;
+            summary = Ext.String.format('{0} livraison(s)\n{1} sac(s)\n{2} tone(s)', Ext.util.Format.number(nbrDeliveries, stringFormatEntier), Ext.util.Format.number(nbrBags, stringFormatEntier), Ext.util.Format.number(tonnage, stringFormatEntier));
+            App.txtRejectedAsString.setValue(summary);
+
+
+            /*Stock*/
+            nbrDeliveries = nbrDeliveriesStock;
+            nbrBags = nbrBagsStock;
+            tonnage = tonnageStock;
+            summary = Ext.String.format('{0} livraison(s)\n{1} sac(s)\n{2} tone(s)', Ext.util.Format.number(nbrDeliveries, stringFormatEntier), Ext.util.Format.number(nbrBags, stringFormatEntier), Ext.util.Format.number(tonnage, stringFormatEntier));
+            App.txtStockAsString.setValue(summary);
+
+           /* var totalDeliveries = Overview.totalDeliveries();
+            totalDeliveries = Ext.util.Format.number(totalDeliveries, stringFormatEntier);
+            App.txtTotalDeliveries.setValue(totalDeliveries);
+
+            var estimatedBags = Overview.estimatedBags();
+            estimatedBags = Ext.util.Format.number(estimatedBags, stringFormatEntier);
+            App.txtEstimatedBags.setValue(estimatedBags);
+
+            var estimatedTonnage = Overview.estimatedTonnage();
+            estimatedTonnage = Ext.util.Format.number(estimatedTonnage, stringFormatFlotant);
+            App.txtEstimatedTonnage.setValue(estimatedTonnage);
+
+            var acceptedDeliveries = Overview.acceptedDeliveries();
+            acceptedDeliveries = Ext.util.Format.number(acceptedDeliveries, stringFormatEntier);
+            App.txtAcceptedDeliveries.setValue(acceptedDeliveries);
+
+            var acceptedBags = Overview.acceptedBags();
+            acceptedBags = Ext.util.Format.number(acceptedBags, stringFormatEntier);
+            App.txtAcceptedBags.setValue(acceptedBags);
+
+            var acceptedTonnage = Overview.acceptedTonnage();
+            acceptedTonnage = Ext.util.Format.number(acceptedTonnage, stringFormatFlotant);
+            App.txtAcceptedTonnage.setValue(acceptedTonnage);*/
+        },
+        totalDeliveries: function () {
+
+            return Overview.getRowsValues().length || 0;
+        },
+        getRowsValues: function ()
+        {
+            return App.grpListe.getRowsValues({ currentPageOnly: false });
+        },
+        nbrOfDeliveries: function (statut,colName, colValue)
+        {
+            var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+           
+            if (colName == undefined && colValue == undefined)
+            {
+
+                rowsValues.forEach(function (item) {
+
+                    if (item.StatusID == statut)
+                        sum += 1;
+                });
+            }
+
+            if (colName != undefined && colValue != undefined) 
+            {
+                sum = 0;
+                
+                rowsValues.forEach(function (item) {
+
+                    if (item.StatusID == statut && item[colName] == colValue)
+                    {
+                        sum += 1;
+                        console.log(item);
+                    }
+                       
+                });
+            }
+
+
+            return sum || 0;
+
+            /*return App.storeListe.sum('SacsDeclares') || 0;*/
+        },
+
+        nbrOfBags: function (statut, nomColonne,colName, colValue)
+        {
+            var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+
+            if (colName == undefined && colValue == undefined)
+            {
+                rowsValues.forEach(function (item) {
+                    if (item.StatusID == statut)
+                        sum += item[nomColonne];
+                });
+            }
+
+
+            if (colName != undefined && colValue != undefined)
+            {
+                sum = 0;
+
+                rowsValues.forEach(function (item) {
+
+                    if (item.StatusID == statut && item[colName] == colValue)
+                    {
+                        sum += item[nomColonne];                       
+                    }
+
+                });
+            }
+
+            return sum || 0;
+
+           /* return App.storeListe.sum('SacsDeclares') || 0;*/
+        },
+
+        tonnage: function (statut, nomColonne, colName, colValue)
+        {
+            var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+
+            if (colName == undefined && colValue == undefined)
+            {
+                rowsValues.forEach(function (item) {
+                    if (item.StatusID == statut)
+                        sum += item[nomColonne];
+                });
+            }
+
+            
+            if (colName != undefined && colValue != undefined)
+            {
+                sum = 0;
+
+                rowsValues.forEach(function (item) {
+
+                    if (item.StatusID == statut && item[colName] == colValue) {
+                        sum += item[nomColonne];
+                    }
+
+                });
+            }
+
+
+            return sum || 0;
+
+            /*return App.storeListe.sum('SacsDeclares') || 0;*/
+        },
+
+        estimatedBags: function () {
+            /*var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+            rowsValues.forEach(function (item) {
+                sum += item.SacsDeclares;
+            });
+
+            return sum || 0;*/
+
+            return App.storeListe.sum('SacsDeclares') || 0;
+        },
+        estimatedTonnage: function () {
+            /*var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+            rowsValues.forEach(function (item) {
+                sum += item.PoidsDeclare;
+            });
+
+            return sum || 0;*/
+
+            return App.storeListe.sum('PoidsDeclare') || 0;
+
+        },
+        acceptedDeliveries: function () {
+            var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+            rowsValues.forEach(function (item) {
+                if (item.Statut = 'ACCEPTED')
+                    sum += 1;
+            });
+
+            return sum || 0;
+
+        },
+        acceptedBags: function () {
+            
+            /*var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+            rowsValues.forEach(function (item) {
+                sum += item.AcceptedBags;
+            });*/
+
+            return App.storeListe.sum('AcceptedBags') || 0;
+
+        },
+        acceptedTonnage: function () {
+            var rowsValues = Overview.getRowsValues();
+            var sum = 0;
+            /*rowsValues.forEach(function (item) {
+                sum += item.GrossWeight;
+            });*/
+
+            return App.storeListe.sum('GrossWeight') || 0;
+        }
+   }
+
+
+</script>
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    var secondTick = 0;
+
+            function enableDisableTimer()
+            {
+                if (App.chkAutomaticRefresh.checked == true)
+                    reloadOverviewStoreAtIntervals();
+                else
+                    ResetTimer();
+            }
+
+            function ResetTimer()
+            {
+                clearTimeout(secondTick);
+            }
+
+            function reloadOverviewStoreAtIntervals()
+            {
+                var interval = 60000;
+
+                var store = App.grpListe.getStore();
+                var dateNow= Date.now();
+
+               /* App.lblResume.setText('Last refresh :' + dateNow);*/
+
+                store.reload();               
+                secondTick = setTimeout("reloadOverviewStoreAtIntervals()", interval);
+            }
+            
+            //reloadOverviewStoreAtIntervals();
+
+            Ext.onReady(function ()
+            {
+
+                if (App.chkAutomaticRefresh.checked == true)
+                    reloadOverviewStoreAtIntervals();
+
+            })
+</script>
+
+<style type="text/css">
+
+    /* Background tuiles*/
+    #dataTotalDeliveries-innerCt 
+    {
+        background-color:deeppink;    
+    }
+
+    #txtTotalDeliveries-triggerWrap,
+    #txtAtGateAsString-triggerWrap,
+    #txtInProcessAsString-triggerWrap,
+    #txtAcceptedAsString-triggerWrap,
+    #txtRejectedAsString-triggerWrap,
+    #txtStockAsString-triggerWrap
+    {
+       border-width: 0px;
+       border-style: solid;
+       border-color: #d0d0d0;       
+    }   
+
+
+    .summary-tiles
+    {
+        text-align: center;
+        font-weight: bold !important;
+        font-size: 12px;
+        line-height: 15px!important;
+        min-height: 0px!important;
+        padding-top: 1px!important;
+    }
+
+
+</style>
+
+
+@model Tms.Classes.Business.SuiviLivraison
+@{
+    Layout = null;
+    var X = Html.X();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                                    .Layout(LayoutType.Border)
+                                    .ID("TmsViewPort")
+                                    .Items(
+                                        X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+                                        X.Hidden().ID("HiddenDefExportateur").Value((int)ViewBag.HiddenDefExportateur),
+                                        X.Panel()
+                                            .ID("pnlNorth")
+                                            .Region(Region.North)
+                                            .Layout(LayoutType.Border)
+                                            .TopBar(new Toolbar()
+                                            {
+                                                Items =
+                                                {
+                                                    X.Checkbox()
+                                                    .ID("chkAutomaticRefresh")
+                                                    .BoxLabel("Rafraichir automatiquement")
+                                                    .BoxLabelAlign(BoxLabelAlign.Before)
+                                                    .Checked(false)
+                                                    .Listeners
+                                                    (
+                                                        l =>
+                                                        {
+                                                          l.Change.Fn = "enableDisableTimer";
+                                                          l.AfterRender.Fn = "enableDisableTimer";
+                                                        }
+
+                                                    )
+
+                                                    ,
+                                                    X.Button()
+                                                    .ID("btnFilter")
+                                                    .IconCls("action_filter_02")
+                                                    .Border(false)
+                                                    .Cls("ButtonStyle")
+                                                    .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                                                    .Disable(false)
+                                                    .DirectEvents
+                                                    (
+                                                        de =>
+                                                        {
+                                                            de.Click.Url  = Url.Action("OnFilter");
+                                                            de.Click.EventMask.ShowMask = true;
+                                                        }
+                                                    )
+                                                    ,
+
+                                                    X.Button()
+                                                    .ID("btnRefresh")
+                                                    .IconCls("action_refresh_01")
+                                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                                    .Border(false)
+                                                    .Cls("ButtonStyle")
+                                                    .Disable(false)
+                                                    .DirectEvents
+                                                    (
+                                                            de =>{
+
+                                                                de.Click.Url  = Url.Action("OnRefresh");
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=false, Value= "#{cmbCampagne}.getValue()", Mode=ParameterMode.Raw});
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemLivraisonType",   Encode=false, Value= "#{cmbLivraisonType}.getValue()",   Mode=ParameterMode.Raw});
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemFournisseur",         Encode=false, Value= "#{cmbFournisseur}.getValue()",     Mode=ParameterMode.Raw});
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name = "ItemExportateur",         Encode=false, Value= "#{cmbExportateur}.getValue()",     Mode=ParameterMode.Raw});
+
+                                                                //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemAtGate", Value= "#{chkShowAtGate}.getValue()",     Mode=ParameterMode.Raw});
+                                                                //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemInProcess", Value= "#{chkShowInProcess}.getValue()",     Mode=ParameterMode.Raw});
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Value= "#{cmbStatutLivraison}.getValue()",     Mode=ParameterMode.Raw});
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStartDate",         Encode=false, Value= "#{CrtDateDebut}.rawDateText",     Mode=ParameterMode.Raw});
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name ="ItemEndDate",         Encode=false, Value= "#{CrtDateFin}.rawDateText",     Mode=ParameterMode.Raw});
+
+                                                                de.Click.ExtraParams.Add(new Parameter {  Name = "ItemSite",         Encode=false, Value= "#{cmbSite}.getValue()",     Mode=ParameterMode.Raw});
+
+                                                                de.Click.Success = "App.CriteriaPanel.setTitle('Site : '+ App.cmbSite.rawValue + ', Campagne :'+ App.cmbCampagne.rawValue + ' ; Livraison :' + App.cmbLivraisonType.rawValue +  '; Fournisseur : '+ App.cmbFournisseur.rawValue +  ' ; Exportateur : ' + App.cmbExportateur.rawValue)";
+
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+                                                    )
+                                                    ,
+
+                                                    X.SplitButton()
+                                                    .ID("btnPrint")
+                                                    .IconCls("action_print_02")
+                                                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                    .Disable(false)
+                                                    .Cls("ButtonStyle")
+                                                    .Border(false)
+                                                    .Menu( new Menu()
+                                                    {
+                                                        Items =
+                                                                {
+
+
+                                                                    X.MenuItem()
+                                                                    .ID("mnuPrintAcceptedDeliveriesReport")
+                                                                    .Text("Livraisons Acceptées")
+                                                                    .Disable(true)
+                                                                    .DirectEvents
+                                                                    (
+                                                                        de=>
+                                                                        {
+                                                                            de.Click.Url = Url.Action("OnDisplayDeliveriesReport");
+                                                                            de.Click.ExtraParams.Add(new Parameter { Name = "status", Mode = ParameterMode.Value, Encode = false, Value = "AC" });
+                                                                            de.Click.EventMask.ShowMask = true;
+                                                                        }
+                                                                    ),
+                                                                    X.MenuItem()
+                                                                    .ID("mnuPrintRejectedDeliveriesReport")
+                                                                    .Text("Livraisons Rejetées")
+                                                                    .Disable(true)
+                                                                    .DirectEvents
+                                                                    (
+                                                                        de=>
+                                                                        {
+                                                                            de.Click.Url = Url.Action("OnDisplayDeliveriesReport");
+                                                                            de.Click.ExtraParams.Add(new Parameter { Name = "status", Mode = ParameterMode.Value, Encode = false, Value = "RJ" });
+                                                                            de.Click.EventMask.ShowMask = true;
+                                                                        }
+                                                                    ),
+                                                                    X.MenuItem()
+                                                .ID("mnuPrintQualityAverage")
+                                                .Text("Moyenne Analyse")
+                                                .DirectEvents
+                                                (
+                                                    de=>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnDisplayQualityAverageCriteria", "AnalysePhysique");
+                                                        de.Click.EventMask.ShowMask = true;
+                                                    }
+                                                )
+                                                                    //,
+
+                                                                    //X.MenuItem()
+                                                                    //.ID("mnuPrintDeliveriesAccepted")
+                                                                    //.Text("Print accepted deliveries")
+                                                                    //.DirectEvents
+                                                                    //(
+                                                                    //        de=>
+                                                                    //        {
+                                                                    //            de.Click.Url = Url.Action("OnPrintAcceptedDeliveries");
+                                                                    //        }
+                                                                    //)
+                                                                    //,
+                                                                    //X.MenuItem()
+                                                                    //.ID("mnuPrintDeliveriesRejected")
+                                                                    //.Text("Print rejected deliveries")
+                                                                    //.DirectEvents
+                                                                    //(
+                                                                    //        de=>
+                                                                    //        {
+                                                                    //            de.Click.Url = Url.Action("OnPrintRejectedDeliveries");
+                                                                    //        }
+                                                                    //)
+
+                                                               }
+                                                    }),
+                                                    X.ToolbarFill(),
+
+                                 X.Button()
+                                .ID("btnActions")
+                                .Text("Actions")
+                                .Border(false)
+                                .Cls("ButtonStyle")
+                                .IconCls("menu_04")
+                                .Disable(false)
+                                 .Menu(new Menu()
+                                 {
+                                     Items = {
+                                         X.MenuItem()
+                                            .ID("mnuExport")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Icon(Icon.PageExcel)
+                                            .Handler("SetExcelList();")
+
+                                                }
+                                        })
+
+                               }
+                                            })
+
+                                ,
+                                X.FormPanel()
+                                .ID("CriteriaPanel")
+                                //.Title("On essai d'afficher les criteres ici")
+                                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Moniteur de Livraison - Overview" })
+                                .Region(Region.North)
+                                .Floatable(false)
+                                .Border(false)
+                                .Collapsed(true)
+                                .Collapsible(true)
+                                //.CollapsedCls("panelcollapse")
+                                .BodyPadding(5)
+                                .Frame(true)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                                .Items
+                                (
+
+                                        X.Panel()
+                                        .Flex(2)                                        
+                                        //.Title("Criteria")
+                                        .Layout(LayoutType.Form)
+                                        //.BodyPadding(0)
+                                        .Items
+                                        (
+                                        X.ComboBox()
+                                    .ID("cmbSite")
+                                    .FieldLabel("Site")
+                                    .DisplayField("Nom")
+                                    .ValueField("ID")
+                                    .MatchFieldWidth(false)
+                                    .ListConfig(new BoundList { MinWidth = 300 })
+                                    .LabelAlign(LabelAlign.Right)
+                                    .TypeAhead(false)
+                                    .QueryMode(DataLoadMode.Local)
+                                    .TriggerAction(TriggerAction.All)
+                                    .ForceSelection(true)
+                                    //.ReadOnly(true)
+                                    .Value((int)ViewBag.SiteParDefaut)
+                                    .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadSiteAll", "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ),
+                                        X.ComboBox()
+                                        .ID("cmbExportateur")
+                                        .FieldLabel("Exportateur")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .ForceSelection(true)
+                                        //.SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                        .Store
+                                        (
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                             .Listeners(
+                                                         ls => ls.Load.Handler = "#{cmbExportateur}.setValue(#{HiddenDefExportateur}.value);"
+                                                     )
+                                             )
+                                            ,
+                                            X.ComboBox()
+                                            .ID("cmbCampagne")
+                                            .FieldLabel("Campagne")
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            //.SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "{Tous}" }); })
+                                            .Store(X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                     Html.X().Model()
+                                                    .IDProperty("Designation")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                            )
+                                            .Proxy
+                                            (
+                                                Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                                )
+
+
+                                    )
+                                       ,
+                                        X.Panel()
+                                        .Flex(2)                                        
+                                        //.Title("Criteria")
+                                        .Layout(LayoutType.Form)
+                                        //.BodyPadding(0)
+                                        .Items
+                                        (
+                                        X.ComboBox()
+                                        .ID("cmbLivraisonType")
+                                        .FieldLabel("Type de Livraison")
+                                        .DisplayField("Designation")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ListConfig(new BoundList { Width = 450, MinWidth = 400 })
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .ForceSelection(true)
+                                        .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                        .Listeners(li =>
+                                        {
+                                            li.Select.Handler = "App.cmbFournisseur.clearValue(); App.cmbFournisseur.getStore().load()";
+
+                                            li.Change.Handler = "App.cmbFournisseur.clearValue(); App.cmbFournisseur.getStore().load()";
+                                        })
+                                        .Store
+                                        (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadLivraisonTypeAll", "LivraisonType"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        )
+                                        ,
+                                        X.ComboBox()
+                                        .ID("cmbFournisseur")
+                                        .FieldLabel("Fournisseur")
+                                        .DisplayField("FournisseurNameAndCode")
+                                        .ValueField("ID")
+                                        .LabelAlign(LabelAlign.Right)
+                                        .ListConfig(new BoundList { MinWidth = 400 })
+                                        .TypeAhead(true)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .ForceSelection(true)
+                                        .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                        .Store
+                                        (
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields
+                                                (
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("FournisseurNameAndCode", ModelFieldType.String) { Mapping = "FournisseurNameAndCode" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadAllFournisseurBySupplierGroup", "Fournisseur"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        .Listeners
+                                            (
+                                            li => li.Load.Handler = "var combo = App.cmbFournisseur; if(records.length > 0) {combo.setValue(records[0].get(combo.valueField));} "
+                                            )
+                                        .Parameters
+                                        (
+                                            ps => { ps.Add(new StoreParameter("TypeLivraisonID", "App.cmbLivraisonType.getValue()", ParameterMode.Raw)); }
+                                        )
+                                                )
+
+
+                            ),
+                                X.Panel()
+                                    //.Margin(10)                                    
+                                    .Flex(2)                                    
+                                    //.Title("Criteria")
+                                    .Layout(LayoutType.Form)
+                                    //.LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+                                    .Items
+                                    (
+                                        //X.FieldContainer()
+                                        //    .Layout(LayoutType.HBox)
+                                        //    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+                                        //    .Items(
+                                        //            X.Checkbox().ID("chkShowAtGate").FieldLabel("At Gate").LabelAlign(LabelAlign.Right)
+                                        //            .Handler("loadFilter(App.grpListe.filterHeader, 'AT GATE');")
+                                        //                //.DirectEvents(de =>
+                                        //                //{
+                                        //                //    de.Change.Url = Url.Action("SetFilter");
+                                        //                //    de.Change.ExtraParams.Add(new Parameter { Name = "Item", Encode = false, Value = "#{chkShowAtGate}.getValue()", Mode = ParameterMode.Raw });
+                                        //                //})
+                                        //                ,
+                                        //            X.Checkbox().ID("chkShowInProcess").FieldLabel("In Process").LabelAlign(LabelAlign.Right)
+                                        //                .Handler("loadFilter(App.grpListe.filterHeader, 'IN PROCESS');")
+                                        //    ),
+                                        X.ComboBox()
+                                            .ID("cmbStatutLivraison")
+                                            .FieldLabel("Statut")
+                                            .LabelAlign(LabelAlign.Right)
+                                            //.MatchFieldWidth(false)
+                                            //.ListConfig(new BoundList { MinWidth = 200 })
+                                            .TypeAhead(false)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .TriggerAction(TriggerAction.All)
+                                            .Items(
+                                                    new ListItem("{Tous}", "-1"),
+                                                    new ListItem("A QUAI", "AT"),
+                                                    new ListItem("EN COURS", "IN"),
+                                                    new ListItem("ACCEPTE", "AC"),
+                                                    new ListItem("REJETE", "RJ")
+                                                )
+                                            .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                            .Listeners(ls => ls.Select.Handler = "SetFilterValue();")
+                                        ,
+                                        X.FieldContainer()
+                                            .Layout(LayoutType.HBox)
+                                            .FieldLabel("Periode")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                            .Width(340)
+                                            .Items(
+                                                    X.DateField()
+                                                        .ID("CrtDateDebut")
+                                                        .Flex(1)
+                                                        //.ReadOnly(true)
+                                                        .SelectedDate(DateTime.Now.AddDays(-1))
+                                                        .MarginSpec("0 5 0 0")
+                                                        ,
+                                                    X.DateField()
+                                                    .ID("CrtDateFin")
+                                                    .Flex(1)
+                                                    //.ReadOnly(true)
+                                                    .SelectedDate(DateTime.Now)
+                                            )
+                                        )
+    // ,X.FieldContainer()
+    //.FieldLabel("Debut/Fin").LabelAlign(LabelAlign.Right)
+    //.Layout(LayoutType.HBox)
+    //.Items
+    //(
+    //    X.DateField()
+    //    .ID("dtfDateDebutLivraison")
+    //    .Width(135)
+    //    .SelectedDate(DateTime.Now.AddDays(-1))
+    //    .MarginSpec("0 5 0 0")
+    //    ,
+
+    //    X.DateField()
+    //    .ID("dtfDateFinLivraison")
+    //    .Width(135)
+    //    .SelectedDate(DateTime.Now)
+    //    .MarginSpec("0 5 0 5")
+    // )
+
+
+
+
+    //,X.Panel()
+    //.ID("OvwResume")
+    //.Flex(1)
+    ////.Width(400)
+    //.Margin(10)
+    //.Frame(true)
+    //.Height(150)
+    //.TitleConfig(new PanelTitle { Text = "Summary", Cls = "title_font_color" })
+    //.Border(false)
+    //.BodyPadding(6)
+    //.Layout(LayoutType.HBox)
+    //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+    //.Items(X.Container()
+    //    .ID("")
+    //    .Layout(LayoutType.VBox)
+    //    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+    //    .Items(X.Label().ID("lblResume").Text("Resume ici").EmptyText(""))
+    //    )
+    ),
+    X.Panel()
+    .ID("dataInfos")
+    .Region(Region.North)
+    .Border(false)
+    .Height(100)
+    .Frame(true)
+    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle })
+    .Defaults
+    (de =>
+    {
+        de.Add(new Parameter { Name = "Height", Value = "90", Mode = ParameterMode.Raw });
+        de.Add(new Parameter { Name = "Margin", Value = "0 5 0 0", Mode = ParameterMode.Value });
+        de.Add(new Parameter { Name = "Padding", Value = "0 10 0 10", Mode = ParameterMode.Value });
+    }
+    )
+    .Items
+    (
+        X.Panel()
+    .ID("dataStock")
+    .Frame(true)
+    .Flex(1)
+    .Margin(5)
+    .Layout(LayoutType.Fit)
+    .Items
+    (
+    X.TextArea()
+    .LabelWidth(250)
+    .ReadOnly(true)
+    .Border(false)
+    .FieldLabel("Stock ")
+    .LabelAlign(LabelAlign.Top)
+    .FieldCls("summary-tiles")
+    .StyleHtmlCls(String.Format("<p style='font-weight: bold;>"))
+    .ID("txtStockAsString")
+    )
+        ,
+    X.Panel()
+    .ID("dataAtGate")
+    .Frame(true)
+    .Flex(1)
+    .Margin(5)
+    .Layout(LayoutType.Fit)
+    .Items
+    (
+    X.TextArea()
+    .LabelWidth(250)
+    //.ReadOnly(true)
+    .Border(false)
+    .FieldLabel("A quai")
+    .LabelAlign(LabelAlign.Top)
+    .FieldCls("summary-tiles")
+    .ID("txtAtGateAsString")
+
+    )
+    ,
+    X.Panel()
+    .ID("dataInProcess")
+    .Frame(true)
+                            .Flex(2)
+    .Margin(5)
+    .Layout(LayoutType.Fit)
+    .Items
+    (
+    X.TextArea()
+    .LabelWidth(250)
+    .ReadOnly(true)
+    .Border(false)
+    .FieldLabel("En cours")
+    .LabelAlign(LabelAlign.Top)
+    .FieldCls("summary-tiles")
+    .ID("txtInProcessAsString")
+
+    )
+    ,
+    X.Panel()
+    .ID("dataAccepted")
+    .Frame(true)
+    .Flex(1)
+    .Margin(5)
+    .Layout(LayoutType.Fit)
+    .Items
+    (
+    X.TextArea()
+    .LabelWidth(250)
+    .ReadOnly(true)
+    .Border(false)
+    .FieldLabel("Accepté")
+    .LabelAlign(LabelAlign.Top)
+    .FieldCls("summary-tiles")
+    .ID("txtAcceptedAsString")
+
+    )
+    ,
+    X.Panel()
+    .ID("dataRejected")
+    .Frame(true)
+    .Flex(1)
+    .Margin(5)
+    .Layout(LayoutType.Fit)
+    .Items
+    (
+    X.TextArea()
+    .LabelWidth(250)
+    .ReadOnly(true)
+    .Border(false)
+    .FieldLabel("Refoulé")
+    .LabelAlign(LabelAlign.Top)
+    .FieldCls("summary-tiles")
+    .ID("txtRejectedAsString")
+
+    )
+
+
+
+    )
+
+
+
+    ,
+
+    X.GridPanel()
+    .Layout(LayoutType.Fit)
+    .ID("grpListe")
+    .Region(Region.Center)
+    .ForceFit(false)
+    .AllowDeselect(false)
+    .Store
+    (
+    X.StoreFor<Tms.Classes.Business.SuiviLivraison>
+        ()
+        .ID("storeListe")
+        .AutoLoad(true)
+        .PageSize(100)
+        .RemotePaging(false)
+        .SorterFor(Model, m => m.DateLivraison, Ext.Net.SortDirection.DESC)
+        .Proxy
+        (
+        Html.X().AjaxProxy()
+        .Url(Url.Action("Select", "LivraisonSuivi"))
+        .Reader(Html.X().JsonReader().RootProperty("data"))
+        )
+        .Parameters
+        (
+        ps =>
+        {
+            ps.Add(new StoreParameter { Name = "ItemCampagne", Value = "App.cmbCampagne.getValue()", Encode = false, Mode = ParameterMode.Raw });
+            ps.Add(new StoreParameter { Name = "ItemExportateur", Value = "App.cmbExportateur.getValue()", Encode = false, Mode = ParameterMode.Raw });
+            ps.Add(new StoreParameter { Name = "ItemLivraisonType", Value = "App.cmbLivraisonType.getValue()", Encode = false, Mode = ParameterMode.Raw });
+            ps.Add(new StoreParameter { Name = "ItemFournisseur", Value = "App.cmbFournisseur.getValue()", Encode = false, Mode = ParameterMode.Raw });
+            ps.Add(new StoreParameter { Name = "ItemStartDate", Value = "App.CrtDateDebut.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+            ps.Add(new StoreParameter { Name = "ItemEndDate", Value = " App.CrtDateFin.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+            ps.Add(new StoreParameter { Name = "ItemSite", Value = " App.cmbSite.getValue()", Encode = false, Mode = ParameterMode.Raw });
+        }
+
+        ).Listeners
+        (
+        li =>
+        {
+            li.Load.Handler = "Overview.updateSummary(); Ext.net.Mask.hide();";
+            li.BeforeLoad.Handler = "Ext.net.Mask.show();";
+        }
+        )
+        )
+        .ColumnModel
+        (
+        Html.X().Column().Text("").DataIndex("mIcon").Width(40).Renderer("renderSuiviIcon").Filterable(false).Hideable(false),
+        Html.X().Column().Text("Status").DataIndex("Status").Flex(1),
+        //Html.X().Column().Text("Date").DataIndex("DateLivraisonLongAsString").Width(100).Flex(2).Formatter("date(\"m/d/Y g:i A\")"),
+        Html.X().Column().Text("Date").DataIndex("DateLivraisonLongAsString").Flex(2),
+        Html.X().Column().Text("Site").DataIndex("SiteAsString").Flex(1),
+        Html.X().Column().Text("Type Liv").DataIndex("LivraisonTypeAsString").Flex(2),
+        Html.X().Column().Text("Liv. ID").DataIndex("NumeroLivraison").Width(100).Flex(1),
+        Html.X().Column().Text("Num Externe").DataIndex("NumeroExterne").Flex(1).Hidden(true),
+        Html.X().Column().Text("Fournisseur").DataIndex("FournisseurAsString").Width(100).Flex(2),
+        Html.X().Column().Text("Immatriculation").DataIndex("Immatriculation").Width(100).Flex(1),
+        Html.X().Column().Text("Transporteur").DataIndex("TransporteurNom").Flex(1).Hidden(true),
+        Html.X().Column().Text("Certification").DataIndex("CertificationAsString").Width(100).Flex(1),
+        Html.X().Column().Text("Sacs est..").DataIndex("SacsDeclares").Width(100).Flex(1),
+        Html.X().Column().Text("Ton. est.").DataIndex("PoidsDeclare").Width(100).Flex(1),
+        Html.X().Column().Text("Provenance").DataIndex("OrigineDesignation").Flex(2).Hidden(true),
+        //Html.X().Column().Text("Humidite").DataIndex("Moisture").Width(100).Flex(1),
+        //Html.X().Column().Text("Beans count").DataIndex("BeanCount").Width(100).Flex(1),
+        //Html.X().Column().Text("Foreign matter").DataIndex("ForeignMatter").Width(100).Flex(1),
+        //Html.X().Column().Text("Foreign matter").DataIndex("ForeignMatter").Width(100).Flex(1),
+        Html.X().Column().Text("Ret. Brisures").DataIndex("RefactionBrisures").Flex(1).Hidden(true),
+        Html.X().Column().Text("Ret. Hum.").DataIndex("RefactionHumidite").Flex(1).Hidden(true),
+        Html.X().Column().Text("Ret. Mat Etrg.").DataIndex("RefactionMatieresEtg").Flex(1).Hidden(true),
+
+        Html.X().Column().Text("Sacs Acc.").DataIndex("AcceptedBags").Width(100).Flex(1),
+        Html.X().Column().Text("Brut").DataIndex("GrossWeight").Width(100).Flex(1),
+
+
+        Html.X().Column().Text("Ret. Qlté").DataIndex("QualityRetention").Width(100).Flex(1),
+        Html.X().Column().Text("Taux").DataIndex("Tare").Width(100).Flex(1),
+        Html.X().Column().Text("Net Livré").DataIndex("AcceptedTonnage").Width(100).Flex(1)
+
+        ).BottomBar(
+        Html.X().PagingToolbar()
+        .HideRefresh(true)
+
+        .Plugins(Html.X().ProgressBarPager())
+        )
+        .Plugins(
+        X.FilterHeader(), X.GridFilters()
+        )
+        .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+        .SelectionModel
+        (
+        X.RowSelectionModel()
+        .ID("rowSelectionListe")
+        .Mode(SelectionMode.Single)
+        .AllowDeselect(true)
+
+        ).Listeners(l => { l.Select.Fn = "Overview.resetButtons"; l.Deselect.Fn = "Overview.resetButtons"; })
+        .DirectEvents
+        (
+        de =>
+        {
+            de.RowDblClick.Url = Url.Action("OnConsult");
+            de.RowDblClick.CleanRequest = true;
+            de.RowDblClick.Success = "App.frmSuiviLivraison_Detail.setTitle('Moniteur de Livraison : Detail')";
+            de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowSelectionListe}.getSelected().items[0].data" });
+            de.RowDblClick.EventMask.ShowMask = true;
+        }
+        )
+
+    )
+)
+
+</form>

@@ -1,0 +1,92 @@
+﻿<link rel="stylesheet" href="~/Content/new.bootstrap.theme.css" />
+<link rel="stylesheet" href="~/Content/new.bootsrap.min.css" />
+
+<style type="text/css">
+    .glyphicon {
+        font-size:24px;
+        color:#7f7f7f;    
+    }
+    #WelcomeMsg{
+        padding-top:2px;
+    }
+ </style>
+<script type="text/javascript" src="~/Scripts/jquery-1.10.2.js"></script>
+
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script type="text/javascript">
+    
+    function logOff ()
+    {
+            $.ajax({
+                'url': $('input#base_url').val()+'/Workspace/LogOut',
+                'content-type':'application/html; charset=utf-8',
+                'type':'GET',
+                'dataType':'html'
+            })
+                    .success(function (result) {
+                  
+                        parent.window.location = $('input#base_url').val() + '/login';
+                    
+                    })
+                    .error(function(xhr, status) {
+
+                        console.log(xhr);
+                    })      
+    }
+
+
+
+    $(document).ready(function () {
+        $("#btnLogOff").click(logOff);
+
+        $("#btnQuickMenu").click(function () {
+
+            addTab(window.parent.Ext.getCmp('tabCenter'), 'quickMenu', $('input#base_url').val() + '/Workspace/RenderPartialMenuItems?containerId=tabMenuItems', this, 'Menu');
+
+        });
+
+    });
+    
+</script>
+
+<input type="hidden" id="base_url" value="@(new Tms.Classes.Shared.Parametres(0).Base_url)" />
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3">
+            <span id="btnQuickMenu" class="glyphicon glyphicon-th" aria-hidden="true" title="Go to menu"></span>
+            <span id="btnDashBoard" class="glyphicon glyphicon-list-alt" aria-hidden="true" title="Go to dashboard"></span>
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-5">
+            <div class="row">
+                <div id="WelcomeMsg"class="col-sm-6 col-md-6">
+                    @using System.Security.Claims
+                    
+                        @if (Request.IsAuthenticated)
+                        { 
+                        var welcomeText = "";
+                            var claimIdentity = User.Identity as ClaimsIdentity;
+
+                            if (claimIdentity != null)
+                            { welcomeText = "Welcome, " + claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;  }
+
+                            @welcomeText 
+                        }                    
+                    
+                    
+                </div>
+
+                <div class="col-sm-2 col-md-2">
+                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                </div>
+
+                <div class="col-sm-2 col-md-2">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                </div>
+                <div class="col-sm-2 col-md-2">
+                    <span id="btnLogOff" class="glyphicon glyphicon-user" aria-hidden="true" title="Click to log off"></span>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

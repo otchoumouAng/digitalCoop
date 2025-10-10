@@ -1,0 +1,137 @@
+﻿@model Tms.Classes.Business.stock.Reusinage
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+
+        .x-label-icon {
+            width: 60px !important;
+            height: 60px !important;         
+        }
+    </style>
+    <script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+</head>
+@(
+X.Window()
+    .ID("FormPreventReusinage")
+    .Width(400)
+    .Resizable(false)
+    .Height(240)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title("Re-Cleaning : Approuver")
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()            
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Items
+            (
+                X.Hidden().ID("TxtReusinageID").Value(Model.ID),                 
+                X.Container()
+                    .Flex(1)
+                    .Padding(5)
+                    .Items(
+                            X.Image().ImageUrl("~/Images/Icons/warning.png")
+                    ),
+                X.Container()
+                    .Flex(3)
+                    .Padding(5)
+                    .Items(
+                            X.DisplayField()
+                                .Html(@<text>
+                                    <strong>Important ! This Action Will :</strong>
+                                    <p> </p>
+                                    <p>Cancel the selected Lot;</p>
+                                    <p>Cancel the stock's transaction Lot;</p>
+                                    <p>Cancel All Analysis.</p>
+                                </text>)
+                    )
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOkSecondWeight")            
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("ApproveReusinage");
+                de.Click.Before = "return validNew(App.FormPreventReusinage.id);";
+                de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Value, Encode = false, Value = Model.ID.ToString() });
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.FormPreventReusinage.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Weighing ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+

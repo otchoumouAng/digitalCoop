@@ -1,0 +1,193 @@
+﻿@model Tms.Classes.Business.stock.TransfertFevesViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+
+</head>
+
+<style type="text/css">
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 75px;
+    }
+</style>
+@(
+X.Window()
+    .ID("FormTransfertLot")
+    .Width(700)
+    .Resizable(false)
+    .Height(380)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Beans Transfer : Detail")
+    .Items(
+            X.FormPanel()
+                .FieldDefaults(d => d.ReadOnly = true)
+                .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+    #region zone A
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Padding(5)
+                            .Border(true)
+                            .Items
+                            (
+                                X.Label().Text("In").MarginSpec("0 0 10 0"),
+                                X.TextField()
+                                    .ID("txtDateEntree")
+                                    .FieldLabel("Date")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.DateEntreeAsString),
+                                //X.TextField()
+                                //    .ID("")
+                                //    .FieldLabel("Type of Bags")
+                                //    .LabelAlign(LabelAlign.Right)
+                                //    .Text(Model._TransfertFeves.SacType.Designation),
+                                X.TextField()
+                                    .ID("txtQuantiteEntree")
+                                    .FieldLabel("Quantity")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.QuantiteEntreeAsString),
+
+                                X.TextField()
+                                    .ID("txtPoidsBrutEntree")
+                                    .FieldLabel("Gross Weight")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.PoidsBrutEntreeAsString),
+                                X.TextField()
+                                    .ID("txtTareSacsEntree")
+                                    .FieldLabel("Tare of bags")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(Model._TransfertFeves.TareSacsEntreeAsString),
+                                X.TextField()
+                                    .ID("txtTarePaletteEntree")
+                                    .FieldLabel("Tare Of Pallets")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.TarePaletteEntreeAsString),
+                                X.TextField()
+                                    .ID("txtPoidsNetLivreEntree")
+                                    .FieldLabel("Delivered Wgt")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(Model._TransfertFeves.PoidsLivreEntreeAsString),
+                                X.TextField()
+                                    .ID("txtRetentionEntree")
+                                    .FieldLabel("Retention")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.RetentionPoidsEntreeAsString),
+                                X.TextField()
+                                    .ID("txtPoidsNetAccepteEntre")
+                                    .FieldLabel("Acc Net Weight")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.PoidsNetAccepteEntreeAsString)
+                            ),
+    #endregion
+    #region zone B
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Border(true)
+                            .Padding(5)
+                            .Items
+                            (
+                                X.Label().Text("Out").MarginSpec("0 0 10 0"),
+                                X.TextField()
+                                    .ID("txtDateSortie")
+                                    .FieldLabel("Date")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.DateSortieAsString),
+                                //X.TextField()
+                                //    .ID("")
+                                //    .FieldLabel("Type of Bags")
+                                //    .LabelAlign(LabelAlign.Right)
+                                //    .Text(Model._TransfertFeves.SacType.Designation),
+                                X.TextField()
+                                    .ID("txtQuantiteSortie")
+                                    .FieldLabel("Quantity")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.QuantiteSortieAsString),
+
+                                X.TextField()
+                                    .ID("txtPoidsBrutSortie")
+                                    .FieldLabel("Gross Weight")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.PoidsBrutSortieAsString),
+                                X.TextField()
+                                    .ID("txtTareSacsSortie")
+                                    .FieldLabel("Tare of bags")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(Model._TransfertFeves.TareSacsSortieAsString),
+                                X.TextField()
+                                    .ID("txtTarePaletteSortie")
+                                    .FieldLabel("Tare Of Pallets")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.TarePaletteSortieAsString),
+                                X.TextField()
+                                    .ID("txtPoidsNetLivreSortie")
+                                    .FieldLabel("Delivered Wgt")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Value(Model._TransfertFeves.PoidsLivreSortieAsString),
+                                X.TextField()
+                                    .ID("txtRetentionSortie")
+                                    .FieldLabel("Retention")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.RetentionPoidsSortieAsString),
+                                X.TextField()
+                                    .ID("txtPoidsNetAccepteSortie")
+                                    .FieldLabel("Acc Net Weight")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.PoidsNetAccepteSortieAsString)
+                            ),
+    #endregion
+    #region Deviation
+                        X.Panel()
+                            .Layout(LayoutType.Form)
+                            .Flex(1)
+                            .Padding(5)
+                            .Border(true)
+                            .Items
+                            (
+                                X.Label().Text("Shrink").MarginSpec("0 0 10 0"),
+                                X.TextField()
+                                    .ID("")
+                                    .FieldLabel("Hour(s)")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.DeviationJour),
+                                X.TextField()
+                                    .ID("")
+                                    .FieldLabel("Quantity")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.DeviationQuantiteAsString),
+                                X.TextField()
+                                    .ID("")
+                                    .FieldLabel("Gross Weight")
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Text(Model._TransfertFeves.DeviationPoidsAsString)
+                            )
+    #endregion
+
+            )
+
+    )
+    .Buttons(
+                X.Button()
+                    .Text("Close")
+                        .Handler("App.FormTransfertLot.doClose()")
+                        .Cls("btncancel")
+               )
+)
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+

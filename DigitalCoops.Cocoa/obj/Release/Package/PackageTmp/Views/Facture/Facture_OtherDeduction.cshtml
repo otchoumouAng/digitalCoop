@@ -1,0 +1,295 @@
+﻿@model Tms.Classes.Business.MiseEnCompteViewModel
+@{
+    Layout = null;
+    var X = Html.X();    
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+
+
+@(
+                        //X.FormPanel()
+                        //            .Items(
+                        X.Window()
+                            .ID("SavingOthers")
+                            .Width(340)
+                            .Resizable(false)
+                            .Height(300)
+                            .Modal(true)
+                            .CloseAction(Ext.Net.CloseAction.Destroy)
+                            //.Listeners
+                            //(
+                            //  l =>
+                            //  {
+                            //      l.BeforeClose.Handler = "App.TmsViewPort.unmask();";
+                            //      l.Close.Handler = "App.TmsViewPort.unmask();";
+                            //  }
+                            //)
+                            .X(400)
+                            .Y(20)
+                            .Title("Autres deductions : Nouvaeu")
+                            .Layout(LayoutType.VBox)
+                            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                            .Items
+                            (
+                                       X.Panel()
+                                        .Layout(LayoutType.Form)
+                                        .Items
+                                        (
+                                            X.Hidden().ID("hiddenSavings").Value(Model._MiseEnCompte != null ? Model._MiseEnCompte.ListOfMecDeducted : string.Empty),
+
+                                            X.TextField()
+                                             .ID("txtMontantDisponible")
+                                             .FieldLabel("Disponible")
+                                             .HideTrigger(true)
+                                             .LabelAlign(LabelAlign.Right)
+                                             .ReadOnly(true)
+                                             .LabelWidth(102)
+                                             .Width(275)
+                                             .Value(Model._MiseEnCompte.MontantDisponibleAsString),
+
+                                            X.ComboBox()
+                                             .ID("_cmbType")
+                                             .ForceSelection(true)
+                                             .FieldLabel("Type")
+                                             .DisplayField("Designation")
+                                             .ValueField("ID")
+                                             .LabelWidth(102)
+                                             .Width(283)
+                                             .AllowBlank(false)
+                                             .LabelAlign(LabelAlign.Right)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .Store
+                                             (
+                                               X.Store()
+                                                .AutoLoad(true)
+                                                .Model
+                                                (
+                                                    Html.X().Model()
+                                                    .IDProperty("ID")
+                                                    .Fields
+                                                    (
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadListOfAvailableOthersDeductions", "Facture"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                                .Parameters
+                                                (
+                                                ps =>
+                                                {
+                                                    ps.Add(new StoreParameter("ItemsSaving", "#{hiddenSavings}.getValue()", ParameterMode.Raw));
+                                                }
+                                                )
+                                              ),
+
+                                            X.Checkbox()
+                                             .ID("chkAuKilo")
+                                             .FieldLabel("Par Kg :")
+                                             //.BoxLabel("Per Kg :")
+                                             .Checked(true)
+                                             //.BoxLabelAlign(BoxLabelAlign.Before)
+                                             .LabelAlign(LabelAlign.Right)
+                                             //.MarginSpec("0 0 0 58")
+                                             .Listeners
+                                             (
+                                                l =>
+                                                {
+                                                    l.Change.Fn = "CheckPerKg";
+                                                }
+                                             ),
+
+                                            X.TextField()
+                                             .ID("txtTaux")
+                                             .MaskRe("[0123456789]")
+                                             .FieldLabel("Taux (FCFA)")
+                                             .HideTrigger(true)
+                                             .LabelAlign(LabelAlign.Right)
+                                             .LabelWidth(102)
+                                             .Width(283)
+                                             .AllowBlank(false)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .Listeners
+                                             (
+                                                l =>
+                                                {
+                                                    l.Change.Fn = "CalculateAmount";
+                                                    l.Blur.Handler = "if (App.txtTaux.value && !App.txtTaux.readOnly) {#{txtTaux}.setValue(formatNumber(#{txtTaux}.getValue()));}";
+                                                    l.Focus.Handler = "if (App.txtTaux.value && !App.txtTaux.readOnly) { #{txtTaux}.setRawValue(unformatNumber(#{txtTaux}.getValue()));}";
+                                                }
+                                             ),
+
+                                            X.TextField()
+                                            .ID("txtPoidsNet")
+                                            .FieldLabel("Poids Net (KG)")
+                                            .HideTrigger(true)
+                                            .ReadOnly(true)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .LabelWidth(102)
+                                            .Width(275)
+                                            .Value(Model._MiseEnCompte.PoidsNetAsString),
+
+                                            X.TextField()
+                                             .ID("txtMontant")
+                                             .MaskRe("[0123456789]")
+                                             .FieldLabel("Montant(FCFA)")
+                                             .HideTrigger(true)
+                                             .LabelAlign(LabelAlign.Right)
+                                             .LabelWidth(102)
+                                             .Width(283)
+                                             .AllowBlank(false)
+                                             .ReadOnly(true)
+                                             .IndicatorCls("IndicatorRedStar")
+                                             .IndicatorText("*")
+                                             .Listeners
+                                             (
+                                               l =>
+                                               {
+                                                   l.Blur.Handler = "if (App.txtMontant.value && !App.txtMontant.readOnly) {#{txtMontant}.setValue(formatNumber(#{txtMontant}.getValue()));}";
+                                                   l.Focus.Handler = "if (App.txtMontant.value && !App.txtMontant.readOnly) { #{txtMontant}.setRawValue(unformatNumber(#{txtMontant}.getValue()));}";
+                                               }
+                                             )
+
+
+                                     )
+
+                             )
+                             .Buttons
+                             (
+                                X.Button()
+                                .Text("OK")
+                                .ID("BtnOkOtherDeduction")
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url = Url.Action("SubmitDeductedOthers");
+                                        de.Click.Before = "return validNewUpdateOther(App.SavingOthers.id);";
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemSavings", Mode = ParameterMode.Raw, Encode = false, Value = "#{hiddenSavings}.getValue()" });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemType", Mode = ParameterMode.Raw, Encode = false, Value = "#{_cmbType}.getValue()" });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemAmount", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtMontant}.getValue()" });
+                                        de.Click.ExtraParams.Add(new Parameter { Name = "ItemRate", Mode = ParameterMode.Raw, Encode = false, Value = "#{txtTaux}.getValue()" });
+                                    }
+                               ),
+
+                                X.Button()
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                .Handler("App.SavingOthers.doClose()")
+                                .Cls("btncancel")
+
+                             )
+
+
+    //)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    
+    var validNewUpdateOther = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Mise En Compte Update Deduction : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+        var Disponible = unformatNumber(App.txtMontantDisponible.value) || '0';
+        var Montant = unformatNumber(App.txtMontant.value) || '0';
+
+        if (Ext.isNumeric(Disponible) && Ext.isNumeric(Montant) && parseFloat(Montant) > parseFloat(Disponible)) {
+            Ext.Msg.show({ title: 'Mise En Compte Update Deduction : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Deduction can not be higher than available ! ', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var CalculateAmount = function () {
+
+        try {
+            
+            var Taux = unformatNumber(App.txtTaux.value) || '';
+            var PoidsNet = unformatNumber(App.txtPoidsNet.value) || '';
+            var Amount = '';
+
+            App.txtMontant.setValue('0');
+
+            if (Ext.isNumeric(Taux) && Ext.isNumeric(PoidsNet)) {
+                Amount = RoundInt(Taux * PoidsNet);
+                App.txtMontant.setValue(formatNumber(Amount));
+            }           
+
+
+        }
+        catch (err) {
+            Ext.Msg.show({ title: 'Mise En Compte : Amount Calculation ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating amount.', buttons: Ext.Msg.OK });
+
+        }
+
+    };
+
+    var CheckPerKg = function () {
+        
+        try
+        {
+            if (App.chkAuKilo.checked === true)
+            {
+                App.txtTaux.setReadOnly(false);
+                App.txtTaux.allowBlank = (false);
+                App.txtTaux.setIndicator("*");
+
+                App.txtMontant.setReadOnly(true);              
+                App.txtMontant.validate();                
+
+            }
+            else {
+                App.txtTaux.setReadOnly(true);
+                App.txtTaux.allowBlank = (true);
+                App.txtTaux.validate();
+                App.txtTaux.setIndicator("");
+                App.txtTaux.setValue("");
+
+                App.txtMontant.setReadOnly(false);
+                App.txtMontant.allowBlank = (false);
+            }
+        }
+        catch (err) {
+            Ext.Msg.show({ title: 'Financing Update Deduction : Check Deduction ', icon: Ext.MessageBox.WARNING, msg: 'Error when calculating amount.', buttons: Ext.Msg.OK });
+            
+        }      
+        
+    };
+
+
+    var RoundInt = function (v) {
+      try {
+            if ((parseFloat(v) - parseInt(v)) > 0.5) {
+                return parseInt(v) + 1;
+            }
+            else {
+                return parseInt(v);
+            }
+        } catch (err) {
+            return 0;
+        }
+    }
+
+</script>

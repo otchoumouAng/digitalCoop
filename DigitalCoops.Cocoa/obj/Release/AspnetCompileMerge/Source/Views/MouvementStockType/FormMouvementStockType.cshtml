@@ -1,0 +1,170 @@
+﻿
+@model Tms.Classes.Shared.stock.MouvementStockTypeViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+@(
+X.Window()
+    .ID("FormMouvementStockType")
+    .Width(350)
+    .Resizable(false)
+    .Height(280)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Type Of Movement")
+    .Items
+    (
+        X.FormPanel()
+            .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .Layout(LayoutType.VBox)
+            .BodyPadding(5)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+            .Items(
+    #region Zone Gauche
+                                            X.Hidden().ID("TxtMouvementStockTypeID").ReadOnly(true).Value(Model._MouvementStockType.ID),
+                                            X.Hidden().ID("hiddenExecMode").ReadOnly(true).Value(Model._ExecMode),
+                                            X.TextField()
+                                                .ID("TxtDesignation")
+                                                .FieldLabel("Designation")
+                                                .TabIndex(1)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MouvementStockType.Designation : string.Empty)
+                                                .IndicatorText("*"),
+                                            X.ComboBox()
+                                                .ID("cmbTypeStock")
+                                                .TabIndex(2)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Stock Type")
+                                                .DisplayField("Designation")
+                                                .ValueField("ID")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MouvementStockType.StockType.ID : (int?)null)
+                                                .Store
+                                                (
+                                                    X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model
+                                                        (
+                                                            X.Model()
+                                                                .IDProperty("ID")
+                                                                .Fields
+                                                                (
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                        )
+                                                        .Proxy
+                                                        (
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadActiveStockType", "StockType"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                                ),
+                             X.ComboBox()
+                                    .ID("cmbSens")
+                                    .ForceSelection(true)
+                                    .FieldLabel("Direction")
+                                    .AllowBlank(false)
+                                    .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                    .TypeAhead(true)
+                                    .TabIndex(3)
+                                    .ForceSelection(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items(
+                                            new ListItem("Input", "1"),
+                                            new ListItem("OutPut", "-1"),
+                                            new ListItem("Neutral", "0")
+                                    )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Input", Value = "1" }); }),
+                                            X.Checkbox()
+                                                .ID("ChkEstAuto")
+                                                .FieldLabel("Est TRansit")
+                                                .TabIndex(4)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MouvementStockType.EstAuto : false)
+                                                .LabelAlign(LabelAlign.Right),
+
+                                                X.Checkbox().ID("TxtVisibilityOnSite").FieldLabel("Visible on Site")
+                                .Checked(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MouvementStockType.VisibleEnAgence : true)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._MouvementStockType.VisibleEnAgence : true)
+                                .LabelAlign(LabelAlign.Right)
+    #endregion
+
+                    )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .TabIndex(20)
+            .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormMouvementStockType.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                }
+            ),
+        X.Button()
+            .TabIndex(21)
+            .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+            .Handler("App.FormMouvementStockType.doClose()")
+            .Cls("btncancel")
+    )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Type Of Movement : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+</script>
+
+
+

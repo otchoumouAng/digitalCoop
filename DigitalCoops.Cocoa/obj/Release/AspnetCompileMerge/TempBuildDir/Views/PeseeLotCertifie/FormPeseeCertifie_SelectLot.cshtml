@@ -1,0 +1,401 @@
+﻿@model Tms.Classes.Business.stock.Lot
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-btn-default-toolbar-small {
+        padding: 2px 7px 2px 7px;
+    }
+</style>
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script>
+   
+    var SetValidBtnOK = function () {
+        if (App.rowPendingLot.hasSelection())
+            App.BtnSendBlDelivery.enable();
+        else
+            App.BtnSendBlDelivery.disable();
+    };
+
+    SummarySelectLot = function () {
+        var nbrOfrows = App.grpListeAvlbLot.getStore().getCount();
+        var totalNet = App.storeListeAvlbLot.sum('PoidsNet') || 0;
+        var totalNbrOfBags = App.storeListeAvlbLot.sum('NombreSacs') || 0;
+        var totalPoidsBrut = App.storeListeAvlbLot.sum('PoidsBrut') || 0;
+
+        totalNet = FormatAmount(totalNet);
+        totalNbrOfBags = FormatAmount(totalNbrOfBags);
+        totalPoidsBrut = FormatAmount(totalPoidsBrut);
+        App.lblSummarySelectLot.setHtml("Nbr de lots : " + nbrOfrows + "<br/>Nbr de sacs : " + totalNbrOfBags + "<br/>Total Poids Brut (Kg) : " + totalPoidsBrut + "<br/>Total Livré (Kg) : " + totalNet);
+    };
+</script>
+@(                        
+X.Window()
+    .ID("FormPeseeCertifie_SelectLot")
+    .Width(880)
+    .Resizable(false)
+    .Height(470)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(200)
+    .Y(20)
+    .Title("BE Disponibles")
+    .Layout(LayoutType.VBox)
+    .BodyPadding(5)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items
+    (
+        X.FormPanel()
+            .ID("SelectLotCP")
+            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Delivery Note - Livraisons disponibles", Height = 20 })
+            .Region(Region.North)
+            .Border(false)
+            .Collapsed(false)
+            .Collapsible(true)
+            .BodyPadding(5)
+            .Frame(true)
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+            .Height(150)
+            .HeaderConfig(new PanelHeader
+            {
+                Items = {
+                            X.Button()
+                                .ID("btnRefreshDeliveryNote")
+                                .IconCls("action_refresh_01")
+                                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                .Border(false)
+                                .Cls("ButtonStyle")
+                                .Disable(false)
+                                .DirectEvents
+                                (
+                                    de =>
+                                    {
+                                        de.Click.Url  = Url.Action("OnRefreshForAvailableLot");
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=true, Value= "#{cmbCampagneLot}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemExportateur", Encode=false, Value= "#{cmbFiltreExportateur}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemType", Encode=true, Value= "#{cmbFiltreTypeLot}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{txtFiltreDateDebut}.getRawValue()",   Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{txtFiltreDateFin}.getRawValue()",     Mode=ParameterMode.Raw});
+                                        de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCertification", Encode=false, Value= "#{cmbFiltreCertification}.getValue()", Mode=ParameterMode.Raw});
+                                        de.Click.Success = "App.SelectLotCP.setTitle('Campagne : '+ App.cmbCampagneLot.rawValue + ' , Exportateur = ' + App.cmbFiltreExportateur.rawValue +  ', Lot Type = '+ App.cmbFiltreTypeLot.rawValue + ', Certification = '+ App.cmbFiltreCertification.rawValue + ' , du  '+ App.txtFiltreDateDebut.rawValue  + ' au  '+ App.txtFiltreDateFin.rawValue )";
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                )
+                    }
+            }
+            )
+            .Items
+            (                    
+    #region A
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbCampagneLot")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                                .IDProperty("Designation")
+                                                .Fields
+                                                (
+                                                    //new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                ).SelectedItems
+                                (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                                ),
+
+                            X.ComboBox()
+                                .ID("cmbFiltreExportateur")
+                                .FieldLabel("Exportateur")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                //.MatchFieldWidth(false)
+                                //.ListConfig(new BoundList { MinWidth = 300 })
+                                .Store
+                                    (
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadExportateurAllActive", "Exportateur"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                    )
+                                .SelectedItems
+                                (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                                ),
+                            X.ComboBox()
+                                .ID("cmbFiltreTypeLot")
+                                .FieldLabel("Type De Lot")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(true)
+                                .ForceSelection(true)
+                                .Store
+                                (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadActiveLotTypeAll", "LotType"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                    )
+                                            .SelectedItems
+                                            (
+                                            it =>
+                                            {
+                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                            }
+                                            )
+                        ),
+    #endregion
+    #region B
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbFiltreCertification")
+                                .FieldLabel("Certification")
+                                .LabelWidth(110)
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Store
+                                (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                            .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                )
+                                .SelectedItems
+                                (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                }
+                                ),
+                            X.DateField().ID("txtFiltreDateDebut").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(@StartDate),
+                            X.DateField().ID("txtFiltreDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(@EndDate),
+
+                            X.ComboBox()
+                            .ID("cmbStatusv")
+                            .FieldLabel("Statut")
+                            .LabelWidth(110)
+                            .DisplayField("Description")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .TypeAhead(true)
+                            .ForceSelection(true)
+                            .Items
+                            (
+                                it =>
+                                {
+                                    it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                    it.Add(new ListItem { Text = "Non Approuvé", Value = "CA" });
+                                    it.Add(new ListItem { Text = "Approuvé", Value = "AP" });
+                                }
+                            )
+                            .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                            }
+                            )
+                        ),
+    #endregion
+                    X.Container()
+                        .Flex(1)
+                        .Border(false)
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                            (
+                                X.Container()
+                                .Layout(LayoutType.VBox)
+                                .Flex(1)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Start })
+                                    .Items(
+                                        X.Label().ID("lblSummarySelectLot").Text("Resume").EmptyText("")
+                                        )
+                            )
+        ),
+
+                //X.Hidden()
+                //.ID("TxtExecMode").Value(Model._ExecMode),
+                X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListeAvlbLot")
+                            .MarginSpec("5 0 0 0")
+                            //.MinHeight(130)
+                            .Frame(true)
+                            .AllowDeselect(true)
+                            .Store
+                            (
+                               X.StoreFor<Tms.Classes.Business.stock.Lot>()
+                                .ID("storeListeAvlbLot")
+                                .AutoLoad(true)
+                             .Proxy
+                             (
+                              Html.X().AjaxProxy()
+                                  .Url(Url.Action("LoadListOfAvailableLots"))
+                                  .Reader(Html.X().JsonReader().RootProperty("data"))
+                             )
+                             .Listeners(
+                                   ls => ls.Load.Handler = "SummarySelectLot();"
+                                   )
+                             .Parameters
+                             (
+                               ps =>
+                               {
+                                   ps.Add(new StoreParameter("ItemCampagne", "#{cmbCampagneLot}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemExportateur", "#{cmbFiltreExportateur}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemType", "#{cmbFiltreTypeLot}.getValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemPeriodStart", "#{txtFiltreDateDebut}.getRawValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemPeriodEnd", "#{txtFiltreDateFin}.getRawValue()", ParameterMode.Raw));
+                                   ps.Add(new StoreParameter("ItemCertification", "#{cmbFiltreCertification}.getValue()", ParameterMode.Raw));
+                               }
+                             )
+                             )
+                             .ColumnModel
+                             (
+                                Html.X().Column().Text("Date").DataIndex("DateLotAsString").Flex(1),
+                                Html.X().Column().Text("Campagne").DataIndex("CampagneAsString").Flex(1),
+                                Html.X().Column().Text("Prod N°").DataIndex("NumeroProduction").Flex(1),
+                                Html.X().Column().Text("Lot N°").DataIndex("NumeroLot").Flex(1),
+                                Html.X().Column().Text("Type De Lot").DataIndex("LotTypeAsString").Flex(1),
+                                Html.X().Column().Text("Certification").DataIndex("CertificationAsString").Flex(1),
+                                Html.X().Column().Text("Nbr de sacs").DataIndex("NombreSacsAsString").Flex(1),
+                                Html.X().Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(1),
+                                Html.X().Column().Text("Tare Des Sacs").DataIndex("TareSacsAsString").Flex(1),
+                                Html.X().Column().Text("Tare des palettes").DataIndex("TarePaletteAsString").Flex(1),
+                                Html.X().Column().Text("Poids Net").DataIndex("PoidsNetAsString").Flex(1),
+                                Html.X().BooleanColumn().Text("Queue").DataIndex("EstQueue").FalseText("No").TrueText("Yes").Flex(1)
+                             )
+
+                            .SelectionModel(
+                               X.RowSelectionModel()
+                                    .ID("rowPendingLot")
+                                    .Mode(SelectionMode.Single)
+                            .Listeners(l =>
+                            {
+                                l.Select.Handler = "SetValidBtnOK();";
+                                l.Deselect.Handler = "SetValidBtnOK();";
+                            })
+                           )
+                       )
+                       .Buttons
+                       (
+                           X.Button()
+                            .Text("OK")
+                            .ID("BtnSendBlDelivery")
+                            .Disabled(true)
+                            .DirectEvents
+                           (
+                              de =>
+                              {
+                                  de.Click.Url = Url.Action("SubmitSelectedLot");
+                                  de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeAvlbLot}.getSelectionModel().getSelection()[0].data" });
+                              }
+                           ),
+
+                           X.Button()
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                            .Handler("App.FormPeseeCertifie_SelectLot.doClose()")
+                            .Cls("btncancel")
+
+                          )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+

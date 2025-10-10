@@ -1,0 +1,1084 @@
+﻿@model Tms.Classes.Business.LivraisonViewModel
+
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <script type="text/javascript">
+        var SetDefaultSite = function (val) {
+            if (App.cmbDetFournisseur.value) {
+                var DefaultFournisseur_Type = parseInt(App.hiddenTypeFournisseur.value) || 0;
+                var fournisseurtypeid = parseInt(App.cmbDetFournisseur.getSelectedRecord().data.FournisseurTypeID) || 0;
+                var agenceid = parseInt(App.cmbDetFournisseur.getSelectedRecord().data.DefaultAgenceFournisseurID) || 0;
+
+                if (DefaultFournisseur_Type == fournisseurtypeid) {
+                    if (App.hiddenExecMode.value.toString() == "AddNew") {                        
+                        App.cmbDetAgence.setValue(agenceid);
+                        App.cmbDetAgence.setReadOnly(false);
+                    } else if (App.hiddenExecMode.value.toString() == "Update") {
+                        App.cmbDetAgence.setReadOnly(false);
+                    }
+                }
+                else {
+                    var DfSite = parseInt(App.hiddenDefaultSite.value) || 0;
+                    App.cmbDetAgence.setReadOnly(true);
+                    App.cmbDetAgence.setValue(null);
+                }
+            }
+        };
+
+        var setDestinationExecMode = function ()
+        {
+            var combo = App.cmbDetDestination;
+            records = combo.getStore().getRecordsValues();            
+            var execMode = App.hiddenExecMode.value;
+            if (records.length > 0)
+            {                
+                var firstComboElt = records[0][combo.valueField];
+
+                if (execMode == "AddNew")
+                    combo.setValue(App.hiddenDestinationDefaultID.getValue());
+                
+                combo.setReadOnly(false);
+                if (execMode == "Consult" || App.HiddenStatutLivraison.value == 2) {
+                    combo.setReadOnly(true);
+                    return;
+                }
+
+                if (App.hiddenDestinationDefaultID.getValue() == firstComboElt)
+                {                    
+                    combo.setReadOnly(true);
+                    combo.setValue(App.hiddenDestinationDefaultID.getValue());
+                }
+
+                /*if (App.cmbDetDeliveryType.getStore().isLoaded() == true) {
+                    var selectedDeliveryType = App.cmbDetDeliveryType.getSelectedRecord().data;
+                    DefinirZonesObligatoires(selectedDeliveryType);
+                } */
+            }
+        };
+        
+        var setOrigineExecMode = function ()
+        {
+            var combo = App.cmbDetOrigin;
+            
+            records = combo.getStore().getRecordsValues();           
+
+            var execMode = App.hiddenExecMode.value;
+
+            if (records.length > 0)
+            {
+                
+                var firstComboElt = records[0][combo.valueField];
+                
+                if (execMode == "AddNew")
+                    combo.setValue(App.hiddenOriginDefaultID.getValue());
+                
+                combo.setReadOnly(false);
+                if (execMode == "Consult" || App.HiddenStatutLivraison.value == 2) {
+                    combo.setReadOnly(true);
+                    return;
+                }
+
+                if (App.hiddenOriginDefaultID.getValue() == firstComboElt)
+                {
+                    combo.setReadOnly(true);
+                    combo.setValue(App.hiddenOriginDefaultID.getValue());
+                }
+
+                /*if (App.cmbDetDeliveryType.getStore().isLoaded() == true) {
+                    var selectedDeliveryType = App.cmbDetDeliveryType.getSelectedRecord().data;
+                    DefinirZonesObligatoires(selectedDeliveryType);
+                } */
+            }
+        };
+
+        var setCtrlIsRequired = function (field, value)
+        {
+            field.allowBlank = !value;
+            
+            field.setIndicator("");
+            field.setIndicatorCls('');
+            field.showIndicator();
+
+            if (value == true)
+            {
+                
+                field.setIndicator("*");
+                field.setIndicatorCls('IndicatorRedStar');
+                field.showIndicator();
+            }
+
+            /*Champ Ext Waybill en lecture seule*/
+
+
+            /*if (App.cmbDetDeliveryType.getValue() == 41 && App.cmbDetDeliveryType.getValue() != null) {
+                App.btnAddExterWaybill.enable();
+            } else {
+                App.btnAddExterWaybill.disable();
+            }*/
+        };
+
+        var DefinirZonesObligatoires = function (record) {
+
+            App.btnAddExterWaybill.disable();
+            App.txtExternalWayBill.setReadOnly(false);
+            setCtrlIsRequired(App.txtExternalWayBill, false);
+            if (record.SaisieNumTransfert == true) {
+                App.btnAddExterWaybill.enable();
+                App.txtExternalWayBill.setReadOnly(true);
+                setCtrlIsRequired(App.txtExternalWayBill, true);
+            }
+
+            /*Numero Lot*/
+            setCtrlIsRequired(App.txtLotNumber, false);
+            if (record.SaisieNumLot == true) {
+                setCtrlIsRequired(App.txtLotNumber, true);
+            }
+
+            /*Numero OT*/
+            setCtrlIsRequired(App.txtShipmentNumber, false);
+            if (record.SaisieNumOT == true) {
+                setCtrlIsRequired(App.txtShipmentNumber, true);
+            }
+
+            /*Seal number*/
+            setCtrlIsRequired(App.txtSealNumber, false);
+            if (record.SaisieNumPlomb == true) {
+                setCtrlIsRequired(App.txtSealNumber, true);
+            }
+
+            /*container number*/
+            setCtrlIsRequired(App.txtContainerNumber, false);
+            if (record.SaisieNumConteneur == true) {
+                setCtrlIsRequired(App.txtContainerNumber, true);
+                console.log('saisie numero de conteuneur.');
+            }
+
+            /*certification */
+            setCtrlIsRequired(App.cmbDetCertification, false);
+            if (record.SaisieCertification == true) {
+                setCtrlIsRequired(App.cmbDetCertification, true);
+            }
+
+            /*Transitaire */
+            setCtrlIsRequired(App.cmbDetTransitaire, false);
+            if (record.SaisieTransitaire == true) {
+                setCtrlIsRequired(App.cmbDetTransitaire, true);
+            }
+
+            /*Connaiss Externe */
+            /*setCtrlIsRequired(App.txtExternalWayBill, false);
+            if (record.SaisieNumExterne == true) {
+                setCtrlIsRequired(App.txtExternalWayBill, true);
+            }*/
+
+            /*Centre d'achats */
+            setCtrlIsRequired(App.cmbDetSite, false);
+            if (record.SaisieCentreAchat == true) {
+                setCtrlIsRequired(App.cmbDetSite, true);
+            }
+        };
+
+        var CheckDeclaredWeight = function (record)
+        {
+            /*console.log(record);*/
+
+            if (!record)
+                return;
+
+            if (App.txtNbrOfBags.value != null && App.txtEstimatedTonnage.value != null)
+            {
+
+                var mNbSacsDeclares = parseInt(App.txtNbrOfBags.value, 10);
+
+                var mPoidsDeclare   = parseInt(App.txtEstimatedTonnage.value,10);               
+
+                /*console.log('Poids Max :' + record.PoidsMax);
+                console.log('Est. Poids Max :' + record.PoidsMax * mNbSacsDeclares);
+                console.log('Est. Poids Min :' + record.PoidsMin * mNbSacsDeclares);
+                console.log('Poids declare. :' + mPoidsDeclare);*/
+
+                if (record.PoidsMax > 0)
+                {
+                    if ((mPoidsDeclare > record.PoidsMax * mNbSacsDeclares) || (mPoidsDeclare < record.PoidsMin * mNbSacsDeclares))
+                    {
+                        /*App.txtEstimatedTonnage.setValue('');
+                        App.txtEstimatedTonnage.focus(true);*/
+                        Ext.Msg.show({ title: 'Erreur : Livraison ', msg: 'Le poids estimé est hors marge theorique Poids. Min= ' + record.PoidsMin * mNbSacsDeclares + ' ,Max= ' + record.PoidsMax * mNbSacsDeclares, buttons: Ext.Msg.OK });
+                    }
+                }
+
+            }
+        };
+
+        var validEstimatedWeight = function ()
+        {
+            var combo = App.cmbDetPackaging;
+            record = App.cmbDetPackaging.getSelectedRecord().data;
+
+            if (records.length > 0)
+            {
+                var firstComboElt = record;                
+                CheckDeclaredWeight(firstComboElt);
+            }
+        };
+
+    </script>
+
+    <style type="text/css">
+        .small-text 
+        {
+            font-size:small;
+        }
+        .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 100px !important;
+}
+    </style>
+</head>
+@(                          
+
+
+X.Window()
+    .ID("Livraison_DetailSmall")
+    .Width(1150)
+    .Resizable(false)
+    .Height(400)
+    .BodyPadding(5)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? "Livraison : Modifier" : "Livraison : Nouveau")
+    .Items(
+            X.FormPanel()
+                //.FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Items
+                (
+                X.Panel()
+                    .ID("pnlFlexEven")
+                    .Layout(LayoutType.HBox)
+                    //.LayoutConfig(new TableLayoutConfig { Columns = 3 })
+                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                    //.PaddingSpec("5 5 5 5")                                                    
+                    .Items
+                    (
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+
+                        X.Hidden().ID("hiddenID").Value(Model._Livraison.ID),
+                        X.Hidden().ID("hiddenTypeFournisseur").Value(Model._Parametres.ChefAgenceType),
+                        X.Hidden().ID("hiddenDefaultSite").Value(Model._Parametres.Site),
+
+                        //X.Hidden().ID("hiddenCropID").Value(Model._Campagne),
+
+                        //X.Hidden().ID("hiddenRecolteID").Value(Model._Recolte.ID.ToString()),
+
+                        //X.Hidden().ID("hiddenExportateurID").Value(Model._Exportateur.ID.ToString()),
+
+                        X.Hidden().ID("hiddenDestinationDefaultID").Value(Model._DefaultSite.Destination.ID),
+
+                        X.Hidden().ID("hiddenOriginDefaultID").Value(Model._DefaultSite.Provenance.ID),
+
+                        X.Hidden().ID("hiddenRowversion").Value(Model._Livraison.RowVersionKey),
+                        X.Hidden().ID("HiddenStatutLivraison").Value((int)ViewData["StatutLivraison"]),
+                        X.Hidden().ID("HiddenFromWeighing").Value((string)ViewData["FromWeighing"]),
+
+                                                                X.Panel()
+                                                                .ID("firstCol")
+                                                                .Layout(LayoutType.Form)
+                                                                .MarginSpec("0 10 0 0")
+                                                               .Flex(1)
+                                                                .Items
+                                                                (
+                                                                        X.ComboBox().ID("cmbDetSite")
+                                                                        .AllowBlank(false)
+                                                                        .IndicatorCls("IndicatorRedStar")
+                                                                        .IndicatorText("*")
+                                                                        .TypeAhead(true)
+                                                                        .ReadOnly(true)
+                                                                        .QueryMode(DataLoadMode.Local)
+                                                                        .ForceSelection(true)
+                                                                        .FieldLabel("Site").DisplayField("Nom").ValueField("ID")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                                                                        //.Select(0)
+                                                                        //.Width(310)
+                                                                        //.Value(int.Parse(ViewData["defaultSite"].ToString()))
+                                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Site.ID : ViewData["defaultSite"])
+                                                                        .Store
+                                                                        (
+                                                                                    X.Store()
+                                                                                    .AutoLoad(true)
+                                                                                    .Model(
+                                                                                            Html.X().Model()
+                                                                                            .IDProperty("ID")
+                                                                                            .Fields
+                                                                                            (
+                                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                            )
+                                                                                            )
+                                                                                    .Proxy
+                                                                                    (
+                                                                                        Html.X().AjaxProxy()
+                                                                                        .Url(Url.Action("LoadSite", "Site"))
+                                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                    )
+                                                                                    //.Listeners(li => li.Load.Handler = "combo.setReadOnly(true);")
+                                                                                    //.Listeners(li => li.Load.Handler = "var combo = App.cmbDetSite; combo.setValue(records.length > 0 ? records[0].get(combo.valueField): 0);combo.setReadOnly(true);")
+
+
+                                                                                    ),
+                                                                        X.ComboBox().ID("cmbDetExporter").AllowBlank(false)
+                                                                        .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                        .FieldLabel("Exportateur").DisplayField("Nom").ValueField("ID")
+                                                                        .LabelAlign(LabelAlign.Right)
+                                                                        //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                                        .TypeAhead(true)
+                                                                        .QueryMode(DataLoadMode.Local)
+                                                                        .ForceSelection(true)
+                                                                        .ReadOnly(true)
+                                                                        //.Width(310)
+                                                                        //.SelectedItems(sel => { sel.Add(new ListItem { Value = (Model._Exportateur).ID.ToString(), Text = (Model._Exportateur).Nom }); })
+                                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Exportateur.ID : Model._Parametres.Exportateur.ID)
+                                                                            .Store(X.Store()
+                                                                                    .AutoLoad(true)
+                                                                                    .Model(Html.X().Model()
+                                                                                    .IDProperty("ID")
+                                                                                            .Fields(
+                                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                            )
+                                                                                        )
+                                                                                    .Proxy(Html.X().AjaxProxy()
+                                                                                        .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                    )),
+
+                                                                    X.FieldContainer()
+                                                                    .FieldLabel("Campagne/Recolte")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .Layout(LayoutType.HBox)
+                                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                                    .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                    .Width(370)
+                                                                    .Items
+                                                                    (
+
+
+                                                                            X.ComboBox()
+                                                                            .ID("cmbDetCrop")
+                                                                            .AllowBlank(false)
+                                                                            //.IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                            .DisplayField("Designation")
+                                                                            .ValueField("ID")
+                                                                            .ReadOnly(true)
+                                                                            .LabelAlign(LabelAlign.Right)
+                                                                            //.Width(120)
+                                                                            .Flex(1)
+                                                                            .MarginSpec("0 5 0 0")
+                                                                            .ListConfig(new BoundList { Width = 200, MinWidth = 150 })
+                                                                            .TypeAhead(true)
+                                                                            .QueryMode(DataLoadMode.Local)
+                                                                            .ForceSelection(true)
+                                                                            //.SelectedItems(sel => sel.Add(new ListItem { Value = Model._Campagne, Text = Model._Campagne }))
+                                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Campagne.Designation : Model._Campagne)
+                                                                            .Store
+                                                                            (
+                                                                                X.Store()
+                                                                                .AutoLoad(true)
+                                                                                .Model
+                                                                                (
+                                                                                    Html.X().Model()
+                                                                                    .IDProperty("ID")
+                                                                                    .Fields
+                                                                                    (
+                                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                                                        new ModelField("ID", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                    )
+                                                                               )
+                                                                               .Proxy
+                                                                               (
+                                                                                    Html.X().AjaxProxy()
+                                                                                    .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                            ),
+
+                                                                            X.ComboBox()
+                                                                            .ID("cmbDetCropQuality")
+                                                                            .AllowBlank(false)
+                                                                            .DisplayField("Designation")
+                                                                            .ValueField("ID")
+                                                                            .LabelAlign(LabelAlign.Right)
+                                                                            .TypeAhead(true)
+                                                                            //.Width(120)
+                                                                            .Flex(1)
+                                                                            .QueryMode(DataLoadMode.Local)
+                                                                            .ListConfig(new BoundList { Width = 300, MinWidth = 200 })
+                                                                            .ForceSelection(true)
+                                                                            .ReadOnly(true)
+                                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Recolte.ID : Model._Recolte.ID)
+                                                                            .Store
+                                                                            (
+                                                                                    X.Store()
+                                                                                    .AutoLoad(true)
+                                                                                    .Model
+                                                                                    (
+                                                                                        Html.X().Model()
+                                                                                        .IDProperty("ID")
+                                                                                        .Fields
+                                                                                            (
+                                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                            )
+                                                                                     )
+                                                                                    .Proxy
+                                                                                    (
+                                                                                        Html.X().AjaxProxy()
+                                                                                        .Url(Url.Action("LoadRecolte", "Recolte"))
+                                                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                    )
+                                                                            )
+                                                                    ),
+
+                                                                    X.FieldContainer()
+                                                                    .FieldLabel("Date/Heure").LabelAlign(LabelAlign.Right)
+                                                                    .Layout(LayoutType.HBox)
+                                                                    .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                                    .Width(370)
+                                                                    .IndicatorText("*")
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .Items
+                                                                    (
+                                                                         X.DateField().ID("dtfDeliveryDate")
+                                                                         .AllowBlank(false)
+                                                                        //.IndicatorText("*")
+                                                                        //.IndicatorCls("IndicatorRedStar")
+                                                                        .Flex(1)
+                                                                        .ReadOnly(true)
+                                                                         .SelectedDate(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.DateLivraison : DateTime.Now)
+                                                                         ,
+                                                                         X.TimeField().ID("tmfDelivery")
+                                                                         .AllowBlank(false)
+
+                                                                         .ListConfig(new BoundList { Width = 200, MinWidth = 150 })
+                                                                         .Flex(1)
+                                                                         .MarginSpec("0 0 0 5")
+                                                                         .ReadOnly(true)
+                                                                         .SelectedTime(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? TimeSpan.FromTicks(Model._Livraison.DateLivraison.Ticks) : TimeSpan.FromTicks(DateTime.Now.Ticks))
+                                                                    ),
+
+
+
+                                                                    X.NumberField().FieldLabel("Livraison N°")
+                                                                    //.Width(335)
+                                                                    .HideTrigger(true).MinValue(0)
+                                                                    .AllowBlank(false).IndicatorText("*").IndicatorCls("IndicatorRedStar")
+                                                                    .LabelAlign(LabelAlign.Right).LabelWidth(90)
+                                                                    .ID("txtDeliveryNumber")
+                                                                    .ReadOnly(true)
+                                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Numero : string.Empty),
+
+
+                                                                    X.ComboBox()
+                                                                    .ID("cmbDetDeliveryType")
+                                                                    .AllowBlank(false)
+                                                                    .IndicatorCls("IndicatorRedStar")
+                                                                    .IndicatorText("*")
+                                                                    //.Width(310)
+                                                                    .ForceSelection(true)
+                                                                    .FieldLabel("Type de livraison")
+                                                                    .ReadOnly(true)
+                                                                    .DisplayField("Designation")
+                                                                    .ValueField("ID")
+                                                                    .LabelWidth(90)
+                                                                    .ListConfig(new BoundList { Width = 500, MinWidth = 350 })
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.LivraisonType.ID : (int?)null)
+                                                                    .Listeners(li =>
+                                                                    {
+                                                                        li.Select.Handler = "" +
+                                                                        "App.cmbDetFournisseur.clearValue(); " +
+                                                                        "App.cmbDetFournisseur.getStore().load(); " +
+                                                                        "App.cmbDetDestination.clearValue(); " +
+                                                                        "App.cmbDetDestination.getStore().load(); " +
+                                                                        "App.cmbDetOrigin.clearValue(); " +
+                                                                        "App.cmbDetOrigin.getStore().load(); " +
+                                                                        "DefinirZonesObligatoires(App.cmbDetDeliveryType.getSelectedRecord().data);";
+                                                                        li.Change.Handler = "" +
+                                                                        "App.cmbDetFournisseur.clearValue(); " +
+                                                                        "App.cmbDetFournisseur.getStore().load(); " +
+                                                                        "App.cmbDetDestination.clearValue(); " +
+                                                                        "App.cmbDetDestination.getStore().load(); " +
+                                                                        "App.cmbDetOrigin.clearValue(); " +
+                                                                        "App.cmbDetOrigin.getStore().load(); " +
+                                                                        "DefinirZonesObligatoires(App.cmbDetDeliveryType.getSelectedRecord().data);";
+                                                                    }
+                                                                             )
+                                                                    .Store
+                                                                    (
+                                                                            X.Store()
+                                                                            //.AutoLoad(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? true : false)
+                                                                            .AutoLoad(true)
+                                                                            .Model
+                                                                            (
+                                                                                    Html.X()
+                                                                                    .Model()
+                                                                                    .IDProperty("ID")
+                                                                                    .Fields
+                                                                                    (
+                                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                                    )
+                                                                            )
+                                                                            .Proxy
+                                                                            (
+                                                                                Html.X()
+                                                                                .AjaxProxy()
+                                                                                .Url(Url.Action("LoadLivraisonType", "LivraisonType"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                               .Listeners(
+                                                                   ls => ls.Load.Handler = "if (#{hiddenExecMode}.value != 'AddNew') { DefinirZonesObligatoires(App.cmbDetDeliveryType.getSelectedRecord().data);};"
+                                                               )
+                                                               ),
+
+                                                                X.ComboBox()
+                                                                .ID("cmbDetFournisseur")
+                                                                .AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar")
+                                                                .IndicatorText("*")
+                                                                .FieldLabel("Fournisseur")
+                                                                .DisplayField("FournisseurNameAndCode")
+                                                                //.Width(310)
+                                                                .ValueField("ID")
+                                                                .LabelWidth(90)
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .ForceSelection(true)
+                                                                .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .ReadOnly(true)
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Fournisseur.ID : (int?)null)
+                                                                .Store
+                                                                (
+                                                                        X.Store()
+                                                                        .AutoLoad(true)
+                                                                        .Model
+                                                                        (
+                                                                            Html.X().Model()
+                                                                            .IDProperty("ID")
+                                                                            .Fields
+                                                                            (
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("FournisseurNameAndCode", ModelFieldType.String) { Mapping = "FournisseurNameAndCode" },
+                                                                                new ModelField("FournisseurTypeID", ModelFieldType.Int) { Mapping = "FournisseurTypeID" },
+                                                                                new ModelField("DefaultAgenceFournisseurID", ModelFieldType.Int) { Mapping = "DefaultAgenceFournisseurID" }
+                                                                            )
+                                                                        )
+                                                                        .Proxy
+                                                                        (
+                                                                            Html.X().AjaxProxy()
+                                                                            .Url(Url.Action("LoadFournisseurBySupplierGroup", "Fournisseur"))
+                                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                        )
+                                                                        .Listeners(li => {
+                                                                            //li.Load.Handler = "var combo = App.cmbDetFournisseur;if(App.hiddenExecMode.value == 'AddNew') { records.length > 0 ? records[0].get(combo.valueField) : 0; } ";
+                                                                        })
+                                                                    .Parameters
+                                                                    (
+                                                                        ps => {
+                                                                            ps.Add(new StoreParameter("TypeLivraisonID", "App.cmbDetDeliveryType.getValue()", ParameterMode.Raw));
+                                                                            ps.Add(new StoreParameter("SiteID", "App.cmbDetSite.getValue()", ParameterMode.Raw));
+                                                                            ps.Add(new StoreParameter("Extend", "1", ParameterMode.Value));
+                                                                        }
+                                                                    )
+                                                            )
+                                                            .Listeners(ls => {
+                                                                ls.Select.Handler = "SetDefaultSite();";
+                                                                ls.Change.Handler = "SetDefaultSite();";
+                                                            })
+                                                            ,
+
+
+
+                                                            X.TextField().FieldLabel("Immatriculation").AllowBlank(false)
+                                                            .IndicatorCls("IndicatorRedStar")
+                                                            .IndicatorText("*").LabelAlign(LabelAlign.Right)
+                                                            .LabelWidth(90)
+                                                            //.Width(310)
+                                                            .ID("txtTruckID")
+                                                            //.ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Immatriculation : string.Empty),
+
+
+
+                                                            X.TextField().FieldLabel("Tracteur").LabelAlign(LabelAlign.Right)
+                                                            .LabelWidth(90)
+                                                            .Width(300)
+                                                            .ID("txtTractorID")
+                                                            //.ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                                            .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Tracteur : string.Empty),
+
+
+                                                            X.ComboBox().ID("cmbDetCertification")
+                                                            //.Width(300)
+                                                            .ForceSelection(true)
+                                                            //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                            .TypeAhead(true)
+                                                            .QueryMode(DataLoadMode.Local)
+                                                            .TriggerAction(TriggerAction.All)
+                                                            .FieldLabel("Certification").DisplayField("Designation")
+                                                            .ValueField("ID").LabelWidth(90).LabelAlign(LabelAlign.Right)
+                                                            .ReadOnly(true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Certification.ID : (int?)null)
+                                                            .Store(
+                                                                    X.Store()
+                                                                    .AutoLoad(true)
+                                                                    .Model(Html.X().Model()
+                                                                    .IDProperty("ID")
+                                                                    .Fields
+                                                                    (
+                                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                    )
+                                                                        )
+                                                                    .Proxy(Html.X().AjaxProxy()
+                                                                        .Url(Url.Action("LoadCertification", "Certification"))
+                                                                        .Reader(Html.X().JsonReader().RootProperty("data")))
+                                                                )
+
+                                                    ),
+
+
+                                                    X.Panel()
+                                                    .ID("secondCol")
+                                                    .Layout(LayoutType.Form)
+                                                    .Flex(1)
+                                                    .Items
+                                                    (
+                                                        X.ComboBox().ID("cmbDetAgence")
+                                                                    //.AllowBlank(false)
+                                                                    //.IndicatorCls("IndicatorRedStar")
+                                                                    //.IndicatorText("*")
+                                                                    .TypeAhead(true)
+                                                                    .ReadOnly(true)
+                                                                    .QueryMode(DataLoadMode.Local)
+                                                                    .ForceSelection(false)
+                                                                    .FieldLabel("Agence").DisplayField("Nom").ValueField("ID")
+                                                                    .LabelAlign(LabelAlign.Right)
+                                                                    .ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                                    //.Select(0)
+                                                                    //.Width(310)
+                                                                    .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.CentreAchat.ID : (int?)null)
+                                                                    .Store
+                                                                    (
+                                                                                X.Store()
+                                                                                .AutoLoad(true)
+                                                                                .Model(
+                                                                                        Html.X().Model()
+                                                                                        .IDProperty("ID")
+                                                                                        .Fields
+                                                                                        (
+                                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                        )
+                                                                                        )
+                                                                                .Proxy
+                                                                                (
+                                                                                    Html.X().AjaxProxy()
+                                                                                    .Url(Url.Action("LoadSite", "Site"))
+                                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                                //.Listeners(li => li.Load.Handler = "var combo = App.cmbDetAgence; combo.setValue(records.length > 0 ? records[0].get(combo.valueField): 0);combo.setReadOnly(true);")
+
+                                                                                ),
+                                                                X.ComboBox().ID("cmbDetOrigin").AllowBlank(false)
+                                                                .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                                .FieldLabel("Provenance").DisplayField("Nom").ValueField("ID")
+                                                                .LabelAlign(LabelAlign.Right)
+                                                                .ForceSelection(true)
+                                                                //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                                .TypeAhead(true)
+                                                                .QueryMode(DataLoadMode.Local)
+                                                                .TriggerAction(TriggerAction.All)
+                                                                .EmptyText("")
+                                                                .ValueNotFoundText("")
+                                                                .ReadOnly(true)
+                                                                //.Width(290)
+                                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Provenance.ID : Model._DefaultSite.Provenance.ID)
+                                                                .Store(
+                                                                        X.Store()
+                                                                        .AutoLoad(true)
+                                                                        .Model(Html.X().Model()
+                                                                        .IDProperty("ID")
+                                                                                .Fields(
+                                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                                )
+                                                                            )
+                                                                        .Proxy(
+                                                                                Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadProvenanceByLivraisonType", "Provenance"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                                )
+                                                                        .Parameters(p => { p.Add(new StoreParameter("TypeLivraison", "App.cmbDetDeliveryType.getValue()", ParameterMode.Raw)); })
+                                                                        .Listeners(li => li.Load.Fn = "setOrigineExecMode")
+                                                                        ),
+                                                            X.ComboBox().ID("cmbDetDestination").AllowBlank(false)
+                                                            .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                            .FieldLabel("Destination")
+                                                            .DisplayField("Nom").ValueField("ID")
+                                                            .LabelAlign(LabelAlign.Right)
+                                                            .EmptyText("")
+                                                            .ValueNotFoundText("")
+                                                            .ForceSelection(true)
+                                                            .ReadOnly(true)
+                                                            //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                            //.Width(410)
+                                                            .TypeAhead(true)
+                                                            .QueryMode(DataLoadMode.Local)
+                                                            .TriggerAction(TriggerAction.All)
+                                                            //.ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Destination.ID : Model._DefaultSite.Destination.ID)
+                                                            .Store(
+                                                                    X.Store()
+                                                                    .AutoLoad(true)
+                                                                    .Model(Html.X().Model()
+                                                                    .IDProperty("ID")
+                                                                            .Fields(
+                                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                            )
+                                                                        )
+                                                                    .Proxy(
+                                                                                Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("LoadDestinationByLivraisonType", "Destination"))
+                                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                            )
+                                                                    .Parameters(p => { p.Add(new StoreParameter("TypeLivraison", "App.cmbDetDeliveryType.getValue()", ParameterMode.Raw)); })
+                                                                    .Listeners(
+                                                                                    li => li.Load.Handler = "setDestinationExecMode();"
+                                                                                )
+                                                                ),
+
+                                                        X.ComboBox().ID("cmbDetPackaging")
+                                                        .AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                        //.Width(410)
+                                                        .FieldLabel("Type de sac").DisplayField("Designation")
+                                                        .ReadOnly(true)
+                                                        .ForceSelection(true)
+                                                        //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                        .TypeAhead(true)
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .ValueField("ID").LabelAlign(LabelAlign.Right)
+                                                        .Listeners(li => { li.Blur.Fn = "validEstimatedWeight"; })
+                                                        //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.SacType.ID : (int?)null)
+                                                        .Store(X.Store()
+                                                                .AutoLoad(true)
+                                                                .Model(Html.X().Model()
+                                                                .IDProperty("ID")
+                                                                        .Fields(
+                                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                        )
+                                                                    )
+                                                                .Proxy(Html.X().AjaxProxy()
+                                                                    .Url(Url.Action("LoadSacTypeActive", "SacType"))
+                                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                                )),
+
+
+
+
+                                                        X.NumberField().ID("txtNbrOfBags")
+                                                        //.Width(410)
+                                                        .AllowBlank(false).MinValue(0)
+                                                        .IndicatorCls("IndicatorRedStar").HideTrigger(true)
+                                                        .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] != (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? true : false)
+                                                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.SacsDeclares.ToString() : string.Empty)
+                                                        .IndicatorText("*").LabelAlign(LabelAlign.Right)
+                                                        .FieldLabel("Esti. nbr Sacs")
+                                                        .Listeners(li => { li.Blur.Fn = "validEstimatedWeight"; })
+                                                        ,
+
+
+
+                                                        X.NumberField()
+                                                        .ID("txtEstimatedTonnage")
+                                                        //.Width(410)
+                                                        .AllowBlank(false)
+                                                        .IndicatorText("*")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .MinValue(0)
+                                                        //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] != (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? true : false)
+                                                        .IndicatorCls("IndicatorRedStar")
+                                                        .HideTrigger(true)
+                                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (Model._Livraison.PoidsDeclare).ToString() : string.Empty)
+                                                        //.Number(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? (double)Model._Livraison.PoidsDeclare : 0)
+                                                        .FieldLabel("Poids Est. (kg)")
+                                                        .Listeners(li => { li.Blur.Fn = "validEstimatedWeight"; })
+                                            ,
+                                            X.TextField().FieldLabel("Chauffeur")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .AllowBlank(false)
+                                                .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                //.ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                                .ID("txtDriverName")
+                                                //.Width(310)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Chauffeur : string.Empty),
+
+                                                X.ComboBox()
+                                                .ID("cmbDetTransporter")
+                                                .AllowBlank(false)
+                                                //.Width(310)
+                                                .IndicatorCls("IndicatorRedStar")
+                                                .IndicatorText("*")
+                                                .FieldLabel("Transporteur")
+                                                .DisplayField("Nom")
+                                                .ValueField("ID")
+                                                .ForceSelection(true)
+                                                .ListConfig(new BoundList { Width = 300, MinWidth = 250 })
+                                                .TypeAhead(true)
+                                                .QueryMode(DataLoadMode.Local)
+                                                .TriggerAction(TriggerAction.All)
+                                                //.TriggerAction(TriggerAction.Query)
+                                                .LabelAlign(LabelAlign.Right)
+                                                //.ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Transporteur.ID : (int?)null)
+                                                .Store(X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model(Html.X().Model()
+                                                        .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                            )
+                                                        .Proxy(Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadTransporteur", "Transporteur"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        ))
+                                                        ,
+
+                                            X.FieldContainer()
+                                                .FieldLabel("Num Externe")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .Layout(LayoutType.HBox)
+                                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                                                .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                                .Items(
+
+                                                    X.TextField()
+                                                    .LabelAlign(LabelAlign.Right)
+                                                    .ID("txtExternalWayBill")
+                                                    .Width(160)
+                                                    .MarginSpec("0 10 0 0")
+                                                    .ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                                    .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumeroExterne : string.Empty),
+
+                                                    X.Button()
+                                                        .ID("btnAddExterWaybill")
+                                                        .Text("...")
+                                                        .Disabled(true)
+                                                        .Height(20)
+                                                        .Width(40)
+                                                        .DirectEvents
+                                                        (
+                                                            de =>
+                                                            {
+                                                                de.Click.Url = Url.Action("OnAddExterWaybill", "Livraison");
+
+                                                                de.Click.ExtraParams.Add(new Parameter {
+                                                                    Name = "ItemCampagne",
+                                                                    Mode = ParameterMode.Raw,
+                                                                    Encode = false,
+                                                                    Value = "#{cmbDetCrop}.getValue()"
+                                                                });
+
+                                                                de.Click.ExtraParams.Add(new Parameter {
+                                                                    Name = "ItemFournisseur",
+                                                                    Mode = ParameterMode.Raw,
+                                                                    Encode = false,
+                                                                    Value = "#{cmbDetFournisseur}.getValue()"
+                                                                });
+
+                                                                de.Click.ExtraParams.Add(new Parameter {
+                                                                    Name = "ItemSite",
+                                                                    Mode = ParameterMode.Raw,
+                                                                    Encode = false,
+                                                                    Value = "#{cmbDetSite}.getValue()"
+                                                                });
+
+                                                                de.Click.EventMask.ShowMask = true;
+                                                            }
+
+                                                        )
+
+                                                    ),
+
+
+
+                                            X.ComboBox().ID("cmbDetTransitaire")
+                                            .FieldLabel("Transitaire").DisplayField("Nom")
+                                            //.Width(410)                                            
+                                            .ForceSelection(true)
+                                            .ListConfig(new BoundList { Width = 300, MinWidth = 250 })
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .TriggerAction(TriggerAction.All)
+                                            .ValueField("ID").LabelAlign(LabelAlign.Right)
+                                            .ReadOnly(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] == (int)Tms.Classes.Business.StatutLivraison.Val.NotWeighed ? false : true)
+                                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.Transitaire.ID : (int?)null)
+                                            .Store(X.Store()
+                                            .AutoLoad(true)
+                                            .Model(Html.X().Model()
+                                            .IDProperty("ID")
+                                                    .Fields(
+                                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                        new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                    )
+                                                )
+                                            .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("LoadTransitaire", "Transitaire"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            ))
+
+
+
+                                        ),
+
+
+
+                                         X.Panel()
+                                        .ID("thirdCol")
+                                        .Layout(LayoutType.Form)
+                                        .Flex(1)
+                                        .MarginSpec("0 0 0 0")
+                                        .Items
+                                        (
+                                                X.TextField().FieldLabel("Conteneur nr")
+                                                .LabelAlign(LabelAlign.Right)
+                                                //.Width(410)
+                                                .ID("txtContainerNumber")
+                                                //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] > (int)Tms.Classes.Business.StatutLivraison.Val.FirstWeight ? true : false)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumConteneur : string.Empty),
+
+
+
+                                                X.TextField().FieldLabel("N° Plomb")
+                                                //.Width(410)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ID("txtSealNumber")
+                                                //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] > (int)Tms.Classes.Business.StatutLivraison.Val.FirstWeight ? true : false)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumPlomb : string.Empty),
+
+
+
+                                                X.TextField().FieldLabel("Embarquement Nr")
+                                                //.Width(410)
+                                                .LabelAlign(LabelAlign.Right)
+                                                .ID("txtShipmentNumber")
+                                                //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] > (int)Tms.Classes.Business.StatutLivraison.Val.FirstWeight ? true : false)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumOT : string.Empty)
+
+                                             ,
+                                                X.TextField()
+                                                .FieldLabel("Lot Nr")
+                                                .LabelAlign(LabelAlign.Right)
+                                                //.Width(310)
+                                                .LabelWidth(90)
+                                                .ID("txtLotNumber")
+                                                //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult || (int)ViewData["StatutLivraison"] > (int)Tms.Classes.Business.StatutLivraison.Val.FirstWeight ? true : false)
+                                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Livraison.NumLot : string.Empty)
+
+                                        )
+
+                )
+          )
+          )
+    .Buttons
+          (
+                X.Button()
+                .Text("OK")
+                .ID("BtnOk")                
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethodSmall");
+                    //de.Click.ExtraParams.Add(new Parameter { Name = "FromWeighing", Value = "#{HiddenFromWeighing}.value", Mode = ParameterMode.Raw });
+                    de.Click.Before = "return validNew(App.Livraison_DetailSmall.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.Livraison_DetailSmall.doClose()").Cls("btncancel")
+           )
+
+
+)
+
+
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Warning : Delivery ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+    var setExecMode = function (winId) {
+
+
+        var TextFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textfield') || [];
+        var ComboBoxArray = Ext.ComponentQuery.query('window[id="' + winId + '"] combobox') || [];
+        var DateFieldArray = Ext.ComponentQuery.query('window[id="' + winId + '"] datefield') || [];
+        var TextAreaArray = Ext.ComponentQuery.query('window[id="' + winId + '"] textarea') || [];
+
+        /*Ensuite nous concatenons tous les tableaux obtenus obtenus
+        */
+        var allCustomComponentsOnWindowArray = TextFieldArray.concat(ComboBoxArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(DateFieldArray);
+        allCustomComponentsOnWindowArray = allCustomComponentsOnWindowArray.concat(TextAreaArray);
+
+        if (allCustomComponentsOnWindowArray.length > 0)
+        {
+
+            var flag = Ext.each(allCustomComponentsOnWindowArray,
+                            function (item, index, objectItSelf)
+                            {
+                                item.setReadOnly(false);
+
+                                if (App.hiddenExecMode.value == 'Consult')
+                                    item.setReadOnly(true);                      
+                                    
+                            }
+                     );
+
+            return (flag === true);
+        }
+
+
+    };
+</script>
+
+
+
+

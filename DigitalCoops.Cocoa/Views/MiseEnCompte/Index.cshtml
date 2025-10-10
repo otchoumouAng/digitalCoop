@@ -1,0 +1,518 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+    width: 100px !important;
+}
+    </style>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeMec.columnManager.getColumns(), App.grpListeMec.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    }
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+
+        //var tpl = '<span class="x-btn-icon-el {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        console.log(Ext.String.format(tpl, icon_url));
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+    }
+
+
+    var Overview =
+    {
+        getIcons: function (value) {
+            if (value === 0) {
+                return 'icon-delete';//Ext.net.ResourceMgr.getIcon('Icon.BulletCross');//'glyphicon-remove';//Ext.net.ResourceMgr.getIconUrl('Icon.BulletCross');
+            }
+            else if (value == 1) {
+                return 'action_approve_02';// 'glyphicon-ok';//Ext.net.ResourceMgr.getIconUrl('Icon.Tick');
+            }
+            else if (value == 2) {
+                return 'action_new_02';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+            else if (value == 3) {
+                return 'action_new_03';//'glyphicon-file';//Ext.net.ResourceMgr.getIconUrl('Icon.Add'); // New
+            }
+        },
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red';
+            }
+            else if (value == 1) {
+                return  'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+            else if (value == 3) {
+                return 'glyphicon-ban-circle red';
+            }
+            else if (value == 4) {
+                return 'glyphicon-ban-circle red';
+            }
+        },
+
+        SummaryMEC: function () {
+            var nbrOfrows = App.grpListeMec.getStore().getCount();
+            var totalBalance = parseFloat(App.storeListeMec.sum('Balance')) || 0;
+            var totalAmount = parseFloat(App.storeListeMec.sum('Montant')) || 0;
+            var totalPaid = parseFloat(0);
+
+            /*for (var i = 0; i < nbrOfrows; i++) {
+
+                totalAmount += parseFloat(App.grpListeMec.getRowsValues()[i].Montant);
+                totalBalance += parseFloat(App.grpListeMec.getRowsValues()[i].Balance);
+            }*/
+            totalPaid = totalAmount - totalBalance
+
+            totalAmount = FormatAmount(totalAmount);
+            totalBalance = FormatAmount(totalBalance);
+            totalPaid = FormatAmount(totalPaid);
+            App.lblSummaryMEC.setText("Montant Total : " + totalAmount + " FCFA, Total Paid : " + totalPaid + " FCFA, Total UnPaid : " + totalBalance + " FCFA");
+        },
+
+        resetButtons: function () {
+
+            App.btnModify.disable();
+            App.btnCancel.disable();
+
+            if (App.rowSelectionListeMEC.hasSelection()) {
+
+                var isActive = App.rowSelectionListeMEC.selected.items[0].data.IsActive;
+
+                if (isActive === true)
+                {
+                  App.btnModify.enable();
+                  App.btnCancel.enable();
+                }
+
+                else
+                {
+                  App.btnModify.disable();
+                  App.btnCancel.disable();
+                }
+
+            }
+        }
+    }
+
+
+</script>
+
+@model Tms.Classes.Business.MiseEnCompte
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);   
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))
+
+<form id="tms_form">
+
+    @(X.Viewport()
+                        .Layout(LayoutType.Border)
+                        .ID("TmsViewPort")
+                        .Items
+                         (
+                            X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+                            X.Panel()
+                                .ID("pnlNorth")
+                                .Region(Region.North)
+                                .Layout(LayoutType.Border)
+                                .TopBar(new Toolbar()
+                                {
+                                    Items =
+                                    {
+                                         X.Button()
+                                            .ID("btnFilter")
+                                            .IconCls("action_filter_02")
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                {
+                                                    de.Click.Url  = Url.Action("OnFilter");
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                             ),
+
+                                         X.Button()
+                                            .ID("btnRefresh")
+                                            .IconCls("action_refresh_01")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                                            .Border(false)
+                                            .Cls("ButtonStyle")
+                                            .Disabled(false)
+                                            .DirectEvents
+                                             (
+                                                de =>
+                                                {
+                                                    de.Click.Url  = Url.Action("OnRefresh");
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSite", Value= "#{_cmbSite}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemFournisseur", Encode=true, Value= "#{cmbFournisseur}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
+                                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Encode=false, Value= "#{cmbStatus}.getValue()", Mode=ParameterMode.Raw});
+                                                    de.Click.Success = "App.CriteriaPanelMEC.setTitle('Site ' + App._cmbSite.rawValue + ', Fournisseur : ' + App.cmbFournisseur.rawValue +  ', Statut : '+ App.cmbStatus.rawValue + ' , du  '+ App.dtpStartDate.rawValue  + ' au  '+ App.dtpEndDate.rawValue )";
+                                                    de.Click.EventMask.ShowMask = true;
+                                                }
+                                             ),
+
+                                         X.SplitButton()
+                                            .ID("btnPrint")
+                                            .IconCls("action_print_02")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Menu
+                                             (
+                                                new Menu()
+                                                {
+                                                    Items =
+                                                    {
+                                                        X.MenuItem()
+                                                                    .ID("mnuPrintSavingList")
+                                                                    .Text("Savings")
+                                                                    //.Disable(true)
+                                                                    .DirectEvents
+                                                                    (
+                                                                        de=>
+                                                                        {
+                                                                            de.Click.Url = Url.Action("OnDisplaySavingList");
+                                                                            de.Click.EventMask.ShowMask = true;
+                                                                        }
+                                                                    )
+                                                    }
+                                                 }
+                                               ),
+                                         X.ToolbarFill(),
+
+                                            X.Button()
+                                                .ID("btnActions")
+                                                .Text("Actions")
+                                                .Border(false)
+                                                .Cls("ButtonStyle")
+                                                .IconCls("menu_04")
+                                                .Disabled(false)
+                                                .Menu
+                                                 (
+                                                    new Menu()
+                                                    {
+                                                        Items =
+                                                        {
+                                                            X.MenuItem()
+                                                            .ID("mnuExportSaving")
+                                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                                            .Icon(Icon.PageExcel)
+                                                            .Handler("SetExcelList();")
+
+
+
+                                                        }
+                                                    }
+                                                )
+
+
+
+
+                                     }
+                                }
+                           ),
+
+
+                           X.FormPanel()
+                            .ID("CriteriaPanelMEC")
+                            .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Mise en Compte planifiée - overview" })
+                            .Region(Region.North)
+                            .Floatable(false)
+                            .Border(false)
+                            .Collapsed(true)
+                            .Collapsible(true)
+                            .BodyPadding(5)
+                            .Frame(true)
+                            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                            .Items
+                             (
+
+                               X.Panel()
+                                     .Layout(LayoutType.Form)
+                                    .Flex(2)
+                                    .Items
+                                     (
+                                        X.ComboBox()
+                                            .ID("_cmbSite")
+                                            .FieldLabel("Site")
+                                            .DisplayField("Nom")
+                                            .ValueField("ID")
+                                            .MatchFieldWidth(false)
+                                            .ListConfig(new BoundList { MinWidth = 300 })
+                                            .LabelAlign(LabelAlign.Right)
+                                            .TypeAhead(false)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .TriggerAction(TriggerAction.All)
+                                            .ForceSelection(true)
+                                            //.ReadOnly(true)
+                                            .Value((int)ViewBag.SiteParDefaut)
+                                            .Store(
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        X.Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            X.AjaxProxy()
+                                                            .Url(Url.Action("LoadSiteAll", "Site"))
+                                                .Reader(
+                                                            X.JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                        ).Listeners(
+                                                ls =>
+                                                {
+                                                    ls.Select.Handler = "if (App._cmbSite.value) { App.cmbFournisseur.clearValue(); App.cmbFournisseur.getStore().load(); };";
+                                                }
+                                            ),
+                                                     X.ComboBox()
+                                                        .ID("cmbFournisseur")
+                                                        .FieldLabel("Fournisseur")
+                                                        .LabelWidth(110)
+                                                        .DisplayField("NameAndCode")
+                                                        .ValueField("ID")
+                                                        .LabelAlign(LabelAlign.Right)
+                                                        .TypeAhead(true)
+                                                        .QueryMode(DataLoadMode.Local)
+                                                        .TriggerAction(TriggerAction.All)
+                                                        .ForceSelection(true)
+                                                        .Width(400)
+                                                        .MatchFieldWidth(false)
+                                                        .ListConfig(new BoundList { MinWidth = 350 })                                                        
+                                                        .Store
+                                                         (
+                                                               X.Store()
+                                                               .AutoLoad(true)
+                                                               .Model
+                                                               (
+                                                                   Html.X().Model()
+                                                                  .IDProperty("ID")
+                                                                  .Fields
+                                                                  (
+                                                                     new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                     new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                  )
+                                                               )
+                                                              .Proxy
+                                                              (
+                                                                 Html.X().AjaxProxy()
+                                                                .Url(Url.Action("LoadAllCocoaBeansSuppliers", "Fournisseur"))
+                                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                              )
+                                                              .Parameters
+                                                              (
+                                                                   ps => { ps.Add(new StoreParameter("siteID", "#{_cmbSite}.getValue()", ParameterMode.Raw)); }
+                                                              )
+
+                                                           )
+                                                         .SelectedItems
+                                                         (
+                                                            it =>
+                                                            {
+                                                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                                            }
+                                                         ),
+
+                                                        X.ComboBox()
+                                                      .ID("cmbStatus")
+                                                      .FieldLabel("Statut")
+                                                      .LabelWidth(110)
+                                                      .DisplayField("Description")
+                                                      .ValueField("ID")
+                                                      .LabelAlign(LabelAlign.Right)
+                                                      .TypeAhead(true)
+                                                      .ForceSelection(true)
+                                                      .Items
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "{Tous}", Value = "%%" });
+                                                             it.Add(new ListItem { Text = "Paid", Value = "PA" });
+                                                             it.Add(new ListItem { Text = "Unpaid", Value = "UP" });
+                                                         }
+                                                      )
+                                                      .SelectedItems
+                                                      (
+                                                         it =>
+                                                         {
+                                                             it.Add(new ListItem { Text = "Unpaid", Value = "UP" });
+                                                         }
+                                                      )
+
+                                ),
+
+                            X.Panel()
+                                .Layout(LayoutType.Form)                                
+                                .Flex(2)
+                                .Items
+                                (
+                                    X.DateField().ID("dtpStartDate").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(""),
+                                    X.DateField().ID("dtpEndDate").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text("")
+                                ),
+
+
+                               X.Panel()
+                                .ID("formOverview")
+                                .Flex(2)
+                                .Border(false)
+                                //.BodyPadding(6)
+                                .Layout(LayoutType.HBox)
+                                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                                .Items
+                                 (
+                                    X.Container()
+                                    .ID("")
+                                    .Layout(LayoutType.VBox)
+                                    .LayoutConfig(new VBoxLayoutConfig { Pack = BoxPack.Center })
+                                    .Items(X.Label().ID("lblSummaryMEC").Text("Montant").EmptyText(""))
+                                 )
+                        ),
+
+                        X.GridPanel()
+                       .Layout(LayoutType.Fit)
+                       .ID("grpListeMec")
+                       .Region(Region.Center)
+                       .ForceFit(false)
+                       .AllowDeselect(true)
+                       .Store
+                       (
+                          X.StoreFor<Tms.Classes.Business.MiseEnCompte>()
+                          .ID("storeListeMec")
+                          .PageSize(100)
+                          .RemotePaging(false)
+                          .AutoLoad(true)
+                          .Proxy
+                            (
+                                Html.X().AjaxProxy()
+                                .Url(Url.Action("LoadListOfMec"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                          .Parameters
+                          (
+                            ps =>
+                            {
+                                ps.Add(new StoreParameter("ItemFournisseur", "#{cmbFournisseur}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDate}.getRawValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDate}.getRawValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemStatus", "#{cmbStatus}.getValue()", ParameterMode.Raw));
+                                ps.Add(new StoreParameter("ItemSite", "#{_cmbSite}.getValue()", ParameterMode.Raw));
+                            }
+                          )
+
+                          .Listeners
+                          (
+                            ls =>
+                            {
+                                ls.Load.Handler = "Overview.SummaryMEC(); Ext.net.Mask.hide();";
+                                ls.Add.Fn = "Overview.SummaryMEC";
+                                ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                            }
+                           )
+
+                       )
+                       .ColumnModel
+                       (
+                            Html.X().Column().Text("").DataIndex("mIcon").Width(40).Filterable(false).Hideable(false).Renderer("renderIcon"),
+                            Html.X().DateColumn().Text("Date").DataIndex("DateMec").Flex(1),
+                            Html.X().Column().Text("Facture N°").DataIndex("FactureNumero").Flex(1),
+                            Html.X().Column().Text("Fournisseur").DataIndex("FournisseurNameAndCode").Flex(2),
+                            Html.X().Column().Text("Type").DataIndex("LibelleMiseEnCompteType").Flex(1),
+                            Html.X().Column().Text("Taux").DataIndex("Taux").Flex(1),
+                            Html.X().Column().Text("Montant").DataIndex("MontantAsString").Flex(1),
+                            Html.X().Column().Text("Solde").DataIndex("BalanceAsString").Flex(1),
+                            Html.X().Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                            Html.X().DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                            Html.X().Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                            Html.X().DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+
+                         )
+                         .BottomBar
+                         (
+                             Html.X().PagingToolbar()
+                            .HideRefresh(false)
+                            .Plugins(Html.X().ProgressBarPager())
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                         .View(
+                            Html.X().GridView().LoadingText("Chargement...")
+                    )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowSelectionListeMEC")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(true)
+                        )
+
+        )
+    )
+
+</form>

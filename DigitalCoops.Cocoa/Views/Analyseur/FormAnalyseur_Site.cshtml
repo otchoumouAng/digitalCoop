@@ -1,0 +1,92 @@
+﻿
+@model Tms.Classes.Shared.Analyseur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(      
+X.Window()
+    .ID("FormAnalyseur_Site")
+    .Width(300)
+    .Resizable(false)
+    .Height(440)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .X(400)
+    .Y(30)
+    .Title("Quality Agent : Select Site")
+    .Layout(LayoutType.VBox)
+    .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+    .Items(
+            //X.Hidden().ID("TxtFournisseurID").Value(Model.ID),
+            X.Container()
+                .Layout(LayoutType.Fit)
+                .Items(
+                        X.GridPanel()
+                            .Layout(LayoutType.Fit)
+                            .ID("grpListeSiteFS")
+                            .Region(Region.Center)
+                            .ForceFit(false)
+                            .Height(320)
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Shared.Site>().ID("storeListeSiteFS")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectSiteToAdd"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(
+                                            ps => ps.Add(new StoreParameter("ItemAnalyseur", Model.ID.ToString(), ParameterMode.Value))
+                                        )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("").DataIndex("mIcon").Renderer("renderIcon").Width(40).Hideable(false).Filterable(false),
+                                        Html.X().Column().Text("Nom").DataIndex("Nom").Flex(1).Hideable(false)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )
+
+                            )
+
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitListsite")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListeSites");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeSiteFS.getRowsValues({selectedOnly : true})" });
+
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormAnalyseur_Site.doClose()").Cls("btncancel")
+
+                )
+
+//)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+
+
+

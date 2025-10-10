@@ -1,0 +1,156 @@
+﻿@model Tms.Classes.Business.Fournisseur
+@{
+    Layout = null;
+    var X = Html.X();
+}
+
+@(
+
+X.Window()
+    .ID("frmPeriodWithSupplierForReport")
+    .Width(440)
+    .Resizable(false)
+    .Height(190)
+    .Modal(true)
+    .Y(80)
+    .BodyPadding(5)
+    .Title(ViewData["Titre"] + " : Criteria")
+    .Layout(LayoutType.Form)
+    .Items
+    (
+        X.FormPanel()
+                //.DefaultAnchor("100%")
+                //.FieldDefaults(d => d.LabelWidth = 130)
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Center })
+                .Items(
+                        X.ComboBox()
+                                        .ID("cmbDetSite")
+                                        .FieldLabel("Site")
+                                        .DisplayField("Nom")
+                                        .ValueField("ID")
+                                        .MatchFieldWidth(false)
+                                        .ListConfig(new BoundList { MinWidth = 300 })
+                                        .LabelAlign(LabelAlign.Right)
+                                        .TypeAhead(false)
+                                        .QueryMode(DataLoadMode.Local)
+                                        .TriggerAction(TriggerAction.All)
+                                        .ForceSelection(true)
+                                        //.ReadOnly(true)
+                                        .Value((int)ViewData["SiteParDefaut"])
+                                        .Store(
+                                                X.Store()
+                                                //.Listeners(l => l.Load.Handler = "App.cmbDetSite.setValue(App.cmbDetSite.getStore().getAt(0));")
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                )
+                                                    )
+                                                .Proxy(
+                                                            Html.X().AjaxProxy()
+                                                            .Url(Url.Action(ViewData["UrlSite"].ToString(), "Site"))
+                                                .Reader(
+                                                            Html.X().JsonReader().RootProperty("data")
+                                                            )
+                                                )
+                                    ).Listeners(
+                                                ls =>
+                                                {
+                                                    ls.Select.Handler = "if (App.cmbDetSite.value) { App.cmbDetFournisseur.clearValue(); App.cmbDetFournisseur.getStore().load(); };";
+                                                }
+                                            ),
+            X.ComboBox()
+                .ID("cmbDetFournisseur")
+                .FieldLabel("Fournisseur")
+                .ForceSelection(true)
+                //.TypeAhead(true)
+                .QueryMode(DataLoadMode.Local)
+                .TriggerAction(TriggerAction.All)
+                .DisplayField("NameAndCode")
+                .ValueField("ID")
+                //.MatchFieldWidth(false)
+                //.ListConfig(new BoundList { MinWidth = 300 })
+                .LabelAlign(LabelAlign.Right)
+                .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                .Store(
+                        X.Store()
+                            .AutoLoad(true)
+                            .Listeners(l => l.Load.Handler = "App.cmbDetFournisseur.setValue(App.cmbDetFournisseur.getStore().getAt(0));")
+                            .Model(Html.X().Model()
+                            .IDProperty("ID")
+                                    .Fields(
+                                        new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                        new ModelField("NameAndCode", ModelFieldType.String) { Mapping = "NameAndCode" }
+                                    )
+                                )
+                            .Proxy(
+                                    Html.X().AjaxProxy()
+                                        .Url(
+                                                Url.Action("LoadAllSupplierBySite", "Fournisseur")
+                                                )
+                                        .Reader(
+                                                    Html.X().JsonReader().RootProperty("data")
+                                                )
+                                )
+                                .Parameters
+                                (
+                                    ps => { ps.Add(new StoreParameter("siteID", "App.cmbDetSite.getValue()", ParameterMode.Raw)); }
+                                )
+                    ),
+            X.FieldContainer()
+                .Width(460)
+                .Layout(LayoutType.HBox)
+                .FieldLabel("Date Debut")
+                .LabelAlign(LabelAlign.Right)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.StretchMax })
+                .Items(
+                        X.DateField()
+                            //.FieldLabel("Date Debut")
+                            //.LabelAlign(LabelAlign.Right)
+                            .ID("dtfDetStartDate")
+                            .Width(120)
+                            .SelectedDate(DateTime.Now.AddDays(-1))
+                            ,
+                        X.DateField()
+                            .FieldLabel("Date Fin")
+                            .LabelWidth(70)
+                            .LabelAlign(LabelAlign.Right)
+                            .ID("dtfDetEndDate")
+                            .Width(190)
+                            .SelectedDate(DateTime.Now)
+                )
+            )
+        )
+        .Buttons
+        (
+            X.Button()
+                .Text("OK")
+                .ID("BtnOk")
+                .DirectEvents
+                (
+                    d =>
+                    {
+                        d.Click.Url = Url.Action(ViewData["actionToDo"].ToString(), ViewData["ControllerName"].ToString());
+                        d.Click.ExtraParams.Add(new Parameter { Name = "fournisseur", Value = "#{cmbDetFournisseur}.getValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "fournisseurText", Value = "#{cmbDetFournisseur}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "startDate", Value = "#{dtfDetStartDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.ExtraParams.Add(new Parameter { Name = "endDate", Value = "#{dtfDetEndDate}.getRawValue()", Encode = false, Mode = ParameterMode.Raw });
+                        d.Click.FormID = "#(return this.up('window').down('form');)";
+                    }
+                ),
+            X.Button()
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.frmPeriodWithSupplierForReport.doClose()")
+                .Cls("btncancel")
+        )
+
+)
+
+
+
+
+

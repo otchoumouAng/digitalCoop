@@ -1,0 +1,274 @@
+﻿@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-60).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+
+</head>
+@(
+X.Window()
+    .ID("OrdreProduction_Print")
+    .Width(700)
+    .Resizable(false)
+    .Height(240)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title("Production Order : Print")
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Items
+            (
+    #region Zone A
+                X.Container()
+                    .Border(false)
+                    .Frame(false)
+                    .Flex(1)
+                    .Layout(LayoutType.Form)
+                    .Items
+                    (
+                        X.ComboBox()
+                            .ID("cmbQuart")
+                            .FieldLabel("Shift")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .Store
+                            (
+                                X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.String) { Mapping = "ID" },
+                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                        )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadActiveAgentProductionAll", "AgentProduction"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                                    .Parameters(
+                                                ps => ps.Add(new StoreParameter("typeID", "1", ParameterMode.Value))
+                                                )
+
+                                )
+                            .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                            }
+                            ),
+                        X.ComboBox()
+                            .ID("cmbMelangeur")
+                            .FieldLabel("Blending Agent")
+                            .DisplayField("Nom")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .Store
+                            (
+                                X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.String) { Mapping = "ID" },
+                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                        )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadActiveAgentProductionAll", "AgentProduction"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                                    .Parameters(
+                                                ps => ps.Add(new StoreParameter("typeID", "2", ParameterMode.Value))
+                                                )
+
+                                )
+                            .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                            }
+                            ),
+                        X.ComboBox()
+                            .ID("cmbCertification")
+                            .FieldLabel("Certification")
+                            .DisplayField("Designation")
+                            .ValueField("ID")
+                            .LabelAlign(LabelAlign.Right)
+                            .Store
+                            (
+                                X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    Html.X().Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.String) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                    )
+                                    .Proxy
+                                    (
+                                        Html.X().AjaxProxy()
+                                    .Url(Url.Action("LoadCertificationAll", "Certification"))
+                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+
+                                )
+                            .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                            }
+                            )
+                    ),
+    #endregion
+    #region Zone B
+            X.Container()
+                .Border(false)
+                .Frame(false)
+                .Flex(1)
+                .Layout(LayoutType.Form)
+                .Items
+                (
+                    X.DateField().ID("txtDateDebut").FieldLabel("Date Debut").LabelAlign(LabelAlign.Right).Text(DateTime.Now.AddDays(-30).ToString()),
+                    X.DateField().ID("txtDateFin").FieldLabel("Date Fin").LabelAlign(LabelAlign.Right).Text(DateTime.Now.ToString()),
+                    X.ComboBox()
+                        .ID("cmbStatut")
+                        .FieldLabel("Statut")
+                        .DisplayField("Description")
+                        .ValueField("ID")
+                        .LabelAlign(LabelAlign.Right)
+                        .Items
+                        (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                                it.Add(new ListItem { Text = "Openned", Value = "NA" });
+                                it.Add(new ListItem { Text = "Closed", Value = "CL" });
+                            }
+                        )
+                        .SelectedItems
+                            (
+                            it =>
+                            {
+                                it.Add(new ListItem { Text = "{Tous}", Value = "-1" });
+                            }
+                            )
+                )
+    #endregion
+
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("")
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action("PrintList");
+                de.Click.Before = "return validNew(App.OrdreProduction_Print.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.OrdreProduction_Print.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Stock Status - (Items) ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,89 @@
+﻿
+@model Tms.Classes.Shared.Sales.OrigineViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormOrigine")
+    .Width(400)
+    .Resizable(false)
+    .Modal(true)
+    .Height(160)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Listeners(l =>
+    {        
+        l.Show.Handler = "#{TxtNomOrigine}.focus()";
+    })
+    .Y(20)
+    .Title("Sales - Origin : Detail")
+    .Layout(LayoutType.Form)
+    .Items(
+            X.FormPanel()
+                .Layout(LayoutType.Form)
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Items(
+                        X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                        X.Hidden().ID("hiddenRowversion").Value(Model._Origine.RowVersionKey),
+                        X.Hidden().ID("TxtOrigineID").Value(Model._Origine.ID),
+                        X.TextField().ID("TxtNomOrigine").FieldLabel("Nom")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Origine.Nom : string.Empty)
+                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnSubmitOrigine")
+                    .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("SubmitFormMethod");
+                        de.Click.FormID = "#(return this.up('window').down('form');)";
+                        de.Click.Before = "return validNew(App.FormOrigine.id);";
+                    }),
+                X.Button()
+                    .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                    .Handler("App.FormOrigine.doClose()").Cls("btncancel")
+
+                )
+
+    )
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            
+            Ext.Msg.show({ title: 'Destination Export : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

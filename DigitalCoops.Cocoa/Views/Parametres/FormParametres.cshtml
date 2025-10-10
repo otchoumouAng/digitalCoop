@@ -1,0 +1,297 @@
+﻿
+@model Tms.Classes.Shared.Parametres
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 110px !important;
+    }
+</style>
+@(
+
+            X.Window()
+                .ID("FormParametres")
+                .Width(950)
+                .Resizable(false)
+                .Height(280)
+                .CloseAction(Ext.Net.CloseAction.Destroy)
+                .Modal(true)
+                //.X(400)
+                .Y(150)
+                .Title("Parameter : Detail")
+                .Layout(LayoutType.Fit)
+                //.LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                .BodyPadding(6)
+                    .Items(
+
+                Html.X().FormPanel()
+                .ID("form1")
+                    .Layout(LayoutType.HBox)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Middle, Pack = BoxPack.Center })
+                    .Border(false)
+                    .Items(
+                            X.Panel().Layout(LayoutType.Form).Flex(2)
+                                .Items(
+                                        //X.TextField().ID("TxtNomSociete").FieldLabel("Entity Name")
+                                        //    .Text(Model.NomSociete)
+                                        //    .AllowBlank(false)
+                                        //    .IndicatorCls("IndicatorRedStar")
+                                        //    .IndicatorText("*")
+                                        //    .LabelAlign(LabelAlign.Right),
+                                        X.TextField().ID("TxtAdresseSociete").FieldLabel("Adresse")
+                                            .Text(Model.AdresseSociete)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .LabelAlign(LabelAlign.Right),
+                                        X.TextField().ID("TxtTel1Societe").FieldLabel("Tel 1")
+                                            .Text(Model.TelSociete)
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .LabelAlign(LabelAlign.Right),
+                                        X.TextField().ID("TxtTel2Societe").FieldLabel("Tel 2")
+                                            .Text(Model.Tel2Societe)
+                                            .LabelAlign(LabelAlign.Right),
+                                        X.ComboBox()
+                                            .ID("cmbDefSite")
+                                            .AllowBlank(false)
+                                            .FieldLabel("Default Site")
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            .DisplayField("Nom").ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            //.ListConfig(new BoundList { Width = 600, MinWidth = 500 })
+                                            .Value(Model.Site)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model(
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                            )
+                                                        )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadSite", "Site"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+
+                                            )
+
+
+                                        ),
+                                X.Panel().Layout(LayoutType.Form).Flex(2)
+                                .Items(
+                                         X.ComboBox()
+                                            .ID("cmbDefaultCampagne")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                                            .DisplayField("Designation")
+                                            .ValueField("Designation")
+                                            .FieldLabel("Default Campagne")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .ListConfig(new BoundList { Width = 200, MinWidth = 150 })
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            //.ForceSelection(true)
+                                            .Value(Model.Campagne)
+                                            .Store
+                                            (
+                                                X.Store()
+                                                .AutoLoad(true)
+                                                .Model
+                                                (
+                                                    Html.X().Model()
+                                                    .IDProperty("Designation")
+                                                    .Fields
+                                                    (                                                        
+                                                        new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                                )
+                                                .Proxy
+                                                (
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                    .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                )
+                                            ),
+                                        X.ComboBox()
+                                            .ID("cmbDefaultCropQuality")
+                                            .AllowBlank(false)
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .FieldLabel("Default Crop Quality")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ListConfig(new BoundList { Width = 300, MinWidth = 200 })
+                                            .ForceSelection(true)
+                                            .Value(Model.Recolte.ID)
+                                            .Store
+                                            (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                        Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                            (
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                            )
+                                                        )
+                                                    .Proxy
+                                                    (
+                                                        Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadRecolte", "Recolte"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+                                            ),
+                                         X.NumberField().ID("TxtTolerancePrixNegocie")
+                                            .FieldLabel("Accepted Marge Of Prix Negociés")
+                                            .AllowDecimals(true)
+                                            .MinValue(0)
+                                            .HideTrigger(true)
+                                            .Value(Model.PrixNegocie)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                         X.NumberField().ID("TxtMaxCodeGenerated")
+                                            .FieldLabel("Max Nbr. Of Code generated For Analysis")
+                                            .AllowDecimals(false)
+                                            .MinValue(0)
+                                            .MaxValue(5)
+                                            .HideTrigger(true)
+                                            .Value(Model.MaxCodeAnalyseGenere)
+                                            .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                                        X.ComboBox()
+                                            .ID("cmbDefaultExportateur")
+                                            .FieldLabel("Default Exportateur")
+                                            .DisplayField("Nom")
+                                            .ValueField("ID")
+                                            .LabelWidth(110)
+                                            .LabelAlign(LabelAlign.Right)
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .ForceSelection(true)
+                                            .Value(Model.Exportateur.ID)
+                                            .Store
+                                            (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model(Html.X().Model()
+                                                    .IDProperty("ID")
+                                                            .Fields(
+                                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                                   )
+                                                           )
+                                                    .Proxy(Html.X().AjaxProxy()
+                                                        .Url(Url.Action("LoadExportateurActive", "Exportateur"))
+                                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                          )
+                                                 )
+                                            ,
+                                        X.ComboBox()
+                                            .ID("CmbDefaultLaboratoire")
+                                            .AllowBlank(false)
+                                            .IndicatorCls("IndicatorRedStar")
+                                            .IndicatorText("*")
+                                            .FieldLabel("Default Laboratory")
+                                            .DisplayField("Designation")
+                                            .ValueField("ID")
+                                            .LabelAlign(LabelAlign.Right)
+                                            .Value(Model.Laboratoire.ID)
+                                            .ForceSelection(true)
+                                            .TypeAhead(true)
+                                            .QueryMode(DataLoadMode.Local)
+                                            .TriggerAction(TriggerAction.All)
+                                            .MatchFieldWidth(false)
+                                            .ListConfig(new BoundList { MinWidth = 300 })
+                                            .Store(
+                                                    X.Store()
+                                                        .AutoLoad(true)
+                                                        .Model(Html.X().Model()
+                                                        .IDProperty("ID")
+                                                                .Fields(
+                                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                                )
+                                                            )
+                                                        .Proxy(Html.X().AjaxProxy()
+                                                            .Url(Url.Action("LoadLaboratoire", "Laboratoire"))
+                                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                        )
+                                            )
+                                )
+                                )
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitTransporteur")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Success = "App.FormParametres.doClose();";
+                    de.Click.FormID = "form1";
+                    de.Click.Before = "return validNew(App.FormParametres.id);";
+                }),
+                X.Button()
+                .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                .Handler("App.FormParametres.doClose()").Cls("btncancel")
+
+            )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Parameter : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

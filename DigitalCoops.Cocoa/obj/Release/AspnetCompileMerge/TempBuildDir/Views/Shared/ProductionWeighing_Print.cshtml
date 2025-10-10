@@ -1,0 +1,180 @@
+﻿@model Tms.Classes.Business.stock.Lot
+
+@{
+    Layout = null;
+    var X = Html.X();
+    string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <style type="text/css">
+        .header_style {
+            background-color: white;
+        }
+
+        .x-form-text-default.x-form-textarea {
+            line-height: 17px;
+            min-height: 50px !important;
+        }
+
+        .title_style {
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+        .frame_title_style {
+            border: 1px solid transparent !important;
+            border-bottom-width: 0px !important;
+            color: black;
+            font-size: small;
+            line-height: inherit;
+        }
+
+
+        .x-form-layout-auto-label > * > .x-form-item-label {
+            width: 100px !important;
+        }
+
+        .x-panel .x-panel-header-default-framed-top {
+            border-bottom-width: 0px !important;
+        }
+    </style>
+
+</head>
+@(
+X.Window()
+    .ID("ProductionWeighing_Print")
+    .Width(700)
+    .Resizable(false)
+    .Height(220)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(20)
+    .Y(20)
+    .Title(ViewData["Titre"] + " : Criteria")
+    .BodyPadding(5)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.HBox)
+            .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch })
+            .Items
+            (
+    #region Zone A
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbCampagne")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Value(ViewData["Campagne"])
+                                .Store
+                                (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+
+                                ),
+                            X.ComboBox()
+                                    .ID("CmbStatut")
+                                    .ForceSelection(true)
+                                    .FieldLabel("Statut")
+                                    .TypeAhead(true)
+                                    .ForceSelection(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items(
+                                            new ListItem("{Tous}", "-1"),
+                                            new ListItem("Saisi", "NA"),
+                                            new ListItem("Finalized", "AP"),
+                                            new ListItem("Annulé", "CA")
+                                        )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Saisi", Value = "NA" }); })
+                        ),
+    #endregion
+    #region Zone B
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                            X.DateField().ID("txtDateDebut").FieldLabel("Debut").LabelAlign(LabelAlign.Right).Text(@StartDate),
+                            X.DateField().ID("txtDateFin").FieldLabel("Fin").LabelAlign(LabelAlign.Right).Text(@EndDate)
+                        )
+    #endregion
+
+
+            )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("")
+            .DirectEvents(de =>
+            {
+                de.Click.Url = Url.Action(ViewData["actionToDo"].ToString(), ViewData["ControllerName"].ToString());
+                de.Click.Before = "return validNew(App.ProductionWeighing_Print.id);";
+                de.Click.FormID = "#(return this.up('window').down('form');)";
+            }),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.ProductionWeighing_Print.doClose()")
+            .Cls("btncancel")
+    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Erreur : Sample Analysis ', msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+</script>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,186 @@
+﻿
+@model Tms.Classes.Shared.Sales.ConteneurShipViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+X.Window()
+    .ID("FormConteneurShip")
+    .Width(300)
+    .Resizable(false)
+    .Height(260)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    //.X(400)
+    .Y(20)
+    .Title("Conteneur : Detail")
+    .Layout(LayoutType.Form)
+    .Items(
+                X.FormPanel()
+                .Layout(LayoutType.VBox)
+                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+                .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .Items(
+
+                            X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                            X.Hidden().ID("hiddenRowversion").Value(Model._ConteneurShip.RowVersionKey),
+                            X.Hidden().ID("TxtConteneurShipID").Value(Model._ConteneurShip.ID),
+                            X.ComboBox()
+                                .ID("_cmbCampagne")
+                                .AllowBlank(false)
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                //.ReadOnly(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Update || Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                                .Value(Model._ConteneurShip.Campagne.Designation)
+                                .Store
+                                    (
+                                        X.Store()
+                                            .AutoLoad(true)
+                                            .Model
+                                            (
+                                                X.Model()
+                                                    .IDProperty("Designation")
+                                                    .Fields
+                                                    (
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                    )
+                                            )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                                     .Url(Url.Action("LoadCampagne", "Campagne"))
+                                                     .Reader(X.JsonReader().RootProperty("data"))
+                                        )                                                
+                                    ),
+                            X.TextField().ID("TxtDesignation").FieldLabel("Designation")
+                                .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConteneurShip.Libelle.ToString() : string.Empty)
+                                .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*")
+                            ,
+                            X.ComboBox().ID("CmbConteneurType")
+                            .AllowBlank(false).IndicatorCls("IndicatorRedStar")
+                            .IndicatorText("*")
+                            .FieldLabel("Type")
+                            .DisplayField("Designation")
+                            .ValueField("ID")
+                            //.LabelWidth(110)
+                            .LabelAlign(LabelAlign.Right)
+                            .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                            .ForceSelection(true)
+                            .TypeAhead(true)
+                            .QueryMode(DataLoadMode.Local)
+                            .TriggerAction(TriggerAction.All)
+                            .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConteneurShip.ConteneurType.ID : (int?)null)
+                                .Store(X.Store()
+                                        .AutoLoad(true)
+                                        .Model(X.Model()
+                                        .IDProperty("ID")
+                                                .Fields(
+                                                    new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                    new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                                )
+                                            )
+                                        .Proxy(X.AjaxProxy()
+                                            .Url(Url.Action("LoadActive", "ConteneurType"))
+                                            .Reader(X.JsonReader().RootProperty("data"))
+                                        )
+                                        ),
+                            X.ComboBox()
+                                .ID("_cmbShippingLine")
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .AllowBlank(false)                                                 
+                                .FieldLabel("Shipping Line")
+                                .IndicatorCls("IndicatorRedStar")
+                                .IndicatorText("*")
+                                .MatchFieldWidth(false)
+                                .ListConfig(new BoundList { MinWidth = 300 })
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._ConteneurShip.CompagnieMaritime.ID : (int?)null)
+                                .Store
+                                (
+                                                    X.Store()
+                                                    .AutoLoad(true)
+                                                    .Model
+                                                    (
+                                                         Html.X().Model()
+                                                        .IDProperty("ID")
+                                                        .Fields
+                                                        (
+                                                          new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                          new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                                     )
+                                                    .Proxy
+                                                    (
+                                                       Html.X().AjaxProxy()
+                                                       .Url(Url.Action("LoadActive", "CompagnieMaritime"))
+                                                       .Reader(Html.X().JsonReader().RootProperty("data"))
+                                                    )
+
+                                                )
+
+                    )
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitDestination")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormConteneurShip.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                })
+
+                    ,
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormConteneurShip.doClose()").Cls("btncancel")
+
+                )
+
+            
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            Ext.Msg.show({ title: 'Conteneur : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

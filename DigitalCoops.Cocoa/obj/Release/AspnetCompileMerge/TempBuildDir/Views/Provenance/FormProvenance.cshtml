@@ -1,0 +1,131 @@
+﻿
+@model Tms.Classes.Shared.ProvenanceViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(X.FormPanel()
+    .FieldDefaults(d => d.ReadOnly = Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+    .Items(
+            X.Window()
+            .ID("FormProvenance")
+            .Width(500)
+            .Resizable(false)
+            .Height(210)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            .Listeners(l =>
+            {
+                l.Close.Handler = "App.TmsViewPort.unmask();";
+                l.Show.Handler = "#{TxtDesignationProvenance}.focus()";
+            })
+            //.X(400)
+            .Y(20)
+            .Title("Origin : Detail")
+            .Layout(LayoutType.Form)
+            .Items(
+                    X.Hidden().ID("hiddenExecMode").Value(Model._ExecMode),
+                    X.Hidden().ID("hiddenRowversion").Value(Model._Provenance.RowVersionKey),
+                    X.Hidden().ID("TxtProvenanceID").Value(Model._Provenance.ID),
+                    X.TextField().ID("TxtDesignationProvenance").FieldLabel("Nom")
+                        .Text(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Provenance.Nom.ToString() : string.Empty)
+                        .LabelAlign(LabelAlign.Right).AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*"),
+                    X.ComboBox().ID("CmbProvenanceType").AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*").FieldLabel("Type").DisplayField("Designation").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                        .ForceSelection(true)
+                        .TypeAhead(true)
+                        .QueryMode(DataLoadMode.Local)
+                        .TriggerAction(TriggerAction.All)
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Provenance.ProvenanceType.ID : (int?)null)
+                            .Store(X.Store()
+                                    .AutoLoad(true)
+                                    .Model(Html.X().Model()
+                                    .IDProperty("ID")
+                                            .Fields(
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                    .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadProvenanceType", "ProvenanceType"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                                    ),
+                    X.ComboBox().ID("CmbPoleProvenance").AllowBlank(false).IndicatorCls("IndicatorRedStar").IndicatorText("*").FieldLabel("Type").DisplayField("Designation").ValueField("ID").LabelWidth(110).LabelAlign(LabelAlign.Right)
+                        .ListConfig(new BoundList { Width = 400, MinWidth = 300 })
+                        .ForceSelection(true)
+                        .TypeAhead(true)
+                        .QueryMode(DataLoadMode.Local)
+                        .TriggerAction(TriggerAction.All)
+                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._Provenance.PoleProvenance.ID : (int?)null)
+                            .Store(X.Store()
+                                    .AutoLoad(true)
+                                    .Model(Html.X().Model()
+                                    .IDProperty("ID")
+                                            .Fields(
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                    .Proxy(Html.X().AjaxProxy()
+                                        .Url(Url.Action("Load", "PoleProvenance"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                    )
+                                    )
+
+                    )
+            .Buttons(
+                X.Button()
+                .Text("OK")
+                .ID("BtnSubmitProvenance")
+                .Hidden(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? true : false)
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitFormMethod");
+                    de.Click.Before = "return validNew(App.FormProvenance.id);";
+                }),
+                X.Button()
+                .Text(Model._ExecMode == Tms.Components.Settings.EnumsDefinition.eExecMode.Consult ? "Fermer" : "Annuler")
+                .Handler("App.FormProvenance.doClose()").Cls("btncancel")
+
+                )
+
+            )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+            
+            Ext.Msg.show({ title: 'Origin : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,669 @@
+﻿<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap.css" />
+    @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">*@
+
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 100px !important;
+    }
+</style>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<script src="~/Scripts/FormatAmount.js"></script>
+<script src="~/Scripts/renderers.js"></script>
+<script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
+<script type="text/javascript">
+    var SetExcelList = function () {
+        var mList = getRowsForExcel(App.grpListeInventaire.columnManager.getColumns(), App.grpListeInventaire.getRowsValues({ visibleOnly: true }));
+        var BaseUrl = App.BaseUrl.value;
+        if (mList) {
+            Ext.net.DirectMethod.request({
+                url: BaseUrl + "/Report/ExportToExcel",
+                cleanRequest: true,
+                isUpload: true,
+                params: {
+                    ItemList: mList
+                }
+            });
+            return true;
+        }
+        else
+            return false;
+    };
+
+    var renderObject = function (value) {
+        if (!Ext.isEmpty(value)) {
+            if (value.AsString)
+                return value.AsString;
+        }
+
+        return value;
+    }
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+
+        var icon_url = Overview.getBootStrapIcons(value);
+
+        return Ext.String.format(tpl, icon_url);
+    }
+
+
+    var iconRenderer = function (value, metaData, record) {
+
+        metaData.css = Overview.getIcons(value);
+
+    }
+
+
+    var Overview =
+    {
+        getBootStrapIcons: function (value) {
+            if (value === 0) {
+                return 'glyphicon-remove red';
+            }
+            else if (value == 1) {
+                return  'glyphicon-ok green';
+            }
+            else if (value == 2) {
+                return 'glyphicon-file blue';
+            }
+            else if (value == 3) {
+                return 'glyphicon-ban-circle red';
+            }
+            else if (value == 4) {
+                return 'glyphicon-ban-circle red';
+            }
+        },
+
+        SummaryIV: function () {
+            var nbrOfrows = App.grpListeInventaire.getStore().getCount();
+            var totalNet = App.storeListeInventaire.sum('PoidsNetAccepte') || 0;
+
+            totalNet = FormatAmount(totalNet);
+            App.lblSummaryInventaire.setHtml("Nbre Inventaire : "+ nbrOfrows);
+        },
+
+        resetButtons: function () {
+
+            App.btnCancel.disable();
+            App.btnApprove.disable();
+            App.btnAjust.disable();
+            App.mnuPrintStockInventory.disable();
+            if (App.rowInventaire.hasSelection()) {
+
+                var isDesactive = App.rowInventaire.selected.items[0].data.Desactive;
+                var isFinalized = App.rowInventaire.selected.items[0].data.EstFinalise;
+
+                if (isDesactive === false) {
+
+                    if (App.ivhiddenPermPrintInventory.value == 'true')
+                        App.mnuPrintStockInventory.enable();
+
+                    if (App.ivhiddenPermDesactiver.value == 'true' && isFinalized === false)
+                        App.btnCancel.enable();
+
+                    if (App.ivhiddenPermApprove.value == 'true' && isFinalized === false)
+                        App.btnApprove.enable();
+
+                    if (App.ivhiddenPermAjust.value == 'true' && isFinalized === false)
+                        App.btnAjust.enable();
+                }
+                else {
+                    App.btnCancel.disable();
+                    App.btnApprove.disable();
+                    App.btnAjust.disable();
+                    App.mnuPrintStockInventory.disable();
+                }
+
+            }
+        }
+    }
+
+</script>
+
+@*@model Tms.Classes.Business.BonDeLivraison*@
+@{
+    Layout = null;
+    var X = Html.X();
+    //string StartDate = DateTime.Now.AddDays(-30).ToShortDateString();
+    //string EndDate = DateTime.Now.ToShortDateString();
+    string BaseUrl = (new Tms.Classes.Shared.Parametres(0).Base_url);
+}
+
+@(Html.X().ResourceManager().AjaxTimeout(3600000))
+
+<form id="tms_form">
+    @(X.Viewport()
+        .Layout(LayoutType.Border)
+        .ID("TmsViewPort")
+        .Items
+            (
+            X.Hidden().ID("BaseUrl").Value(@BaseUrl),
+            X.Hidden().ID("ivhiddenPermDesactiver").ReadOnly(true),
+            X.Hidden().ID("ivhiddenPermApprove").ReadOnly(true),
+            X.Hidden().ID("ivhiddenPermPrintInventory").ReadOnly(true),
+            X.Hidden().ID("ivhiddenPermAjust").ReadOnly(true),
+    #region Boutons Actions
+            X.Panel()
+                .ID("pnlNorth")
+                .Region(Region.North)
+                .Layout(LayoutType.Border)
+                .TopBar(new Toolbar()
+                {
+                    Items =
+                    {
+                        X.Button()
+                            .ID("btnFilter")
+                            .IconCls("action_filter_02")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.btnFilter)
+                            .Disable(false)
+                            .DirectEvents
+                                (
+                                de =>
+                                {
+                                    de.Click.Url  = Url.Action("OnFilter");
+                                    de.Click.EventMask.ShowMask = true;
+                                }
+                                ),
+
+                        X.Button()
+                            .ID("btnRefresh")
+                            .IconCls("action_refresh_01")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .Disable(false)
+                            .DirectEvents
+                                (
+                                de =>
+                                {
+                                    de.Click.Url  = Url.Action("OnRefresh","InventaireStock");
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemCampagne", Encode=true, Value= "#{cmbFiltreCampagne}.getValue()", Mode=ParameterMode.Raw});
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemMagasin", Encode=true, Value= "#{cmbFiltreMagasin}.getValue()", Mode=ParameterMode.Raw});
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriode", Encode=true, Value= "#{cmbFiltrePeriode}.getValue()", Mode=ParameterMode.Raw});
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemSite", Encode=true, Value= "#{cmbFiltreSite}.getValue()", Mode=ParameterMode.Raw});
+                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemType", Encode=true, Value= "#{cmbType}.getValue()", Mode=ParameterMode.Raw});
+                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodStart", Value= "#{dtpStartDate}.getRawValue()",   Mode=ParameterMode.Raw});
+                                    //de.Click.ExtraParams.Add(new Parameter {  Name ="ItemPeriodEnd", Value= "#{dtpEndDate}.getRawValue()",     Mode=ParameterMode.Raw});
+                                    de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatut", Encode=false, Value= "#{CmbFiltreStatut}.getValue()", Mode=ParameterMode.Raw});
+                                    de.Click.Success = "App.inventaireCP.setTitle('Site : ' + App.cmbFiltreSite.rawValue + ', Campagne : '+ App.cmbFiltreCampagne.rawValue + ', Magasin : '+ App.cmbFiltreMagasin.rawValue + ' , Periode : ' + App.cmbFiltrePeriode.rawValue + ', Statut : ' + App.CmbFiltreStatut.rawValue)";
+                                    de.Click.EventMask.ShowMask = true;
+                                }
+                                ),
+
+                        X.Button()
+                            .ID("btnNew")
+                            .IconCls("action_new_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnNew)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disabled(false)
+                            .DirectEvents
+                                (
+                                de =>
+                                    {
+                                        de.Click.Url  = Url.Action("OnAdd","InventaireStock");
+                                        de.Click.Success = "App.FormInventaireStock.setTitle('Inventaire de Stock : Nouveau')";
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                ),
+                        X.Button()
+                            .ID("btnAjust")
+                            //.IconCls("glyphicon glyphicon-folder green")
+                            .Icon(Icon.Application)
+                            .Text("Ajustement")
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disabled(true)
+                            .DirectEvents
+                                (
+                                de =>
+                                    {
+
+                                        de.Click.Url = Url.Action("onAjust","InventaireStock");
+                                        //de.Click.Success = "App.FormApprouveStock.setTitle('Inventaire de Stock : Approuver')";
+                                        de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeInventaire}.getSelectionModel().getSelection()[0].data"});
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                ),
+                        X.Button()
+                            .ID("btnApprove")
+                            .IconCls("glyphicon glyphicon-ok green")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnApprove)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Disabled(true)
+                            .DirectEvents
+                                (
+                                de =>
+                                    {
+
+                                        de.Click.Url = Url.Action("onApprove","InventaireStock");
+                                        de.Click.Success = "Overview.resetButtons();";
+                                        de.Click.ExtraParams.Add(new Parameter { Name="ItemSelected", Mode=ParameterMode.Raw, Encode=true, Value="#{grpListeInventaire}.getSelectionModel().getSelection()[0].data"});
+                                        de.Click.EventMask.ShowMask = true;
+                                    }
+                                ),
+
+                        X.SplitButton()
+                            .ID("btnPrint")
+                            .IconCls("action_print_02")
+                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                            .Disabled(false)
+                            .Cls("ButtonStyle")
+                            .Border(false)
+                            .Menu
+                                (
+                                    new Menu()
+                                    {
+                                        Items =
+                                        {
+
+                                            X.MenuItem()
+                                                .ID("mnuPrintStockInventory")
+                                                .Text("Inventaire de Stock")
+                                                .Disabled(true)
+                                                .DirectEvents
+                                                (
+                                                    de=>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnPrintStockInventory","InventaireStock");
+                                                        de.Click.ExtraParams.Add(new Parameter { Name="ItemInventaire", Mode=ParameterMode.Raw, Encode=false, Value="#{grpListeInventaire}.getSelectionModel().getSelection()[0].data.ID"});
+                                                    }
+                                                ),
+                                            X.MenuItem()
+                                                .ID("mnuPrintList")
+                                                .Text("Liste")
+                                                .DirectEvents
+                                                (
+                                                    de=>
+                                                    {
+                                                        de.Click.Url = Url.Action("OnPrintList","InventaireStock");
+                                                        de.Click.EventMask.ShowMask = true;
+                                                    }
+                                                )
+                                            //X.MenuItem()
+                                            //    .ID("mnuPrintStockStatus")
+                                            //    .Text("Statut Stock")
+                                            //    .DirectEvents
+                                            //    (
+                                            //        de=>
+                                            //        {
+                                            //            de.Click.Url = Url.Action("OnPrintStockItems", "SituationStockItem");
+                                            //            de.Click.EventMask.ShowMask = true;
+                                            //        }
+                                            //    )
+                                            }
+                                        }
+                                    ),
+
+                        X.ToolbarFill(),
+
+                        X.Button()
+                            .ID("btnActions")
+                            .Text("Actions")
+                            .Border(false)
+                            .Cls("ButtonStyle")
+                            .IconCls("menu_04")
+                            .Disabled(false)
+                            .Menu
+                                (
+                                new Menu()
+                                {
+                                    Height = 120,
+                                    Items =
+                                    {
+                                        X.MenuItem()
+                                            .ID("mnuExport")
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnPrint)
+                                            .Icon(Icon.PageExcel)
+                                            .Handler("SetExcelList();"),
+
+                                        X.MenuItem()
+                                            .ID("btnCancel")
+                                            .Icon(Icon.Cross)
+                                            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                                            .Cls("ButtonStyle")
+                                            .Border(false)
+                                            .Disabled(true)
+                                            .DirectEvents
+                                            (
+                                                de =>
+                                                {
+                                                    de.Click.Url = Url.Action("OnCancel","InventaireStock");
+                                                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeInventaire}.getSelectionModel().getSelection()[0].data" });
+                                                    de.Click.EventMask.ShowMask = true;
+                                                    de.Click.Confirmation.ConfirmRequest = true;
+                                                    de.Click.Confirmation.Title = "Inventaire";
+                                                    de.Click.Confirmation.BeforeConfirm = "return SetMsgBoxConfirm(config,#{grpListeInventaire}.getSelectionModel().getSelection()[0].data.Desactive)";
+                                                    de.Click.Success = "Overview.resetButtons();";
+                                                }
+                                            )
+                                    }
+                                }
+                            )
+                        }
+                }
+            ),
+    #endregion
+    #region Critere
+            X.FormPanel()
+                .ID("inventaireCP")
+                .TitleConfig(new PanelTitle { Cls = "title_font_color", Text = "Inventaire de Stock - overview" })
+                .Region(Region.North)
+                .Floatable(false)
+                .Border(false)
+                .Collapsed(true)
+                .Collapsible(true)
+                .BodyPadding(5)
+                .Frame(true)
+                .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Start })
+                .Items
+                (
+    #region Zone A
+                    X.Container()
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbFiltreSite")
+                                .FieldLabel("Site")
+                                .DisplayField("Nom")
+                                .ValueField("ID")
+                                .MatchFieldWidth(false)
+                                .ListConfig(new BoundList { MinWidth = 300 })
+                                .LabelAlign(LabelAlign.Right)
+                                .TypeAhead(false)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .ForceSelection(true)
+                                .ReadOnly(true)
+                                .Value((int)ViewBag.SiteParDefaut)
+                                .Store(
+                                        X.Store()
+                                        .AutoLoad(true)
+                                        .Model(
+                                                Html.X().Model()
+                                                .IDProperty("ID")
+                                                .Fields(
+                                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                            new ModelField("Nom", ModelFieldType.String) { Mapping = "Nom" }
+                                                        )
+                                            )
+                                        .Proxy(
+                                                    Html.X().AjaxProxy()
+                                                    .Url(Url.Action("LoadSiteAll", "Site"))
+                                        .Reader(
+                                                    Html.X().JsonReader().RootProperty("data")
+                                                    )
+                                        )
+                                    )
+                                    .Listeners
+                                    (
+                                        li =>
+                                        {
+                                            li.Select.Handler = "if (App.cmbFiltreSite.value) {App.cmbFiltreMagasin.clearValue()}; App.cmbFiltreMagasin.getStore().load();";
+                                            li.AfterRender.Handler = "if (App.cmbFiltreSite.value) {App.cmbFiltreMagasin.clearValue()}; App.cmbFiltreMagasin.getStore().load();";
+                                            //li.Change.Handler = "App.cmbMouvementType.clearValue(); App.cmbMouvementType.getStore().load();";
+                                        }
+                                    ),
+                            X.ComboBox()
+                                .ID("cmbFiltreCampagne")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value("")
+                                .Store
+                                    (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                    ),
+                            X.ComboBox()
+                                .ID("cmbFiltreMagasin")
+                                .FieldLabel("Magasin")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Value((int)ViewBag.MagasinParDefaut)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                            .Url(Url.Action("LoadActiveMagasin", "Magasin"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                            .Parameters
+                                            (
+                                                ps =>
+                                                {
+                                                    ps.Add(new StoreParameter("SiteID", "App.cmbFiltreSite.getValue()", ParameterMode.Raw));
+                                                }
+                                            )
+                                //.Listeners
+                                //(
+                                //    li =>
+                                //    {
+                                //        li.Load.Handler = "var combo = App.cmbFiltreMagasin; combo.setValue(records.length > 0 ? records[0].data.ID : 0);";
+                                //    }
+                                //)
+                                )
+
+                    ),
+    #endregion
+    #region zone B
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                        X.ComboBox()
+                                .ID("cmbFiltrePeriode")
+                                .FieldLabel("Periode")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                            .Url(Url.Action("LoadActivePeriodeAll", "Periode"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                        .Listeners
+                                        (
+                                            li =>
+                                            {
+                                                li.Load.Handler = "var combo = App.cmbFiltrePeriode; combo.setValue(records.length > 0 ? records[0].data.ID : 0);";
+                                            }
+                                        )
+                                ),
+                            X.ComboBox()
+                                    .ID("CmbFiltreStatut")
+                                    .ForceSelection(true)
+                                    .FieldLabel("Statut")
+                                    .TypeAhead(true)
+                                    .ForceSelection(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items(
+                                            new ListItem("{Tous}", "-1"),
+                                            new ListItem("Saisi", "NA"),
+                                            new ListItem("Approuvé", "AP"),
+                                            new ListItem("Annulé", "CA")
+                                    )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                        ),
+    #endregion
+    #region Zone D
+                    X.Container()
+                        .Flex(2)
+                        .Border(false)
+                        .Layout(LayoutType.HBox)
+                        .LayoutConfig(new HBoxLayoutConfig { Align = HBoxAlign.Stretch, Pack = BoxPack.Center })
+                        .Items
+                            (
+                                X.Container()
+                                .Layout(LayoutType.VBox)
+                                .Flex(1)
+                                .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Center, Pack = BoxPack.Center })
+                                    .Items(
+                                        X.Label().ID("lblSummaryInventaire").Text("Resume").EmptyText("")
+                                        )
+                            )
+    #endregion
+                ),
+    #endregion
+    #region GridPanel
+            X.GridPanel()
+                .Layout(LayoutType.Fit)
+                .ID("grpListeInventaire")
+                .Region(Region.Center)
+                .ForceFit(false)
+                .AllowDeselect(false)
+                .Store
+                (
+                    X.StoreFor<Tms.Classes.Business.stock.Inventaire>()
+                    .ID("storeListeInventaire")
+                    .PageSize(100)
+                    .RemotePaging(false)
+                    .AutoLoad(true)
+                    .Proxy
+                    (
+                                 Html.X().AjaxProxy().Timeout(480000)
+                                .Url(Url.Action("Select", "InventaireStock"))
+                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                            )
+                              .Parameters
+                              (
+                                ps =>
+                                {
+                                    ps.Add(new StoreParameter("ItemCampagne", "#{cmbFiltreCampagne}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemMagasin", "#{cmbFiltreMagasin}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemPeriode", "#{cmbFiltrePeriode}.getValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemSite", "#{cmbFiltreSite}.getValue()", ParameterMode.Raw));
+                                    //ps.Add(new StoreParameter("ItemType", "#{cmbType}.getValue()", ParameterMode.Raw));
+                                    //ps.Add(new StoreParameter("ItemPeriodStart", "#{dtpStartDate}.getRawValue()", ParameterMode.Raw));
+                                    //ps.Add(new StoreParameter("ItemPeriodEnd", "#{dtpEndDate}.getRawValue()", ParameterMode.Raw));
+                                    ps.Add(new StoreParameter("ItemStatut", "#{CmbFiltreStatut}.getValue()", ParameterMode.Raw));
+                                }
+                            )
+                            .Listeners
+                            (
+                             ls =>
+                             {
+                                 ls.BeforeLoad.Handler = "Ext.net.Mask.show();";
+                                 ls.Load.Handler = "Overview.SummaryIV(); Ext.net.Mask.hide();";
+                                 ls.Add.Handler = "SelectNewRecordAddedOnGrid(records, #{grpListeInventaire}.id); Overview.SummaryIV(); Overview.resetButtons();";
+                                 ls.Update.Handler = "Overview.resetButtons(); Overview.SummaryIV();";
+                             }
+                          )
+                       )
+                       .ColumnModel
+                       (
+                            X.Column().Text("").DataIndex("mIcon").Width(40).Hideable(false).Renderer("renderIcon").Filterable(false),
+                            X.Column().Text("Magasin").DataIndex("MagasinAsString").Flex(1),
+                            X.Column().Text("Inv N°").DataIndex("Numero").Flex(1),
+                            X.Column().Text("Date/Heure").DataIndex("DateInventaireAsString").Flex(1),
+                            X.Column().Text("Periode").DataIndex("PeriodeAsString").Flex(1),
+                            X.Column().Text("Nbr de sacs").DataIndex("Quantite").Flex(1),
+                            X.Column().Text("Poids Brut").DataIndex("PoidsBrutAsString").Flex(1),
+                            X.Column().Text("Tare des sacs").DataIndex("TareSacsAsString").Flex(1),
+                            X.Column().Text("Tare des palettes").DataIndex("TarePalettesAsString").EmptyCellText("0").Flex(1),
+                            X.Column().Text("Net Livré").DataIndex("PoidsNetLivreAsString").Flex(1),
+                            X.Column().Text("Retention").DataIndex("RetentionAsString").Flex(1),
+                            X.Column().Text("Accepté").DataIndex("PoidsNetAccepteAsString").Flex(1),
+                            X.Column().Text("Qte Physique").DataIndex("QuantitePhysiqueAsString").EmptyCellText("0").Flex(1),
+                            X.Column().Text("Poids Physique").DataIndex("PoidsBrutPhysiqueAsString").EmptyCellText("0").Flex(1),
+                            X.Column().Text("Utilisateur Creation").DataIndex("UtilisateurCreation").Flex(1).Hidden(true),
+                            X.DateColumn().Text("Date Creation ").DataIndex("DateCreation").Flex(1).Hidden(true).Renderer("renderDateLong"),
+                            X.Column().Text("Utilisateur Modification").DataIndex("UtilisateurModification").Flex(1).Hidden(true),
+                            X.DateColumn().Text("Date Modification").DataIndex("DateModification").Flex(1).Hidden(true).Renderer("renderDateLong")
+                         )
+                         .BottomBar
+                         (
+                             X.PagingToolbar()
+                            .HideRefresh(true)
+                            .Plugins(X.ProgressBarPager())
+                         )
+                         .Plugins
+                         (
+                           X.FilterHeader()
+                         )
+                        .SelectionModel
+                        (
+                          X.RowSelectionModel()
+                           .ID("rowInventaire")
+                           .Mode(SelectionMode.Single)
+                           .AllowDeselect(false)
+                        )
+                        .View(
+                            X.GridView().LoadingText("Chargement...")
+                    )
+                       .Listeners(l => { l.Select.Fn = "Overview.resetButtons"; l.Deselect.Fn = "Overview.resetButtons"; })
+                       .DirectEvents(de =>
+                       {
+                           de.RowDblClick.Url = Url.Action("OnConsult","InventaireStock");
+                           de.RowDblClick.CleanRequest = true;
+                           de.RowDblClick.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{rowInventaire}.getSelected().items[0].data" });
+                           de.RowDblClick.EventMask.ShowMask = true;
+                           de.RowDblClick.Success = "App.FormInventaireStock.setTitle('Inventaire : Detail')";
+                       }
+                       )
+    #endregion
+        )
+    )
+</form>
+

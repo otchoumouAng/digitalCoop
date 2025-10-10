@@ -1,0 +1,39 @@
+﻿@*@model IEnumerable<Tms2017.MVC.Models.Module>*@
+@model IEnumerable<Tms.Classes.Security.Module>
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+</head>
+<script src="~/Scripts/FunctionHelpers.js"></script>
+<style>
+    .x-body{
+        background-color: #fff;
+    }
+    p.text-center {
+        font-size:small;
+    }
+</style>
+
+@foreach (var Item in Model)
+{
+    <a href="javascript:addTab(window.parent.Ext.getCmp('tabCenter'),'id'+'@Item.Nom+@Item.ID', '@Item.FullUrl', this,'@Item.Nom');">
+        <div class="col-xs-4 col-md-4 item-wrap">
+            <img class="dimension" src="../Images/icons/@Item.IconModule" />
+
+            <p class="text-center">@Item.Nom</p>
+        </div>
+    </a>
+}
+
+@*@foreach (var item in Model)
+{
+    foreach (var subItem in item.Items)
+    {       
+    <a href="javascript:addTab(window.parent.Ext.getCmp('tabCenter'),'id'+'@subItem.Title+@subItem.ID', '@subItem.Url', this,'@subItem.Title');">
+        <div class="col-xs-4 col-md-4 item-wrap">
+            <img class="dimension" src="@subItem.Icon" />
+
+            <p class="text-center">@subItem.Title</p>
+        </div>
+    </a>
+    }
+}*@

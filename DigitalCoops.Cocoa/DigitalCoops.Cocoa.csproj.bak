@@ -1,0 +1,1556 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9B970F8D-6705-4264-A5BE-0D8C119BF0A9}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tms2017.MVC</RootNamespace>
+    <AssemblyName>Tms2017.MVC</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>CrystalReports_Dll\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>CrystalReports_Dll\CrystalDecisions.ReportSource.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>CrystalReports_Dll\CrystalDecisions.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Charts.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.CodeParser.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Data.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.DataAccess.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Office.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.PivotGrid.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Sparkline.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.ASPxThemes.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.Mvc5.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.Resources.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Xpo.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraCharts.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGauges.v16.2.Core, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v16.2, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v16.2.Web, Version=16.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="Ext.Net, Version=4.2.2.0, Culture=neutral, PublicKeyToken=2e12ce3d0176cd87, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ext.NET.MVC.4.2.2\lib\net45\Ext.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ext.Net.Utilities, Version=2.5.0.0, Culture=neutral, PublicKeyToken=2c34ac34702a3c23, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ext.NET.Utilities.2.5.0\lib\Ext.Net.Utilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Transformer.NET, Version=2.1.1.22883, Culture=neutral, PublicKeyToken=e274d618e7c603a7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Transformer.NET.2.1.1\lib\net35\Transformer.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0.6\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.3.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.3.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.3.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.3.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\ExtNetConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AnalysePhysiqueController.cs" />
+    <Compile Include="Controllers\AnalyseurController.cs" />
+    <Compile Include="Controllers\ApplicationController.cs" />
+    <Compile Include="Controllers\BanqueController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BonDeLivraisonController.cs" />
+    <Compile Include="Controllers\CertificationController.cs" />
+    <Compile Include="Controllers\ClassificationFevesController.cs" />
+    <Compile Include="Controllers\ContratPeriodeController.cs" />
+    <Compile Include="Controllers\ContratPeriodeTypeController.cs" />
+    <Compile Include="Controllers\DailyPriceController.cs" />
+    <Compile Include="Controllers\DeliveryCodingController.cs" />
+    <Compile Include="Controllers\DestinationTypeController.cs" />
+    <Compile Include="Controllers\ExtNetController.cs" />
+    <Compile Include="Controllers\CampagneController.cs" />
+    <Compile Include="Controllers\FactureController.cs" />
+    <Compile Include="Controllers\FactureDeductionTypeController.cs" />
+    <Compile Include="Controllers\FactureValorisationTypeController.cs" />
+    <Compile Include="Controllers\FonctionController.cs" />
+    <Compile Include="Controllers\LaboratoireController.cs" />
+    <Compile Include="Controllers\LivraisonTypeController.cs" />
+    <Compile Include="Controllers\LivraisonController.cs" />
+    <Compile Include="Controllers\FinancementController.cs" />
+    <Compile Include="Controllers\FinancementTypeController.cs" />
+    <Compile Include="Controllers\FournisseurController.cs" />
+    <Compile Include="Controllers\FournisseurGroupeController.cs" />
+    <Compile Include="Controllers\FournisseurTypeController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MiseEnCompteTypeController.cs" />
+    <Compile Include="Controllers\ModuleController.cs" />
+    <Compile Include="Controllers\PayementModeController.cs" />
+    <Compile Include="Controllers\PayementTransactionTypeController.cs" />
+    <Compile Include="Controllers\PeseeController.cs" />
+    <Compile Include="Controllers\PeseeRefouleeController.cs" />
+    <Compile Include="Controllers\PieceTypeController.cs" />
+    <Compile Include="Controllers\PontBasculeController.cs" />
+    <Compile Include="Controllers\PricingController.cs" />
+    <Compile Include="Controllers\PrixNegocieModeApplicationController.cs" />
+    <Compile Include="Controllers\ProduitController.cs" />
+    <Compile Include="Controllers\ProtocoleController.cs" />
+    <Compile Include="Controllers\ProvenanceController.cs" />
+    <Compile Include="Controllers\ProvenanceTypeController.cs" />
+    <Compile Include="Controllers\RemboursementDirectTypeController.cs" />
+    <Compile Include="Controllers\RemboursementModeController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\ReportViewerController.cs" />
+    <Compile Include="Controllers\PrelevementModeController.cs" />
+    <Compile Include="Controllers\ExportateurController.cs" />
+    <Compile Include="Controllers\DestinationController.cs" />
+    <Compile Include="Controllers\RecolteController.cs" />
+    <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Controllers\SacTypeController.cs" />
+    <Compile Include="Controllers\TransitaireController.cs" />
+    <Compile Include="Controllers\TransporteurController.cs" />
+    <Compile Include="Controllers\SiteController.cs" />
+    <Compile Include="Controllers\SpotPriceController.cs" />
+    <Compile Include="Controllers\StatusStringController.cs" />
+    <Compile Include="Controllers\UtilisateurController.cs" />
+    <Compile Include="Controllers\WorkspaceController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ExtNetModel.cs" />
+    <Compile Include="Models\FournisseurViewModel.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Module.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\BanqueListe.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\FrmPDFViewer.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reports\FrmPDFViewer.aspx.designer.cs">
+      <DependentUpon>FrmPDFViewer.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\ReportWithParam.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\rptFarmerCard.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptFarmerCard.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\XtraReportListBank.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Readme\Ext.NET.Utilities\BREAKING_CHANGES.txt" />
+    <Content Include="App_Readme\Ext.NET.Utilities\LICENSE.txt" />
+    <Content Include="App_Readme\Ext.NET.Utilities\README.txt" />
+    <Content Include="App_Readme\Transformer.NET\LICENSE.txt" />
+    <Content Include="App_Readme\Transformer.NET\README.txt" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\CustomStyles.css" />
+    <Content Include="Content\IconsStyles.css" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.CrystalReports.Design.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.CrystalReports.Engine.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.ClientDoc.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.CommLayer.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.CommonControls.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.CommonObjectModel.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.Controllers.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.CubeDefModel.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.DataDefModel.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.DataSetConversion.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.ObjectFactory.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.Prompting.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.ReportDefModel.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportAppServer.XmlSerialize.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.ReportSource.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.Shared.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.Web.dll" />
+    <Content Include="CrystalReports_Dll\CrystalDecisions.Windows.Forms.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Dashboard.v16.2.Web.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Dashboard.v16.2.Win.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.DataAccess.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.AuditTrail.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Design.BOEditorUI.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Design.DynamicTypesManager.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Design.ModelEditor.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.DesignCore.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.HtmlPropertyEditor.Web.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.PivotChart.Web.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Reports.Web.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Scheduler.Web.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Security.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Web.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.ExpressApp.Win.Design.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Snap.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Web.ASPxScheduler.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Web.Bootstrap.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Web.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Carousel.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Charts.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Charts.v16.2.VisualStudio.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Controls.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Core.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Core.v16.2.Design.Wizards.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Core.v16.2.Extensions.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.DataAccess.v16.2.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Diagram.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Docking.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Gauges.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Grid.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.LayoutControl.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Map.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.NavBar.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.PdfViewer.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.PivotGrid.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Printing.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.PropertyGrid.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.ReportDesigner.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Ribbon.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.RichEdit.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Scheduler.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.Spreadsheet.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpf.TreeMap.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.Xpo.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraBars.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraCharts.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraCharts.v16.2.Web.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraDiagram.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraEditors.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraGauges.v16.2.Design.Win.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraGrid.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraLayout.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraMap.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraNavBar.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraPdfViewer.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraPivotGrid.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraPrinting.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraReports.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraReports.v16.2.Service.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraRichEdit.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraScheduler.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraSpellChecker.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraSpreadsheet.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraTreeList.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraTreeMap.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraVerticalGrid.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\Design\DevExpress.XtraWizard.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\DevExpress.BonusSkins.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Charts.Designer.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Charts.Designer.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Charts.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.CodeConverter.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.CodeParser.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Web.dll" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Web.Mvc.dll" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Web.Mvc.xml" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Web.Mvc5.dll" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Web.xml" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Win.dll" />
+    <Content Include="Dll devExpress\DevExpress.Dashboard.v16.2.Win.xml" />
+    <Content Include="Dll devExpress\DevExpress.Data.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Data.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.DataAccess.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.DataAccess.v16.2.UI.dll" />
+    <Content Include="Dll devExpress\DevExpress.DataAccess.v16.2.UI.xml" />
+    <Content Include="Dll devExpress\DevExpress.DataAccess.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.DemoData.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.DemoData.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.DemoReports.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.DevAV.v16.2.Data.dll" />
+    <Content Include="Dll devExpress\DevExpress.DevAV.v16.2.Reports.dll" />
+    <Content Include="Dll devExpress\DevExpress.Diagram.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Diagram.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Docs.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Docs.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Drawing.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.EasyTest.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.EasyTest.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.AuditTrail.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.AuditTrail.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Chart.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Chart.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Chart.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Chart.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Chart.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Chart.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.CloneObject.Mobile.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.CloneObject.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.CloneObject.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ConditionalAppearance.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ConditionalAppearance.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Dashboards.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Dashboards.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Dashboards.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.DataService.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Demos.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Demos.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.EasyTest.WebAdapter.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.EasyTest.WinAdapter.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.EF.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.EF.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.FileAttachment.Mobile.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.FileAttachment.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.FileAttachment.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.FileAttachment.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.FileAttachment.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.HtmlPropertyEditor.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.HtmlPropertyEditor.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Images.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Kpi.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Kpi.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Maps.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Maps.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Mobile.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Notifications.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Notifications.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Notifications.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Notifications.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Notifications.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Notifications.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Objects.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotChart.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotChart.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotChart.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotChart.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotChart.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotChart.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotGrid.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotGrid.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotGrid.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.PivotGrid.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Reports.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Reports.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Reports.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Reports.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Reports.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Reports.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.Mobile.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ReportsV2.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Scheduler.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Scheduler.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Scheduler.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Scheduler.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Scheduler.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Scheduler.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ScriptRecorder.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ScriptRecorder.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ScriptRecorder.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ScriptRecorder.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ScriptRecorder.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ScriptRecorder.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Security.EF.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Security.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Security.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Security.Xpo.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.StateMachine.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.StateMachine.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.TreeListEditors.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.TreeListEditors.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.TreeListEditors.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.TreeListEditors.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.TreeListEditors.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.TreeListEditors.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Validation.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Validation.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Validation.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Validation.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Validation.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Validation.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ViewVariantsModule.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.ViewVariantsModule.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Workflow.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Workflow.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Workflow.Win.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Workflow.Win.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Xpo.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.ExpressApp.Xpo.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Images.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Map.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Map.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.DataModel.dll" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.DataModel.EF6.dll" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.DataModel.EF6.xml" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.DataModel.EFCore.dll" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.DataModel.WCF.dll" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.DataModel.WCF.xml" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.ViewModel.dll" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.ViewModel.xml" />
+    <Content Include="Dll devExpress\DevExpress.Mvvm.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Office.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Office.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Pdf.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Pdf.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Pdf.v16.2.Drawing.dll" />
+    <Content Include="Dll devExpress\DevExpress.Pdf.v16.2.Drawing.xml" />
+    <Content Include="Dll devExpress\DevExpress.Persistent.Base.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Persistent.Base.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Persistent.BaseImpl.EF.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Persistent.BaseImpl.EF.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Persistent.BaseImpl.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Persistent.BaseImpl.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.PivotGrid.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.PivotGrid.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Printing.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Printing.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.RichEdit.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.RichEdit.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.SharePoint.2013.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Snap.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Snap.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Snap.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Snap.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.Snap.v16.2.Extensions.xml" />
+    <Content Include="Dll devExpress\DevExpress.Snap.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Sparkline.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Sparkline.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.SpellChecker.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.SpellChecker.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Spreadsheet.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Spreadsheet.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.TreeMap.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.TreeMap.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Tutorials.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Utils.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Utils.v16.2.UI.dll" />
+    <Content Include="Dll devExpress\DevExpress.Utils.v16.2.UI.xml" />
+    <Content Include="Dll devExpress\DevExpress.Utils.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxGauges.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxGauges.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxHtmlEditor.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxHtmlEditor.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxPivotGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxPivotGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxRichEdit.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxRichEdit.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxScheduler.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxScheduler.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxSpellChecker.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxSpellChecker.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxSpreadsheet.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxSpreadsheet.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxThemes.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxTreeList.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.ASPxTreeList.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.Bootstrap.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.Bootstrap.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.Mvc.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.Mvc.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Web.Mvc5.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.Resources.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Web.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Workflow.Activities.v16.2.Design.dll" />
+    <Content Include="Dll devExpress\DevExpress.Workflow.Activities.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Carousel.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Carousel.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Charts.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Charts.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Controls.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Controls.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Core.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Core.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Core.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.DataAccess.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.DemoBase.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Diagram.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Diagram.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Docking.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Docking.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.DocumentViewer.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.DocumentViewer.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Gauges.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Gauges.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Grid.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Grid.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Grid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Grid.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Grid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Layout.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Layout.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.LayoutControl.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.LayoutControl.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Map.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Map.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.NavBar.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.NavBar.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.PdfViewer.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.PdfViewer.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.PivotGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.PivotGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Printing.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Printing.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.PropertyGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.PropertyGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.ReportDesigner.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.ReportDesigner.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Ribbon.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Ribbon.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.RichEdit.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.RichEdit.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Scheduler.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Scheduler.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.SpellChecker.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.SpellChecker.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Spreadsheet.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Spreadsheet.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.DXStyle.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.HybridApp.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.LightGray.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.MetropolisDark.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.MetropolisLight.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2007Black.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2007Blue.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2007Silver.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2010Black.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2010Blue.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2010Silver.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2013.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2013DarkGray.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2013LightGray.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2016Black.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2016Colorful.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Office2016White.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.Seven.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.TouchlineDark.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.Themes.VS2010.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.TreeMap.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpf.TreeMap.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpo.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpo.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.Xpo.v16.2.Extensions.xml" />
+    <Content Include="Dll devExpress\DevExpress.Xpo.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraBars.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraBars.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.UI.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.UI.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.Web.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.Web.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.Wizard.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.Wizard.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraCharts.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraDiagram.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraDiagram.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraEditors.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraEditors.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraGauges.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraGauges.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraGauges.v16.2.Presets.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraGauges.v16.2.Presets.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraGauges.v16.2.Win.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraGauges.v16.2.Win.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraLayout.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraLayout.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraMap.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraMap.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraNavBar.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraNavBar.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraPdfViewer.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraPdfViewer.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraPivotGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraPivotGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraPrinting.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraPrinting.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Extensions.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Service.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Service.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Web.Azure.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Web.Azure.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Web.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.Web.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraReports.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraRichEdit.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraRichEdit.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraRichEdit.v16.2.Extensions.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraRichEdit.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Core.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Core.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Extensions.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Reporting.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Reporting.Extensions.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Reporting.Extensions.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.Reporting.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraScheduler.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraSpellChecker.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraSpellChecker.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraSpreadsheet.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraSpreadsheet.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraTreeList.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraTreeList.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraTreeMap.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraTreeMap.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraVerticalGrid.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraVerticalGrid.v16.2.xml" />
+    <Content Include="Dll devExpress\DevExpress.XtraWizard.v16.2.dll" />
+    <Content Include="Dll devExpress\DevExpress.XtraWizard.v16.2.xml" />
+    <Content Include="Dll devExpress\de\DevExpress.Charts.Designer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Dashboard.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Dashboard.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Dashboard.v16.2.Win.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Data.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.DataAccess.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.DataAccess.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.AuditTrail.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Chart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.CloneObject.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Dashboards.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Dashboards.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Dashboards.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Demos.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.FileAttachment.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.FileAttachment.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Kpi.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Objects.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.PivotChart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.PivotChart.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.PivotChart.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.PivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Reports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Reports.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Reports.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.ReportsV2.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.ReportsV2.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.ReportsV2.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Scheduler.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Scheduler.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.ScriptRecorder.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.ScriptRecorder.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Security.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.StateMachine.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Validation.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Validation.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.ViewVariantsModule.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Workflow.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.ExpressApp.Workflow.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Map.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Office.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Pdf.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.PivotGrid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Printing.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.RichEdit.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Snap.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Snap.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Snap.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Sparkline.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Spreadsheet.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Utils.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Utils.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.ASPxHtmlEditor.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.ASPxRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.ASPxScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.ASPxSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.ASPxSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.ASPxTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Charts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Controls.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Core.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Docking.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.DocumentViewer.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Gauges.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Grid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.LayoutControl.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.NavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.PdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Printing.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.PropertyGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Ribbon.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.RichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.SpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpf.Spreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.Xpo.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraBars.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraCharts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraCharts.v16.2.Wizard.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraEditors.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraGauges.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraGauges.v16.2.Presets.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraLayout.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraNavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraPdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraPivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraPrinting.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraReports.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraReports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraReports.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraRichEdit.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraScheduler.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraScheduler.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraScheduler.v16.2.Reporting.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraVerticalGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\de\DevExpress.XtraWizard.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Charts.Designer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Dashboard.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Dashboard.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Dashboard.v16.2.Win.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Data.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.DataAccess.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.DataAccess.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.CloneObject.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Dashboards.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Dashboards.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Dashboards.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.FileAttachment.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.FileAttachment.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Objects.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.PivotChart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.PivotChart.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.PivotChart.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Reports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Reports.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.ReportsV2.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.ReportsV2.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.ReportsV2.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Scheduler.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Scheduler.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.ScriptRecorder.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.ScriptRecorder.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Security.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Validation.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Validation.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.ViewVariantsModule.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.ExpressApp.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Map.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Office.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Pdf.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.PivotGrid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Printing.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.RichEdit.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Snap.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Snap.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Snap.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Sparkline.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Spreadsheet.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Utils.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Utils.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.ASPxHtmlEditor.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.ASPxRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.ASPxScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.ASPxSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.ASPxSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.ASPxTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Charts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Controls.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Core.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Docking.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.DocumentViewer.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Gauges.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Grid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.LayoutControl.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.NavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.PdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Printing.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.PropertyGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Ribbon.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.RichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.SpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpf.Spreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.Xpo.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraBars.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraCharts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraCharts.v16.2.Wizard.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraEditors.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraGauges.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraGauges.v16.2.Presets.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraLayout.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraNavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraPdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraPivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraPrinting.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraReports.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraReports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraReports.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraRichEdit.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraScheduler.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraScheduler.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraScheduler.v16.2.Reporting.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraVerticalGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\es\DevExpress.XtraWizard.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Charts.Designer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Dashboard.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Dashboard.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Dashboard.v16.2.Win.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Data.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.DataAccess.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.DataAccess.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.AuditTrail.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Chart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.CloneObject.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Dashboards.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Dashboards.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Dashboards.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Demos.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.FileAttachment.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.FileAttachment.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Kpi.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Objects.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.PivotChart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.PivotChart.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.PivotChart.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.PivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Reports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Reports.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Reports.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.ReportsV2.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.ReportsV2.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.ReportsV2.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Scheduler.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Scheduler.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.ScriptRecorder.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.ScriptRecorder.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Security.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.StateMachine.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Validation.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Validation.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.ViewVariantsModule.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Workflow.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.ExpressApp.Workflow.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Map.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Office.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Pdf.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.PivotGrid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Printing.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.RichEdit.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Snap.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Snap.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Snap.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Sparkline.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Spreadsheet.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Utils.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Utils.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.ASPxHtmlEditor.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.ASPxRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.ASPxScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.ASPxSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.ASPxSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.ASPxTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Charts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Controls.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Core.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Docking.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.DocumentViewer.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Gauges.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Grid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.LayoutControl.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.NavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.PdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Printing.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.PropertyGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Ribbon.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.RichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.SpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpf.Spreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.Xpo.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraBars.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraCharts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraCharts.v16.2.Wizard.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraEditors.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraGauges.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraGauges.v16.2.Presets.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraLayout.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraNavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraPdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraPivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraPrinting.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraReports.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraReports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraReports.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraRichEdit.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraScheduler.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraScheduler.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraScheduler.v16.2.Reporting.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraVerticalGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ja\DevExpress.XtraWizard.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Charts.Designer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Dashboard.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Dashboard.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Dashboard.v16.2.Win.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Data.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.DataAccess.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.DataAccess.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.AuditTrail.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Chart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.CloneObject.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Dashboards.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Dashboards.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Dashboards.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Demos.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.FileAttachment.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.FileAttachment.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Kpi.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Objects.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.PivotChart.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.PivotChart.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.PivotChart.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.PivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Reports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Reports.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Reports.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.ReportsV2.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.ReportsV2.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.ReportsV2.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Scheduler.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Scheduler.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.ScriptRecorder.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.ScriptRecorder.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Security.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.StateMachine.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Validation.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Validation.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.ViewVariantsModule.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Workflow.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.ExpressApp.Workflow.Win.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Map.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Office.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Pdf.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.PivotGrid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Printing.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.RichEdit.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Snap.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Snap.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Snap.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Sparkline.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Spreadsheet.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Utils.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Utils.v16.2.UI.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.ASPxHtmlEditor.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.ASPxRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.ASPxScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.ASPxSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.ASPxSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.ASPxTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Web.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Charts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Controls.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Core.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Docking.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.DocumentViewer.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Gauges.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Grid.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.LayoutControl.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.NavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.PdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Printing.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.PropertyGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Ribbon.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.RichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Scheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.SpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpf.Spreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.Xpo.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraBars.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraCharts.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraCharts.v16.2.Wizard.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraEditors.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraGauges.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraGauges.v16.2.Presets.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraLayout.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraNavBar.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraPdfViewer.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraPivotGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraPrinting.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraReports.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraReports.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraReports.v16.2.Web.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraRichEdit.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraRichEdit.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraScheduler.v16.2.Core.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraScheduler.v16.2.Extensions.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraScheduler.v16.2.Reporting.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraScheduler.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraSpellChecker.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraSpreadsheet.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraTreeList.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraVerticalGrid.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\ru\DevExpress.XtraWizard.v16.2.resources.dll" />
+    <Content Include="Dll devExpress\System.Windows.Interactivity.dll" />
+    <Content Include="Dll devExpress\System.Windows.Interactivity.xml" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Images\Icons\action_approve_01.jfif" />
+    <Content Include="Images\Icons\action_approve_02.jfif" />
+    <Content Include="Images\Icons\action_approve_03.jfif" />
+    <Content Include="Images\Icons\action_approve_04.jfif" />
+    <Content Include="Images\Icons\action_filter_01.png" />
+    <Content Include="Images\Icons\action_filter_02.png" />
+    <Content Include="Images\Icons\action_filter_03.png" />
+    <Content Include="Images\Icons\action_filter_04.png" />
+    <Content Include="Images\Icons\action_find_01.png" />
+    <Content Include="Images\Icons\action_find_02.png" />
+    <Content Include="Images\Icons\action_find_03.png" />
+    <Content Include="Images\Icons\action_modify_01.jfif" />
+    <Content Include="Images\Icons\action_modify_02.png" />
+    <Content Include="Images\Icons\action_new_01.jfif" />
+    <Content Include="Images\Icons\action_new_02.png" />
+    <Content Include="Images\Icons\action_new_03.png" />
+    <Content Include="Images\Icons\action_new_04.png" />
+    <Content Include="Images\Icons\action_print_01.png" />
+    <Content Include="Images\Icons\action_print_02.png" />
+    <Content Include="Images\Icons\action_refresh_01.png" />
+    <Content Include="Images\Icons\action_refresh_02.png" />
+    <Content Include="Images\Icons\Coding.png" />
+    <Content Include="Images\Icons\Delivery_1.jfif" />
+    <Content Include="Images\Icons\DeliveryNote_01.png" />
+    <Content Include="Images\Icons\DeliveryNote_02.jfif" />
+    <Content Include="Images\Icons\DeliveryNote_03.jfif" />
+    <Content Include="Images\Icons\Delivery_10.jfif" />
+    <Content Include="Images\Icons\Delivery_11.png" />
+    <Content Include="Images\Icons\Delivery_2.jfif" />
+    <Content Include="Images\Icons\Delivery_3.jfif" />
+    <Content Include="Images\Icons\Delivery_4.jfif" />
+    <Content Include="Images\Icons\Delivery_5.jfif" />
+    <Content Include="Images\Icons\Delivery_6.jfif" />
+    <Content Include="Images\Icons\Delivery_7.jfif" />
+    <Content Include="Images\Icons\Delivery_8.jfif" />
+    <Content Include="Images\Icons\Delivery_9.jfif" />
+    <Content Include="Images\Icons\farmer_01.png" />
+    <Content Include="Images\Icons\farmer_02.jfif" />
+    <Content Include="Images\Icons\help.jfif" />
+    <Content Include="Images\Icons\Invoice_01.png" />
+    <Content Include="Images\Icons\Invoice_02.png" />
+    <Content Include="Images\Icons\Invoice_03.png" />
+    <Content Include="Images\Icons\Invoice_04.png" />
+    <Content Include="Images\Icons\Menu.png" />
+    <Content Include="Images\Icons\menu_01.png" />
+    <Content Include="Images\Icons\menu_02.png" />
+    <Content Include="Images\Icons\menu_03.png" />
+    <Content Include="Images\Icons\menu_04.png" />
+    <Content Include="Images\Icons\Payment_01.png" />
+    <Content Include="Images\Icons\Payment_02.png" />
+    <Content Include="Images\Icons\Payment_03.jfif" />
+    <Content Include="Images\Icons\Quality_01.jfif" />
+    <Content Include="Images\Icons\Quality_02.png" />
+    <Content Include="Images\Icons\Quality_03.png" />
+    <Content Include="Images\Icons\Settings.jfif" />
+    <Content Include="Images\Icons\Supplier.jfif" />
+    <Content Include="Images\Icons\user.jfif" />
+    <Content Include="Images\Icons\Weighing_01.png" />
+    <Content Include="Images\Icons\Weighing_02.jfif" />
+    <Content Include="Images\Icons\Weighing_03.png" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="App_Readme\Ext.NET\README.md" />
+    <Content Include="App_Readme\Ext.NET\LICENSE" />
+    <Content Include="App_Readme\Ext.NET\CHANGELOG.md" />
+    <Content Include="Content\new.bootsrap.min.css" />
+    <Content Include="Content\new.bootstrap.theme.css" />
+    <None Include="Properties\PublishProfiles\DeployTms.pubxml" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\CommonFunctions.js" />
+    <Content Include="Scripts\FunctionHelpers.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\renderers.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\ValidationField.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Analyseur\FormAnalyseur.cshtml" />
+    <Content Include="Views\Analyseur\Index.cshtml" />
+    <Content Include="Views\Banque\FormBanque.cshtml" />
+    <Content Include="Views\ContratPeriode\Index.cshtml" />
+    <Content Include="Views\DeliveryCoding\Index.cshtml" />
+    <Content Include="Views\Facture\index.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Pesee\Index.cshtml" />
+    <Content Include="Views\Pesee\Pesee_FirstWeighingDetail.cshtml" />
+    <Content Include="Views\Pesee\Pesee_SecondWeighingDetail.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\SpotPrice\FormSpotPrice.cshtml" />
+    <Content Include="Views\SpotPrice\Index.cshtml" />
+    <Content Include="Views\Utilisateur\Index.cshtml" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\ConfirmEmail.cshtml" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\SendCode.cshtml" />
+    <Content Include="Views\Account\VerifyCode.cshtml" />
+    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\ExtNet\Index.cshtml" />
+    <Content Include="Views\Workspace\Index.cshtml" />
+    <Content Include="Views\Workspace\PartialViewNorth.cshtml" />
+    <Content Include="Views\Workspace\PartialViewMenuItems.cshtml" />
+    <Content Include="Views\Workspace\PartialModuleView.cshtml" />
+    <Content Include="Views\Workspace\PartialFunctionView.cshtml" />
+    <Content Include="Views\Fournisseur\Index.cshtml" />
+    <Content Include="Views\Fournisseur\OnCreate.cshtml" />
+    <Content Include="Views\Fournisseur\OnEdit.cshtml" />
+    <Content Include="Views\Fournisseur\Fournisseur_Detail.cshtml" />
+    <Content Include="Views\Fournisseur\OnFilter.cshtml" />
+    <Content Include="Views\Pricing\DailyPrice.cshtml" />
+    <Content Include="Views\Pricing\FormDailyPrice.cshtml" />
+    <Content Include="Views\Pricing\SpotPrice.cshtml" />
+    <Content Include="Views\Pricing\FormSpotPrice.cshtml" />
+    <Content Include="Views\DailyPrice\Index.cshtml" />
+    <Content Include="Views\DailyPrice\FormDailyPrice.cshtml" />
+    <Content Include="Views\ContratPeriode\FormContratPeriode.cshtml" />
+    <Content Include="Views\DeliveryCoding\FormDeliveryCoding.cshtml" />
+    <Content Include="Views\Shared\ReportView.cshtml" />
+    <Content Include="Views\Livraison\Index.cshtml" />
+    <Content Include="Views\Livraison\Livraison_Detail.cshtml" />
+    <Content Include="Views\Financement\Index.cshtml" />
+    <Content Include="Views\Financement\Financement_Detail.cshtml" />
+    <Content Include="Views\Financement\Index_Approval.cshtml" />
+    <Content Include="Views\SpotPrice\ListDeliveriesDetails.cshtml" />
+    <Content Include="Views\BonDeLivraison\Index.cshtml" />
+    <Content Include="Views\BonDeLivraison\BonDeLivraison_Detail.cshtml" />
+    <Content Include="Views\AnalysePhysique\Index.cshtml" />
+    <Content Include="Views\AnalysePhysique\FormAnalysePhysique.cshtml" />
+    <Content Include="Views\AnalysePhysique\FormApproveAnalysePhysique.cshtml" />
+    <Content Include="Views\Livraison\Livraisons_Disponibles_Finalisation.cshtml" />
+    <Content Include="Views\Pesee\Pesee_ManualDetail.cshtml" />
+    <Content Include="Views\BonDeLivraison\BonDeLivraison_Deliveries.cshtml" />
+    <Content Include="Views\Module\Index.cshtml" />
+    <Content Include="Views\Module\FormModule.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\Role\FormRole.cshtml" />
+    <Content Include="Views\Fonction\Index.cshtml" />
+    <Content Include="Views\Fonction\FormFonction.cshtml" />
+    <Content Include="Views\Role\FormListeRoleFonctions.cshtml" />
+    <Content Include="Views\Utilisateur\FormUser.cshtml" />
+    <Content Include="Views\Utilisateur\FormListeUserRoles.cshtml" />
+    <Content Include="Views\Utilisateur\FormUserCredential.cshtml" />
+    <Content Include="Views\Campagne\Index.cshtml" />
+    <Content Include="Views\Campagne\FormCampagne.cshtml" />
+    <Content Include="Views\Certification\Index.cshtml" />
+    <Content Include="Views\Certification\FormCertification.cshtml" />
+    <Content Include="Views\ClassificationFeves\Index.cshtml" />
+    <Content Include="Views\ClassificationFeves\FormClassificationFeves.cshtml" />
+    <Content Include="Views\Destination\Index.cshtml" />
+    <Content Include="Views\Destination\FormDestination.cshtml" />
+    <Content Include="Views\Facture\Facture_DeliveryNotes.cshtml" />
+    <Content Include="Views\Facture\Facture_Detail.cshtml" />
+    <Content Include="Views\ContratPeriodeType\FormContratPeriodeType.cshtml" />
+    <Content Include="Views\ContratPeriodeType\Index.cshtml" />
+    <Content Include="Views\DestinationType\FormDestinationType.cshtml" />
+    <Content Include="Views\DestinationType\Index.cshtml" />
+    <Content Include="Views\Exportateur\FormExportateur.cshtml" />
+    <Content Include="Views\Exportateur\Index.cshtml" />
+    <Content Include="Views\FactureDeductionType\FormFactureDeductionType.cshtml" />
+    <Content Include="Views\FactureDeductionType\Index.cshtml" />
+    <Content Include="Views\FactureValorisationType\FormFactureValorisationType.cshtml" />
+    <Content Include="Views\FactureValorisationType\Index.cshtml" />
+    <Content Include="Views\FinancementType\FormFinancementType.cshtml" />
+    <Content Include="Views\FinancementType\Index.cshtml" />
+    <Content Include="Views\FournisseurGroupe\FormFournisseurGroupe.cshtml" />
+    <Content Include="Views\FournisseurGroupe\Index.cshtml" />
+    <Content Include="Views\FournisseurType\FormFournisseurType.cshtml" />
+    <Content Include="Views\FournisseurType\Index.cshtml" />
+    <Content Include="Views\Laboratoire\FormLaboratoire.cshtml" />
+    <Content Include="Views\Laboratoire\Index.cshtml" />
+    <Content Include="Views\LivraisonType\FormLivraisonType.cshtml" />
+    <Content Include="Views\LivraisonType\Index.cshtml" />
+    <Content Include="Views\MiseEnCompteType\FormMiseEnCompteType.cshtml" />
+    <Content Include="Views\MiseEnCompteType\Index.cshtml" />
+    <Content Include="Views\ModuleItem\FormModuleItem.cshtml" />
+    <Content Include="Views\ModuleItem\Index.cshtml" />
+    <Content Include="Views\PayementMode\FormPayementMode.cshtml" />
+    <Content Include="Views\PayementMode\Index.cshtml" />
+    <Content Include="Views\PayementTransactionType\FormPayementTransactionType.cshtml" />
+    <Content Include="Views\PayementTransactionType\Index.cshtml" />
+    <Content Include="Views\PeseeRefoulee\Index.cshtml" />
+    <Content Include="Views\PeseeRefoulee\PeseeRefoulee_FirstWeighingDetail.cshtml" />
+    <Content Include="Views\PeseeRefoulee\PeseeRefoulee_ManualDetail.cshtml" />
+    <Content Include="Views\PeseeRefoulee\PeseeRefoulee_SecondWeighingDetail.cshtml" />
+    <Content Include="Views\PieceType\FormPieceType.cshtml" />
+    <Content Include="Views\PieceType\Index.cshtml" />
+    <Content Include="Views\PrixNegocieModeApplication\FormPrixNegocieModeApplication.cshtml" />
+    <Content Include="Views\PrixNegocieModeApplication\Index.cshtml" />
+    <Content Include="Views\Provenance\FormProvenance.cshtml" />
+    <Content Include="Views\Provenance\Index.cshtml" />
+    <Content Include="Views\RemboursementMode\FormRemboursementMode.cshtml" />
+    <Content Include="Views\RemboursementMode\Index.cshtml" />
+    <Content Include="Views\SacType\FormSacType.cshtml" />
+    <Content Include="Views\SacType\Index.cshtml" />
+    <Content Include="Views\Site\FormSite.cshtml" />
+    <Content Include="Views\Site\Index.cshtml" />
+    <Content Include="Views\Transitaire\FormTransitaire.cshtml" />
+    <Content Include="Views\Transitaire\Index.cshtml" />
+    <Content Include="Views\Transporteur\FormTransporteur.cshtml" />
+    <Content Include="Views\Transporteur\Index.cshtml" />
+    <Content Include="Views\Utilisateur\FormListeModuleUser.cshtml" />
+    <Content Include="Views\Utilisateur\FormModuleUser.cshtml" />
+    <Content Include="Views\Utilisateur\FormUserCredentials.cshtml" />
+    <Content Include="Views\Produit\FormProduit.cshtml" />
+    <Content Include="Views\Produit\Index.cshtml" />
+    <Content Include="Views\Protocole\FormProtocole.cshtml" />
+    <Content Include="Views\Protocole\Index.cshtml" />
+    <Content Include="Views\ProvenanceType\FormProvenanceType.cshtml" />
+    <Content Include="Views\ProvenanceType\Index.cshtml" />
+    <Content Include="Views\RemboursementDirectType\FormRemboursementDirectType.cshtml" />
+    <Content Include="Views\RemboursementDirectType\Index.cshtml" />
+    <Content Include="Views\RemboursementDirectType\FormRemboursementDirectType.cshtml" />
+    <Content Include="Views\PrixNegocieModeApplication\Index.cshtml" />
+    <Content Include="Views\PrixNegocieModeApplication\FormPrixNegocieModeApplication.cshtml" />
+    <Content Include="Views\Utilisateur\FormUserCredentials.cshtml" />
+    <Content Include="Views\Report\_DocumentViewerPartial.cshtml" />
+    <Content Include="Views\Report\ReportWithParam.cshtml" />
+    <Content Include="Views\Report\DocumentViewerWithParamPartial.cshtml" />
+    <Content Include="Views\Banque\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Views\Classification\" />
+    <Folder Include="Views\PontBascule\" />
+    <Folder Include="Views\ReportViewer\" />
+    <Folder Include="Views\Statut\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="packages.config" />
+    <None Include="Project_Readme.html" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tms.Classes\Tms.Classes.csproj">
+      <Project>{d1b8eb39-3a94-401a-9d5b-39e247a1f3da}</Project>
+      <Name>Tms.Classes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tms.Components\Tms.Components.csproj">
+      <Project>{58cbf427-1c0c-4144-a8f0-aac1b0d91e88}</Project>
+      <Name>Tms.Components</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Reports\BanqueListe.resx">
+      <DependentUpon>BanqueListe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ReportWithParam.resx">
+      <DependentUpon>ReportWithParam.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\rptFarmerCard.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rptFarmerCard.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\XtraReportListBank.resx">
+      <DependentUpon>XtraReportListBank.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>5179</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:5179/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

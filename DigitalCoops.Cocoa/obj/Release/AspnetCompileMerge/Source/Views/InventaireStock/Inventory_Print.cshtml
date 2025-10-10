@@ -1,0 +1,189 @@
+﻿@model Tms.Classes.Business.stock.InventaireViewModel
+@{
+    Layout = null;
+    var X = Html.X();
+    string DefaultCampagne = new Tms.Classes.Shared.Parametres(0).Campagne;
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style type="text/css">
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 300px !important;
+    }
+</style>
+<script src="~/Scripts/FormatAmount.js"></script>
+
+@(
+X.Window()
+    .ID("Inventory_Print")
+    .Width(300).Resizable(false)
+    .Height(240).CloseAction(Ext.Net.CloseAction.Destroy)
+    .Modal(true)
+    //.X(400)
+    .Y(20).Title("Inventaire de Stock : Print")
+    //.Layout(LayoutType.VBox).LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch, Pack = BoxPack.Start })
+    .Items(
+            X.FormPanel()                
+                .Items(
+    #region Zone A
+                    X.Container()
+                        .Layout(LayoutType.Form)
+                        .Flex(1)
+                        .Items
+                        (
+                            X.ComboBox()
+                                .ID("cmbCampagne")
+                                .FieldLabel("Campagne")
+                                .DisplayField("Designation")
+                                .ValueField("Designation")
+                                .LabelAlign(LabelAlign.Right)
+                                .Value(ViewData["Campagne"])
+                                .Store
+                                    (
+                                    X.Store()
+                                    .AutoLoad(true)
+                                    .Model
+                                    (
+                                        Html.X().Model()
+                                            .IDProperty("Designation")
+                                            .Fields
+                                            (
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            Html.X().AjaxProxy()
+                                        .Url(Url.Action("LoadCampagneAll", "Campagne"))
+                                        .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )
+                                    ),
+                            X.ComboBox()
+                                .ID("cmbMagasin")
+                                .FieldLabel("Magasin")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .Value((int)ViewData["Magasin"])
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                            .Url(Url.Action("LoadActiveMagasin", "Magasin"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                )
+
+                    ),
+    #endregion
+    #region zone B
+                    X.Container()
+                        .Flex(1)
+                        .Layout(LayoutType.Form)
+                        .Items
+                        (
+                        X.ComboBox()
+                                .ID("cmbPeriode")
+                                .FieldLabel("Periode")
+                                .DisplayField("Designation")
+                                .ValueField("ID")
+                                .LabelAlign(LabelAlign.Right)
+                                .QueryMode(DataLoadMode.Local)
+                                .TriggerAction(TriggerAction.All)
+                                .SelectedItems(se => { se.Add(new ListItem { Text = "{Tous}", Value = "-1" }); })
+                                .Store
+                                (
+                                    X.Store()
+                                        .AutoLoad(true)
+                                        .Model
+                                        (
+                                            Html.X().Model()
+                                            .IDProperty("ID")
+                                            .Fields
+                                            (
+                                                new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                                new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                            )
+                                        )
+                                        .Proxy
+                                        (
+                                            X.AjaxProxy()
+                                            .Url(Url.Action("LoadActivePeriodeAll", "Periode"))
+                                            .Reader(Html.X().JsonReader().RootProperty("data"))
+                                        )                                        
+                                ),
+                            X.ComboBox()
+                                    .ID("CmbStatut")
+                                    .ForceSelection(true)
+                                    .FieldLabel("Statut")
+                                    .TypeAhead(true)
+                                    .ForceSelection(true)
+                                    .LabelAlign(LabelAlign.Right)
+                                    .Items(
+                                            new ListItem("{Tous}", "-1"),
+                                            new ListItem("Saisi", "NA"),
+                                            new ListItem("Approuvé", "AP")                                            
+                                    )
+                                    .SelectedItems(se => { se.Add(new ListItem { Text = "Approuvé", Value = "AP" }); })
+                        )
+    #endregion
+
+                    )
+    )
+    .Buttons(
+                X.Button()
+                    .Text("OK")
+                    .ID("BtnPrint")                    
+                    .DirectEvents(de =>
+                    {
+                        de.Click.Url = Url.Action("PrintList");
+                        de.Click.Before = "return validNew(App.Inventory_Print.id);";
+                        de.Click.FormID = "#(return this.up('window').down('form');)";                        
+                    }),
+                X.Button()
+                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+                    .Handler("App.Inventory_Print.doClose()").Cls("btncancel")
+                    )
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript">
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+        *   Vérification de la saisie des champs obligatoires
+        */
+        if (!areAllrequiredFieldsFilled) {
+            console.log('error fileds');
+            Ext.Msg.show({ title: 'Inventaire de Stock : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Please enter empty fields', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    }
+
+</script>
+
+
+

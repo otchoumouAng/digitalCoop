@@ -1,0 +1,183 @@
+﻿@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+<style>
+    .x-form-layout-auto-label > * > .x-form-item-label {
+        width: 140px !important;
+    }
+
+    .x-form-text-default.x-form-textarea {
+        line-height: 17px;
+        min-height: 50px !important;
+    }
+</style>
+@(
+X.Window()
+    .ID("Mouvement_ChangeEmplacement")
+    .Width(350)
+    .Resizable(false)
+    .Height(240)
+    .Modal(true)
+    .CloseAction(Ext.Net.CloseAction.Destroy)
+    .Y(100)
+    .Title("Position")    
+    .Modal(true)
+    .Items
+    (
+        X.FormPanel()
+            .Layout(LayoutType.Form)
+            .Items(
+                    X.ComboBox()
+                        .ID("cmbMouvementMagasin")
+                        .FieldLabel("Magasin")
+                        .DisplayField("Designation")
+                        .ValueField("ID")
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*")
+                        .LabelAlign(LabelAlign.Right)
+                        .QueryMode(DataLoadMode.Local)
+                        .TriggerAction(TriggerAction.All)
+                        .Value("")            
+                        .Store
+                        (
+                            X.Store()
+                                .AutoLoad(true)
+                                .Model
+                                (
+                                    X.Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                )
+                                .Proxy
+                                (
+                                   X.AjaxProxy()
+                                        .Url(Url.Action("LoadActiveMagasinWithAccess", "Magasin"))
+                                        .Reader(X.JsonReader().RootProperty("data"))
+                                )
+                        .Listeners
+                        (
+                                li =>
+                                {
+                                    li.Load.Handler = "if (App.cmbMouvementEmplacement.value) {App.cmbMouvementEmplacement.clearValue()}; App.cmbMouvementEmplacement.getStore().load();";
+                                }
+                        )
+                        )
+                        .Listeners
+                        (
+                                ls =>
+                                {
+                                    ls.Select.Handler = "if (App.cmbMouvementEmplacement.value) {App.cmbMouvementEmplacement.clearValue()}; App.cmbMouvementEmplacement.getStore().load();";
+                                    ls.Change.Handler = "if (App.cmbMouvementEmplacement.value) {App.cmbMouvementEmplacement.clearValue()}; App.cmbMouvementEmplacement.getStore().load();";
+                                }
+                        ),
+                    X.ComboBox()
+                        .ID("cmbMouvementEmplacement")
+                        .FieldLabel("Position")
+                        .DisplayField("Designation")
+                        .ValueField("ID")
+                        .AllowBlank(false)
+                        .IndicatorCls("IndicatorRedStar")
+                        .IndicatorText("*")
+                        .LabelAlign(LabelAlign.Right)
+                        .Store
+                        (
+                            X.Store()
+                                .AutoLoad(false)
+                                .Model
+                                (
+                                    X.Model()
+                                        .IDProperty("ID")
+                                        .Fields
+                                        (
+                                            new ModelField("ID", ModelFieldType.Int) { Mapping = "ID" },
+                                            new ModelField("Designation", ModelFieldType.String) { Mapping = "Designation" }
+                                        )
+                                )
+                                .Proxy
+                                (
+                                    X.AjaxProxy()
+                                        .Url(Url.Action("LoadActiveEmplacement", "Emplacement"))
+                                        .Reader(X.JsonReader().RootProperty("data"))
+                                )
+                                .Parameters
+                                (
+                                    ps =>
+                                    {
+                                        ps.Add(new StoreParameter("ItemMagasin", "#{cmbMouvementMagasin}.getValue()", ParameterMode.Raw));
+                                    }
+                                )
+                                .Listeners
+                                (
+                                        li =>
+                                        {
+                                            li.Load.Handler = "var combo = App.cmbMouvementEmplacement; combo.setValue(records.length > 0 ? records[0].data.ID : 0);";
+                                        }
+                                )
+                        ),
+                    X.TextArea()
+                        .ID("txtCommentaire")
+                        .FieldLabel("Commentaire")
+                        .LabelAlign(LabelAlign.Right)
+                        .Text("")
+                )
+    )
+    .Buttons
+    (
+        X.Button()
+            .Text("OK")
+            .ID("BtnOk")
+            .DirectEvents
+            (
+                de =>
+                {
+                    de.Click.Url = Url.Action("ChangePosition", "MouvementStock");
+                    de.Click.Before = "return validNew(App.Mouvement_ChangeEmplacement.id);";
+                    de.Click.FormID = "#(return this.up('window').down('form');)";
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Encode = true, Mode = ParameterMode.Raw, Value = "App.grpListeMouvementStock.getSelectionModel().getSelection()[0].data" });
+                    //de.Click.ExtraParams.Add(new Parameter { Name = "ItemMagasin", Encode = false, Mode = ParameterMode.Raw, Value = "App.cmbMouvementMagasin.value" });
+                    //de.Click.ExtraParams.Add(new Parameter { Name = "ItemEmplacement", Encode = false, Mode = ParameterMode.Raw, Value = "App.cmbMouvementEmplacement.value" });
+                }
+            ),
+        X.Button()
+            .Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel)
+            .Handler("App.Mouvement_ChangeEmplacement.doClose()")
+            .Cls("btncancel")
+    )
+
+)
+
+@Scripts.Render("~/bundles/validation")
+
+<script type="text/javascript" src="~/Scripts/FormatNumber.js"></script>
+<script type="text/javascript">
+
+    var validNew = function (winId) {
+        /*alert(winId);*/
+        /*var winId = #{FormFournisseur}.id;*/
+        var areAllrequiredFieldsFilled = isFormValid(winId);
+
+        /*
+       *   Vérification de la saisie des champs obligatoires
+       */
+        if (!areAllrequiredFieldsFilled) {
+
+            Ext.Msg.show({ title: 'Position : Data Validation ', icon: Ext.MessageBox.WARNING, msg: 'Veuillez remplir les champs réquis.', buttons: Ext.Msg.OK });
+            return false;
+        }
+
+    };
+
+
+</script>
+
+

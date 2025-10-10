@@ -1,0 +1,111 @@
+﻿
+@model Tms.Classes.Business.PrixJournalierAgence
+@{
+    Layout = null;
+    var X = Html.X();
+}
+<head>
+    <link rel="stylesheet" href="~/Content/IconsStyles.css" />
+    <link rel="stylesheet" href="~/Content/CustomStyles.css" />
+</head>
+@(
+            //X.FormPanel()
+            //    .Items(
+            X.Window()
+            .ID("FormListePriceSites")
+            .Width(700)
+            .Resizable(false)
+            .Height(400)
+            .Modal(true)
+            .CloseAction(Ext.Net.CloseAction.Destroy)
+            //.Listeners(l =>
+            //{
+            //    l.Close.Handler = "App.TmsViewPort.unmask();";
+            //})
+            .X(450)
+            .Y(30)
+            .Title("Prix Journalier : Select Sites")
+            .Layout(LayoutType.VBox)
+            .LayoutConfig(new VBoxLayoutConfig { Align = VBoxAlign.Stretch })
+            .Items(
+                    X.Hidden().ID("TxtDailyPriceAgenceID").Value(Model.ID),
+                    X.Panel().Layout(LayoutType.Fit)
+                    //.TopBar(new Toolbar()
+                    //{
+                    //    Items = {
+                    //                X.Button()
+                    //                    .ID("BtnRefreshListUserRoles")
+                    //                    .IconCls("action_new_02")
+                    //                    .Border(false)
+                    //                    .Cls("ButtonStyle")
+                    //                    .Text(DigitalCoops.Cocoa.Properties.Resources.BtnRefresh)
+                    //                    .Disable(false)
+                    //                    .DirectEvents( de =>{
+                    //                        de.Click.Url  = Url.Action("AddRolToUser");
+                    //                        de.Click.EventMask.ShowMask = true;
+                    //                    } )
+                    //            }
+                    //})
+                    .Items(
+                            X.GridPanel()
+                            .ID("grpListeSitesToPrice")
+                            .Region(Region.Center)
+                            .ForceFit(false)
+                            .Height(300)
+                            .AllowDeselect(true)
+                            .Store(
+                                    X.StoreFor<Tms.Classes.Shared.Site>().ID("storeListeSitesToPrice")
+                                    .Proxy(Html.X().AjaxProxy()
+                                                .Url(Url.Action("SelectToPrice", "Site"))
+                                                .Reader(Html.X().JsonReader().RootProperty("data"))
+                                            )
+                                    .Parameters(
+                                            ps => ps.Add(new StoreParameter("ItemPrice", "#{TxtDailyPriceAgenceID}.getRawValue()", ParameterMode.Raw))
+                                        )
+                                    )
+                                    .ColumnModel
+                                    (
+                                        Html.X().Column().Text("Site").DataIndex("Nom").Flex(1).Hideable(false)
+                                    )
+                                    .Plugins(
+                                        X.FilterHeader()
+                                        )
+                                    .SelectionModel(
+                                            X.CheckboxSelectionModel()
+                                            .Mode(SelectionMode.Multi)
+                                            .AllowDeselect(true)
+                                        )
+
+                            )
+
+
+                    )
+            .Buttons(
+                X.Button().Text("OK").ID("BtnSubmitListSiteToPrice")
+                .DirectEvents(de =>
+                {
+                    de.Click.Url = Url.Action("SubmitListeSite");
+                    de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "App.grpListeSitesToPrice.getRowsValues({selectedOnly : true})" });
+
+                })
+
+                    ,
+                X.Button().Text(DigitalCoops.Cocoa.Properties.Resources.BtnCancel).Handler("App.FormListePriceSites.doClose()").Cls("btncancel")
+
+                )
+
+            //)
+)
+
+@Scripts.Render("~/bundles/validation")
+
+
+
+
+
+
+
+
+
+
+
