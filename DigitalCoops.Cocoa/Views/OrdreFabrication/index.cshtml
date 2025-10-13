@@ -63,13 +63,13 @@
                             store.load();
                             App.OrdreFabricationCriteriaPanel.collapse();
                         "),
-                            X.Button().ID("btnNewOrdreFabrication").IconCls("action_new_02").Text("Nouveau").DirectEvents(de => { de.Click.Url = Url.Action("OnAdd"); de.Click.EventMask.ShowMask = true; }),
+                            X.Button().ID("btnNewOrdreFabrication").IconCls("action_new_02").Text("Nouveau").DirectEvents(de => { de.Click.Url = Url.Action("OnAdd"); de.Click.EventMask.ShowMask = true; de.Click.Type = DirectEventType.Load; }),
                             X.Button().ID("btnModifyOrdreFabrication").IconCls("action_modify_02").Text("Modifier").Disabled(true)
                             .DirectEvents(de => { de.Click.Url = Url.Action("OnEdit"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" });
-                                de.Click.EventMask.ShowMask = true;
+                                de.Click.EventMask.ShowMask = true; de.Click.Type = DirectEventType.Load;
                             }),
-                            X.Button().ID("btnOpen").Disabled(true).Icon(Icon.BookOpen).Text("Ouvrir un OF").DirectEvents(de => { de.Click.Url = Url.Action("onOpenProduction"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; }),
-                            X.Button().ID("btnClose").Disabled(true).Icon(Icon.Lock).Text("Fermer").DirectEvents(de => { de.Click.Url = Url.Action("onCloseProduction"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; }),
+                            X.Button().ID("btnOpen").Disabled(true).Icon(Icon.BookOpen).Text("Ouvrir un OF").DirectEvents(de => { de.Click.Url = Url.Action("onOpenProduction"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; de.Click.Type = DirectEventType.Load; }),
+                            X.Button().ID("btnClose").Disabled(true).Icon(Icon.Lock).Text("Fermer").DirectEvents(de => { de.Click.Url = Url.Action("onCloseProduction"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; de.Click.Type = DirectEventType.Load; }),
                             X.ToolbarFill(),
                             X.Button().ID("btnActions").Text("Actions").IconCls("menu_04")
                                 .Menu(X.Menu().Items(
@@ -206,7 +206,7 @@
                     de.ItemDblClick.Url = Url.Action("OnConsult");
                     de.ItemDblClick.EventMask.ShowMask = true;
                     de.ItemDblClick.ExtraParams.Add(new Parameter("ItemSelected", "Ext.encode(record.data)", ParameterMode.Raw));
-
+                    de.ItemDblClick.Type = DirectEventType.Load;
                 })
                 .BottomBar(X.PagingToolbar().DisplayInfo(false))
         )
