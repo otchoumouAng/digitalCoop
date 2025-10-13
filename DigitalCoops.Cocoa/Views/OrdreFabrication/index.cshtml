@@ -5,66 +5,7 @@
 </head>
 <script type="text/javascript" src="~/Scripts/renderers.js"></script>
 <script type="text/javascript" src="~/Scripts/CommonFunctions.js"></script>
-<script type="text/javascript">
-    Ext.onReady(function () {
-        var currentYear = new Date().getFullYear();
-        var years = [];
-        for (var i = 0; i < 5; i++) {
-            // Correction : Utiliser des objets avec des propriétés explicites pour plus de clarté
-            var yearValue = currentYear - i;
-            years.push({ display: yearValue, value: yearValue });
-        }
-        App.cmbAnnee.getStore().loadData(years);
-        App.cmbAnnee.setValue(currentYear);
-
-        var weeks = [{ display: '{Tous}', value: -1 }];
-        for (var i = 1; i <= 52; i++) {
-            // Correction : Utiliser des objets avec des propriétés explicites
-            weeks.push({ display: i, value: i });
-        }
-        App.cmbSemaine.getStore().loadData(weeks);
-        App.cmbSemaine.setValue(-1);
-    });
-
-    var renderIcon = function (value) {
-        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
-        var icon_url = Overview.getBootStrapIcons(value);
-        return Ext.String.format(tpl, icon_url);
-    }
-
-    var SetMsgBoxConfirm = function (config, isDisabled) {
-        config.message = isDisabled ? "Êtes-vous sûr de vouloir activer cet élément ?" : "Êtes-vous sûr de vouloir annuler cet élément ?";
-        return config;
-    };
-
-    var Overview = {
-        getBootStrapIcons: function (value) {
-            if (value === 0) return 'glyphicon-remove red';
-            if (value === 2) return 'glyphicon-file blue';
-            return '';
-        },
-        resetButtons: function () {
-            var hasSel = App.rowSelectionOrdreFabrication.hasSelection();
-            App.btnModifyOrdreFabrication.setDisabled(!hasSel);
-            App.mnuCancelOrdreFabrication.setDisabled(!hasSel);
-            App.btnClose.setDisabled(!hasSel);
-            App.btnOpen.setDisabled(!hasSel);
-
-            if (hasSel) {
-                var record = App.rowSelectionOrdreFabrication.getSelection()[0];
-                var isDisabled = record.data.Desactive;
-                if (isDisabled) {
-                    App.mnuCancelOrdreFabrication.setText('Activer');
-                    App.mnuCancelOrdreFabrication.setIconCls('glyphicon glyphicon-ok green');
-                    App.btnModifyOrdreFabrication.disable();
-                } else {
-                    App.mnuCancelOrdreFabrication.setText('Annuler');
-                    App.mnuCancelOrdreFabrication.setIconCls('glyphicon glyphicon-remove red');
-                }
-            }
-        }
-    };
-</script>
+@* Le script avec Ext.onReady a été déplacé à la fin du fichier *@
 
 @model Tms.Classes.Shared.OrdreFabrication
 @{
@@ -123,7 +64,10 @@
                             App.OrdreFabricationCriteriaPanel.collapse();
                         "),
                             X.Button().ID("btnNewOrdreFabrication").IconCls("action_new_02").Text("Nouveau").DirectEvents(de => { de.Click.Url = Url.Action("OnAdd"); de.Click.EventMask.ShowMask = true; }),
-                            X.Button().ID("btnModifyOrdreFabrication").IconCls("action_modify_02").Text("Modifier").Disabled(true).DirectEvents(de => { de.Click.Url = Url.Action("OnEdit"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; }),
+                            X.Button().ID("btnModifyOrdreFabrication").IconCls("action_modify_02").Text("Modifier").Disabled(true)
+                            .DirectEvents(de => { de.Click.Url = Url.Action("OnEdit"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" });
+                                de.Click.EventMask.ShowMask = true;
+                            }),
                             X.Button().ID("btnOpen").Disabled(true).Icon(Icon.BookOpen).Text("Ouvrir un OF").DirectEvents(de => { de.Click.Url = Url.Action("onOpenProduction"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; }),
                             X.Button().ID("btnClose").Disabled(true).Icon(Icon.Lock).Text("Fermer").DirectEvents(de => { de.Click.Url = Url.Action("onCloseProduction"); de.Click.ExtraParams.Add(new Parameter { Name = "ItemSelected", Mode = ParameterMode.Raw, Encode = true, Value = "#{grpListeOrdreFabrication}.getSelectionModel().getSelection()[0].data" }); de.Click.EventMask.ShowMask = true; }),
                             X.ToolbarFill(),
@@ -161,45 +105,43 @@
                                         .Layout(LayoutType.Form).Flex(1).Border(false).Padding(5)
                                         .Items(
 
-// Pour Année - avec année en cours sélectionnée
-X.ComboBox()
-    .ID("cmbAnnee")
-    .FieldLabel("Année")
-    .Name("Annee")
-    .LabelAlign(LabelAlign.Right)
-    .LabelWidth(120)
-    .DisplayField("display")
-    .ValueField("value")
-    .QueryMode(DataLoadMode.Local)
-    .ForceSelection(true)
-    .Store(X.Store()
-        .Data(Enumerable.Range(DateTime.Now.Year - 4, 5)
-            .Select(y => new { display = y, value = y })
-        )
-    )
-    .Value(DateTime.Now.Year), // ← Année en cours par défaut
+                                            X.ComboBox()
+                                                .ID("cmbAnnee")
+                                                .FieldLabel("Année")
+                                                .Name("Annee")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .LabelWidth(120)
+                                                .DisplayField("display")
+                                                .ValueField("value")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .ForceSelection(true)
+                                                .Store(X.Store()
+                                                    .Data(Enumerable.Range(DateTime.Now.Year - 4, 5)
+                                                        .Select(y => new { display = y, value = y })
+                                                    )
+                                                )
+                                                .Value(DateTime.Now.Year),
 
-// Pour Semaine - avec semaine en cours sélectionnée
-X.ComboBox()
-    .ID("cmbSemaine")
-    .FieldLabel("Semaine")
-    .Name("Semaine")
-    .LabelAlign(LabelAlign.Right)
-    .LabelWidth(120)
-    .DisplayField("display")
-    .ValueField("value")
-    .QueryMode(DataLoadMode.Local)
-    .ForceSelection(true)
-    .Store(X.Store()
-        .Data(Enumerable.Range(-1, 54)
-            .Select(w => new
-            {
-                display = w == -1 ? "{Tous}" : w.ToString(),
-                value = w
-            })
-        )
-    )
-    .Value(GetCurrentWeekNumber()),
+                                            X.ComboBox()
+                                                .ID("cmbSemaine")
+                                                .FieldLabel("Semaine")
+                                                .Name("Semaine")
+                                                .LabelAlign(LabelAlign.Right)
+                                                .LabelWidth(120)
+                                                .DisplayField("display")
+                                                .ValueField("value")
+                                                .QueryMode(DataLoadMode.Local)
+                                                .ForceSelection(true)
+                                                .Store(X.Store()
+                                                    .Data(Enumerable.Range(-1, 54)
+                                                        .Select(w => new
+                                                        {
+                                                            display = w == -1 ? "{Tous}" : w.ToString(),
+                                                            value = w
+                                                        })
+                                                    )
+                                                )
+                                                .Value(GetCurrentWeekNumber()),
 
 
                                             X.ComboBox().ID("cmbProduit").FieldLabel("Produit").Name("Produit").DisplayField("Designation").ValueField("ID").Value(-1).LabelAlign(LabelAlign.Right).LabelWidth(120)
@@ -211,24 +153,22 @@ X.ComboBox()
                                         .Layout(LayoutType.Form).Flex(1).Border(false).Padding(5)
                                         .Items(
                                             X.ComboBox().ID("cmbTypeProduit").FieldLabel("Type de produit").Name("TypeProduit").DisplayField("Designation").ValueField("ID").Value(-1).LabelAlign(LabelAlign.Right).LabelWidth(120)
-    .Store(X.Store().AutoLoad(true).Proxy(X.AjaxProxy().Url(Url.Action("LoadProduitTypeAll", "ProduitType")).Reader(X.JsonReader().RootProperty("data"))))
-    .Listeners(ls =>
-    {
-        ls.Select.Handler = @"
-            var typeProduitId = this.getValue();
-            var articleStore = App.cmbArticle.getStore();
-            App.cmbArticle.clearValue();
-            // Assurez-vous que le paramètre est bien 'typeProduitID' dans votre action LoadArticle
-            articleStore.getProxy().setExtraParam('typeProduitID', typeProduitId);
-            articleStore.load();
-        ";
-    })
-,
+                                                .Store(X.Store().AutoLoad(true).Proxy(X.AjaxProxy().Url(Url.Action("LoadProduitTypeAll", "ProduitType")).Reader(X.JsonReader().RootProperty("data"))))
+                                                .Listeners(ls =>
+                                                {
+                                                    ls.Select.Handler = @"
+                                                        var typeProduitId = this.getValue();
+                                                        var articleStore = App.cmbArticle.getStore();
+                                                        App.cmbArticle.clearValue();
+                                                        articleStore.getProxy().setExtraParam('typeProduitID', typeProduitId);
+                                                        articleStore.load();
+                                                    ";
+                                                }),
                                             X.ComboBox().ID("cmbArticle").FieldLabel("Article").Name("Article").DisplayField("Nom").ValueField("ID").QueryMode(DataLoadMode.Local).TypeAhead(true).ForceSelection(false).LabelAlign(LabelAlign.Right).LabelWidth(120)
-    .Store(X.Store().AutoLoad(true)
-        .Proxy(X.AjaxProxy()
-            .Url(Url.Action("LoadByType", "Article"))
-            .Reader(X.JsonReader().RootProperty("data")))),
+                                                .Store(X.Store().AutoLoad(false)
+                                                    .Proxy(X.AjaxProxy()
+                                                        .Url(Url.Action("LoadByType", "Article"))
+                                                        .Reader(X.JsonReader().RootProperty("data")))),
                                             X.ComboBox().ID("cmbStatut").FieldLabel("Statut").Name("Statut").Value("Tous").LabelAlign(LabelAlign.Right).LabelWidth(120)
                                                 .Items(new ListItem("{Tous}", "Tous"), new ListItem("En attente", "EA"), new ListItem("En cours", "EC"), new ListItem("Fermé", "CL"))
                                         ),
@@ -261,20 +201,77 @@ X.ComboBox()
                     l.Select.Fn = "Overview.resetButtons";
                     l.Deselect.Fn = "Overview.resetButtons";
                 }))
-                .Listeners(l => l.ItemDblClick.Handler = @"
-                var record = App.rowSelectionOrdreFabrication.getSelection()[0];
-                if (record) {
-                    var itemSelected = Ext.encode(record.data);
-                    Ext.net.DirectMethod.request({
-                        url: '" + Url.Action("OnConsult", "OrdreFabrication") + @"',
-                        params: { ItemSelected: itemSelected },
-                        mask: { showMask: true }
-                    });
-                }
-            ")
-            .BottomBar(X.PagingToolbar().DisplayInfo(false))
+                .DirectEvents(de =>
+                {
+                    de.ItemDblClick.Url = Url.Action("OnConsult");
+                    de.ItemDblClick.EventMask.ShowMask = true;
+                    de.ItemDblClick.ExtraParams.Add(new Parameter("ItemSelected", "Ext.encode(record.data)", ParameterMode.Raw));
+
+                })
+                .BottomBar(X.PagingToolbar().DisplayInfo(false))
         )
     )
 </form>
 
-}
+@* CORRECTION : Le script est maintenant placé après la définition des composants pour assurer leur initialisation. *@
+<script type="text/javascript">
+    Ext.onReady(function () {
+        var currentYear = new Date().getFullYear();
+        var years = [];
+        for (var i = 0; i < 5; i++) {
+            var yearValue = currentYear - i;
+            years.push({ display: yearValue, value: yearValue });
+        }
+        // Le Store est déjà chargé côté serveur, donc ces lignes ne sont plus nécessaires
+        // App.cmbAnnee.getStore().loadData(years);
+        // App.cmbAnnee.setValue(currentYear);
+
+        var weeks = [{ display: '{Tous}', value: -1 }];
+        for (var i = 1; i <= 52; i++) {
+            weeks.push({ display: i, value: i });
+        }
+        // Le Store est déjà chargé côté serveur, donc ces lignes ne sont plus nécessaires
+        // App.cmbSemaine.getStore().loadData(weeks);
+        // App.cmbSemaine.setValue(-1);
+    });
+
+    var renderIcon = function (value) {
+        var tpl = '<span class="glyphicon {0}" aria-hidden="true"></span>';
+        var icon_url = Overview.getBootStrapIcons(value);
+        return Ext.String.format(tpl, icon_url);
+    }
+
+    var SetMsgBoxConfirm = function (config, isDisabled) {
+        config.message = isDisabled ? "Êtes-vous sûr de vouloir activer cet élément ?" : "Êtes-vous sûr de vouloir annuler cet élément ?";
+        return config;
+    };
+
+    var Overview = {
+        getBootStrapIcons: function (value) {
+            if (value === 0) return 'glyphicon-remove red';
+            if (value === 2) return 'glyphicon-file blue';
+            return '';
+        },
+        resetButtons: function () {
+            var hasSel = App.rowSelectionOrdreFabrication.hasSelection();
+            App.btnModifyOrdreFabrication.setDisabled(!hasSel);
+            App.mnuCancelOrdreFabrication.setDisabled(!hasSel);
+            App.btnClose.setDisabled(!hasSel);
+            App.btnOpen.setDisabled(!hasSel);
+
+            if (hasSel) {
+                var record = App.rowSelectionOrdreFabrication.getSelection()[0];
+                var isDisabled = record.data.Desactive;
+                if (isDisabled) {
+                    App.mnuCancelOrdreFabrication.setText('Activer');
+                    App.mnuCancelOrdreFabrication.setIconCls('glyphicon glyphicon-ok green');
+                    App.btnModifyOrdreFabrication.disable();
+                } else {
+                    App.mnuCancelOrdreFabrication.setText('Annuler');
+                    App.mnuCancelOrdreFabrication.setIconCls('glyphicon glyphicon-remove red');
+                }
+            }
+        }
+    };
+</script>
+

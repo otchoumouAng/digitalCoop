@@ -2,6 +2,21 @@
 @{
     Layout = null;
     var X = Html.X();
+
+    // Logique pour définir le titre de la fenêtre dynamiquement
+    var windowTitle = "Ordre de production";
+    switch (Model._ExecMode)
+    {
+        case Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew:
+            windowTitle += " - Nouveau";
+            break;
+        case Tms.Components.Settings.EnumsDefinition.eExecMode.Update:
+            windowTitle += " - Modification";
+            break;
+        case Tms.Components.Settings.EnumsDefinition.eExecMode.Consult:
+            windowTitle += " - Consultation";
+            break;
+    }
 }
 <head>
     <link rel="stylesheet" href="~/Content/IconsStyles.css" />
@@ -27,7 +42,7 @@ X.Window()
     .Height(380)
     .Modal(true)
     .CloseAction(Ext.Net.CloseAction.Destroy)
-    .Title("Ordre de production - Nouveau")
+    .Title(windowTitle)
     .Items
     (
         X.FormPanel()
@@ -57,7 +72,8 @@ X.Window()
                                         .LabelAlign(LabelAlign.Right),
 
                                     X.ComboBox()
-                                        .ID("cmbArticle")
+                                        // CORRECTION : ID unique pour éviter les conflits
+                                        .ID("cmbArticleModal")
                                         .FieldLabel("Article")
                                         .DisplayField("Nom")
                                         .ValueField("ID")
@@ -67,7 +83,8 @@ X.Window()
                                         .QueryMode(DataLoadMode.Local)
                                         .TriggerAction(TriggerAction.All)
                                         .LabelAlign(LabelAlign.Right)
-                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreFabrication.Article.ID : (Guid?)null)
+                                        // CORRECTION : Ajout de l'opérateur ?. pour la sécurité
+                                        .Value(Model._ExecMode != Tms.Components.Settings.EnumsDefinition.eExecMode.AddNew ? Model._OrdreFabrication.Article?.ID : (Guid?)null)
                                         .Store
                                             (
                                             X.Store()
@@ -127,12 +144,16 @@ X.Window()
                                         .ID("txtAnnee")
                                         .FieldLabel("Année")
                                         .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
                                         .LabelAlign(LabelAlign.Right)
                                         .Value(Model._OrdreFabrication.Annee),
                                     X.NumberField()
                                         .ID("txtSemaine")
                                         .FieldLabel("Semaine")
                                         .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
                                         .LabelAlign(LabelAlign.Right)
                                         .Value(Model._OrdreFabrication.Semaine),
 
@@ -222,6 +243,8 @@ X.Window()
                                         .ID("txtNbrePaletteAProduire")
                                         .FieldLabel("Nbre Palettes")
                                         .AllowBlank(false)
+                                        .IndicatorCls("IndicatorRedStar")
+                                        .IndicatorText("*")
                                         .LabelAlign(LabelAlign.Right)
                                         .Value(Model._OrdreFabrication.NbrePaletteAProduire),
 
@@ -290,5 +313,7 @@ X.Window()
             });
             return false;
         }
+        return true;
     };
 </script>
+

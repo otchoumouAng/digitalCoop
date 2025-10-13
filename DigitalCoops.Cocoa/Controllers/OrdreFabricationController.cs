@@ -123,7 +123,6 @@ namespace Tms2017.MVC.Controllers
         public ActionResult OnAdd()
         {
 
-
             OrdreFabricationViewModel OrdreFabricationVm = new OrdreFabricationViewModel();
 
             OrdreFabricationVm._OrdreFabrication = new OrdreFabrication();
@@ -479,7 +478,7 @@ namespace Tms2017.MVC.Controllers
             obj.NumeroProduction = X.GetCmp<TextField>("txtNumeroProduction").Text;
 
             // Article
-            var cmbArticle = X.GetCmp<ComboBox>("cmbArticle");
+            var cmbArticle = X.GetCmp<ComboBox>("cmbArticleModal");
             if (!string.IsNullOrEmpty(cmbArticle.Text))
             {
                 obj.Article = new Article
