@@ -261,7 +261,18 @@ X.ComboBox()
                     l.Select.Fn = "Overview.resetButtons";
                     l.Deselect.Fn = "Overview.resetButtons";
                 }))
-                .BottomBar(X.PagingToolbar().DisplayInfo(false))
+                .Listeners(l => l.ItemDblClick.Handler = @"
+                var record = App.rowSelectionOrdreFabrication.getSelection()[0];
+                if (record) {
+                    var itemSelected = Ext.encode(record.data);
+                    Ext.net.DirectMethod.request({
+                        url: '" + Url.Action("OnConsult", "OrdreFabrication") + @"',
+                        params: { ItemSelected: itemSelected },
+                        mask: { showMask: true }
+                    });
+                }
+            ")
+            .BottomBar(X.PagingToolbar().DisplayInfo(false))
         )
     )
 </form>
