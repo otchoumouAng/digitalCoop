@@ -320,7 +320,7 @@ namespace Tms2017.MVC.Controllers
             return this.Direct();
         }
 
-        public ActionResult Select(StoreRequestParameters parameters, int annee, int semaine, int produitID, int typeProduitID, string articleID, string statut, int actifState)
+        public ActionResult Select(StoreRequestParameters parameters, int annee = -1, int semaine = -1, int produitID = -1, int typeProduitID = -1, string articleID = null, string statut = "Tous", int actifState = -1)
         {
             Guid? articleGuid = null;
             if (!string.IsNullOrEmpty(articleID) && Guid.TryParse(articleID, out Guid parsedGuid))
