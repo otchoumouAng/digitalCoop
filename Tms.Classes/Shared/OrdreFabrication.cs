@@ -1016,56 +1016,59 @@ namespace Tms.Classes.Shared
                     {
                         mClass._Article = new Article();
                         mClass._Article.ID = (Guid)mDataReader["ArticleCode"];
-                        mClass._Article.Nom = (string)mDataReader["ArticleDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["ArticleDesignation"])) mClass._Article.Nom = (string)mDataReader["ArticleDesignation"];
 
                         mClass._ArticleID = (Guid)mDataReader["ArticleCode"];
-                        mClass._ArticleNom= (string)mDataReader["ArticleDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["ArticleDesignation"])) mClass._ArticleNom = (string)mDataReader["ArticleDesignation"];
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["LigneProductionCode"]))
                     {
                         mClass._LigneDeProduction = new LigneProduction();
                         mClass._LigneDeProduction.ID = (int)mDataReader["LigneProductionCode"];
-                        mClass._LigneDeProduction.Designation = (string)mDataReader["LigneProductionDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["LigneProductionDesignation"])) mClass._LigneDeProduction.Designation = (string)mDataReader["LigneProductionDesignation"];
 
                         mClass._LigneDeProductionID = (int)mDataReader["LigneProductionCode"];
-                        mClass._LigneDeProductionDesignation = (string)mDataReader["LigneProductionDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["LigneProductionDesignation"])) mClass._LigneDeProductionDesignation = (string)mDataReader["LigneProductionDesignation"];
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["RecolteCode"]))
                     {
                         mClass._Recolte = new Recolte();
                         mClass._Recolte.ID = (int)mDataReader["RecolteCode"];
-                        mClass._Recolte.Designation = (string)mDataReader["RecolteDesignation"];
-                        mClass._RecolteDesignation = (string)mDataReader["RecolteDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["RecolteDesignation"]))
+                        {
+                            mClass._Recolte.Designation = (string)mDataReader["RecolteDesignation"];
+                            mClass._RecolteDesignation = (string)mDataReader["RecolteDesignation"];
+                        }
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["ClientCode"]))
                     {
                         mClass._Client = new Client();
                         mClass._Client.ID = (int)mDataReader["ClientCode"];
-                        mClass._Client.Nom = (string)mDataReader["ClientNom"];
+                        if (!DBNull.Value.Equals(mDataReader["ClientNom"])) mClass._Client.Nom = (string)mDataReader["ClientNom"];
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["ProduitCode"]))
                     {
                         mClass._Produit = new Produit();
                         mClass._Produit.ID = (int)mDataReader["ProduitCode"];
-                        mClass._Produit.Designation = (string)mDataReader["ProduitDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["ProduitDesignation"])) mClass._Produit.Designation = (string)mDataReader["ProduitDesignation"];
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["TypeProduitCode"]))
                     {
                         mClass._TypeDeProduit = new ProduitType();
                         mClass._TypeDeProduit.ID = (int)mDataReader["TypeProduitCode"];
-                        mClass._TypeDeProduit.Designation = (string)mDataReader["TypeProduitDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["TypeProduitDesignation"])) mClass._TypeDeProduit.Designation = (string)mDataReader["TypeProduitDesignation"];
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["ConditionnementCode"]))
                     {
                         mClass._Conditionnement = new Conditionnement();
                         mClass._Conditionnement.ID = (int)mDataReader["ConditionnementCode"];
-                        mClass._Conditionnement.Designation = (string)mDataReader["ConditionnementDesignation"];
+                        if (!DBNull.Value.Equals(mDataReader["ConditionnementDesignation"])) mClass._Conditionnement.Designation = (string)mDataReader["ConditionnementDesignation"];
                     }
 
                     if (!DBNull.Value.Equals(mDataReader["Annee"])) mClass._Annee = (int)mDataReader["Annee"];
@@ -1074,14 +1077,12 @@ namespace Tms.Classes.Shared
                     if (!DBNull.Value.Equals(mDataReader["NumeroProduction"])) mClass._NumeroProduction = (string)mDataReader["NumeroProduction"];
                     if (!DBNull.Value.Equals(mDataReader["ReferenceExterne"])) mClass._ReferenceExterne = (string)mDataReader["ReferenceExterne"];
 
-
                     if (!DBNull.Value.Equals(mDataReader["DatePrevue"])) mClass._DateEffective = (DateTime)mDataReader["DatePrevue"];
-                    if (!DBNull.Value.Equals(mDataReader["DatePrevue"])) mClass._DateDebutProduction = (DateTime)mDataReader["DateDebut"];
+                    if (!DBNull.Value.Equals(mDataReader["DateDebut"])) mClass._DateDebutProduction = (DateTime)mDataReader["DateDebut"];
                     if (!DBNull.Value.Equals(mDataReader["DateFin"])) mClass._DateFinProduction = (DateTime)mDataReader["DateFin"];
-                    //if (!DBNull.Value.Equals(mDataReader["NumeroProduction"])) mClass._NumeroProduction = (string)mDataReader["NumeroProduction"];
+
                     if (!DBNull.Value.Equals(mDataReader["Statut"])) mClass._Statut = (string)mDataReader["Statut"];
                     if (!DBNull.Value.Equals(mDataReader["Desactive"])) mClass._Desactive = (bool)mDataReader["Desactive"];
-
 
                     if (!DBNull.Value.Equals(mDataReader["CreationUtilisateur"])) mClass._UtilisateurCreation = (string)mDataReader["CreationUtilisateur"];
                     if (!DBNull.Value.Equals(mDataReader["CreationDate"])) mClass._DateCreation = (DateTime)mDataReader["CreationDate"];
