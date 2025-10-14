@@ -485,13 +485,25 @@ namespace Tms.Classes.Shared
 
         public List<DataPersist> fnSelect(int mStatus)
         {
+            return fnSelect(-1, -1, -1, -1, null, "Tous", mStatus);
+        }
+
+        public List<DataPersist> fnSelect(int annee, int semaine, int produitID, int typeProduitID, Guid? articleID, string statut, int actifState)
+        {
             List<DataPersist> mList = new List<DataPersist>();
             IDataReader mDataReader = null;
 
             try
             {
                 DataCommand mCommande = db().CreateStoredProcCommand("pp_OrdreFabrication_Select");
-                db().AddInParameter(mCommande, "@Statut", SqlDbType.SmallInt, mStatus);
+                db().AddInParameter(mCommande, "@Annee", SqlDbType.Int, annee);
+                db().AddInParameter(mCommande, "@Semaine", SqlDbType.Int, semaine);
+                db().AddInParameter(mCommande, "@ProduitID", SqlDbType.Int, produitID);
+                db().AddInParameter(mCommande, "@TypeProduitID", SqlDbType.Int, typeProduitID);
+                db().AddInParameter(mCommande, "@ArticleID", SqlDbType.UniqueIdentifier, articleID);
+                db().AddInParameter(mCommande, "@Statut", SqlDbType.VarChar, statut);
+                db().AddInParameter(mCommande, "@ActifState", SqlDbType.Int, actifState);
+
                 mDataReader = db().ExecuteReader(mCommande);
 
                 while (mDataReader.Read())

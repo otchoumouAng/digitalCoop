@@ -320,19 +320,15 @@ namespace Tms2017.MVC.Controllers
             return this.Direct();
         }
 
-        public ActionResult Select(StoreRequestParameters parameters, string ItemStatus)
+        public ActionResult Select(StoreRequestParameters parameters, int annee, int semaine, int produitID, int typeProduitID, string articleID, string statut, int actifState)
         {
-            int status = -1;
-            if (string.IsNullOrEmpty(ItemStatus))
+            Guid? articleGuid = null;
+            if (!string.IsNullOrEmpty(articleID) && Guid.TryParse(articleID, out Guid parsedGuid))
             {
-                status = -1;
+                articleGuid = parsedGuid;
             }
-            else if (ItemStatus == "true")
-            {
-                status = 0;
-            }
-            var liste = new OrdreFabrication().fnSelect(status);
-            //var pagning = GridStorePaging.SetRangePlants(parameters, liste);
+
+            var liste = new OrdreFabrication().fnSelect(annee, semaine, produitID, typeProduitID, articleGuid, statut, actifState);
             return this.Store(liste);
         }
 
