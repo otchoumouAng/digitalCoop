@@ -506,7 +506,7 @@ namespace Tms2017.MVC.Controllers
             return this.Direct();
         }
 
-        public ActionResult OnRefresh(string ItemStatus, int annee, int semaine)
+        public ActionResult OnRefresh(string ItemStatus, int annee, int semaine, int produitID, int typeProduitID, string articleID, string statut)
         {
             Store mstore = X.GetCmp<Store>("storeListeOrdreFabrication");
 
@@ -514,7 +514,11 @@ namespace Tms2017.MVC.Controllers
                             {
                                 new Ext.Net.Parameter("ItemStatus", ItemStatus),
                                 new Ext.Net.Parameter("annee", annee),
-                                new Ext.Net.Parameter("semaine", semaine)
+                                new Ext.Net.Parameter("semaine", semaine),
+                                new Ext.Net.Parameter("produitID", produitID),
+                                new Ext.Net.Parameter("typeProduitID", typeProduitID),
+                                new Ext.Net.Parameter("articleID", articleID),
+                                new Ext.Net.Parameter("statut", statut)
                             });
             FormPanel mform = X.GetCmp<FormPanel>("OrdreFabricationCriteriaPanel");
 

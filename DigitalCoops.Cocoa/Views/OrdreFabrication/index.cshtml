@@ -300,6 +300,10 @@
                                 de.Click.ExtraParams.Add(new Parameter {  Name ="ItemStatus", Value= "#{TxtStatus}.getValue()",     Mode=ParameterMode.Raw});
                                 de.Click.ExtraParams.Add(new Parameter {  Name ="annee", Value= "#{cmbAnnee}.getValue()",     Mode=ParameterMode.Raw});
                                 de.Click.ExtraParams.Add(new Parameter {  Name ="semaine", Value= "#{cmbSemaine}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="produitID", Value= "#{cmbProduit}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="typeProduitID", Value= "#{cmbTypeProduit}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="articleID", Value= "#{cmbArticle}.getValue()",     Mode=ParameterMode.Raw});
+                                de.Click.ExtraParams.Add(new Parameter {  Name ="statut", Value= "#{cmbStatut}.getValue()",     Mode=ParameterMode.Raw});
                                 de.Click.Success = "SetCriteriaTitle(App.TxtStatus.value);";
                                 de.Click.EventMask.ShowMask = true;
 
@@ -463,6 +467,55 @@
                                         .Items(
                                             X.ComboBox().ID("cmbAnnee").FieldLabel("Année").LabelAlign(LabelAlign.Right),
                                             X.ComboBox().ID("cmbSemaine").FieldLabel("Semaine").LabelAlign(LabelAlign.Right)
+                                        ),
+                                    X.Panel()
+                                        .Border(false)
+                                        .Width(400)
+                                        .Height(40)
+                                        .Layout(LayoutType.Form)
+                                        .Items(
+                                            X.ComboBox().ID("cmbProduit").FieldLabel("Produit").LabelAlign(LabelAlign.Right)
+                                                .Store(
+                                                    X.Store().ID("storeProduit")
+                                                        .Proxy(
+                                                            X.AjaxProxy().Url(Url.Action("LoadProduitWithBlank", "Produit"))
+                                                        )
+                                                        .Model(X.Model().Fields("ID", "Designation"))
+                                                ).DisplayField("Designation").ValueField("ID"),
+                                            X.ComboBox().ID("cmbTypeProduit").FieldLabel("Type de produit").LabelAlign(LabelAlign.Right)
+                                                .Store(
+                                                    X.Store().ID("storeTypeProduit")
+                                                        .Proxy(
+                                                            X.AjaxProxy().Url(Url.Action("LoadProduitTypeAll", "ProduitType"))
+                                                        )
+                                                        .Model(X.Model().Fields("ID", "Designation"))
+                                                ).DisplayField("Designation").ValueField("ID")
+                                        ),
+                                    X.Panel()
+                                        .Border(false)
+                                        .Width(400)
+                                        .Height(40)
+                                        .Layout(LayoutType.Form)
+                                        .Items(
+                                            X.ComboBox().ID("cmbArticle").FieldLabel("Article").LabelAlign(LabelAlign.Right)
+                                                .Store(
+                                                    X.Store().ID("storeArticle")
+                                                        .Proxy(
+                                                            X.AjaxProxy().Url(Url.Action("LoadAll", "Article"))
+                                                        )
+                                                        .Model(X.Model().Fields("ID", "Nom"))
+                                                ).DisplayField("Nom").ValueField("ID"),
+                                            X.ComboBox().ID("cmbStatut").FieldLabel("Statut").LabelAlign(LabelAlign.Right)
+                                                .Store(
+                                                    X.Store().ID("storeStatut")
+                                                        .DataSource(new object[]
+                                                        {
+                                                            new object[] { "Tous" },
+                                                            new object[] { "En attente" },
+                                                            new object[] { "En cours" },
+                                                            new object[] { "Fermé" }
+                                                        })
+                                                )
                                         ),
                                     X.Container()
                                     .ID("")
